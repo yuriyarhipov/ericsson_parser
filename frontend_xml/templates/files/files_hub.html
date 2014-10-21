@@ -1,0 +1,31 @@
+<div class="row">
+    <a href="#/add_file" class="btn btn-success">Add File</a>
+</div>
+<div class="row">
+    <table class="table table-bordered table-stripped">
+        <thead>
+            <td>Date</td>
+            <td>File name</td>
+            <td>Type of file</td>
+            <td>Network</td>
+            <td>Vendor</td>
+            <td>Description</td>
+            <td>Status</td>
+            <td>Action</td>
+        </thead>
+        <tbody>
+            <tr ng-repeat="f in files">
+                <td>{{ f.date }}</td>
+                <td>{{ f.filename }}</td>
+                <td>{{ f.file_type }}</td>
+                <td>{{ f.network }}</td>
+                <td>{{ f.vendor }}</td>
+                <td>{{ f.description }}</td>
+                <td>Active</td>
+                <td><a href="">delete</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+

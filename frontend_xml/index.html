@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="xmlApp">
+<head>
+    <title>XML</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/main.css" rel="stylesheet" type="text/css"/>
+
+    <script type='text/javascript' src='/js/angular.js'></script>
+    <script type='text/javascript' src='/js/jquery.js'></script>
+    <script type='text/javascript' src='/js/angular-route.min.js'></script>
+    <script type='text/javascript' src='/js/angular-cookies.min.js'></script>
+    <script type='text/javascript' src='/js/ng-upload.min.js'></script>
+    <script type='text/javascript' src='/js/ui-bootstrap-tpls-0.11.2.min.js'></script>
+    <script type='text/javascript' src='/app/js/app.js'></script>
+    <script type='text/javascript' src='/app/js/controllers.js'></script>
+    <script type='text/javascript' src='/app/js/controllers/file.js'></script>
+</head>
+<body>
+<div class="row">
+    <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="col-md-2">
+                <a href="/">
+                    <img width="90%" src="/static/logo.png" id="logo">
+                </a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Projects <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#/add_project">Create Project</a></li>
+                            <li><a href="#/projects">Projects</a></li>
+                            <li><a href="#/files_hub">Files Hub</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="container" ng-controller="ActiveProjectCtrl">
+                <h5>Active project: {{ activeProject }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="col-md-2"><h4>Tree view</h4></div>
+    <div ng-view class="col-md-10">
+    </div>
+</div>
+
+
+
+</body>
+</html>

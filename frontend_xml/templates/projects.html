@@ -1,0 +1,16 @@
+<div class="row">
+    <table class="table table-bordered table-striped col-md-">
+        <thead>
+            <tr>
+                <td>Project name</td>
+                <td>Created</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="project in projects">
+                <td><a  href="" ng-click="activeProject(project.project_name)">{{ project.project_name }}</a></td>
+                <td>{{ project.created }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

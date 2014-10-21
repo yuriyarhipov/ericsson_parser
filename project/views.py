@@ -1,0 +1,26 @@
+import json
+
+from django.http import HttpResponse
+
+from project.models import Project
+
+
+def projects(request):
+    data = []
+    for project in Project.objects.all().order_by('project_name'):
+        data.append({'project_name': project.project_name, 'created': project.created.strftime('%m.%d.%Y')})
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')
+
+
+def save_project(request):
+    data = {'status': 'error', 'message': 'Sorry, Internal Error'}
+    if request.POST:
+        project_name = request.POST.get('project_name')
+        if Project.objects.filter(project_name=project_name).exists():
+            data = {'status': 'error', 'message': 'Sorry, A project with name "%s" exists' % project_name}
+        else:
+            Project.objects.create(project_name=project_name)
+            data = {'status': 'ok', 'message': 'Done'}
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')
