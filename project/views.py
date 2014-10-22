@@ -24,3 +24,22 @@ def save_project(request):
             data = {'status': 'ok', 'message': 'Done'}
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
+
+def treeview(request, mproject):
+
+    project = request.project
+
+    print project.project_name, mproject
+    data = [{'id': 'network', 'label': 'Network Configuration', 'children': [
+        {'id': '2g', 'label': '2G', 'children': []},
+        {'id': '3g', 'label': '3G', 'children': project.get_wcdma_tree()},
+        {'id': '4g', 'label': '4G', 'children': []}
+    ]},
+            {'id': 'licenses', 'label': 'Licenses', 'children': []},
+            {'id': 'measurements', 'label': 'Measurements', 'children': [
+                {'id': 'ncs', 'label': 'NCS', 'children': []},
+                {'id': 'mrr', 'label': 'MRR', 'children': []}
+            ]},
+            {'id': 'hardware', 'label': 'Hardware', 'children': []}]
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')

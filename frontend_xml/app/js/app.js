@@ -6,7 +6,10 @@ var XmlApp = angular.module(
         'ui.bootstrap',
         'xmlControllers',
         'filesControllers',
-        'ngUpload'
+        'ngUpload',
+        'angularTreeview',
+        'treeViewControllers',
+        'activeProjectModule'
     ]);
 
 XmlApp.config(['$routeProvider',

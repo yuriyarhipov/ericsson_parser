@@ -4,17 +4,20 @@
     <title>XML</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/main.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/angular.treeview.css" rel="stylesheet" type="text/css"/>
 
     <script type='text/javascript' src='/js/angular.js'></script>
     <script type='text/javascript' src='/js/jquery.js'></script>
     <script type='text/javascript' src='/js/angular-route.min.js'></script>
     <script type='text/javascript' src='/js/angular-cookies.min.js'></script>
     <script type='text/javascript' src='/js/ng-upload.min.js'></script>
+    <script type='text/javascript' src='/js/angular.treeview.min.js'></script>
     <script type='text/javascript' src='/js/ui-bootstrap-tpls-0.11.2.min.js'></script>
     <script type='text/javascript' src='/app/js/app.js'></script>
     <script type='text/javascript' src='/app/js/controllers.js'></script>
+    <script type='text/javascript' src='/app/js/project.js'></script>
     <script type='text/javascript' src='/app/js/controllers/file.js'></script>
+    <script type='text/javascript' src='/app/js/controllers/treeview.js'></script>
 </head>
 <body>
 <div class="row">
@@ -42,14 +45,22 @@
         </div>
         <div class="row">
             <div class="container" ng-controller="ActiveProjectCtrl">
-                <h5>Active project: {{ activeProject }}</h5>
+                <h5>Active project: <span ng-bind="activeProject"></span></h5>
             </div>
         </div>
     </div>
 </div>
 <div class="container-fluid">
-    <div class="col-md-2"><h4>Tree view</h4></div>
-    <div ng-view class="col-md-10">
+    <div class="col-md-3"
+        ng-controller="TreeViewCtrl"
+        data-angular-treeview="true"
+        data-tree-id="tree_view"
+        data-tree-model="treedata"
+        data-node-id="id"
+        data-node-label="label"
+        data-node-children="children">
+    </div>
+    <div ng-view class="col-md-9">
     </div>
 </div>
 

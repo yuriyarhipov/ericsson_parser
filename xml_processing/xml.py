@@ -615,11 +615,11 @@ class Xml(object):
             Files.objects.filter(filename=xml.filename, project=project).delete()
             Files.objects.create(
                 filename=xml.filename,
-                file_type=tables.file_type,
+                file_type=file_type.lower(),
                 project=project,
                 tables=','.join(xml.tables.keys()),
                 description=description,
                 vendor=vendor,
-                network=network)
+                network=network.lower())
 
 

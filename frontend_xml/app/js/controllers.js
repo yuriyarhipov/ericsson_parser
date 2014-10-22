@@ -1,9 +1,9 @@
 var xmlControllers = angular.module('xmlControllers', []);
 
-xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', '$cookies',
-    function ($scope, $http, $cookies) {
-        $scope.activeProject = function(project){
-            $cookies.active_project = project;
+xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectService',
+    function ($scope, $http, activeProjectService) {
+        $scope.setActiveProject = function(project){
+            activeProjectService.setProject(project);
         };
 
         $http.get('/data/projects/').success(function(data) {
@@ -11,9 +11,12 @@ xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', '$cookies',
         });
   }]);
 
-xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies',
-    function($scope, $cookies) {
-        $scope.activeProject =$cookies.active_project;
+xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService',
+    function($scope, $cookies, activeProjectService) {
+        $scope.activeProject = $cookies.active_project;
+        $scope.$on('handleBroadcast', function() {
+            $scope.activeProject = activeProjectService.project;
+        });
   }]);
 
 xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location',

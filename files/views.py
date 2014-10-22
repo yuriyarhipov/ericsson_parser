@@ -29,18 +29,15 @@ def save_files(request):
     file_type = request.POST.get('file_type')
     network = request.POST.get('network')
     filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
-    print 'OK1'
     job = tasks.worker.delay(filename, project, description, vendor, file_type, network)
-
-    #Files.objects.filter(filename=filename, project=project).delete()
-    #Files.objects.create(filename=filename, project=project, description=description, vendor=vendor, network=network, file_type=file_type)
     data = dict()
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
 
 def files(request):
+    project = request.project
     data = []
-    for f in Files.objects.all():
+    for f in Files.objects.filter(project=project):
         data.append({
             'filename': f.filename,
             'date': f.date.strftime('%m.%d.%Y'),
