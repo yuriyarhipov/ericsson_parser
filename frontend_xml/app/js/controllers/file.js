@@ -14,7 +14,7 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
         $scope.CurrentNetwork = $scope.Network[0];
         $scope.CurrentTypeFile = $scope.TypeFile[0];
         $scope.file_data = {};
-        $scope.complete = function(){
-            $location.path('/files_hub');
-        }
+        //$scope.complete = function(){
+            //$location.path('/files_hub');
+        //}
   }]);

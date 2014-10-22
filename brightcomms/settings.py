@@ -1,5 +1,5 @@
 """
-Django settings for brightcomms project.
+Django settings for xml_processing project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -7,7 +7,12 @@ https://docs.djangoproject.com/en/1.6/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
+import djcelery
+djcelery.setup_loader()
 
+## Celery config ##
+
+BROKER_URL = "amqp://guest:guest@localhost:5672//"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -30,6 +35,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    'djcelery',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -85,8 +91,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
+STATICFILES_DIRS = ['/home/arhipov/PycharmProjects/xml_processing/static', ]
 STATIC_URL = '/static/'
 
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR,  'templates'),
-)
+
+TEMPLATE_DIRS = ['templates', ]
+FILE_UPLOAD_MAX_MEMORY_SIZE = 26214400000
+ZIP_PATH = '/tmp/zip/'
