@@ -9,7 +9,8 @@ var XmlApp = angular.module(
         'ngUpload',
         'angularTreeview',
         'treeViewControllers',
-        'activeProjectModule'
+        'activeProjectModule',
+        'queryControllers'
     ]);
 
 XmlApp.config(['$routeProvider',
@@ -30,6 +31,10 @@ XmlApp.config(['$routeProvider',
             when('/add_file',{
                 templateUrl: 'templates/files/add_file.html',
                 controller: 'AddFileCtrl'
+            }).
+            when('/create_group_of_cells',{
+                templateUrl: 'templates/query/create_group_of_cells.html',
+                controller: 'CreateGroupOfCellsCtrl'
             }).
             otherwise({
                 redirectTo: '/'

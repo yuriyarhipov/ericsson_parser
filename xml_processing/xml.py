@@ -94,7 +94,8 @@ class Excel:
         try:
             worksheet = self.workbook.add_worksheet(table_name)
             i = 0
-            columns = displayed_columns(table_name, self.filename)
+            self.cursor.execute("SELECT DISTINCT * FROM %s" % table_name)
+            columns = [desc[0].lower() for desc in self.cursor.description]
             sql = "SELECT %s FROM %s WHERE filename='%s';" % (','.join(columns), table_name, self.filename)
             self.cursor.execute(sql)
             for column in columns:
@@ -192,7 +193,7 @@ class Tables:
     def table(self, table_name):
         self.cursor.execute(
             'SELECT column_name FROM information_schema.columns WHERE table_catalog = %s AND table_name=%s;',
-            ('xml', table_name.lower()))
+            (settings.DATABASES['default']['NAME'], table_name.lower()))
         column_names = set(row[0].lower() for row in self.cursor)
         if column_names:
             self.check_table(table_name, column_names)

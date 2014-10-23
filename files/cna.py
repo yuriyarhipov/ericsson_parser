@@ -1,7 +1,9 @@
 import psycopg2
 from django.conf import settings
-from main.models import QueryTemplate, GroupCells, File, Project, UserProfile
-from main.lib import fcount
+from query.models import QueryTemplate, GroupCells
+from files.models import Files
+from project.models import Project
+from lib import fcount
 from os.path import basename
 
 class CNA:
@@ -17,7 +19,7 @@ class CNA:
 
     def get_cells(self):
         query_tables = []
-        for f in File.objects.filter(file_type='CNA'):
+        for f in Files.objects.filter(file_type='CNA'):
             query_tables.append('SELECT CELL FROM "%s"' % f.filename)
         print query_tables
         self.cursor.execute('SELECT DISTINCT CELL FROM (%s) as t ORDER BY CELL' % ' UNION '.join(query_tables))
@@ -25,7 +27,7 @@ class CNA:
 
     def get_mo(self, query):
 
-        mo = [f.filename for f in File.objects.filter(file_type='CNA')]
+        mo = [f.filename for f in Files.objects.filter(file_type='CNA')]
         data = []
         for m in mo:
             if query:
@@ -171,8 +173,7 @@ class CNA:
         cursor.execute('DROP TABLE IF EXISTS "%s"' % (table_name, ))
         cursor.execute('CREATE TABLE "%s" (%s) ' % (table_name, sql_columns))
 
-
-    def save_cna(self, filename, project, user, task, current, available):
+    def save_cna(self, filename, project, description, vendor, file_type, network, task, current, available):
         table_name = basename(filename).split('.')[0]
         count = fcount(filename)
         with open(filename) as f:
@@ -186,11 +187,14 @@ class CNA:
                 current = float(current) + float(interval)
                 self.add_row(table_name, columns, row)
                 task.update_state(state="PROGRESS", meta={"current": int(current), "total": 100})
-        project = Project.objects.get(project_name=project)
-        File.objects.filter(filename=table_name, project=project).delete()
-        f = File.objects.create(filename=table_name, file_type='CNA', project=project)
-        user_profile = UserProfile.objects.get(user=user, project=project)
-        user_profile.cna = f
-        user_profile.active = True
-        user_profile.save()
+        Files.objects.filter(filename=table_name, project=project).delete()
+        Files.objects.create(filename=table_name, file_type='CNA', project=project)
+        Files.objects.create(
+                filename=table_name,
+                file_type=file_type.lower(),
+                project=project,
+                tables='',
+                description=description,
+                vendor=vendor,
+                network=network.lower())
         self.conn.commit()

@@ -7,13 +7,12 @@ from django.conf import settings
 
 @celery.task
 def worker(filename, project,  description, vendor, file_type, network):
-    print 'OK2'
     if not project:
         return
 
     from archive import XmlPack
     from xml_processing.xml import Xml
-    #from cna.cna import CNA
+    from files.cna import CNA
     #from measurements.measurements import Measurements
 
 
@@ -28,13 +27,14 @@ def worker(filename, project,  description, vendor, file_type, network):
 
     current = 0
 
-    if network.lower() == '3g':
+    if network.lower() in ['3g', '4g']:
        if file_type.lower() == 'xml':
            Xml().save_xml(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
 
-    #
-    #    if '.txt' in f:
-    #        CNA().save_cna(f, project, '', current_task, current, interval_per_file)
+    if network.lower() == '2g':
+        if file_type.lower() == 'txt':
+            CNA().save_cna(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
+
     #    elif '.xml' in f:
     #        Xml().save_xml(f, project, current_task, current, interval_per_file)
     #    elif '.msmt' in f:

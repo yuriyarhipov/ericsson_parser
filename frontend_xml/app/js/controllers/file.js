@@ -10,7 +10,7 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http',
 filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
     function ($scope, $http, $location) {
         $scope.Network = [ '2G', '3G', '4G'];
-        $scope.TypeFile = ['Xml', 'License'];
+        $scope.TypeFile = ['Xml', 'License', 'Txt'];
         $scope.CurrentNetwork = $scope.Network[0];
         $scope.CurrentTypeFile = $scope.TypeFile[0];
         $scope.file_data = {};

@@ -9,9 +9,9 @@ class Project(models.Model):
         from files.models import Files
         return [f.filename for f in Files.objects.filter(project=self, network=network, file_type=file_type)]
 
-    def get_wcdma_tree(self):
+
+    def get_tree(self, network, file_type):
         data = []
-        print self.get_list_files('3g', 'xml')
-        for f in self.get_list_files('3g', 'xml'):
+        for f in self.get_list_files(network, file_type):
             data.append({'id': f.lower(), 'label': f, 'children': ''})
         return data
