@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'project',
     'files',
+    'query',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -52,7 +53,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'project.middleware.ActiveProject'
+    'project.middleware.ActiveProject',
+    'files.middleware.middleware.ActiveFiles'
 )
 
 ROOT_URLCONF = 'brightcomms.urls'

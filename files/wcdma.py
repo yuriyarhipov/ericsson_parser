@@ -2,7 +2,7 @@ import psycopg2
 
 from django.conf import settings
 
-from main.models import File, Table, GroupCells, QueryTemplate
+from query.models import GroupCells, QueryTemplate
 
 
 class WCDMA:
@@ -23,44 +23,6 @@ class WCDMA:
     def get_rnc(self, filename):
         self.cursor.execute("SELECT DISTINCT RNC from Topology WHERE filename=%s ORDER BY RNC", (filename,))
         return [r[0] for r in self.cursor]
-
-    def get_wcdma_files(self):
-        files = []
-        for f in File.objects.all():
-            if f.file_type == 'WCDMA':
-                files.append(f)
-        return files
-
-    def get_mo(self, query):
-        mo = []
-        for f in self.get_wcdma_files():
-            mo = mo + f.tables.split(',')
-        mo = set(mo)
-        data = []
-        for m in mo:
-            if query:
-                if query.lower() in m.lower():
-                    data.append(dict(id=m, text=m))
-            else:
-                data.append(dict(id=m, text=m))
-
-        data.sort()
-        return data
-
-    def get_mo_param(self, mo, q):
-        params = set()
-        for t in Table.objects.filter(table_name=mo):
-            for p in t.columns.split(','):
-                if q:
-                    if q.lower() in p.lower():
-                        params.add(p)
-                else:
-                    params.add(p)
-
-        data = [dict(id=p, text=p) for p in params]
-
-        data.sort()
-        return data
 
     def get_groups(self):
         return [gc.group_name for gc in GroupCells.objects.filter(type='WCDMA').order_by('group_name')]
@@ -89,26 +51,7 @@ class WCDMA:
                 real_cells.append(cell)
         return set("'%s'" % cell for cell in set(real_cells))
 
-    def get_real_table_name(self, table_name, filename):
-        for t in Table.objects.filter(filename=filename):
-            if t.table_name.lower() == table_name.lower():
-               return  t.table_name
 
-    def get_from(self, tables, filename):
-        result = []
-        for table_name in tables:
-            table_name = self.get_real_table_name(table_name, filename)
-            if Table.objects.filter(table_name=table_name, filename=filename):
-                columns = Table.objects.get(table_name=table_name, filename=filename).columns.split(',')
-                sql_joins = []
-                if 'Element1' in columns:
-                    sql_joins.append('(Topology.RNC=%s.Element1)' % table_name)
-                if 'Element2' in columns:
-                    sql_joins.append('(Topology.SITE=%s.Element2) ' % table_name)
-                if 'UtranCell' in columns:
-                    sql_joins.append('(Topology.UtranCell=%s.UtranCell) ' % table_name)
-                result.append('INNER JOIN %s ON (%s) ' % (table_name, ' AND'.join(sql_joins)))
-        return ' '.join(result)
 
     def get_params_with_min_max(self, template):
         params = dict()

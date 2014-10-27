@@ -10,7 +10,7 @@ def projects(request):
     for project in Project.objects.all().order_by('project_name'):
         data.append({'project_name': project.project_name, 'created': project.created.strftime('%m.%d.%Y')})
 
-    return HttpResponse(json.dumps(data), mimetype='application/json')
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def save_project(request):
@@ -23,7 +23,7 @@ def save_project(request):
             Project.objects.create(project_name=project_name)
             data = {'status': 'ok', 'message': 'Done'}
 
-    return HttpResponse(json.dumps(data), mimetype='application/json')
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def treeview(request, project):
@@ -40,4 +40,4 @@ def treeview(request, project):
             ]},
             {'id': 'hardware', 'label': 'Hardware', 'children': []}]
 
-    return HttpResponse(json.dumps(data), mimetype='application/json')
+    return HttpResponse(json.dumps(data), content_type='application/json')

@@ -1,5 +1,6 @@
 from django.db import models
 from project.models import Project
+from files.wcdma import WCDMA
 
 class Files(models.Model):
     filename = models.TextField()
@@ -12,3 +13,15 @@ class Files(models.Model):
     vendor = models.TextField()
     network = models.TextField()
     project = models.ForeignKey(Project)
+
+    def get_cells(self):
+        cells = []
+        if (self.file_type == 'xml') and (self.network == '3g'):
+            wcdma = WCDMA()
+            for cell in wcdma.get_rnc(self.filename):
+                cells.append({'cell': cell, 'type': 'RNC'})
+            for cell in wcdma.get_cells(self.filename):
+                cells.append({'cell': cell, 'type': 'Individuals'})
+
+
+        return cells

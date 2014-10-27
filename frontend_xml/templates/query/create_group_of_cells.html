@@ -1,9 +1,9 @@
 <div class="row">
-    <form action="" class="form-horizontal col-sm-6" role="form">
+    <form ng-submit="saveGroupOfCells()" class="form-horizontal col-sm-6" role="form">
         <div class="form-group">
-            <label class="col-sm-3 control-label" for="technology">Technology</label>
+            <label class="col-sm-3 control-label" for="network">Network</label>
             <div class="col-sm-9">
-                <select ng-model="technology" ng-change="onChangeTechnology()" class="form-control" id="technology">
+                <select ng-model="form_data.network" ng-change="onChangeNetwork()" class="form-control" id="network">
                     <option value="2g">2G</option>
                     <option value="3g">3G</option>
                     <option value="4g">4G</option>
@@ -13,7 +13,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label" for="title">Title:</label>
             <div class="col-sm-9">
-                <input class="form-control" id="title">
+                <input ng-model="form_data.title" class="form-control" id="title">
             </div>
         </div>
         <div class="form-group">
@@ -22,23 +22,16 @@
                 <input class="form-control" id="filter">
                 <select ng-model="selected_cells" ng-options="cell.cell group by cell.type for cell in data_cells" class="form-control" multiple>
                 </select>
-                <button class="btn btn-success">Add to Group</button>
-                <button class="btn btn-danger">Delete from Group</button>
-                <select class="form-control" multiple>
+                <button ng-click="onAddCell()" class="btn btn-success" type="button">Add to Group</button>
+                <button ng-click="onDeleteCell()" class="btn btn-danger" type="button">Delete from Group</button>
+                <select ng-model="selected_group_cells" ng-options="cell.cell group by cell.type for cell in group_cells" class="form-control" multiple>
                 </select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label" for="query_template">Template</label>
-            <div class="col-sm-9">
-                <input type="file" name="query_template">
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-3"></div>
             <div class="col-sm-9">
-                <button type="submit" ng-disabled="$isLoading" class="btn btn-success">Save Group</button>
+                <button type="submit" class="btn btn-success">Save Group</button>
                 <button class="btn btn-default" type="reset">Cancel</button>
             </div>
         </div>
