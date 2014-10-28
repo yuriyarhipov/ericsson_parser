@@ -4,6 +4,7 @@ from django.contrib import admin
 from project import views as project_views
 from files import views as files_views
 from query import views as query_views
+from tables import views as table_views
 
 admin.autodiscover()
 
@@ -15,6 +16,9 @@ urlpatterns = patterns('',
 
     url(r'^data/get_cells/(\S+)/$', query_views.get_cells),
     url(r'^data/save_group_of_cells/$', query_views.save_group_of_cells),
+    url(r'^data/get_groups/$', query_views.get_groups),
+
+    url(r'^data/table/(\S+)/$', table_views.table),
 
 
     url(r'^data/save_file/$', files_views.save_files),

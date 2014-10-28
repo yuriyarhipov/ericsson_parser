@@ -2,14 +2,14 @@
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
-                <td>Project name</td>
-                <td>Created</td>
+                <td>Name</td>
+                <td>Network</td>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="project in projects">
-                <td><a  href="" ng-click="setActiveProject(project.project_name)">{{ project.project_name }}</a></td>
-                <td>{{ project.created }}</td>
+                <td>{{ project.name }}</td>
+                <td>{{ project.network }}</td>
             </tr>
         </tbody>
     </table>

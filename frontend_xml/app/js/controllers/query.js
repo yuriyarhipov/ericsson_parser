@@ -48,3 +48,11 @@ queryControllers.controller('CreateGroupOfCellsCtrl', ['$scope', '$http',
 
 
   }]);
+
+queryControllers.controller('GroupsCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $http.get('/data/get_groups/').success(function(data) {
+                $scope.projects = data;
+            });
+
+  }]);

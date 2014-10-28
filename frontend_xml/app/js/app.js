@@ -10,7 +10,8 @@ var XmlApp = angular.module(
         'angularTreeview',
         'treeViewControllers',
         'activeProjectModule',
-        'queryControllers'
+        'queryControllers',
+        'tableControllers',
     ]);
 
 XmlApp.config(['$routeProvider',
@@ -35,6 +36,14 @@ XmlApp.config(['$routeProvider',
             when('/create_group_of_cells',{
                 templateUrl: 'templates/query/create_group_of_cells.html',
                 controller: 'CreateGroupOfCellsCtrl'
+            }).
+            when('/groups',{
+                templateUrl: 'templates/query/groups.html',
+                controller: 'GroupsCtrl'
+            }).
+            when('/table/:table_name',{
+                templateUrl: 'templates/tables/table.html',
+                controller: 'TableCtrl'
             }).
             otherwise({
                 redirectTo: '/'

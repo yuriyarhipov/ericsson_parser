@@ -1,0 +1,17 @@
+<div class="row">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <td ng-repeat="column in columns">{{ column }}</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in data track by $index">
+                <td ng-repeat="col in row track by $index">
+                    {{ col }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>

@@ -16,7 +16,6 @@ from files.lic import License
 from files.hw import HardWare
 
 
-
 def get_mo(mo):
     result = dict()
     pattern = '(\w*)=(\w*-*\w*)'
@@ -117,7 +116,7 @@ class Excel:
         path = tempfile.mkdtemp()
         excel_filename = join(path, 'Export_MultiTable.xlsx')
         self.workbook = xlsxwriter.Workbook(excel_filename, {'constant_memory': True})
-        tables, suffix = [[], '']#displayed_tables(self.filename)
+        tables, suffix = [[], '']  # displayed_tables(self.filename)
         count = len(tables)
         i = 0
         for table_name in tables:
@@ -164,7 +163,7 @@ class Tables:
 
     def load_data(self, task, current, interval_per_file):
         count = len(self.tables)
-        interval = float(interval_per_file)/float(count)
+        interval = float(interval_per_file) / float(count)
         for table_name, columns in self.tables.iteritems():
             current = float(current) + float(interval)
             task.update_state(state="PROGRESS", meta={"current": int(current), "total": 100})
@@ -303,6 +302,58 @@ class Tables:
 	            (EUtrancellFDD.filename=TPTM2.filename)
             ;''')
 
+    def rnd_wcdma(self):
+        self.cursor.execute('DROP TABLE IF EXISTS RND_WCDMA;')
+        self.cursor.execute('''
+            SELECT DISTINCT
+                topology.filename,
+                Sector.MO,
+                Sector.element2 as site,
+                Sector.sector,
+                topology.cid,
+                topology.utrancell,
+                topology.carrier,
+                topology.rnc,
+                latitude,
+                longitude,
+                beamdirection,
+                height,
+                band,
+                lathemisphere,
+                geodatum,
+                MEContext.ipaddress,
+                MEContext.nemimversion,
+                MEContext.mirrormibversion,
+                MEContext.lostsynchronisation,
+                ManagedElement.userdefinedstate,
+                ManagedElement.vendorname,
+                ManagedElement.swversion,
+                ManagedElement.productname,
+                ManagedElement.siteref,
+                ManagedElement.logicalname,
+                UtranCell.uarfcnul,
+                UtranCell.uarfcndl,
+                UtranCell.primaryscramblingcode,
+                UtranCell.primarycpichpower,
+                UtranCell.lac,
+                UtranCell.rac,
+                UtranCell.sac,
+                UtranCell.cellreserved,
+                UtranCell.administrativeState
+            INTO
+                RND_WCDMA
+            FROM
+                Sector
+                INNER JOIN Topology ON ((Sector.element2=Topology.site) AND (Sector.sector=Topology.sector))
+                INNER JOIN MEContext ON (Sector.element2=MEContext.element2)
+                INNER JOIN ManagedElement ON (Sector.element2=ManagedElement.element2)
+                INNER JOIN UtranCell ON ((topology.cid=UtranCell.cid))
+            WHERE (Sector.filename=Topology.filename) AND
+                (Sector.filename=MEContext.filename) AND
+                (Sector.filename=ManagedElement.filename) AND
+                (Sector.filename=UtranCell.filename)
+            ;''')
+
     def rnd_lte(self):
         tables = ','.join(self.tables.keys())
         if 'eutrancellfdd' not in tables.lower():
@@ -366,6 +417,7 @@ class Tables:
         self.load_data(task, current, interval_per_file)
         self.topology()
         self.topology_lte()
+        self.rnd_wcdma()
         self.rnd_lte()
         self.fourgneighbors()
         self.threegneighborss()
@@ -571,7 +623,7 @@ class Processing:
 
         attrs = [attr for attr in root.iterfind('.//{genericNrm.xsd}attributes')]
         count = len(attrs)
-        interval = float(interval_per_file)/float(count)
+        interval = float(interval_per_file) / float(count)
 
         i = 0
         for attribute in attrs:
@@ -583,12 +635,10 @@ class Processing:
                 task.update_state(state="PROGRESS", meta={"current": int(current), "total": 100})
 
 
-
 class Xml(object):
-
-    def save_xml(self, filename, project, description, vendor, file_type, network, current_task, current, interval_per_file):
-
-        #if self.file_type == 'LIC':
+    def save_xml(self, filename, project, description, vendor, file_type, network, current_task, current,
+                 interval_per_file):
+        # if self.file_type == 'LIC':
         #    lc = License(filename)
         #    lc.parse_data(current_task, current, interval_per_file)
         #    File.objects.filter(filename=lc.filename, project=project).delete()
@@ -609,10 +659,10 @@ class Xml(object):
         #        tables='')
         if file_type.lower() == 'xml':
             xml = Processing(filename)
-            xml.parse_data(current_task, current, interval_per_file/2)
-            current += interval_per_file/2
+            xml.parse_data(current_task, current, interval_per_file / 2)
+            current += interval_per_file / 2
             tables = Tables(xml.data, xml.tables, xml.filename)
-            tables.create_tables(current_task, current, interval_per_file/2)
+            tables.create_tables(current_task, current, interval_per_file / 2)
             Files.objects.filter(filename=xml.filename, project=project).delete()
             Files.objects.create(
                 filename=xml.filename,
