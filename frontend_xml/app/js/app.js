@@ -12,6 +12,7 @@ var XmlApp = angular.module(
         'activeProjectModule',
         'queryControllers',
         'tableControllers',
+        'parameterControllers'
     ]);
 
 XmlApp.config(['$routeProvider',
@@ -44,6 +45,14 @@ XmlApp.config(['$routeProvider',
             when('/table/:table_name',{
                 templateUrl: 'templates/tables/table.html',
                 controller: 'TableCtrl'
+            }).
+            when('/register_version_release',{
+                templateUrl: 'templates/tables/table.html',
+                controller: 'registerVRCtrl'
+            }).
+            when('/create_predefined_template',{
+                templateUrl: 'templates/template/create_template.html',
+                controller: 'createTemplateCtrl'
             }).
             otherwise({
                 redirectTo: '/'

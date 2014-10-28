@@ -5,6 +5,7 @@ from project import views as project_views
 from files import views as files_views
 from query import views as query_views
 from tables import views as table_views
+from parameters import views as parameters_views
 
 admin.autodiscover()
 
@@ -20,6 +21,9 @@ urlpatterns = patterns('',
 
     url(r'^data/table/(\S+)/$', table_views.table),
 
+    url(r'^data/version_release/$', parameters_views.version_release),
+    url(r'^data/get_mo/(\S+)/$', parameters_views.get_mo),
+    url(r'^data/get_param/(\S+)/$', parameters_views.get_param),
 
     url(r'^data/save_file/$', files_views.save_files),
     url(r'^data/files/$', files_views.files),

@@ -22,6 +22,13 @@ class Files(models.Model):
                 cells.append({'cell': cell, 'type': 'RNC'})
             for cell in wcdma.get_cells(self.filename):
                 cells.append({'cell': cell, 'type': 'Individuals'})
-
-
         return cells
+
+    def get_mo(self):
+        data = []
+        for f in Files.objects.filter(file_type=self.file_type):
+            data.extend(f.tables.split(','))
+        data = set(data)
+        data = list(data)
+        data.sort()
+        return data
