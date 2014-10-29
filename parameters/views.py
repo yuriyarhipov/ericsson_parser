@@ -2,6 +2,7 @@ import json
 
 from django.http import HttpResponse
 from django.db import connection
+from template import Template
 
 
 def version_release(request):
@@ -28,3 +29,15 @@ def get_param(request, mo):
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 
+def add_template(request):
+    data = []
+    select_mo_val = request.POST.getlist('mo')
+    select_mo_param_val = request.POST.getlist('param')
+    min_values = request.POST.getlist('min_value')
+    max_values = request.POST.getlist('min_value')
+    template_name = request.POST.get('template_name')
+    project = request.project
+    network = request.POST.get('network')
+    Template().save_template(project, network, template_name, select_mo_val, select_mo_param_val, min_values, max_values)
+    Template().check_tables()
+    return HttpResponse(json.dumps(data), content_type='application/json')

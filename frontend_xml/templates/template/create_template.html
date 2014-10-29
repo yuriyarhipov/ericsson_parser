@@ -1,5 +1,5 @@
 <div class="row">
-    <form ng-submit="processForm()" class="form-horizontal col-sm-10" role="form">
+    <form ng-upload="complete(content)" class="form-horizontal col-sm-10" role="form" action="/data/add_template/">
         <div class="form-group">
             <label class="col-sm-3 control-label" for="network">Network:</label>
             <div class="col-sm-9">
@@ -13,7 +13,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label" for="template_name">Template Name:</label>
             <div class="col-sm-9">
-                <input ng-model="template_name" type="text" class="form-control" id="template_name" placeholder="Template Name">
+                <input ng-model="template_name" type="text" class="form-control" id="template_name" placeholder="Template Name" name="template_name">
             </div>
         </div>
         <div class="form-group">
@@ -58,13 +58,16 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="row in param_table">
-                        <td>{{ row.mo }}</td>
-                        <td>{{ row.param }}</td>
-                        <td>{{ row.min_value }}</td>
-                        <td>{{ row.max_value }}</td>
+                        <td>{{ row.mo }}<input type="hidden" name="mo" value="{{ row.mo }}"></td>
+                        <td>{{ row.param }}<input type="hidden" name="param" value="{{ row.param }}"></td>
+                        <td>{{ row.min_value }}<input type="hidden" name="min_value" value="{{ row.min_value }}"></td>
+                        <td>{{ row.max_value }}<input type="hidden" name="max_value" value="{{ row.max_value }}"></td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-success" type="submit">Save template</button>
         </div>
     </form>
 

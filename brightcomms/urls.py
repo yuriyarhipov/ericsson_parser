@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     url(r'^data/version_release/$', parameters_views.version_release),
     url(r'^data/get_mo/(\S+)/$', parameters_views.get_mo),
     url(r'^data/get_param/(\S+)/$', parameters_views.get_param),
+    url(r'^data/add_template/$', parameters_views.add_template),
 
     url(r'^data/save_file/$', files_views.save_files),
     url(r'^data/files/$', files_views.files),

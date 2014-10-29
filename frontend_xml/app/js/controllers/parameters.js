@@ -29,7 +29,6 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http',
         $scope.onClickAddParam = function(){
             var row = {'mo': $scope.mo, 'param': $scope.param, 'min_value': $scope.min_value, 'max_value':$scope.max_value}
             $scope.param_table.push(row);
-            $scope.columns = '';
             $scope.min_value = '';
             $scope.max_value = '';
         };
