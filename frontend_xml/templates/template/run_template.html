@@ -1,0 +1,69 @@
+<div ng-hide="hideForm" class="row">
+    <form ng-upload="complete(content)" class="form-horizontal" role="form" action="/data/run_template/">
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="network">Network:</label>
+            <div class="col-sm-9">
+                <select ng-change="onChangeNetwork()" ng-model="network" class="form-control" id="network" name="network">
+                    <option value="2g">2G</option>
+                    <option value="3g">3G</option>
+                    <option value="4g">4G</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="template">Template:</label>
+            <div class="col-sm-9">
+                <select
+                        ng-model="template"
+                        ng-options="template for template in templates track by template"
+                        class="form-control"
+                        id="template"
+                        name="template">
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="cells">Select Cells:</label>
+            <div class="col-sm-9">
+                <input class="form-control" id="filter">
+                <select
+                        ng-model="selected_cells"
+                        ng-options="cell.cell group by cell.cell_type for cell in data_cells"
+                        class="form-control"
+                        multiple>
+                </select>
+                <button ng-click="onAddCell()" class="btn btn-success" type="button">Add to Group</button>
+                <button ng-click="onDeleteCell()" class="btn btn-danger" type="button">Delete from Group</button>
+                <select
+                        ng-model="selected_group_cells"
+                        ng-options="cell.cell group by cell.type for cell in group_cells"
+                        class="form-control"
+                        multiple>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div ng-repeat="cell in group_cells">
+                <input type="hidden" value="{{ cell.cell }}" name="cell">
+            </div>
+            <div class="col-sm-3"></div>
+            <div class="col-sm-9"><button type="submit" class="btn btn-success">Run</button></div>
+        </div>
+    </form>
+</div>
+<div class="row" ng-hide="hideTable">
+     <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <td ng-repeat="column in columns">{{ column }}</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in data track by $index">
+                <td ng-repeat="col in row track by $index">
+                    {{ col.0 }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,18 @@
+<div class="row">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <td>Template</td>
+                <td>Network</td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="template in templates">
+                <td>{{ template.template_name }}</td>
+                <td>{{ template.network }}</td>
+                <td><span ng-click="onDeleteTemplate(template.template_name)">Delete</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

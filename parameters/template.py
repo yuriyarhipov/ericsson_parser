@@ -161,7 +161,6 @@ class Template(object):
     def create_template_table(self, template_name):
         self.cursor.execute('DROP VIEW IF EXISTS "template_%s"' % template_name)
         sql_select = self.get_select(template_name)
-        print sql_select
         self.cursor.execute(sql_select)
         self.conn.commit()
 

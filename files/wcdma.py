@@ -17,15 +17,24 @@ class WCDMA:
         self.cursor = self.conn.cursor()
 
     def get_cells(self, filename):
+        cells = []
+        for cell in self.get_groups():
+            cells.append({'cell': cell, 'cell_type': 'Groups'})
+
+        for cell in self.get_rnc(filename):
+            cells.append({'cell': cell, 'cell_type': 'RNC'})
+
         self.cursor.execute("SELECT DISTINCT UtranCell from UtranCell WHERE filename=%s ORDER BY UtranCell", (filename,))
-        return [r[0] for r in self.cursor]
+        for r in self.cursor:
+            cells.append({'cell': r[0], 'cell_type': 'Cells'})
+        return cells
 
     def get_rnc(self, filename):
         self.cursor.execute("SELECT DISTINCT RNC from Topology WHERE filename=%s ORDER BY RNC", (filename,))
         return [r[0] for r in self.cursor]
 
     def get_groups(self):
-        return [gc.group_name for gc in GroupCells.objects.filter(type='WCDMA').order_by('group_name')]
+        return [gc.group_name for gc in GroupCells.objects.filter(network='3g').order_by('group_name')]
 
     def get_cells_from_rnc(self, rnc, filename):
         self.cursor.execute("select DISTINCT UtranCell from Topology where filename='%s' AND RNC='%s'" % (filename, rnc))
@@ -33,8 +42,8 @@ class WCDMA:
 
     def get_cells_from_group_cell(self, group_cells):
         cells = []
-        if GroupCells.objects.filter(group_name=group_cells, type='WCDMA').exists():
-            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, type='WCDMA').cells.split(',')]
+        if GroupCells.objects.filter(group_name=group_cells, network='3g').exists():
+            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, network='3g').cells.split(',')]
         return cells
 
     def convert_form_cells(self, cells, filename):
@@ -96,7 +105,6 @@ class WCDMA:
             for r in self.cursor:
                 row = []
                 for i in range(0, len(r)):
-
                     row.append([r[i], self.get_status(colnames[i], r[i], params), ])
                 data.append(row)
         return columns, data

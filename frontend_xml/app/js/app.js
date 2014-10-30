@@ -54,6 +54,14 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/template/create_template.html',
                 controller: 'createTemplateCtrl'
             }).
+            when('/predefined_templates',{
+                templateUrl: 'templates/template/predefined_templates.html',
+                controller: 'predefinedTemplatesCtrl'
+            }).
+            when('/run_template',{
+                templateUrl: 'templates/template/run_template.html',
+                controller: 'runTemplateCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });

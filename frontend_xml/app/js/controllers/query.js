@@ -2,8 +2,8 @@ var queryControllers = angular.module('queryControllers', []);
 
 queryControllers.controller('CreateGroupOfCellsCtrl', ['$scope', '$http',
     function ($scope, $http) {
-        $scope.selected_group_cells = []
-        $scope.selected_cells = []
+        $scope.selected_group_cells = [];
+        $scope.selected_cells = [];
         $scope.form_data = {'cells': []};
         $scope.group_cells = [];
         $scope.onChangeNetwork = function(){
