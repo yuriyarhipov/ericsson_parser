@@ -9,20 +9,22 @@
     </div>
 </div>
 <div class="row">
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <td>Filename</td>
-                <td>Type</td>
-                <td>Network</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="file in files">
-                <td>{{ file.filename }}</td>
-                <td>{{ file.file_type }}</td>
-                <td>{{ file.network }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="col-sm-12">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <td>Filename</td>
+                    <td>Type</td>
+                    <td>Network</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="file in files">
+                    <td><a href="#/table/{{ file.filename }}/">{{ file.filename }}</a></td>
+                    <td>{{ file.file_type }}</td>
+                    <td>{{ file.network }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

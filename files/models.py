@@ -1,4 +1,6 @@
 from django.db import models
+from django.db import connection
+
 from project.models import Project
 from files.wcdma import WCDMA
 
@@ -32,3 +34,10 @@ class Files(models.Model):
         data = list(data)
         data.sort()
         return data
+
+    def get_data(self):
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM "%s"' % (self.filename.split('.')[0], ))
+        columns = [desc[0] for desc in cursor.description]
+        data = cursor.fetchall()
+        return columns, data
