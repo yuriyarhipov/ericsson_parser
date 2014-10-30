@@ -1,1 +1,28 @@
-<div>ok</div>
+<div class="row">
+    <div class="col-sm-2">
+        <select class="form-control" ng-model="selected_file_type" ng-change="onChangeFileType()">
+            <option value="wncs">WNCS</option>
+            <option value="wmrr">WMRR</option>
+            <option value="ncs">NCS</option>
+            <option value="mrr">MRR</option>
+        </select>
+    </div>
+</div>
+<div class="row">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <td>Filename</td>
+                <td>Type</td>
+                <td>Network</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="file in files">
+                <td>{{ file.filename }}</td>
+                <td>{{ file.file_type }}</td>
+                <td>{{ file.network }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -47,3 +47,10 @@ def files(request):
             'description': f.description
         })
     return HttpResponse(json.dumps(data), mimetype='application/json')
+
+def measurements(request, file_type):
+    project = request.project
+    data = []
+    for f in Files.objects.filter(project=project, file_type=file_type):
+        data.append({'filename': f.filename, 'file_type': f.file_type, 'network': f.network})
+    return HttpResponse(json.dumps(data), mimetype='application/json')
