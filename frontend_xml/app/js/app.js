@@ -12,7 +12,8 @@ var XmlApp = angular.module(
         'activeProjectModule',
         'queryControllers',
         'tableControllers',
-        'parameterControllers'
+        'parameterControllers',
+        'measurementsControllers'
     ]);
 
 XmlApp.config(['$routeProvider',
@@ -65,6 +66,10 @@ XmlApp.config(['$routeProvider',
             when('/explore',{
                 templateUrl: 'templates/tables/explore.html',
                 controller: 'exploreCtrl'
+            }).
+            when('/measurements/:file_type',{
+                templateUrl: 'templates/measurements/measurements_table.html',
+                controller: 'measurementsCtrl'
             }).
             otherwise({
                 redirectTo: '/'
