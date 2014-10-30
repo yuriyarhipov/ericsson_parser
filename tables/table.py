@@ -26,6 +26,6 @@ class Table(object):
     def get_data(self):
         cursor = self.conn.cursor()
         sql_columns = ','.join(self.columns)
-        cursor.execute('SELECT %s FROM %s' % (sql_columns, self.table_name))
+        cursor.execute("SELECT %s FROM %s WHERE filename='%s'" % (sql_columns, self.table_name, self.filename))
         data = cursor.fetchall()
         return data

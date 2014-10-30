@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^data/get_groups/$', query_views.get_groups),
 
     url(r'^data/table/(\S+)/$', table_views.table),
+    url(r'^data/explore/$', table_views.explore),
 
     url(r'^data/version_release/$', parameters_views.version_release),
     url(r'^data/get_mo/(\S+)/$', parameters_views.get_mo),

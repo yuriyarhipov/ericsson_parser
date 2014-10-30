@@ -5,9 +5,8 @@ from django.http import HttpResponse
 from table import Table
 
 def table(request, table_name):
-    active_file = None
+    active_file = request.wcdma
     if table_name == 'rnd':
-        active_file = request.wcdma
         if active_file.network == '3g':
             table_name = 'rnd_wcdma'
         else:
@@ -18,3 +17,9 @@ def table(request, table_name):
     data = current_table.get_data()[:20]
 
     return HttpResponse(json.dumps({'columns': columns, 'data': data}), content_type='application/json')
+
+
+def explore(request):
+    tables = [table for table in request.wcdma.tables.split(',')]
+    tables.sort()
+    return HttpResponse(json.dumps(tables), content_type='application/json')

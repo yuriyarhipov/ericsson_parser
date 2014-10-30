@@ -8,3 +8,11 @@ tableControllers.controller('TableCtrl', ['$scope', '$http', '$routeParams',
             $scope.data = data.data;
         });
   }]);
+
+tableControllers.controller('exploreCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $http.get('/data/explore/').success(function(data) {
+            console.log(data);
+            $scope.tables = data;
+        });
+  }]);

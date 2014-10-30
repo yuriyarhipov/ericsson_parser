@@ -1,0 +1,16 @@
+<div class="row">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <td>Table name</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="table in tables">
+                <td>
+                    <a href="#/table/{{ table }}">{{ table }}</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

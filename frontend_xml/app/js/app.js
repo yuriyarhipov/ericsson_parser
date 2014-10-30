@@ -62,6 +62,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/template/run_template.html',
                 controller: 'runTemplateCtrl'
             }).
+            when('/explore',{
+                templateUrl: 'templates/tables/explore.html',
+                controller: 'exploreCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });
@@ -69,7 +73,6 @@ XmlApp.config(['$routeProvider',
     }]);
 
 XmlApp.run(function($rootScope, $http, $cookies){
-    // set the CSRF token here
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
     $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
