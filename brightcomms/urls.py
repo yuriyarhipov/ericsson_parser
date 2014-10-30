@@ -34,6 +34,7 @@ urlpatterns = patterns('',
     url(r'^data/save_file/$', files_views.save_files),
     url(r'^data/files/$', files_views.files),
     url(r'^data/measurements/(\S+)/$', files_views.measurements),
+    url(r'^data/licenses/$', files_views.licenses),
 
 
     url(r'^admin/', include(admin.site.urls)),

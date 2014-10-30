@@ -29,3 +29,10 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
         //    $location.path('/files_hub');
         //}
   }]);
+
+filesControllers.controller('licensesCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $http.get('/data/licenses/').success(function(data) {
+            $scope.files = data;
+        });
+  }]);

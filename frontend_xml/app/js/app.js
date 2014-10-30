@@ -71,6 +71,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/measurements/measurements_table.html',
                 controller: 'measurementsCtrl'
             }).
+            when('/licenses',{
+                templateUrl: 'templates/files/licenses.html',
+                controller: 'licensesCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });

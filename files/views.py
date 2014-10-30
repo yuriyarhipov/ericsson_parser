@@ -48,9 +48,17 @@ def files(request):
         })
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
+
 def measurements(request, file_type):
     project = request.project
     data = []
     for f in Files.objects.filter(project=project, file_type=file_type):
+        data.append({'filename': f.filename, 'file_type': f.file_type, 'network': f.network})
+    return HttpResponse(json.dumps(data), mimetype='application/json')
+
+def licenses(request):
+    project = request.project
+    data = []
+    for f in Files.objects.filter(project=project, file_type='license'):
         data.append({'filename': f.filename, 'file_type': f.file_type, 'network': f.network})
     return HttpResponse(json.dumps(data), mimetype='application/json')
