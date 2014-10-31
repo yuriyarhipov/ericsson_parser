@@ -10,10 +10,8 @@
         </thead>
         <tbody>
             <tr ng-repeat="file in files">
-                <td>{{ file.filename }}</td>
+                <td><a href="#/hardware/{{ file.filename }}/hardware/">{{ file.filename }}</a></td>
                 <td>{{ file.network }}</td>
-                <td><a href="#/license/{{ file.filename }}/featurekey/">FeatureKey</a></td>
-                <td><a href="#/license/{{ file.filename }}/capacitykey/">CapacityKey</a></td>
             </tr>
         </tbody>
     </table>

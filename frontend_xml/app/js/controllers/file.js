@@ -25,14 +25,41 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
             $scope.CurrentTypeFile = $scope.TypeFile[0];
         };
 
-        //$scope.complete = function(){
-        //    $location.path('/files_hub');
-        //}
+        $scope.complete = function(){
+            $location.path('/files_hub');
+        }
   }]);
 
 filesControllers.controller('licensesCtrl', ['$scope', '$http',
     function ($scope, $http) {
         $http.get('/data/licenses/').success(function(data) {
             $scope.files = data;
+        });
+  }]);
+
+filesControllers.controller('licenseCtrl', ['$scope', '$http', '$routeParams',
+    function ($scope, $http, $routeParams) {
+        var filename = $routeParams.filename;
+        var table = $routeParams.table;
+        $http.get('/data/license/' + filename + '/' + table + '/').success(function(data) {
+            $scope.columns = data.columns;
+            $scope.data = data.data;
+        });
+  }]);
+
+filesControllers.controller('hardwaresCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $http.get('/data/hardwares/').success(function(data) {
+            $scope.files = data;
+        });
+  }]);
+
+filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams',
+    function ($scope, $http, $routeParams) {
+        var filename = $routeParams.filename;
+        var table = $routeParams.table;
+        $http.get('/data/hardware/' + filename + '/' + table + '/').success(function(data) {
+            $scope.columns = data.columns;
+            $scope.data = data.data;
         });
   }]);

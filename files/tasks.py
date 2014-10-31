@@ -14,6 +14,8 @@ def worker(filename, project,  description, vendor, file_type, network):
     from xml_processing.xml import Xml
     from files.cna import CNA
     from files.measurements import Measurements
+    from files.lic import License
+    from files.hw import HardWare
 
 
     work_file = XmlPack(filename).get_files()[0]
@@ -39,6 +41,13 @@ def worker(filename, project,  description, vendor, file_type, network):
     if file_type.lower() in ['ncs', 'mrr', 'wncs', 'wmrr']:
         Measurements().save_file(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
 
+    if file_type.lower() == 'license':
+        lic = License(work_file)
+        lic.parse_data(project, description, vendor, file_type, network, current_task, current, interval_per_file)
+
+    if file_type.lower() == 'hardware':
+        hw = HardWare(work_file)
+        hw.parse_data(project, description, vendor, file_type, network, current_task, current, interval_per_file)
 
     #    current += interval_per_file
     #task.update_state(state='PROGRESS', meta={"current": 100, "total": 100})

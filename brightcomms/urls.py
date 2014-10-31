@@ -35,6 +35,9 @@ urlpatterns = patterns('',
     url(r'^data/files/$', files_views.files),
     url(r'^data/measurements/(\S+)/$', files_views.measurements),
     url(r'^data/licenses/$', files_views.licenses),
+    url(r'^data/license/(\S+)/(\S+)/$', files_views.license),
+    url(r'^data/hardwares/$', files_views.hardwares),
+    url(r'^data/hardware/(\S+)/(\S+)/$', files_views.hardware),
 
 
     url(r'^admin/', include(admin.site.urls)),

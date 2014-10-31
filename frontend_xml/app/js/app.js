@@ -75,6 +75,18 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/files/licenses.html',
                 controller: 'licensesCtrl'
             }).
+            when('/license/:filename/:table',{
+                templateUrl: 'templates/tables/table.html',
+                controller: 'licenseCtrl'
+            }).
+            when('/hardwares',{
+                templateUrl: 'templates/files/hardwares.html',
+                controller: 'hardwaresCtrl'
+            }).
+            when('/hardware/:filename/:table',{
+                templateUrl: 'templates/tables/table.html',
+                controller: 'hardwareCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });

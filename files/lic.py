@@ -3,6 +3,7 @@ from collections import OrderedDict
 import psycopg2
 from django.conf import settings
 from os.path import basename
+from files.models import Files
 
 
 class License(object):
@@ -88,7 +89,7 @@ class License(object):
         year = attr_date.get('Year')
         return '%s.%s.%s' % (day, month, year)
 
-    def parse_data(self, task, current, interval_per_file):
+    def parse_data(self, project, description, vendor, file_type, network, task, current, interval_per_file):
         self.create_table()
         tree = etree.parse(self.path)
         root = tree.getroot()
@@ -101,6 +102,15 @@ class License(object):
             current = float(current) + float(interval)
             task.update_state(state="PROGRESS", meta={"current": int(current), "total": 100})
         self.conn.commit()
+        Files.objects.filter(filename=self.filename, project=project).delete()
+        Files.objects.create(
+                filename=self.filename,
+                file_type=file_type.lower(),
+                project=project,
+                tables='',
+                description=description,
+                vendor=vendor,
+                network=network.lower())
 
     def create_table(self):
         self.cursor.execute('''

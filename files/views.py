@@ -6,6 +6,7 @@ from django.shortcuts import HttpResponseRedirect
 from django.conf import settings
 
 from .models import Files
+from tables.table import Table
 import tasks
 
 
@@ -62,3 +63,24 @@ def licenses(request):
     for f in Files.objects.filter(project=project, file_type='license'):
         data.append({'filename': f.filename, 'file_type': f.file_type, 'network': f.network})
     return HttpResponse(json.dumps(data), mimetype='application/json')
+
+def license(request, filename, table):
+    current_table = Table(table, filename)
+    columns = current_table.columns
+    data = current_table.get_data()
+    data = data[:20]
+    return HttpResponse(json.dumps({'columns': columns, 'data': data}), mimetype='application/json')
+
+def hardwares(request):
+    project = request.project
+    data = []
+    for f in Files.objects.filter(project=project, file_type='hardware'):
+        data.append({'filename': f.filename, 'file_type': f.file_type, 'network': f.network})
+    return HttpResponse(json.dumps(data), mimetype='application/json')
+
+def hardware(request, filename, table):
+    current_table = Table(table, filename)
+    columns = current_table.columns
+    data = current_table.get_data()
+    data = data[:20]
+    return HttpResponse(json.dumps({'columns': columns, 'data': data}), mimetype='application/json')
