@@ -20,7 +20,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="file in files">
-                    <td><a href="#/table/{{ file.filename }}/">{{ file.filename }}</a></td>
+                    <td><a href="#/table/{{ file.filename }}/{{ file.filename }}/">{{ file.filename }}</a></td>
                     <td>{{ file.file_type }}</td>
                     <td>{{ file.network }}</td>
                 </tr>

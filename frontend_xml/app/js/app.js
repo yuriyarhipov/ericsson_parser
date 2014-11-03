@@ -43,7 +43,7 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/query/groups.html',
                 controller: 'GroupsCtrl'
             }).
-            when('/table/:table_name',{
+            when('/table/:filename/:table_name',{
                 templateUrl: 'templates/tables/table.html',
                 controller: 'TableCtrl'
             }).
@@ -63,7 +63,7 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/template/run_template.html',
                 controller: 'runTemplateCtrl'
             }).
-            when('/explore',{
+            when('/explore/:filename',{
                 templateUrl: 'templates/tables/explore.html',
                 controller: 'exploreCtrl'
             }).

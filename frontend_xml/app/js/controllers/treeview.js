@@ -1,7 +1,7 @@
 var treeViewControllers = angular.module('treeViewControllers', []);
 
-treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', 'activeProjectService',
-    function ($scope, $http, $cookies, activeProjectService) {
+treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', 'activeProjectService', '$location',
+    function ($scope, $http, $cookies, activeProjectService, $location) {
         $http.get('/data/treeview/' + $cookies.active_project).success(function(data){
             $scope.treedata = data;
         });
@@ -12,5 +12,24 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
                 $scope.treedata = data;
             });
         });
+        $scope.$watch( 'tree_view.currentNode', function( newObj, oldObj ) {
+            if( $scope.tree_view && angular.isObject($scope.tree_view.currentNode) ) {
+                var node_type = $scope.tree_view.currentNode.type;
+                if ((node_type == 'xml') && ($scope.tree_view.currentNode.network == '3g')){
+                    var wcdma = $scope.tree_view.currentNode.id;
+                    $cookies.wcdma = wcdma;
+                    $location.path('/explore/' + wcdma + '/');
+                }
+                if (node_type == 'license'){
+                    $location.path('/licenses/');
+                }
+                if (node_type == 'hardware'){
+                    $location.path('/hardwares/');
+                }
+                if ((node_type == 'wncs') || (node_type == 'ncs') || (node_type == 'wmrr') || (node_type == 'mrr')) {
+                    $location.path('/measurements/' + node_type + '/');
+                }
+            }
+        }, false);
     }
 ]);

@@ -62,7 +62,6 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
                         $scope.templates.push(data[i].template_name);
                     }
                 }
-                console.log($scope.templates);
             });
             $http.get('/data/get_template_cells/' + $scope.network).success(function(data) {
                 $scope.data_cells = data;

@@ -94,9 +94,6 @@ def get_files_for_compare(request, network):
         for table in request.wcdma.tables.split(','):
             tables.append({'table': table, 'type': 'Table'})
 
-
-
-
     data = [file.filename for file in Files.objects.filter(project=request.project, network=network, file_type='xml')]
     data.sort()
     return HttpResponse(json.dumps({'files': data, 'main_file': main_file, 'tables': tables}), mimetype='application/json')
