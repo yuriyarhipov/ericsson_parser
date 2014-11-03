@@ -1,10 +1,13 @@
 import json
 
+from openpyxl import load_workbook
+
 from django.http import HttpResponse
 from django.db import connection
 
 from query.models import QueryTemplate
 from files.wcdma import WCDMA
+from files.views import handle_uploaded_file
 from template import Template
 
 
@@ -76,3 +79,16 @@ def run_template(request):
     columns, data = WCDMA().run_query(template, cells, request.wcdma.filename)
     return HttpResponse(json.dumps({'columns': columns, 'data': data[:20]}), content_type='application/json')
 
+def upload_template(request):
+    data =[]
+    filename = handle_uploaded_file(request.FILES.getlist('excel'))[0]
+    wb = load_workbook(filename=filename, use_iterators=True)
+    ws = wb.active
+    for row in ws.iter_rows():
+        if row[0].value != 'MO':
+            excel_mo = row[0].value #check_mo(mo_list, row[0].internal_value)
+            excel_param = row[1].value #check_param(excel_mo, row[1].internal_value, type)
+            if excel_mo and excel_param:
+                data.append(dict(mo=excel_mo, param=excel_param, min_value=row[2].value, max_value=row[3].value))
+
+    return HttpResponse(json.dumps(data), content_type='application/json')

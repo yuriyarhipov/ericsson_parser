@@ -14,6 +14,9 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http',
         $scope.mo = '';
         $scope.min_value = '';
         $scope.max_value = '';
+        $scope.complete = function(data){
+            $scope.param_table = data;
+        };
         $scope.onChangeNetwork = function(){
             $http.get('/data/get_mo/' + $scope.network + '/').success(function(data) {
                 $scope.tables = data;
@@ -48,7 +51,6 @@ parameterControllers.controller('predefinedTemplatesCtrl', ['$scope', '$http', '
 
 parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
     function ($scope, $http) {
-        $scope.templates = [];
         $scope.selected_group_cells = [];
         $scope.selected_cells = [];
         $scope.form_data = {'cells': []};
@@ -56,12 +58,14 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
 
         $scope.onChangeNetwork = function(){
             $http.get('/data/predefined_templates/').success(function(data) {
+                $scope.templates = [];
                 var templates_length = data.length;
                 for (var i = 0; i < templates_length; i++){
                     if (data[i].network == $scope.network){
                         $scope.templates.push(data[i].template_name);
                     }
                 }
+                $scope.template = $scope.templates;
             });
             $http.get('/data/get_template_cells/' + $scope.network).success(function(data) {
                 $scope.data_cells = data;

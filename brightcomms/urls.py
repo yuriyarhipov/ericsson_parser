@@ -32,6 +32,7 @@ urlpatterns = patterns('',
     url(r'^data/delete_template/(\S+)/$', parameters_views.delete_template),
     url(r'^data/get_template_cells/(\S+)/$', parameters_views.get_template_cells),
     url(r'^data/run_template/$', parameters_views.run_template),
+    url(r'^data/upload_template/$', parameters_views.upload_template),
 
     url(r'^data/save_file/$', files_views.save_files),
     url(r'^data/files/$', files_views.files),
