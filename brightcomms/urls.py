@@ -38,6 +38,8 @@ urlpatterns = patterns('',
     url(r'^data/license/(\S+)/(\S+)/$', files_views.license),
     url(r'^data/hardwares/$', files_views.hardwares),
     url(r'^data/hardware/(\S+)/(\S+)/$', files_views.hardware),
+    url(r'^data/get_files_for_compare/(\S+)/$', files_views.get_files_for_compare),
+    url(r'^data/compare_files/$', files_views.compare_files),
 
 
     url(r'^admin/', include(admin.site.urls)),

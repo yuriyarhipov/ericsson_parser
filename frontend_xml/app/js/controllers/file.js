@@ -63,3 +63,46 @@ filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams',
             $scope.data = data.data;
         });
   }]);
+
+filesControllers.controller('compareFilesCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.network = '2g';
+
+        function set_files_for_compare(files, main_file){
+            $scope.files_for_compare = [];
+            var f_length =  files.length;
+                for (var i = 0; i < f_length; i++){
+                    if (main_file != files[i]){
+                        $scope.files_for_compare.push(files[i]);
+                    }
+                }
+        }
+
+        function load_files(network){
+            $http.get('/data/get_files_for_compare/' + network + '/').success(function(data) {
+                $scope.files = data.files;
+                $scope.main_file = data.main_file;
+                $scope.tables = data.tables;
+                set_files_for_compare(data.files, data.main_file);
+            });
+        }
+
+        function load_cells(network){
+            $http.get('data/get_cells/' + network + '/').success(function(data){
+                $scope.cells = data;
+            });
+        }
+
+
+        load_files($scope.network);
+        load_cells($scope.network);
+
+        $scope.onChangeNetwork = function(){
+            load_files($scope.network);
+            load_cells($scope.network);
+        };
+
+        $scope.onChangeMainFile = function(){
+            set_files_for_compare($scope.files, $scope.main_file);
+        };
+  }]);

@@ -19,14 +19,14 @@ class WCDMA:
     def get_cells(self, filename):
         cells = []
         for cell in self.get_groups():
-            cells.append({'cell': cell, 'cell_type': 'Groups'})
+            cells.append({'cell': cell, 'type': 'Groups'})
 
         for cell in self.get_rnc(filename):
-            cells.append({'cell': cell, 'cell_type': 'RNC'})
+            cells.append({'cell': cell, 'type': 'RNC'})
 
         self.cursor.execute("SELECT DISTINCT UtranCell from UtranCell WHERE filename=%s ORDER BY UtranCell", (filename,))
         for r in self.cursor:
-            cells.append({'cell': r[0], 'cell_type': 'Cells'})
+            cells.append({'cell': r[0], 'type': 'Cells'})
         return cells
 
     def get_rnc(self, filename):

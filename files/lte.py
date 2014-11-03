@@ -2,7 +2,8 @@ import psycopg2
 
 from django.conf import settings
 
-from main.models import File, Table, GroupCells, QueryTemplate
+from files.models import Files
+from query.models import GroupCells, QueryTemplate
 
 
 class LTE:
@@ -21,11 +22,7 @@ class LTE:
         return [r[0] for r in self.cursor]
 
     def get_lte_files(self):
-        files = []
-        for f in File.objects.all():
-            if f.file_type == 'LTE':
-                files.append(f)
-        return files
+        return [f for f in Files.objects.filter(network='4g', file_type='xml')]
 
     def get_mo(self, query):
         mo = []

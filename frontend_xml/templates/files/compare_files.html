@@ -1,0 +1,52 @@
+<div class="row">
+    <form class="form-horizontal col-sm-6" role="form" action="/data/compare_files/">
+        <div class="form-group">
+            <label class="control-label col-sm-3">Network</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="network" ng-model="network" ng_change="onChangeNetwork()">
+                    <option value="2g" selected>2G</option>
+                    <option value="3g">3G</option>
+                    <option value="4g">4G</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-3">Main File</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="main_file" ng-model="main_file" ng-options="file for file in files track by file" ng-change="onChangeMainFile()">
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-3">Files</label>
+            <div class="col-sm-9">
+                <div ng-repeat="file in files_for_compare" class="checkbox">
+                    <label>
+                    <input type="checkbox" value="{{ file }}">
+                        {{ file }}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-3">Tables & Templates</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="table" ng-model="table" ng-options="t.table group by t.type for t in tables track by t.table" multiple>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-3">Cells:</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="cells" ng-model="selected_cells" ng-options="cell.cell group by cell.type for cell in cells track by cell.cell" multiple>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-9">
+                <button class="btn btn-success" type="submit">Run</button>
+            </div>
+        </div>
+    </form>
+</div>

@@ -87,6 +87,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/tables/table.html',
                 controller: 'hardwareCtrl'
             }).
+            when('/compare_files/',{
+                templateUrl: 'templates/files/compare_files.html',
+                controller: 'compareFilesCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });

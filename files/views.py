@@ -2,11 +2,11 @@ import json
 
 
 from django.http import HttpResponse
-from django.shortcuts import HttpResponseRedirect
 from django.conf import settings
 
 from .models import Files
 from tables.table import Table
+from files.compare import CompareQuery
 import tasks
 
 
@@ -84,3 +84,29 @@ def hardware(request, filename, table):
     data = current_table.get_data()
     data = data[:20]
     return HttpResponse(json.dumps({'columns': columns, 'data': data}), mimetype='application/json')
+
+def get_files_for_compare(request, network):
+    main_file = ''
+    tables = []
+
+    if network == '3g':
+        main_file = request.wcdma.filename
+        for table in request.wcdma.tables.split(','):
+            tables.append({'table': table, 'type': 'Table'})
+
+
+
+
+    data = [file.filename for file in Files.objects.filter(project=request.project, network=network, file_type='xml')]
+    data.sort()
+    return HttpResponse(json.dumps({'files': data, 'main_file': main_file, 'tables': tables}), mimetype='application/json')
+
+def compare_files(request):
+    data = []
+    template_name = request.GET.get('table')
+    filename = request.GEt.get('filename')
+    files = request.GEt.get('files')
+    cells = request.GEt.get('cells')
+    compare_data = CompareQuery(template_name, filename, files, cells)
+    print compare_data
+    return HttpResponse(json.dumps(data), mimetype='application/json')

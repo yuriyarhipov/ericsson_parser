@@ -20,8 +20,7 @@ def table(request, table_name):
         current_table = Table(table_name, filename)
         columns = current_table.columns
         data = current_table.get_data()
-
-    data = data[:20]
+    data = data
     return HttpResponse(json.dumps({'columns': columns, 'data': data}), content_type='application/json')
 
 
