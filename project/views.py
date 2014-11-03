@@ -32,12 +32,6 @@ def treeview(request, project):
         {'id': '2g', 'label': '2G', 'children': project.get_tree('2g', 'txt')},
         {'id': '3g', 'label': '3G', 'children': project.get_tree('3g', 'xml')},
         {'id': '4g', 'label': '4G', 'children': project.get_tree('4g', 'xml')}
-    ]},
-            {'id': 'licenses', 'label': 'Licenses', 'children': []},
-            {'id': 'measurements', 'label': 'Measurements', 'children': [
-                {'id': 'ncs', 'label': 'NCS', 'children': []},
-                {'id': 'mrr', 'label': 'MRR', 'children': []}
-            ]},
-            {'id': 'hardware', 'label': 'Hardware', 'children': []}]
+    ]}, ]
 
     return HttpResponse(json.dumps(data), content_type='application/json')
