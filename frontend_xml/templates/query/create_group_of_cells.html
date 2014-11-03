@@ -1,4 +1,17 @@
 <div class="row">
+    <form ng-upload="complete(content)" class="form-horizontal col-sm-6" role="form" action="/data/upload_cells_template/">
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="upload">Upload Excel</label>
+            <div class="col-sm-6">
+                <input type="file" name="excel">
+            </div>
+            <div class="col-sm-3">
+                <button class="btn btn-success" type="submit">Upload</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="row">
     <form ng-submit="saveGroupOfCells()" class="form-horizontal col-sm-6" role="form">
         <div class="form-group">
             <label class="col-sm-3 control-label" for="network">Network</label>

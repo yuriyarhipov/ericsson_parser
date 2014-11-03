@@ -19,11 +19,13 @@ def version_release(request):
 
     return HttpResponse(json.dumps({'columns': columns, 'data': data}), content_type='application/json')
 
+
 def get_mo(request, network):
     data = []
     if network == '3g':
         data = request.wcdma.get_mo()
     return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 def get_param(request, mo):
     cursor = connection.cursor()
@@ -31,6 +33,7 @@ def get_param(request, mo):
     data = [desc[0] for desc in cursor.description]
 
     return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 def add_template(request):
     data = []
@@ -45,11 +48,13 @@ def add_template(request):
     Template().check_tables()
     return HttpResponse(json.dumps(data), content_type='application/json')
 
+
 def predefined_templates(request):
     data = []
     for qt in QueryTemplate.objects.filter(project=request.project).distinct('template_name').order_by('template_name'):
         data.append({'template_name': qt.template_name, 'network': qt.network})
     return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 def delete_template(request, template_name):
     QueryTemplate.objects.filter(project=request.project, template_name=template_name).delete()
@@ -64,8 +69,10 @@ def get_template_cells(request, network):
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 
+
 def run_template(request):
     template = request.POST.get('template')
     cells = request.POST.getlist('cell')
     columns, data = WCDMA().run_query(template, cells, request.wcdma.filename)
     return HttpResponse(json.dumps({'columns': columns, 'data': data[:20]}), content_type='application/json')
+

@@ -1,11 +1,17 @@
 var queryControllers = angular.module('queryControllers', []);
 
-queryControllers.controller('CreateGroupOfCellsCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+queryControllers.controller('CreateGroupOfCellsCtrl', ['$scope', '$http', '$location',
+    function ($scope, $http, $location) {
         $scope.selected_group_cells = [];
         $scope.selected_cells = [];
         $scope.form_data = {'cells': []};
         $scope.group_cells = [];
+
+
+        $scope.complete = function(data){
+            $scope.group_cells = data;
+        };
+
         $scope.onChangeNetwork = function(){
             $http.get('/data/get_cells/' + $scope.form_data.network).success(function(data) {
                 data.sort();
@@ -42,8 +48,8 @@ queryControllers.controller('CreateGroupOfCellsCtrl', ['$scope', '$http',
             }
             $scope.form_data.cells = cells;
             $http.post('/data/save_group_of_cells/', $.param($scope.form_data)).success(function(){
-                //$location.path('/projects');
             });
+            $location.path('/groups');
         };
 
 
