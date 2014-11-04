@@ -67,7 +67,7 @@ WSGI_APPLICATION = 'brightcomms.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE':'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'xml2',
         'USER': 'postgres',
         'PASSWORD': '000000',
@@ -93,7 +93,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATICFILES_DIRS = ['/home/arhipov/PycharmProjects/xml_processing/static', ]
+STATICFILES_DIRS = ['/opt/xml/static', ]
 STATIC_URL = '/static/'
 
 
