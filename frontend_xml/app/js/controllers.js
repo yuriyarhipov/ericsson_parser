@@ -11,9 +11,12 @@ xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectServ
         });
   }]);
 
-xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService',
-    function($scope, $cookies, activeProjectService) {
+xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService', '$location',
+    function($scope, $cookies, activeProjectService, $location) {
         $scope.activeProject = $cookies.active_project;
+        if (!$cookies.active_project){
+            $location.path('/projects/');
+        }
         $scope.$on('handleBroadcast', function() {
             $scope.activeProject = activeProjectService.project;
         });
