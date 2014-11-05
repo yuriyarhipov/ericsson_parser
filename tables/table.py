@@ -1,4 +1,10 @@
 import psycopg2
+import xlsxwriter
+import tempfile
+from zipfile import ZipFile
+
+from os.path import join
+
 from django.conf import settings
 
 
@@ -28,3 +34,29 @@ class Table(object):
         cursor.execute("SELECT %s FROM %s WHERE lower(filename)='%s'" % (sql_columns, self.table_name, self.filename.lower()))
         data = cursor.fetchall()
         return data
+
+
+def get_excel(table_name, columns, data):
+    print table_name
+    static_path = settings.STATICFILES_DIRS[0]
+    archive_filename = join(static_path, table_name +'.zip')
+    excel_filename = join(tempfile.mkdtemp(), table_name + '.xlsx')
+    workbook = xlsxwriter.Workbook(excel_filename, {'constant_memory': True})
+    worksheet = workbook.add_worksheet(table_name)
+    i = 0
+    for column in columns:
+        worksheet.write(0, i, column)
+        i += 1
+    j = 1
+    for r in data[:65535]:
+        i = 0
+        for cell in r:
+            worksheet.write(j, i, cell)
+            i += 1
+        j += 1
+
+    workbook.close()
+    zip = ZipFile(archive_filename, 'w')
+    zip.write(excel_filename, arcname=table_name + '.xlsx')
+    zip.close()
+    return table_name +'.zip'

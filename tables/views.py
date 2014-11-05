@@ -1,9 +1,10 @@
 import json
 
+from django.shortcuts import render, HttpResponseRedirect
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from table import Table
+from table import Table, get_excel
 from files.models import Files
 
 
@@ -30,6 +31,9 @@ def table(request, filename, table_name):
         current_table = Table(table_name, filename)
         columns = current_table.columns
         data = current_table.get_data()
+
+    if request.GET.get('excel'):
+        return HttpResponseRedirect('/static/%s' % get_excel(table_name, columns, data))
 
     page = request.GET.get('page', 1)
     data_length = len(data)
