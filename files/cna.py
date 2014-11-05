@@ -21,7 +21,6 @@ class CNA:
         query_tables = []
         for f in Files.objects.filter(file_type='CNA'):
             query_tables.append('SELECT CELL FROM "%s"' % f.filename)
-        print query_tables
         self.cursor.execute('SELECT DISTINCT CELL FROM (%s) as t ORDER BY CELL' % ' UNION '.join(query_tables))
         return [r[0] for r in self.cursor.fetchall()]
 

@@ -105,5 +105,4 @@ def compare_files(request):
     files = request.GEt.get('files')
     cells = request.GEt.get('cells')
     compare_data = CompareQuery(template_name, filename, files, cells)
-    print compare_data
     return HttpResponse(json.dumps(data), mimetype='application/json')

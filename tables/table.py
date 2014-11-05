@@ -37,7 +37,6 @@ class Table(object):
 
 
 def get_excel(table_name, columns, data):
-    print table_name
     static_path = settings.STATICFILES_DIRS[0]
     archive_filename = join(static_path, table_name +'.zip')
     excel_filename = join(tempfile.mkdtemp(), table_name + '.xlsx')
