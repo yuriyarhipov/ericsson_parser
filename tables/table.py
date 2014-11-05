@@ -25,7 +25,6 @@ class Table(object):
     def get_data(self):
         cursor = self.conn.cursor()
         sql_columns = ','.join(self.columns)
-        print "SELECT %s FROM %s WHERE lower(filename)='%s'" % (sql_columns, self.table_name, self.filename.lower())
         cursor.execute("SELECT %s FROM %s WHERE lower(filename)='%s'" % (sql_columns, self.table_name, self.filename.lower()))
         data = cursor.fetchall()
         return data

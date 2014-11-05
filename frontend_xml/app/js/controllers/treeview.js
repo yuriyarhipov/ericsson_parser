@@ -18,7 +18,14 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
                 if ((node_type == 'xml') && ($scope.tree_view.currentNode.network == '3g')){
                     var wcdma = $scope.tree_view.currentNode.id;
                     $cookies.wcdma = wcdma;
+                    $cookies.active_file = wcdma;
                     $location.path('/explore/' + wcdma + '/');
+                }
+                if ((node_type == 'xml') && ($scope.tree_view.currentNode.network == '4g')){
+                    var lte = $scope.tree_view.currentNode.id;
+                    $cookies.lte = lte;
+                    $cookies.active_file = lte;
+                    $location.path('/explore/' + lte + '/');
                 }
                 if (node_type == 'license'){
                     $location.path('/licenses/');

@@ -4,18 +4,16 @@ tableControllers.controller('TableCtrl', ['$scope', '$http', '$routeParams',
     function ($scope, $http, $routeParams) {
         var table_name = $routeParams.table_name;
         var filename = $routeParams.filename;
-        var table_data = [];
         $http.get('/data/table/' + filename + '/' + table_name).success(function(data) {
             $scope.columns = data.columns;
-            table_data = data.data;
-            $scope.data = table_data.slice(0,20);
-            $scope.totalItems = table_data.length;
-            $scope.currentPage = 1;
+            $scope.data = data.data;
+            $scope.totalItems = data.count;
             $scope.itemsPerPage = 20;
         });
         $scope.pageChanged = function() {
-            var index = $scope.currentPage * 20;
-            $scope.data = table_data.slice(index -20,index);
+            $http.get('/data/table/' + filename + '/' + table_name + '?page=' + $scope.currentPage ).success(function(data) {
+                $scope.data = data.data;
+            });
         };
   }]);
 
