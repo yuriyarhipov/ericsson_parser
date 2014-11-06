@@ -69,6 +69,8 @@ def rnd(request):
 
 
 def explore(request, filename):
+    if filename == 'tables':
+        filename = request.wcdma.filename
     tables = [{'table': table, 'filename': filename} for table in request.wcdma.tables.split(',')]
     tables.sort()
     return HttpResponse(json.dumps(tables), content_type='application/json')

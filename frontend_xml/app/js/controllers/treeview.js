@@ -36,6 +36,15 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
                 if ((node_type == 'wncs') || (node_type == 'ncs') || (node_type == 'wmrr') || (node_type == 'mrr')) {
                     $location.path('/measurements/' + node_type + '/');
                 }
+                if ($scope.tree_view.currentNode.id == '2g'){
+                    $cookies.network = '2g'
+                }
+                if ($scope.tree_view.currentNode.id == '3g'){
+                    $cookies.network = '3g'
+                }
+                if ($scope.tree_view.currentNode.id == '4g'){
+                    $cookies.network = '4g'
+                }
             }
         }, false);
     }
