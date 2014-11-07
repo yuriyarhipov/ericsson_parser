@@ -1,6 +1,31 @@
 <div class="row">
     <a href="#/add_file" class="btn btn-success">Add File</a>
 </div>
+
+<div ng-show="uploaded_files" class="row">
+    <h4>Uploading...</h4>
+    <table class="table table-bordered table-stripped">
+        <thead>
+            <td>Date</td>
+            <td>File name</td>
+            <td>Type of file</td>
+            <td>Network</td>
+            <td>Vendor</td>
+            <td>Description</td>
+        </thead>
+        <tbody>
+            <tr ng-repeat="f in uploaded_files">
+                <td>{{ f.date }}</td>
+                <td>{{ f.filename }}</td>
+                <td>{{ f.file_type }}</td>
+                <td>{{ f.network }}</td>
+                <td>{{ f.vendor }}</td>
+                <td>{{ f.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 <div class="row">
     <table class="table table-bordered table-stripped">
         <thead>

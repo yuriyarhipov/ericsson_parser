@@ -1,7 +1,6 @@
 from djcelery import celery
 from celery import current_task
 
-
 from django.conf import settings
 
 
@@ -16,11 +15,14 @@ def worker(filename, project,  description, vendor, file_type, network):
     from files.measurements import Measurements
     from files.lic import License
     from files.hw import HardWare
+    from files.models import UploadedFiles
+
+
 
 
     work_file = XmlPack(filename).get_files()[0]
 
-
+    UploadedFiles.objects.create(filename=filename, project=project, description=description, vendor=vendor, file_type=file_type, network=network)
 
     task = current_task
     task.update_state(state="PROGRESS",
@@ -51,7 +53,7 @@ def worker(filename, project,  description, vendor, file_type, network):
 
     #    current += interval_per_file
     #task.update_state(state='PROGRESS', meta={"current": 100, "total": 100})
-
+    UploadedFiles.objects.filter(filename=filename).delete()
 
 @celery.task
 def delete_file(filename):

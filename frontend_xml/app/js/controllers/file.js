@@ -1,10 +1,15 @@
 var filesControllers = angular.module('filesControllers', []);
 
-filesControllers.controller('FilesHubCtrl', ['$scope', '$http',
-    function ($scope, $http) {
-        $http.get('/data/files/').success(function(data) {
-            $scope.files = data;
-        });
+filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout',
+    function ($scope, $http, $timeout) {
+        var loadData = function(){
+            $http.get('/data/files/').success(function(data) {
+                $scope.files = data.files;
+                $scope.uploaded_files = data.uploaded_files;
+            });
+            $timeout(loadData, 5000);
+        };
+        $timeout(loadData, 0);
   }]);
 
 filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',

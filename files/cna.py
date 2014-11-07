@@ -174,12 +174,14 @@ class CNA:
 
     def save_cna(self, filename, project, description, vendor, file_type, network, task, current, available):
         table_name = basename(filename).split('.')[0]
+
         count = fcount(filename)
         with open(filename) as f:
             columns = []
             for col in f.readline().split():
-                if col not in columns:
+                if (col not in columns) and (len(columns) < 1550):
                     columns.append(col.lower())
+
             self.create_cna_tables(table_name, columns[:])
             interval = float(available)/float(count)
             for row in f:

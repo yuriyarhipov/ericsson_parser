@@ -4,6 +4,17 @@ from django.db import connection
 from project.models import Project
 from files.wcdma import WCDMA
 
+
+class UploadedFiles(models.Model):
+    filename = models.TextField()
+    date = models.DateTimeField(auto_now=True)
+    file_type = models.CharField(max_length=50, blank=True)
+    description = models.TextField()
+    vendor = models.TextField()
+    network = models.TextField()
+    project = models.ForeignKey(Project)
+
+
 class Files(models.Model):
     filename = models.TextField()
     date = models.DateTimeField(auto_now=True)
