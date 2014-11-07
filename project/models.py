@@ -12,7 +12,14 @@ class Project(models.Model):
     def get_tree(self, network, file_type):
         data = []
         for f in self.get_list_files(network, file_type):
-            data.append({'id': f.lower(), 'label': f, 'children': '', 'type': file_type, 'network': network})
+            children = []
+            if network == '3g':
+                children.append({'id': 'topology_%s' % f.lower(), 'label': 'Topology', 'children': '', 'type': 'topology', 'network': network, 'file': f})
+                children.append({'id': 'rnd_%s' % f.lower(), 'label': 'RND', 'children': '', 'type': 'rnd_wcdma', 'network': network, 'file': f})
+                children.append({'id': '3g_neighbors_%s' % f.lower(), 'label': '3GNeighbors', 'children': '', 'type': '3g_neighbors_wcdma', 'network': network, 'file': f})
+            data.append({'id': f.lower(), 'label': f, 'children': children, 'type': file_type, 'network': network})
+
+
 
         lic_files = self.get_list_files(network, 'license')
         if lic_files:
