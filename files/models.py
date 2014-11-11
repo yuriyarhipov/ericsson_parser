@@ -45,9 +45,7 @@ class Files(models.Model):
 
     def get_data(self):
         cursor = connection.cursor()
-        print 'SELECT * FROM "%s"' % (self.filename.split('.')[0], )
         cursor.execute('SELECT * FROM "%s"' % (self.filename.split('.')[0], ))
         columns = [desc[0] for desc in cursor.description]
-        print cursor.rowcount
         data = cursor.fetchall()
         return columns, data

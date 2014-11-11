@@ -56,6 +56,9 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
         $scope.form_data = {'cells': []};
         $scope.group_cells = [];
 
+        $scope.hideTable = true;
+        $scope.hideForm = false;
+
         $scope.onChangeNetwork = function(){
             $http.get('/data/predefined_templates/').success(function(data) {
                 $scope.templates = [];
@@ -65,7 +68,7 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
                         $scope.templates.push(data[i].template_name);
                     }
                 }
-                $scope.template = $scope.templates;
+                $scope.template = $scope.templates[0];
             });
             $http.get('/data/get_template_cells/' + $scope.network).success(function(data) {
                 $scope.data_cells = data;
@@ -98,8 +101,30 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
             $scope.data = data.data;
         };
 
-        $scope.onClickExcel = function(){
-            console.log('excel click');
+        $scope.onClickRun = function(){
+            $scope.url='/data/run_template/?network='+ $scope.network + '&template=' + $scope.template;
+            var length_cells = $scope.group_cells.length;
+            for (var i = 0; i<length_cells; i++){
+                $scope.url = $scope.url +'&cell=' + $scope.group_cells[i].cell;
+            }
+            $http.get($scope.url).success(function(data) {
+                $scope.hideTable = false;
+                $scope.hideForm = true;
+                $scope.columns = data.columns;
+                $scope.data = data.data;
+                $scope.totalItems = data.count;
+                $scope.itemsPerPage = 20;
+            });
+        };
+
+        $scope.pageChanged = function() {
+            $http.get($scope.url + '&page=' + $scope.currentPage ).success(function(data) {
+                $scope.data = data.data;
+            });
+        };
+        $scope.onClickReturn = function(){
+            $scope.hideTable = true;
+            $scope.hideForm = false;
         };
 
   }]);

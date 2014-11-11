@@ -12,6 +12,7 @@ from query.models import QueryTemplate
 from files.wcdma import WCDMA
 from files.views import handle_uploaded_file
 from template import Template
+from tables.table import get_excel
 
 
 def version_release(request):
@@ -77,11 +78,15 @@ def get_template_cells(request, network):
 
 
 def run_template(request):
-    template = request.POST.get('template')
-    cells = request.POST.getlist('cell')
+    template = request.GET.get('template')
+    cells = request.GET.getlist('cell')
     columns, data = WCDMA().run_query(template, cells, request.wcdma.filename)
     if request.GET.get('excel'):
-        return HttpResponseRedirect('/static/%s' % get_excel(table_name, columns, data))
+        excel_data = []
+        for row in data:
+            new_row = [cell[0] for cell in row]
+            excel_data.append(new_row)
+        return HttpResponseRedirect('/static/%s' % get_excel(template, columns, excel_data))
 
     page = request.GET.get('page', 1)
     data_length = len(data)
