@@ -3,7 +3,10 @@ import json
 from openpyxl import load_workbook
 
 from django.http import HttpResponse
+from django.shortcuts import HttpResponseRedirect
 from django.db import connection
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 from query.models import QueryTemplate
 from files.wcdma import WCDMA
@@ -77,7 +80,20 @@ def run_template(request):
     template = request.POST.get('template')
     cells = request.POST.getlist('cell')
     columns, data = WCDMA().run_query(template, cells, request.wcdma.filename)
-    return HttpResponse(json.dumps({'columns': columns, 'data': data[:20]}), content_type='application/json')
+    if request.GET.get('excel'):
+        return HttpResponseRedirect('/static/%s' % get_excel(table_name, columns, data))
+
+    page = request.GET.get('page', 1)
+    data_length = len(data)
+    t = Paginator(data, 20)
+    try:
+        data = t.page(page)
+    except PageNotAnInteger:
+        data = t.page(1)
+    except EmptyPage:
+        data = t.page(t.num_pages)
+    return HttpResponse(json.dumps({'columns': columns, 'data': data.object_list, 'count': data_length}), content_type='application/json')
+
 
 def upload_template(request):
     data =[]

@@ -98,4 +98,8 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
             $scope.data = data.data;
         };
 
+        $scope.onClickExcel = function(){
+            console.log('excel click');
+        };
+
   }]);

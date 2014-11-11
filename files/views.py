@@ -47,6 +47,7 @@ def files(request):
             'vendor': f.vendor,
             'description': f.description
         })
+
     uploaded_files = []
     for f in UploadedFiles.objects.filter(project=project):
         uploaded_files.append({

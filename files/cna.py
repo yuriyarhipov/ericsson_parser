@@ -135,35 +135,18 @@ class CNA:
     def add_row(self, table_name, columns, row):
         if '---' not in row:
             row = row.split()
-            first_table_values = row[:1500]
-            second_table_values = [row[3], ]
-            second_table_values.extend(row[1500:])
-            first_columns = columns[:1500]
-            second_columns = ['cell',] + columns[1500:]
+            values = row[:1500]
+            columns = columns[:1500]
 
-            second_table_values = second_table_values[:len(second_columns)]
-            sql_f_columns = ['"%s"' % col for col in first_columns]
-            sql_f_values = ["'%s'" % val for val in first_table_values]
-            sql_s_columns = ['"%s"' % col for col in second_columns]
-            sql_s_values = ["'%s'" % val for val in second_table_values]
+            sql_columns = ['"%s"' % col for col in columns]
+            sql_values = ["'%s'" % val for val in values]
             cursor = self.conn.cursor()
-            cursor.execute('INSERT INTO "%s_t1" (%s) VALUES (%s)' % (table_name, ', '.join(sql_f_columns), ', '.join(sql_f_values)))
-            cursor.execute('INSERT INTO "%s_t2" (%s) VALUES (%s)' % (table_name, ', '.join(sql_s_columns), ', '.join(sql_s_values)))
+            cursor.execute('INSERT INTO "%s" (%s) VALUES (%s)' % (table_name, ', '.join(sql_columns), ', '.join(sql_values)))
+
 
     def create_cna_tables(self, table_name, columns):
-        cursor = self.conn.cursor()
-        cursor.execute('DROP VIEW IF EXISTS "%s";' % table_name)
-        first_columns = columns[:1500]
-        second_columns = ['cell', ] + columns[1500:]
-        first_table_name = '%s_t1' % table_name
-        second_table_name = '%s_t2' % table_name
-        self.create_cna_table(first_table_name, first_columns)
-        self.create_cna_table(second_table_name, second_columns)
-        columns.remove('cell')
-        sql_view_columns = '"%s"."cell", ' % first_table_name
-        sql_view_columns = sql_view_columns + ', '.join(['"%s"' % col for col in columns])
-        select_sql = 'SELECT DISTINCT %s FROM "%s" INNER JOIN "%s" ON ("%s".CELL="%s".CELL)' % (sql_view_columns, first_table_name, second_table_name, first_table_name, second_table_name)
-        cursor.execute('CREATE VIEW "%s" AS %s' % (table_name, select_sql))
+        columns = columns[:1500]
+        self.create_cna_table(table_name, columns)
 
     def create_cna_table(self, table_name, columns):
         cursor = self.conn.cursor()
