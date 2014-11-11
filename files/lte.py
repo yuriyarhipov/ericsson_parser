@@ -18,8 +18,14 @@ class LTE:
         self.cursor = self.conn.cursor()
 
     def get_cells(self, filename):
+        cells = []
+        for cell in self.get_groups():
+            cells.append({'cell': cell, 'type': 'Groups'})
+
         self.cursor.execute("SELECT DISTINCT EUtrancell from TOPOLOGY_LTE WHERE filename=%s ORDER BY EUtrancell", (filename,))
-        return [r[0] for r in self.cursor]
+        for r in self.cursor:
+            cells.append({'cell': r[0], 'type': 'Cells'})
+        return cells
 
     def get_lte_files(self):
         return [f for f in Files.objects.filter(network='4g', file_type='xml')]
@@ -40,22 +46,8 @@ class LTE:
         data.sort()
         return data
 
-    def get_mo_param(self, mo, q):
-        params = set()
-        for t in Table.objects.filter(table_name=mo):
-            for p in t.columns.split(','):
-                if q:
-                    if q.lower() in p.lower():
-                        params.add(p)
-                else:
-                    params.add(p)
-
-        data = [dict(id=p, text=p) for p in params]
-        data.sort()
-        return data
-
     def get_groups(self):
-        return [gc.group_name for gc in GroupCells.objects.filter(type='LTE').order_by('group_name')]
+        return [gc.group_name for gc in GroupCells.objects.filter(network='4g').order_by('group_name')]
 
     def get_where(self, tables, filename, cells):
         result = ["(Topology_LTE.filename='%s')" % filename, ]
@@ -73,8 +65,8 @@ class LTE:
 
     def get_cells_from_group_cell(self, group_cells):
         cells = []
-        if GroupCells.objects.filter(group_name=group_cells, type='LTE').exists():
-            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, type='LTE').cells.split(',')]
+        if GroupCells.objects.filter(group_name=group_cells, network='4g').exists():
+            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, network='4g').cells.split(',')]
         return cells
 
     def convert_form_cells(self, cells, filename):
@@ -121,6 +113,7 @@ class LTE:
         if template and cells:
             params = self.get_params_with_min_max(template)
             q = "SELECT  * FROM template_%s WHERE (filename = '%s') AND EUtrancell in (%s)" % (template, filename, ','.join(cells))
+            print q
             self.cursor.execute(q)
             colnames = [desc[0] for desc in self.cursor.description]
             data = []

@@ -17,12 +17,9 @@ class CNA:
                 settings.DATABASES['default']['PASSWORD']))
         self.cursor = self.conn.cursor()
 
-    def get_cells(self):
-        query_tables = []
-        for f in Files.objects.filter(file_type='CNA'):
-            query_tables.append('SELECT CELL FROM "%s"' % f.filename)
-        self.cursor.execute('SELECT DISTINCT CELL FROM (%s) as t ORDER BY CELL' % ' UNION '.join(query_tables))
-        return [r[0] for r in self.cursor.fetchall()]
+    def get_cells(self, filename):
+        self.cursor.execute('SELECT DISTINCT CELL FROM "%s" ORDER BY CELL' % (filename, ))
+        return [{'cell': r[0], 'type': 'Cells'} for r in self.cursor.fetchall()]
 
     def get_mo(self, query):
 
@@ -60,8 +57,8 @@ class CNA:
 
     def get_cells_from_group_cell(self, group_cells):
         cells = []
-        if GroupCells.objects.filter(group_name=group_cells, type='CNA').exists():
-            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, type='CNA').cells.split(',')]
+        if GroupCells.objects.filter(group_name=group_cells, network='2g').exists():
+            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, network='2g').cells.split(',')]
         return cells
 
     def convert_form_cells(self, cells):

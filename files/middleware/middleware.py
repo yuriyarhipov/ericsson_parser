@@ -26,6 +26,6 @@ class ActiveFiles(object):
         if Files.objects.filter(filename=cna_filename, project=project).exists():
             cna_file = Files.objects.get(filename=cna_filename, project=project)
         else:
-            cna_file = Files.objects.filter(project=project, file_type='xml', network='2g').first()
+            cna_file = Files.objects.filter(project=project, file_type='txt', network='2g').first()
         if cna_file:
             request.cna = cna_file

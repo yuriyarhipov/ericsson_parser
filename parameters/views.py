@@ -10,7 +10,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from query.models import QueryTemplate
 from files.wcdma import WCDMA
+from files.cna import CNA
+from files.lte import LTE
 from files.views import handle_uploaded_file
+from files.models import Files
 from template import Template
 from tables.table import get_excel
 
@@ -29,14 +32,22 @@ def version_release(request):
 
 def get_mo(request, network):
     data = []
+    project = request.project
     if network == '3g':
         data = request.wcdma.get_mo()
+    elif network == '2g':
+        data = [f.filename for f in Files.objects.filter(project=project, file_type='txt', network='2g')]
+    elif network == '4g':
+        data = request.lte.get_mo()
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def get_param(request, mo):
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM %s LIMIT 0;' % mo)
+    if Files.objects.filter(filename=mo).exists():
+        cursor.execute('SELECT * FROM "%s" LIMIT 0;' % mo)
+    else:
+        cursor.execute('SELECT * FROM %s LIMIT 0;' % mo)
     data = [desc[0] for desc in cursor.description]
 
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -70,9 +81,13 @@ def delete_template(request, template_name):
 
 def get_template_cells(request, network):
     data = []
-    if network == '3g':
+    if network == '2g':
+        data = CNA().get_cells(request.cna.filename)
+    elif network == '3g':
         wcdma = WCDMA()
         data = wcdma.get_cells(request.wcdma.filename)
+    elif network == '4g':
+        data = LTE().get_cells(request.lte.filename)
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -80,7 +95,15 @@ def get_template_cells(request, network):
 def run_template(request):
     template = request.GET.get('template')
     cells = request.GET.getlist('cell')
-    columns, data = WCDMA().run_query(template, cells, request.wcdma.filename)
+    network = request.GET.get('network')
+
+    if network == '2g':
+        columns, data = CNA().run_query(template, cells, request.cna.filename)
+    elif network == '3g':
+        columns, data = WCDMA().run_query(template, cells, request.wcdma.filename)
+    elif network == '4g':
+        columns, data = LTE().run_query(template, cells, request.lte.filename)
+
     if request.GET.get('excel'):
         excel_data = []
         for row in data:
