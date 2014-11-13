@@ -91,6 +91,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/files/compare_files.html',
                 controller: 'compareFilesCtrl'
             }).
+            when('/compare_templates/',{
+                templateUrl: 'templates/files/compare_templates.html',
+                controller: 'compareTemplatesCtrl'
+            }).
             when('/by_technology/',{
                 templateUrl: 'templates/tables/by_technology.html',
                 controller: 'byTechnologyCtrl'

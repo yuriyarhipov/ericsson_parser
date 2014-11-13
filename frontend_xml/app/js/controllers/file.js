@@ -72,6 +72,8 @@ filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams',
 filesControllers.controller('compareFilesCtrl', ['$scope', '$http',
     function ($scope, $http) {
         $scope.network = '2g';
+        $scope.hide_files = true;
+
 
         function set_files_for_compare(files, main_file){
             $scope.files_for_compare = [];
@@ -109,5 +111,15 @@ filesControllers.controller('compareFilesCtrl', ['$scope', '$http',
 
         $scope.onChangeMainFile = function(){
             set_files_for_compare($scope.files, $scope.main_file);
+        };
+
+        $scope.complete = function(data){
+            if (data.compare_files){
+                $scope.hide_files = false;
+                $scope.compare_files = data.compare_files;
+            }
+            if (data.compare_table){
+                $scope.compare_table = data.compare_table;
+            }
         };
   }]);

@@ -6,7 +6,7 @@ from django.conf import settings
 
 from .models import Files, UploadedFiles
 from tables.table import Table
-from files.compare import CompareQuery
+from files.compare import CompareQuery, CompareFiles, CompareTable
 import tasks
 
 
@@ -111,10 +111,15 @@ def get_files_for_compare(request, network):
     return HttpResponse(json.dumps({'files': data, 'main_file': main_file, 'tables': tables}), content_type='application/json')
 
 def compare_files(request):
-    data = []
-    template_name = request.GET.get('table')
-    filename = request.GEt.get('filename')
-    files = request.GEt.get('files')
-    cells = request.GEt.get('cells')
-    compare_data = CompareQuery(template_name, filename, files, cells)
+    data = dict()
+    filename = request.POST.get('main_file')
+    files = request.POST.getlist('files')
+    table = request.POST.get('table')
+    cells = request.POST.getlist('cells')
+    if not table:
+        data['compare_files'] = CompareFiles(filename, files).get_tables_info()
+    if (not cells) and table:
+        ct = CompareTable(table, filename, files)
+        data['compare_table'] = {'columns': ct.columns, 'data': ct.data}
+
     return HttpResponse(json.dumps(data), content_type='application/json')

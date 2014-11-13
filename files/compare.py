@@ -30,7 +30,9 @@ class CompareFiles(object):
         result = []
         for table in tables:
             ct = CompareTable(table, self.root_file, self.files)
-            result.append([table, ct.get_count()])
+            count = ct.get_count()
+            if count > 0:
+                result.append({'table': table, 'count': count})
         return result
 
 

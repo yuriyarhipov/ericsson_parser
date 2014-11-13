@@ -1,5 +1,5 @@
 <div class="row">
-    <form class="form-horizontal col-sm-6" ng-upload="complete(content)" role="form" method="GET" action="/data/compare_files/">
+    <form class="form-horizontal col-sm-6" role="form" action="/data/compare_files/">
         <div class="form-group">
             <label class="control-label col-sm-3">Network</label>
             <div class="col-sm-9">
@@ -49,32 +49,4 @@
             </div>
         </div>
     </form>
-</div>
-<div ng-hide="hide_files" class="row">
-    <table class="table">
-        <thead>
-            <tr>
-                <td>Table</td>
-                <td>Count</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="table in compare_files">
-                <td>{{ table.table }}</td>
-                <td>{{ table.count }}</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<div ng-hide="hide_tables" class="row">
-    <table class="table">
-        <thead>
-            <tr>
-                <td ng-repeat="col in compare_table.columns">{{ col }}</td>
-            </tr>
-        </thead>
-        <tbody>
-
-        </tbody>
-    </table>
 </div>
