@@ -114,6 +114,7 @@ filesControllers.controller('compareFilesCtrl', ['$scope', '$http',
         };
 
         $scope.complete = function(data){
+            console.log(data);
             if (data.compare_files){
                 $scope.hide_files = false;
                 $scope.compare_files = data.compare_files;

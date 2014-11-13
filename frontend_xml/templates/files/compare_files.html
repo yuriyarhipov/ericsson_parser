@@ -74,7 +74,11 @@
             </tr>
         </thead>
         <tbody>
-
+            <tr ng-repeat="row in compare_table.data track by $index">
+                <td ng-repeat="col in row track by $index">
+                    {{ col.1 }}
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>

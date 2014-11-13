@@ -120,6 +120,7 @@ def compare_files(request):
         data['compare_files'] = CompareFiles(filename, files).get_tables_info()
     if (not cells) and table:
         ct = CompareTable(table, filename, files)
-        data['compare_table'] = {'columns': ct.columns, 'data': ct.data}
+        mo = ct.get_mo_list()
+        data['compare_table'] = {'columns': ct.columns, 'data': ct.get_data(mo)}
 
     return HttpResponse(json.dumps(data), content_type='application/json')
