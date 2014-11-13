@@ -22,6 +22,7 @@ urlpatterns = patterns('',
 
     url(r'^data/table/(\S+)/(\S+)/$', table_views.table),
     url(r'^data/explore/(\S+)/$', table_views.explore),
+    url(r'^data/by_technology/(\S+)/$', table_views.by_technology),
 
     url(r'^data/version_release/$', parameters_views.version_release),
     url(r'^data/get_mo/(\S+)/$', parameters_views.get_mo),

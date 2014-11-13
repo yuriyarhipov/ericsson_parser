@@ -23,3 +23,16 @@ tableControllers.controller('exploreCtrl', ['$scope', '$http', '$routeParams',
             $scope.tables = data;
         });
   }]);
+
+tableControllers.controller('byTechnologyCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.network = '2g';
+        $http.get('/data/by_technology/2g/').success(function(data) {
+            $scope.data = data;
+        });
+        $scope.onChangeNetwork = function(){
+            $http.get('/data/by_technology/' + $scope.network).success(function(data) {
+                $scope.data = data;
+            });
+        };
+  }]);

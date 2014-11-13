@@ -91,6 +91,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/files/compare_files.html',
                 controller: 'compareFilesCtrl'
             }).
+            when('/by_technology/',{
+                templateUrl: 'templates/tables/by_technology.html',
+                controller: 'byTechnologyCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });

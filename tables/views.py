@@ -29,8 +29,8 @@ def table(request, filename, table_name):
         columns, data = f.get_data()
     else:
         current_table = Table(table_name, filename)
-        columns = current_table.columns
         data = current_table.get_data()
+        columns = current_table.columns
 
     if request.GET.get('excel'):
         return HttpResponseRedirect('/static/%s' % get_excel(table_name, columns, data))
@@ -74,3 +74,38 @@ def explore(request, filename):
     tables = [{'table': table, 'filename': filename} for table in request.wcdma.tables.split(',')]
     tables.sort()
     return HttpResponse(json.dumps(tables), content_type='application/json')
+
+def by_technology(request, network):
+    data = []
+    project = request.project
+    if network == '2g':
+        data = [{'label': f.filename, 'table': f.filename, 'type': 'CNA Table', 'filename': f.filename} for f in Files.objects.filter(network='2g', project=project)]
+
+    elif network == '3g':
+        filename = request.wcdma.filename
+        tables = request.wcdma.tables.split(',')
+        tables.sort()
+        data = [
+            {'label': 'Topology', 'table': 'topology', 'type': 'Additional table', 'filename': filename},
+            {'label': 'RND', 'table': 'rnd_wcdma', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GNeighbors', 'table': 'threegneighbors', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GIRAT', 'table': '3girat', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GMAP_INTRAFREQ', 'table': 'map_intrafreq', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GMAP_INTERFREQ', 'table': 'map_interfreq', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GMAP_GSMIRAT', 'table': 'map_gsmirat', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GNeighbors_CO-SC', 'table': 'neighbors_co-sc', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GNeighbors_TWO_WAYS', 'table': 'neighbors_two_ways', 'type': 'Additional table', 'filename': filename},
+        ]
+        data.extend([{'label': table, 'table': table, 'type': 'XML table', 'filename': filename} for table in tables])
+
+    elif network == '4g':
+        filename = request.lte.filename
+        tables = request.wcdma.tables.split(',')
+        tables.sort()
+        data = [
+            {'label': 'Topology', 'table': 'topology_lte', 'type': 'Additional table', 'filename': filename},
+            {'label': 'RND', 'table': 'rnd_lte', 'type': 'Additional table', 'filename': filename},
+        ]
+        data.extend([{'label': table, 'table': table, 'type': 'XML table', 'filename': filename} for table in tables])
+
+    return HttpResponse(json.dumps(data), content_type='application/json')
