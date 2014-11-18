@@ -9,6 +9,8 @@ from collections import OrderedDict
 
 from django.conf import settings
 
+from files.hw import HardWare
+
 
 def get_mo(mo):
     result = dict()
@@ -35,7 +37,7 @@ class Table(object):
         self.columns = self.get_columns()
 
     def get_columns(self):
-        if self.table_name in ['map_intrafreq', 'map_interfreq', 'map_gsmirat']:
+        if self.table_name in ['map_intrafreq', 'map_interfreq', 'map_gsmirat', 'hw_summary']:
             return
 
         if self.table_name == '3girat':
@@ -78,6 +80,11 @@ class Table(object):
 
         elif self.table_name == 'neighbors_two_ways':
             return ThreeGNeighborsTwoWays(self.filename).data
+
+        elif self.table_name == 'hw_summary':
+            self.columns, data = HardWare().get_summary(self.filename)
+            return data
+
 
         cursor = self.conn.cursor()
         sql_columns = ','.join(self.columns)

@@ -90,13 +90,6 @@ def hardwares(request):
         data.append({'filename': f.filename, 'file_type': f.file_type, 'network': f.network})
     return HttpResponse(json.dumps(data), content_type='application/json')
 
-def hardware(request, filename, table):
-    current_table = Table(table, filename)
-    columns = current_table.columns
-    data = current_table.get_data()
-    data = data[:20]
-    return HttpResponse(json.dumps({'columns': columns, 'data': data}), content_type='application/json')
-
 def get_files_for_compare(request, network):
     main_file = ''
     tables = []

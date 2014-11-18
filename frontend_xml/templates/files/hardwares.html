@@ -3,12 +3,16 @@
         <thead>
             <tr>
                 <td>Filename</td>
+                <td>Table</td>
+                <td>Summary</td>
                 <td>Network</td>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="file in files">
-                <td><a href="#/hardware/{{ file.filename }}/hardware/">{{ file.filename }}</a></td>
+                <td>{{ file.filename }}</td>
+                <td><a href="#/table/{{ file.filename }}/hardware/">Table</a></td>
+                <td><a href="#/table/{{ file.filename }}/hw_summary/">Summary</a></td>
                 <td>{{ file.network }}</td>
             </tr>
         </tbody>

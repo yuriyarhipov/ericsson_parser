@@ -61,12 +61,20 @@ filesControllers.controller('hardwaresCtrl', ['$scope', '$http',
 
 filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams',
     function ($scope, $http, $routeParams) {
-        var filename = $routeParams.filename;
-        var table = $routeParams.table;
-        $http.get('/data/hardware/' + filename + '/' + table + '/').success(function(data) {
+        $scope.filename = $routeParams.filename;
+        $scope.table = $routeParams.table;
+        $http.get('/data/hardware/' + $scope.filename + '/' + $scope.table + '/').success(function(data) {
             $scope.columns = data.columns;
             $scope.data = data.data;
+            $scope.totalItems = data.count;
+            $scope.itemsPerPage = 20;
         });
+
+        $scope.pageChanged = function() {
+            $http.get('/data/table/' + $scope.filename + '/' + $scope.tablename + '?page=' + $scope.currentPage ).success(function(data) {
+                $scope.data = data.data;
+            });
+        };
   }]);
 
 filesControllers.controller('compareFilesCtrl', ['$scope', '$http',

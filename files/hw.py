@@ -1,5 +1,7 @@
 import psycopg2
+import re
 
+from operator import itemgetter
 from lxml import etree
 from os.path import basename
 
@@ -20,43 +22,57 @@ class HardWare(object):
                 settings.DATABASES['default']['USER'],
                 settings.DATABASES['default']['PASSWORD']))
 
-    def get_file(self, filename):
+    def get_summary(self, filename):
         cursor = self.conn.cursor()
-        columns = [
-            'filename',
-            'managed_element',
-            'managed_element_type',
-            'user_label',
-            'inventory_unit',
-            'inventory_unit_type',
-            'vendor_unit_family_type',
-            'vendor_unit_type_number',
-            'vendor_name',
-            'serial_number',
-            'unit_position',
-            'manufacturer_data'
-        ]
-
+        elements = dict()
         cursor.execute('''
             SELECT
                 filename,
                 managed_element,
                 managed_element_type,
-                user_label,
-                inventory_unit,
                 inventory_unit_type,
-                vendor_unit_family_type,
-                vendor_unit_type_number,
-                vendor_name,
-                serial_number,
-                unit_position,
-                manufacturer_data
+                productname,
+                COUNT(productname)
             FROM
                 Hardware
             WHERE
             filename=%s
+            GROUP BY productname, filename, managed_element_type, managed_element, inventory_unit_type
+            ORDER BY managed_element
         ''', (filename, ))
-        return columns, cursor.fetchall()
+
+        product_names = set()
+        for row in cursor:
+            product_names.add(row[4])
+            if row[1] not in elements:
+                elements[row[1]] = dict()
+                elements[row[1]]['filename'] = row[0]
+                elements[row[1]]['managed_element_type'] = row[2]
+                elements[row[1]]['inventory_unit_type'] = row[3]
+                elements[row[1]]['productname'] = dict()
+                elements[row[1]]['productname'][row[4]] = row[5]
+            else:
+                elements[row[1]]['productname'][row[4]] = row[5]
+
+        columns = ['Filename', 'Site', 'Type', 'CE_Boards']
+        product_names = list(product_names)
+        product_names.sort()
+        columns.extend(product_names)
+
+        data = []
+        for site, values in elements.iteritems():
+            row = [values.get('filename'),
+                   site,
+                   values.get('managed_element_type'),
+                   values.get('inventory_unit_type'),
+                   ]
+            product_names_values = [values['productname'].get(pn) for pn in product_names]
+            row.extend(product_names_values)
+            data.append(row)
+
+        data = sorted(data, key=itemgetter(1))
+
+        return columns, data
 
 
     def get_files(self):
@@ -86,7 +102,8 @@ class HardWare(object):
           vendor_name TEXT,
           serial_number TEXT,
           unit_position TEXT,
-          manufacturer_data TEXT)''')
+          manufacturer_data TEXT,
+          productname TEXT)''')
         cursor.execute('DELETE FROM Hardware WHERE filename=%s', (self.filename, ))
 
     def write_data(self, row):
@@ -104,8 +121,9 @@ class HardWare(object):
           vendor_name,
           serial_number,
           unit_position,
-          manufacturer_data
-        ) VALUES (%s, %s,  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+          manufacturer_data,
+          productname
+        ) VALUES (%s, %s,  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ''', row)
 
     def parsing_inventory(self, unit):
@@ -128,7 +146,8 @@ class HardWare(object):
 
         for unit in node.iterfind('.//{http://www.3gpp.org/ftp/specs/archive/32_series/32.695#inventoryNrm}InventoryUnit'):
             inventory_unit, inventory_unit_type, vendor_unit_family_type, vendor_unit_type_number, vendor_name, serial_number, unit_position, manufacturer_data = self.parsing_inventory(unit)
-            self.write_data([self.filename, managed_element, managed_element_type, user_label, inventory_unit, inventory_unit_type, vendor_unit_family_type, vendor_unit_type_number, vendor_name, serial_number, unit_position, manufacturer_data])
+            product_name = self.get_values(manufacturer_data).get('ProductName', '')
+            self.write_data([self.filename, managed_element, managed_element_type, user_label, inventory_unit, inventory_unit_type, vendor_unit_family_type, vendor_unit_type_number, vendor_name, serial_number, unit_position, manufacturer_data, product_name])
 
     def parse_data(self, project, description, vendor, file_type, network, task, current, interval_per_file):
         self.create_table()
@@ -151,3 +170,11 @@ class HardWare(object):
                 description=description,
                 vendor=vendor,
                 network=network.lower())
+
+    def get_values(self, data):
+        result = dict()
+        pattern = '(\w*)=(\w*-*\w*)'
+        k = re.compile(pattern)
+        for k, v in re.findall(k, data):
+            result[k] = v
+        return result
