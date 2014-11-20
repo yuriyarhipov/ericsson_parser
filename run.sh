@@ -1,3 +1,4 @@
+export C_FORCE_ROOT="true"
 service nginx restart &
 service postgresql restart &
 service rabbitmq-server restart &
