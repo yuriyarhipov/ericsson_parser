@@ -15,7 +15,7 @@
     <form ng-upload="complete(content)" class="form-horizontal col-sm-10" role="form" action="/data/add_template/">
         <div class="form-group">
             <label class="col-sm-3 control-label" for="network">Network:</label>
-            <div class="col-sm-9">
+            <div class="col-sm-9" id="network">
                 <ui-select ng-change="onChangeNetwork()" ng-model="network.selected" theme="bootstrap"
                     ng-disabled="disabled"
                     reset-search-input="false">

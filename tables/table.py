@@ -36,6 +36,28 @@ class Table(object):
         self.filename = filename
         self.columns = self.get_columns()
 
+    def sort_columns(self, columns):
+        result = []
+        fixed_columns = [
+            'MO',
+            'Version',
+            'Vendor',
+            'Element',
+            'Element1',
+            'Element2',
+            'UtranCell',
+            'SectorCarrier',
+            'Carrier'
+        ]
+        exists_columns = [column.lower() for column in columns]
+        for column in fixed_columns:
+            if column.lower() in exists_columns:
+                result.append(column)
+                exists_columns.remove(column.lower())
+        exists_columns.sort()
+        result.extend(exists_columns)
+        return result
+
     def get_columns(self):
         if self.table_name in ['map_intrafreq', 'map_interfreq', 'map_gsmirat', 'hw_summary']:
             return
@@ -49,7 +71,8 @@ class Table(object):
 
         cursor = self.conn.cursor()
         cursor.execute('SELECT * FROM %s LIMIT 0' % (self.table_name, ))
-        return [desc[0] for desc in cursor.description]
+        columns = [desc[0] for desc in cursor.description]
+        return self.sort_columns(columns)
 
     def get_data(self):
         if self.table_name == '3girat':
