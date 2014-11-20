@@ -108,7 +108,6 @@ class Table(object):
             self.columns, data = HardWare().get_summary(self.filename)
             return data
 
-
         cursor = self.conn.cursor()
         sql_columns = ','.join(self.columns)
         cursor.execute("SELECT %s FROM %s WHERE lower(filename)='%s'" % (sql_columns, self.table_name, self.filename.lower()))
