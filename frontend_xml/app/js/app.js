@@ -13,7 +13,8 @@ var XmlApp = angular.module(
         'queryControllers',
         'tableControllers',
         'parameterControllers',
-        'measurementsControllers'
+        'measurementsControllers',
+        'ui.select'
     ]);
 
 XmlApp.config(['$routeProvider',

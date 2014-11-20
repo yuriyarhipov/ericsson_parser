@@ -3,7 +3,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label" for="upload">Upload Excel</label>
             <div class="col-sm-4">
-                <input type="file" name="excel">
+                <input type="file" name="excel" id="upload">
             </div>
             <div class="col-sm-5">
                 <button class="btn btn-success" type="submit">Upload</button>
@@ -16,11 +16,14 @@
         <div class="form-group">
             <label class="col-sm-3 control-label" for="network">Network:</label>
             <div class="col-sm-9">
-                <select ng-change="onChangeNetwork()" ng-model="network"  name="network" id="network" class="form-control">
-                    <option value="2g">2G</option>
-                    <option value="3g">3G</option>
-                    <option value="4g">4G</option>
-                </select>
+                <ui-select ng-change="onChangeNetwork()" ng-model="network.selected" theme="bootstrap"
+                    ng-disabled="disabled"
+                    reset-search-input="false">
+                    <ui-select-match placeholder="Network...">{{$select.selected}}</ui-select-match>
+                    <ui-select-choices repeat="net in networks | filter:$select.search">
+                        {{ net }}
+                    </ui-select-choices>
+                </ui-select>
             </div>
         </div>
         <div class="form-group">
@@ -30,15 +33,29 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label" for="mo">MO:</label>
-            <div class="col-sm-9">
-                <select ng-change="onChangeMO()" ng-model="mo" class="form-control" ng-options="table for table in tables" id="mo"></select>
+            <label class="col-sm-3 control-label" for="mo">{{lable_mo}}:</label>
+            <div class="col-sm-9" id="mo">
+                <ui-select ng-change="onChangeMO()" ng-model="mo.selected" theme="bootstrap"
+                    ng-disabled="disabled"
+                    reset-search-input="false">
+                    <ui-select-match placeholder="...">{{$select.selected}}</ui-select-match>
+                    <ui-select-choices repeat="table in tables | filter:$select.search">
+                        {{table}}
+                    </ui-select-choices>
+                </ui-select>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label" for="param">Parameter:</label>
-            <div class="col-sm-9">
-                <select ng-model="param" class="form-control" ng-options="col for col in columns" id="param"></select>
+            <div class="col-sm-9" id="param">
+                <ui-select ng-model="param.selected" theme="bootstrap"
+                    ng-disabled="disabled"
+                    reset-search-input="false">
+                    <ui-select-match placeholder="Enter a param...">{{$select.selected}}</ui-select-match>
+                    <ui-select-choices repeat="col in columns | filter:$select.search">
+                        {{col}}
+                    </ui-select-choices>
+                </ui-select>
             </div>
         </div>
         <div class="form-group">

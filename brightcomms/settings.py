@@ -70,7 +70,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'xml2',
         'USER': 'postgres',
-        'PASSWORD': '000000',
+        'PASSWORD': '1297536',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -93,7 +93,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATICFILES_DIRS = ['/opt/xml/frontend_xml/static', ]
+STATICFILES_DIRS = ['/home/arhipov/PycharmProjects/brightcomms/frontend_xml/static', ]
 STATIC_URL = '/static/'
 
 
