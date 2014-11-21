@@ -110,7 +110,7 @@ class Table(object):
 
         cursor = self.conn.cursor()
         sql_columns = ','.join(self.columns)
-        cursor.execute("SELECT %s FROM %s WHERE lower(filename)='%s'" % (sql_columns, self.table_name, self.filename.lower()))
+        cursor.execute("SELECT %s FROM %s WHERE lower(filename)='%s' ORDER BY %s" % (sql_columns, self.table_name, self.filename.lower(), sql_columns))
         data = cursor.fetchall()
         return data
 
