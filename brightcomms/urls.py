@@ -6,6 +6,7 @@ from files import views as files_views
 from query import views as query_views
 from tables import views as table_views
 from parameters import views as parameters_views
+from dashboard import views as dash_view
 
 admin.autodiscover()
 
@@ -42,6 +43,8 @@ urlpatterns = patterns('',
     url(r'^data/hardwares/$', files_views.hardwares),
     url(r'^data/get_files_for_compare/(\S+)/$', files_views.get_files_for_compare),
     url(r'^data/compare_files/$', files_views.compare_files),
+
+    url(r'^data/dash_num_sectors/$', dash_view.dash_num_sectors),
 
 
     url(r'^admin/', include(admin.site.urls)),

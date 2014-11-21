@@ -4,6 +4,7 @@ var XmlApp = angular.module(
         'ngRoute',
         'ngCookies',
         'ui.bootstrap',
+        'highcharts-ng',
         'xmlControllers',
         'filesControllers',
         'ngUpload',
@@ -12,6 +13,7 @@ var XmlApp = angular.module(
         'activeProjectModule',
         'queryControllers',
         'tableControllers',
+        'dashControllers',
         'parameterControllers',
         'measurementsControllers',
         'ui.select'
@@ -99,6 +101,10 @@ XmlApp.config(['$routeProvider',
             when('/by_technology/',{
                 templateUrl: 'templates/tables/by_technology.html',
                 controller: 'byTechnologyCtrl'
+            }).
+            when('/dashboard_wcdma/',{
+                templateUrl: 'templates/dashboard/wcdma.html',
+                controller: 'dashWcdmaCtrl'
             }).
             otherwise({
                 redirectTo: '/'

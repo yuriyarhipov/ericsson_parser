@@ -14,6 +14,7 @@
     <script type='text/javascript' src='/js/ng-upload.min.js'></script>
     <script type='text/javascript' src='/js/angular.treeview.min.js'></script>
     <script type='text/javascript' src='/js/select.min.js'></script>
+    <script type='text/javascript' src='/js/highcharts-ng.min.js'></script>
     <script type='text/javascript' src='/js/ui-bootstrap-tpls-0.11.2.min.js'></script>
     <script type='text/javascript' src='/app/js/app.js'></script>
     <script type='text/javascript' src='/app/js/controllers.js'></script>
@@ -23,7 +24,9 @@
     <script type='text/javascript' src='/app/js/controllers/query.js'></script>
     <script type='text/javascript' src='/app/js/controllers/table.js'></script>
     <script type='text/javascript' src='/app/js/controllers/parameters.js'></script>
+    <script type='text/javascript' src='/app/js/controllers/dashboard.js'></script>
     <script type='text/javascript' src='/app/js/controllers/measurements.js'></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
 </head>
 <body>
 <div class="row">
@@ -108,6 +111,14 @@
                             <li><a href="#/compare_templates/">Compare Templates</a></li>
                             <li><a href="#/compare_queries/">Compare Queries</a></li>
                             <li><a href="#/compare_neighbors/">Compare Neighbors</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Others <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#/dashboard_wcdma/">Dashboard WCDMA</a></li>
                         </ul>
                     </li>
                 </ul>
