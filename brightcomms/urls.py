@@ -45,6 +45,8 @@ urlpatterns = patterns('',
     url(r'^data/compare_files/$', files_views.compare_files),
 
     url(r'^data/dash_num_sectors/$', dash_view.dash_num_sectors),
+    url(r'^data/dash_model_eq/$', dash_view.dash_model_eq),
+    url(r'^data/dash_cells_lac/$', dash_view.dash_cells_lac),
 
 
     url(r'^admin/', include(admin.site.urls)),
