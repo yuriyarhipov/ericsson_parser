@@ -11,6 +11,7 @@ var XmlApp = angular.module(
         'angularTreeview',
         'treeViewControllers',
         'activeProjectModule',
+        'uploadFileModule',
         'queryControllers',
         'tableControllers',
         'dashControllers',
@@ -20,7 +21,7 @@ var XmlApp = angular.module(
     ]);
 
 XmlApp.config(['$routeProvider',
-    function($routeProvider, $httpProvider, $cookies){
+    function($routeProvider){
         $routeProvider.
             when('/projects',{
                 templateUrl: 'templates/projects.html',

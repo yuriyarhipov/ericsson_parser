@@ -12,6 +12,12 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
                 $scope.treedata = data;
             });
         });
+        $scope.$on('uploadFile', function() {
+            $http.get('/data/treeview/' + $cookies.active_project).success(function(data){
+            $scope.treedata = data;
+
+        });
+        });
         $scope.$watch( 'tree_view.currentNode', function( newObj, oldObj ) {
             if( $scope.tree_view && angular.isObject($scope.tree_view.currentNode) ) {
                 var node_type = $scope.tree_view.currentNode.type;
