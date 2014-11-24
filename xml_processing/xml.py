@@ -638,25 +638,6 @@ class Processing:
 class Xml(object):
     def save_xml(self, filename, project, description, vendor, file_type, network, current_task, current,
                  interval_per_file):
-        # if self.file_type == 'LIC':
-        #    lc = License(filename)
-        #    lc.parse_data(current_task, current, interval_per_file)
-        #    File.objects.filter(filename=lc.filename, project=project).delete()
-        #    File.objects.create(
-        #        filename=lc.filename,
-        #        file_type='LIC',
-        #        project=project,
-        #        tables='')
-
-        #elif self.file_type == 'HW':
-        #    hw = HardWare(filename)
-        #    hw.parse_data(current_task, current, interval_per_file)
-        #    File.objects.filter(filename=hw.filename, project=project).delete()
-        #    File.objects.create(
-        #        filename=hw.filename,
-        #        file_type='HW',
-        #        project=project,
-        #        tables='')
         if file_type.lower() == 'xml':
             xml = Processing(filename)
             xml.parse_data(current_task, current, interval_per_file / 2)

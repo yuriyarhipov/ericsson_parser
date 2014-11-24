@@ -4,9 +4,11 @@ import json
 from django.http import HttpResponse
 from django.conf import settings
 
+from celery.result import AsyncResult
+
 from .models import Files, UploadedFiles
 from tables.table import Table
-from files.compare import CompareQuery, CompareFiles, CompareTable
+from files.compare import CompareFiles, CompareTable
 import tasks
 
 
@@ -50,15 +52,17 @@ def files(request):
 
     uploaded_files = []
     for f in UploadedFiles.objects.filter(project=project):
+        job = AsyncResult(f.description)
+        data = job.result or job.state
+        status = 0
+        if data:
+            status = data.get('current')
         uploaded_files.append({
             'filename': f.filename,
             'date': f.date.strftime('%m.%d.%Y'),
             'file_type': f.file_type,
-            'network': f.network,
-            'vendor': f.vendor,
-            'description': f.description
+            'status': int(status),
         })
-
     return HttpResponse(json.dumps({'files': files, 'uploaded_files': uploaded_files}), content_type='application/json')
 
 

@@ -9,18 +9,14 @@
             <td>Date</td>
             <td>File name</td>
             <td>Type of file</td>
-            <td>Network</td>
-            <td>Vendor</td>
-            <td>Description</td>
+            <td>Status</td>
         </thead>
         <tbody>
             <tr ng-repeat="f in uploaded_files">
                 <td>{{ f.date }}</td>
                 <td>{{ f.filename }}</td>
                 <td>{{ f.file_type }}</td>
-                <td>{{ f.network }}</td>
-                <td>{{ f.vendor }}</td>
-                <td>{{ f.description }}</td>
+                <td>{{ f.status }}%</td>
             </tr>
         </tbody>
     </table>
