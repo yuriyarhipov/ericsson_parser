@@ -28,7 +28,7 @@ def save_project(request):
 
 def treeview(request, project):
     project = Project.objects.get(project_name=project)
-    data = [{'id': 'network', 'label': 'Network Configuration', 'children': [
+    data = [{'id': 'network', 'label': 'Radio Network Configuration', 'children': [
         {'id': '2g', 'label': 'GSM', 'children': [{'id': '2g_ERICSSON', 'label': 'ERICSSON', 'children': project.get_tree('2g', 'txt')}]},
         {'id': '3g', 'label': 'WCDMA', 'children': [{'id': '3g_ERICSSON', 'label': 'ERICSSON', 'children': project.get_tree('3g', 'xml')}]},
         {'id': '4g', 'label': 'LTE', 'children': [{'id': '4g_ERICSSON', 'label': 'ERICSSON', 'children': project.get_tree('4g', 'xml')}]}

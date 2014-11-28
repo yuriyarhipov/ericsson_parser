@@ -15,7 +15,7 @@ class Project(models.Model):
             children = []
             if network == '3g':
                 children.append({'id': 'topology_%s' % f.lower(), 'label': 'Topology', 'children': '', 'type': 'topology', 'network': network, 'file': f})
-                children.append({'id': 'rnd_%s' % f.lower(), 'label': 'RND', 'children': '', 'type': 'rnd_wcdma', 'network': network, 'file': f})
+                children.append({'id': 'rnd_%s' % f.lower(), 'label': 'Radio Network Design Info (RND)', 'children': '', 'type': 'rnd_wcdma', 'network': network, 'file': f})
                 children.append({'id': '3g_neighbors_%s' % f.lower(), 'label': '3GNeighbors', 'children': '', 'type': '3g_neighbors_wcdma', 'network': network, 'file': f})
             data.append({'id': f.lower(), 'label': f, 'children': children, 'type': file_type, 'network': network})
 
