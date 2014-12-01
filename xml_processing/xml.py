@@ -638,20 +638,19 @@ class Processing:
 class Xml(object):
     def save_xml(self, filename, project, description, vendor, file_type, network, current_task, current,
                  interval_per_file):
-        if file_type.lower() == 'xml':
-            xml = Processing(filename)
-            xml.parse_data(current_task, current, interval_per_file / 2)
-            current += interval_per_file / 2
-            tables = Tables(xml.data, xml.tables, xml.filename)
-            tables.create_tables(current_task, current, interval_per_file / 2)
-            Files.objects.filter(filename=xml.filename, project=project).delete()
-            Files.objects.create(
-                filename=xml.filename,
-                file_type=file_type.lower(),
-                project=project,
-                tables=','.join(xml.tables.keys()),
-                description=description,
-                vendor=vendor,
-                network=network.lower())
+        xml = Processing(filename)
+        xml.parse_data(current_task, current, interval_per_file / 2)
+        current += interval_per_file / 2
+        tables = Tables(xml.data, xml.tables, xml.filename)
+        tables.create_tables(current_task, current, interval_per_file / 2)
+        Files.objects.filter(filename=xml.filename, project=project).delete()
+        Files.objects.create(
+            filename=xml.filename,
+            file_type=file_type,
+            project=project,
+            tables=','.join(xml.tables.keys()),
+            description=description,
+            vendor=vendor,
+            network=network)
 
 

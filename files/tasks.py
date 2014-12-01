@@ -17,7 +17,33 @@ def worker(filename, project,  description, vendor, file_type, network):
     from files.hw import HardWare
     from files.models import UploadedFiles
 
+    xml_types = [
+        'WCDMA RADIO OSS BULK CM XML FILE',
+        'WCDMA TRANSPORT OSS BULK CM XML FILE',
+        'LTE RADIO eNodeB BULK CM XML FILE',
+        'LTE TRANSPORT eNodeB BULK CM XML FILE'
+    ]
 
+    cna_types = [
+        'GSM BSS CNA  OSS FILE',
+    ]
+
+    measurements_types = [
+        'WNCS OSS FILE',
+        'WMRR OSS FILE',
+        'GSM NCS OSS FILE',
+        'GSM MRR OSS FILE',
+    ]
+
+    license_types = [
+        'WCDMA LICENSE FILE OSS XML',
+        'LTE LICENSE FILE OSS XML'
+    ]
+
+    hardware_types = [
+        'WCDMA HARDWARE FILE OSS XML',
+        'LTE HARDWARE FILE OSS XML'
+    ]
 
 
     work_file = XmlPack(filename).get_files()[0]
@@ -30,23 +56,22 @@ def worker(filename, project,  description, vendor, file_type, network):
 
     current = 0
 
-    if network.lower() in ['3g', '4g']:
-       if file_type.lower() == 'xml':
-           Xml().save_xml(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
+    if network in ['WCDMA', 'LTE']:
+        if file_type in xml_types:
+            Xml().save_xml(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
 
-
-    if network.lower() == '2g':
-        if file_type.lower() == 'txt':
+    if network == 'GSM':
+        if file_type in cna_types:
             CNA().save_cna(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
 
-    if file_type.lower() in ['ncs', 'mrr', 'wncs', 'wmrr']:
+    if file_type in measurements_types:
         Measurements().save_file(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
 
-    if file_type.lower() == 'license':
+    if file_type in license_types:
         lic = License(work_file)
         lic.parse_data(project, description, vendor, file_type, network, current_task, current, interval_per_file)
 
-    if file_type.lower() == 'hardware':
+    if file_type in hardware_types:
         hw = HardWare(work_file)
         hw.parse_data(project, description, vendor, file_type, network, current_task, current, interval_per_file)
 

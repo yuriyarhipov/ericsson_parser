@@ -18,19 +18,41 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
 
 filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
     function ($scope, $http, $location) {
-        $scope.Network = [ '2G', '3G', '4G'];
-        $scope.TypeFile = ['Txt', 'License', 'Hardware', 'WNCS', 'WMRR'];
+        $scope.Network = [ 'WCDMA', 'GSM', 'LTE'];
+        $scope.TypeFile = [];
         $scope.CurrentNetwork = $scope.Network[0];
         $scope.CurrentTypeFile = $scope.TypeFile[0];
         $scope.file_data = {};
 
         $scope.onChangeNetwork = function(){
-            if ($scope.CurrentNetwork == '2G'){
-                $scope.TypeFile = ['Txt', 'License', 'Hardware', 'WNCS', 'WMRR'];
+            if ($scope.CurrentNetwork == 'WCDMA'){
+                $scope.TypeFile = [
+                    'WCDMA RADIO OSS BULK CM XML FILE',
+                    'WCDMA TRANSPORT OSS BULK CM XML FILE',
+                    'WNCS OSS FILE',
+                    'WMRR OSS FILE',
+                    'WCDMA LICENSE FILE OSS XML',
+                    'WCDMA HARDWARE FILE OSS XML',
+                    'HISTOGRAM FORMAT COUNTER'
+                ];
             }
-            else {
-                $scope.TypeFile = ['XML', 'License', 'Hardware', 'NCS', 'MRR'];
+            if ($scope.CurrentNetwork == 'GSM'){
+                $scope.TypeFile = [
+                    'GSM NCS OSS FILE',
+                    'GSM BSS CNA  OSS FILE',
+                    'GSM NCS OSS FILE',
+                    'GSM MRR OSS FILE'
+                ];
             }
+            if ($scope.CurrentNetwork == 'LTE'){
+                $scope.TypeFile = [
+                    'LTE RADIO eNodeB BULK CM XML FILE',
+                    'LTE TRANSPORT eNodeB BULK CM XML FILE',
+                    'LTE LICENSE FILE OSS XML',
+                    'LTE HARDWARE FILE OSS XML'
+                ];
+            }
+
             $scope.CurrentTypeFile = $scope.TypeFile[0];
         };
 
