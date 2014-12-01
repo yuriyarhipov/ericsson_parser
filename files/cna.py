@@ -171,10 +171,10 @@ class CNA:
         Files.objects.filter(filename=table_name, project=project).delete()
         Files.objects.create(
                 filename=table_name,
-                file_type=file_type.lower(),
+                file_type=file_type,
                 project=project,
                 tables='',
                 description=description,
                 vendor=vendor,
-                network=network.lower())
+                network=network)
         self.conn.commit()

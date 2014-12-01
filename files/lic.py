@@ -105,12 +105,12 @@ class License(object):
         Files.objects.filter(filename=self.filename, project=project).delete()
         Files.objects.create(
                 filename=self.filename,
-                file_type=file_type.lower(),
+                file_type=file_type,
                 project=project,
                 tables='',
                 description=description,
                 vendor=vendor,
-                network=network.lower())
+                network=network)
 
     def create_table(self):
         self.cursor.execute('''

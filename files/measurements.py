@@ -47,12 +47,12 @@ class Measurements(object):
         Files.objects.filter(filename=basename(filename), project=project).delete()
         Files.objects.create(
                 filename=basename(filename),
-                file_type=file_type.lower(),
+                file_type=file_type,
                 project=project,
                 tables='',
                 description=description,
                 vendor=vendor,
-                network=network.lower())
+                network=network)
         self.conn.commit()
 
 
