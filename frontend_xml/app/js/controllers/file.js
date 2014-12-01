@@ -19,7 +19,15 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
 filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
     function ($scope, $http, $location) {
         $scope.Network = [ 'WCDMA', 'GSM', 'LTE'];
-        $scope.TypeFile = [];
+        $scope.TypeFile = [
+                    'WCDMA RADIO OSS BULK CM XML FILE',
+                    'WCDMA TRANSPORT OSS BULK CM XML FILE',
+                    'WNCS OSS FILE',
+                    'WMRR OSS FILE',
+                    'WCDMA LICENSE FILE OSS XML',
+                    'WCDMA HARDWARE FILE OSS XML',
+                    'HISTOGRAM FORMAT COUNTER'
+                ];
         $scope.CurrentNetwork = $scope.Network[0];
         $scope.CurrentTypeFile = $scope.TypeFile[0];
         $scope.file_data = {};
@@ -38,7 +46,6 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
             }
             if ($scope.CurrentNetwork == 'GSM'){
                 $scope.TypeFile = [
-                    'GSM NCS OSS FILE',
                     'GSM BSS CNA  OSS FILE',
                     'GSM NCS OSS FILE',
                     'GSM MRR OSS FILE'
