@@ -25,8 +25,8 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http',
             $http.get('/data/get_mo/' + $scope.network.selected + '/').success(function(data) {
                 $scope.tables = data;
             });
-            if ($scope.network == 'GSM'){
-                $scope.lable_mo = 'gsm file';
+            if ($scope.network.selected == 'GSM'){
+                $scope.lable_mo = 'GSM file';
             }
             else{
                 $scope.lable_mo = 'MO';
