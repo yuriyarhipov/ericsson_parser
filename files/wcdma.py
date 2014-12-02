@@ -34,7 +34,7 @@ class WCDMA:
         return [r[0] for r in self.cursor]
 
     def get_groups(self):
-        return [gc.group_name for gc in GroupCells.objects.filter(network='3g').order_by('group_name')]
+        return [gc.group_name for gc in GroupCells.objects.filter(network='WCDMA').order_by('group_name')]
 
     def get_cells_from_rnc(self, rnc, filename):
         self.cursor.execute("select DISTINCT UtranCell from Topology where filename='%s' AND RNC='%s'" % (filename, rnc))
@@ -42,8 +42,8 @@ class WCDMA:
 
     def get_cells_from_group_cell(self, group_cells):
         cells = []
-        if GroupCells.objects.filter(group_name=group_cells, network='3g').exists():
-            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, network='3g').cells.split(',')]
+        if GroupCells.objects.filter(group_name=group_cells, network='WCDMA').exists():
+            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, network='WCDMA').cells.split(',')]
         return cells
 
     def convert_form_cells(self, cells, filename):

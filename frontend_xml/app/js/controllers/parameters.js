@@ -11,7 +11,7 @@ parameterControllers.controller('registerVRCtrl', ['$scope', '$http',
 parameterControllers.controller('createTemplateCtrl', ['$scope', '$http',
     function ($scope, $http) {
         $scope.lable_mo = 'MO';
-        $scope.networks = ['2g', '3g', '4g'];
+        $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = {};
         $scope.param_table = [];
         $scope.mo = {};

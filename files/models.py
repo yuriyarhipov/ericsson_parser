@@ -29,7 +29,7 @@ class Files(models.Model):
 
     def get_cells(self):
         cells = []
-        if (self.file_type == 'xml') and (self.network == '3g'):
+        if ('XML FILE' in self.file_type) and (self.network == 'WCDMA'):
             wcdma = WCDMA()
             cells = wcdma.get_cells(self.filename)
         return cells

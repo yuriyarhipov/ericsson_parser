@@ -33,11 +33,11 @@ def version_release(request):
 def get_mo(request, network):
     data = []
     project = request.project
-    if network == '3g':
+    if network == 'WCDMA':
         data = request.wcdma.get_mo()
-    elif network == '2g':
+    elif network == 'GSM':
         data = [f.filename for f in Files.objects.filter(project=project, file_type='txt', network='2g')]
-    elif network == '4g':
+    elif network == 'LTE':
         data = request.lte.get_mo()
     return HttpResponse(json.dumps(data), content_type='application/json')
 
