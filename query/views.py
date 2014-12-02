@@ -10,7 +10,7 @@ from files.views import handle_uploaded_file
 
 def get_cells(request, technology):
     data = []
-    if (technology == '3g') and request.wcdma:
+    if (technology == 'WCDMA') and request.wcdma:
         data = request.wcdma.get_cells()
     return HttpResponse(json.dumps(data), content_type='application/json')
 

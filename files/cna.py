@@ -57,8 +57,8 @@ class CNA:
 
     def get_cells_from_group_cell(self, group_cells):
         cells = []
-        if GroupCells.objects.filter(group_name=group_cells, network='2g').exists():
-            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, network='2g').cells.split(',')]
+        if GroupCells.objects.filter(group_name=group_cells, network='GSM').exists():
+            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, network='GSM').cells.split(',')]
         return cells
 
     def convert_form_cells(self, cells):

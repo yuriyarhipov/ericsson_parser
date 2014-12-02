@@ -138,11 +138,11 @@ class Template(object):
         return sql
 
     def get_tables(self, sql_tables, network):
-        if network == '3g':
+        if network == 'WCDMA':
             return self.get_tables_wcdma(sql_tables)
-        elif network == '4g':
+        elif network == 'LTE':
             return self.get_tables_lte(sql_tables)
-        elif network == '2g':
+        elif network == 'GSM':
             return self.get_tables_cna(sql_tables)
 
     def get_select(self, template_name):
@@ -171,9 +171,9 @@ class Template(object):
     def get_sql_compare_id(self, filename):
         f = Files.objects.filter(filename=filename).first()
         if f:
-            if f.network.lower() == '3g':
+            if f.network == 'WCDMA':
                 return 'utrancell'
-            elif f.network.lower() == '4g':
+            elif f.network == 'LTE':
                 return 'eutrancell'
         return 'CELL'
 

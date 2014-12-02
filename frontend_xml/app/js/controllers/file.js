@@ -112,7 +112,7 @@ filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams',
 
 filesControllers.controller('compareFilesCtrl', ['$scope', '$http',
     function ($scope, $http) {
-        $scope.network = '2g';
+        $scope.network = 'GSM';
         $scope.hide_files = true;
 
 

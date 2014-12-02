@@ -28,13 +28,13 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
                     $cookies.active_file = wcdma;
                     $location.path('/explore/' + wcdma + '/');
                 }
-                if ((node_type == 'xml') && (network == '4g')){
+                if ((node_type == 'xml') && (network == 'LTE')){
                     var lte = $scope.tree_view.currentNode.id;
                     $cookies.lte = lte;
                     $cookies.active_file = lte;
                     $location.path('/explore/' + lte + '/');
                 }
-                if ((node_type == 'txt') && (network == '2g')){
+                if ((node_type == 'txt') && (network == 'GSM')){
                     $location.path('/table/'+$scope.tree_view.currentNode.label+'/' + $scope.tree_view.currentNode.label);
                 }
 
@@ -56,14 +56,14 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
                 if ((node_type == 'wncs') || (node_type == 'ncs') || (node_type == 'wmrr') || (node_type == 'mrr')) {
                     $location.path('/measurements/' + node_type + '/');
                 }
-                if ($scope.tree_view.currentNode.id == '2g'){
-                    $cookies.network = '2g'
+                if ($scope.tree_view.currentNode.id == 'GSM'){
+                    $cookies.network = 'GSM'
                 }
-                if ($scope.tree_view.currentNode.id == '3g'){
-                    $cookies.network = '3g'
+                if ($scope.tree_view.currentNode.id == 'WCDMA'){
+                    $cookies.network = 'WCDMA'
                 }
-                if ($scope.tree_view.currentNode.id == '4g'){
-                    $cookies.network = '4g'
+                if ($scope.tree_view.currentNode.id == 'LTE'){
+                    $cookies.network = 'LTE'
                 }
             }
         }, false);

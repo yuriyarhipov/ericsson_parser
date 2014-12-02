@@ -28,7 +28,7 @@ class LTE:
         return cells
 
     def get_lte_files(self):
-        return [f for f in Files.objects.filter(network='4g', file_type='xml')]
+        return [f for f in Files.objects.filter(network='LTE')]
 
     def get_mo(self, query):
         mo = []
@@ -47,7 +47,7 @@ class LTE:
         return data
 
     def get_groups(self):
-        return [gc.group_name for gc in GroupCells.objects.filter(network='4g').order_by('group_name')]
+        return [gc.group_name for gc in GroupCells.objects.filter(network='LTE').order_by('group_name')]
 
     def get_where(self, tables, filename, cells):
         result = ["(Topology_LTE.filename='%s')" % filename, ]
@@ -65,8 +65,8 @@ class LTE:
 
     def get_cells_from_group_cell(self, group_cells):
         cells = []
-        if GroupCells.objects.filter(group_name=group_cells, network='4g').exists():
-            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, network='4g').cells.split(',')]
+        if GroupCells.objects.filter(group_name=group_cells, network='LTE').exists():
+            cells = [cell for cell in GroupCells.objects.get(group_name=group_cells, network='LTE').cells.split(',')]
         return cells
 
     def convert_form_cells(self, cells, filename):

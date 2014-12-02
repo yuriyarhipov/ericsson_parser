@@ -15,10 +15,10 @@ def table(request, filename, table_name):
         if Files.objects.filter(filename__iexact=active_file, project=request.project).exists():
             active_file = Files.objects.filter(filename__iexact=active_file, project=request.project).first()
         else:
-            active_file = Files.objects.filter(project=request.project, file_type='xml', network__in=['3g', '4g']).first()
+            active_file = Files.objects.filter(project=request.project, network__in=['WCDMA', 'LTE']).first()
 
         if active_file:
-            if active_file.network == '3g':
+            if active_file.network == 'WCDMA':
                 table_name = 'rnd_wcdma'
             else:
                 table_name = 'rnd_lte'
@@ -55,10 +55,10 @@ def rnd(request):
     if Files.objects.filter(filename=active_file, project=request.project).exists():
         active_file = Files.objects.filter(filename=active_file, project=request.project).first()
     else:
-        active_file = Files.objects.filter(project=request.project, file_type='xml', network_in=['3g', '4g']).first()
+        active_file = Files.objects.filter(project=request.project, file_type='xml', network_in=['WCDMA', 'LTE']).first()
 
     if active_file:
-        if active_file.network == '3g':
+        if active_file.network == 'WCDMA':
             table_name = 'rnd_wcdma'
         else:
             table_name = 'rnd_lte'
@@ -78,10 +78,10 @@ def explore(request, filename):
 def by_technology(request, network):
     data = []
     project = request.project
-    if network == '2g':
-        data = [{'label': f.filename, 'table': f.filename, 'type': 'CNA Table', 'filename': f.filename} for f in Files.objects.filter(network='2g', project=project)]
+    if network == 'GSM':
+        data = [{'label': f.filename, 'table': f.filename, 'type': 'CNA Table', 'filename': f.filename} for f in Files.objects.filter(network='GSM', project=project)]
 
-    elif network == '3g':
+    elif network == 'WCDMA':
         filename = request.wcdma.filename
         tables = request.wcdma.tables.split(',')
         tables.sort()
@@ -98,7 +98,7 @@ def by_technology(request, network):
         ]
         data.extend([{'label': table, 'table': table, 'type': 'XML table', 'filename': filename} for table in tables])
 
-    elif network == '4g':
+    elif network == 'LTE':
         filename = request.lte.filename
         tables = request.wcdma.tables.split(',')
         tables.sort()

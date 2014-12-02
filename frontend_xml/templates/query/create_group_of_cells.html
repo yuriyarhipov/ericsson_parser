@@ -3,7 +3,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label" for="upload">Upload Excel</label>
             <div class="col-sm-6">
-                <input type="file" name="excel">
+                <input type="file" name="excel" id="upload">
             </div>
             <div class="col-sm-3">
                 <button class="btn btn-success" type="submit">Upload</button>
@@ -17,9 +17,9 @@
             <label class="col-sm-3 control-label" for="network">Network</label>
             <div class="col-sm-9">
                 <select ng-model="form_data.network" ng-change="onChangeNetwork()" class="form-control" id="network">
-                    <option value="2g">2G</option>
-                    <option value="3g">3G</option>
-                    <option value="4g">4G</option>
+                    <option value="GSM">GSM</option>
+                    <option value="WCDMA">WCDMA</option>
+                    <option value="LTE">LTE</option>
                 </select>
             </div>
         </div>

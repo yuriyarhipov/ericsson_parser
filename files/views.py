@@ -98,7 +98,7 @@ def get_files_for_compare(request, network):
     main_file = ''
     tables = []
 
-    if network == '3g':
+    if network == 'WCDMA':
         main_file = request.wcdma.filename
         for table in request.wcdma.tables.split(','):
             tables.append({'table': table, 'type': 'Table'})

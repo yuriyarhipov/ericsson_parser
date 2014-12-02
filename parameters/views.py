@@ -36,7 +36,7 @@ def get_mo(request, network):
     if network == 'WCDMA':
         data = request.wcdma.get_mo()
     elif network == 'GSM':
-        data = [f.filename for f in Files.objects.filter(project=project, file_type='txt', network='2g')]
+        data = [f.filename for f in Files.objects.filter(project=project, network='GSM')]
     elif network == 'LTE':
         data = request.lte.get_mo()
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -81,12 +81,12 @@ def delete_template(request, template_name):
 
 def get_template_cells(request, network):
     data = []
-    if network == '2g':
+    if network == 'GSM':
         data = CNA().get_cells(request.cna.filename)
-    elif network == '3g':
+    elif network == 'WCDMA':
         wcdma = WCDMA()
         data = wcdma.get_cells(request.wcdma.filename)
-    elif network == '4g':
+    elif network == 'LTE':
         data = LTE().get_cells(request.lte.filename)
 
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -97,11 +97,11 @@ def run_template(request):
     cells = request.GET.getlist('cell')
     network = request.GET.get('network')
 
-    if network == '2g':
+    if network == 'GSM':
         columns, data = CNA().run_query(template, cells, request.cna.filename)
-    elif network == '3g':
+    elif network == 'WCDMA':
         columns, data = WCDMA().run_query(template, cells, request.wcdma.filename)
-    elif network == '4g':
+    elif network == 'LTE':
         columns, data = LTE().run_query(template, cells, request.lte.filename)
 
     if request.GET.get('excel'):

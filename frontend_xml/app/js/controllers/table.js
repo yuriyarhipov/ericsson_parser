@@ -26,8 +26,8 @@ tableControllers.controller('exploreCtrl', ['$scope', '$http', '$routeParams',
 
 tableControllers.controller('byTechnologyCtrl', ['$scope', '$http',
     function ($scope, $http) {
-        $scope.network = '2g';
-        $http.get('/data/by_technology/2g/').success(function(data) {
+        $scope.network = 'GSM';
+        $http.get('/data/by_technology/GSM/').success(function(data) {
             $scope.data = data;
         });
         $scope.onChangeNetwork = function(){
