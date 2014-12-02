@@ -121,3 +121,8 @@ def compare_files(request):
         data['compare_table'] = {'columns': ct.columns, 'data': ct.get_data(mo)}
 
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def delete_file(request, filename):
+    Files.objects.filter(filename=filename).delete()
+    return HttpResponse(json.dumps([]), content_type='application/json')
