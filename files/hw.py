@@ -159,7 +159,7 @@ class HardWare(object):
         for node in nodes:
             self.parse_managed_element(node)
             current = float(current) + float(interval)
-            task.update_state(state="PROGRESS", meta={"current": int(current), "total": 100})
+            task.update_state(state="PROGRESS", meta={"current": int(current), "total": 99})
         self.conn.commit()
         Files.objects.filter(filename=self.filename, project=project).delete()
         Files.objects.create(

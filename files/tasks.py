@@ -51,8 +51,8 @@ def worker(filename, project,  description, vendor, file_type, network):
     task = current_task
     UploadedFiles.objects.create(filename=filename, project=project, description=task.request.id, vendor=vendor, file_type=file_type, network=network)
     task.update_state(state="PROGRESS",
-            meta={"current": 0, "total": 100})
-    interval_per_file = float(100)/float(1)
+            meta={"current": 0, "total": 99})
+    interval_per_file = float(99)/float(1)
 
     current = 0
 
@@ -75,7 +75,7 @@ def worker(filename, project,  description, vendor, file_type, network):
         hw = HardWare(work_file)
         hw.parse_data(project, description, vendor, file_type, network, current_task, current, interval_per_file)
 
-    task.update_state(state='PROGRESS', meta={"current": 100, "total": 100})
+    task.update_state(state='PROGRESS', meta={"current": 99, "total": 99})
     UploadedFiles.objects.filter(filename=filename).delete()
 
 @celery.task

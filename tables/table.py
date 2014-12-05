@@ -116,7 +116,6 @@ class Table(object):
         order_columns = sql_columns
         if self.table_name == 'BrightcommsRNDDate':
             order_columns = 'SITENAME, SECTORID, SITEID, CID'
-        print "SELECT %s FROM %s WHERE lower(filename)='%s' ORDER BY %s" % (sql_columns, self.table_name, self.filename.lower(), order_columns)
         cursor.execute("SELECT %s FROM %s WHERE lower(filename)='%s' ORDER BY %s" % (sql_columns, self.table_name, self.filename.lower(), order_columns))
         data = cursor.fetchall()
         return data

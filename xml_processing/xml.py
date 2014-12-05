@@ -123,7 +123,7 @@ class Excel:
             i += 1
             self.write_table_to_xls(table_name)
             task.update_state(state='PROGRESS',
-                              meta={'current': 50 + int((((float(i) / float(count)) * 100) / 2)), 'total': 100})
+                              meta={'current': 50 + int((((float(i) / float(count)) * 99) / 2)), 'total': 99})
 
         self.workbook.close()
         self.archive_filename = join(self.static_path, self.filename[:-4] + '.zip')
@@ -136,7 +136,7 @@ class Excel:
         self.cursor.close()
         self.conn.close()
         task.update_state(state='PROGRESS',
-                          meta={'current': 100, 'total': 100})
+                          meta={'current': 99, 'total': 99})
 
 
 class Tables:
@@ -166,7 +166,7 @@ class Tables:
         interval = float(interval_per_file) / float(count)
         for table_name, columns in self.tables.iteritems():
             current = float(current) + float(interval)
-            task.update_state(state="PROGRESS", meta={"current": int(current), "total": 100})
+            task.update_state(state="PROGRESS", meta={"current": int(current), "total": 99})
             values = []
             for field in self.data[table_name]:
                 row = dict()
@@ -303,6 +303,7 @@ class Tables:
             ;''')
 
     def rnd_wcdma(self):
+        self.cursor.execute('DROP VIEW IF EXISTS BrightcommsRNDDate;')
         self.cursor.execute('DROP TABLE IF EXISTS RND_WCDMA;')
         self.cursor.execute('''
             SELECT DISTINCT
@@ -686,7 +687,7 @@ class Processing:
             i += 1
             if i == 1000:
                 i = 0
-                task.update_state(state="PROGRESS", meta={"current": int(current), "total": 100})
+                task.update_state(state="PROGRESS", meta={"current": int(current), "total": 99})
 
 
 class Xml(object):

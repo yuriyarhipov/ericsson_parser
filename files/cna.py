@@ -167,7 +167,7 @@ class CNA:
             for row in f:
                 current = float(current) + float(interval)
                 self.add_row(table_name, columns, row)
-                task.update_state(state="PROGRESS", meta={"current": int(current), "total": 100})
+                task.update_state(state="PROGRESS", meta={"current": int(current), "total": 99})
         Files.objects.filter(filename=table_name, project=project).delete()
         Files.objects.create(
                 filename=table_name,
