@@ -88,6 +88,7 @@ def by_technology(request, network):
         data = [
             {'label': 'Topology', 'table': 'topology', 'type': 'Additional table', 'filename': filename},
             {'label': 'RND', 'table': 'rnd_wcdma', 'type': 'Additional table', 'filename': filename},
+            {'label': 'BrightcommsRNDDate', 'table': 'BrightcommsRNDDate', 'type': 'Additional table', 'filename': filename},
             {'label': '3GNeighbors', 'table': 'threegneighbors', 'type': 'Additional table', 'filename': filename},
             {'label': '3GIRAT', 'table': '3girat', 'type': 'Additional table', 'filename': filename},
             {'label': '3GMAP_INTRAFREQ', 'table': 'map_intrafreq', 'type': 'Additional table', 'filename': filename},

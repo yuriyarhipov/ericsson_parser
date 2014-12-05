@@ -55,7 +55,7 @@ def files(request):
         job = AsyncResult(f.description)
         data = job.result or job.state
         status = 0
-        if data:
+        if 'current' in data:
             status = data.get('current')
         uploaded_files.append({
             'filename': f.filename,

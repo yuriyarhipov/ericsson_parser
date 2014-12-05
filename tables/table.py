@@ -68,6 +68,9 @@ class Table(object):
             return ['Source', 'Primary_SC_Source', 'Site_Source', 'Target', 'Site_Target', 'Primary_SC_target', 'NEIGHBOR_CO_SC', 'SAME_SITE']
         elif self.table_name == 'neighbors_two_ways':
             return ['Source', 'Site_Source', 'Target', 'Site_Target', 'NEIGHBOR_MUTUAL_RELATION', 'SAME_SITE']
+        elif self.table_name == 'BrightcommsRNDDate':
+            return ['NETWORK', 'SITENAME', 'SECTORID', 'SITEID', 'CID', 'Physical_Sector', 'Logical_Sector', 'Logical_Carrier', 'IPADDRESS', 'SITESTATUS', 'BSCRNC', 'LONGITUDE', 'LATITUDE', 'AZIMUTH', 'ANTHEIGHT', 'MECHTILT', 'ELECTTILT', 'MCC', 'MNC', 'LAC', 'SAC', 'RAC', 'BCCH', 'CHANNELDL', 'CHANNELDUL', 'FREQBAND', 'BSIC', 'SC', 'PCI', 'PCPICHPOWER', 'ANTTYPE', 'ANTBW', 'ANTENNAHEIGHT', 'VENDOR', 'MODEL', 'INFO1', 'INFO2', 'INFO3', 'INFO4', 'INFO5', 'INFO6', 'INFO7', 'INFO8', 'INFO9', 'INFO10', 'TCHARFCN', 'HOP', 'HSN', 'MAIO']
+
 
         cursor = self.conn.cursor()
         cursor.execute('SELECT * FROM %s LIMIT 0' % (self.table_name, ))
@@ -110,7 +113,11 @@ class Table(object):
 
         cursor = self.conn.cursor()
         sql_columns = ','.join(self.columns)
-        cursor.execute("SELECT %s FROM %s WHERE lower(filename)='%s' ORDER BY %s" % (sql_columns, self.table_name, self.filename.lower(), sql_columns))
+        order_columns = sql_columns
+        if self.table_name == 'BrightcommsRNDDate':
+            order_columns = 'SITENAME, SECTORID, SITEID, CID'
+        print "SELECT %s FROM %s WHERE lower(filename)='%s' ORDER BY %s" % (sql_columns, self.table_name, self.filename.lower(), order_columns)
+        cursor.execute("SELECT %s FROM %s WHERE lower(filename)='%s' ORDER BY %s" % (sql_columns, self.table_name, self.filename.lower(), order_columns))
         data = cursor.fetchall()
         return data
 

@@ -353,6 +353,60 @@ class Tables:
                 (Sector.filename=ManagedElement.filename) AND
                 (Sector.filename=UtranCell.filename)
             ;''')
+        self.cursor.execute(''' CREATE OR REPLACE VIEW BrightcommsRNDDate AS
+            SELECT
+            filename,
+            '3G' AS NETWORK,
+            logicalname as SITENAME,
+            Utrancell AS SECTORID,
+            SITE AS SITEID,
+            cid  AS CID,
+            sector AS Physical_Sector,
+            '' AS Logical_Sector,
+            '' AS Logical_Carrier,
+            ipaddress AS IPADDRESS,
+            administrativestate AS SITESTATUS,
+            rnc AS BSCRNC,
+            longitude AS LONGITUDE,
+            latitude AS LATITUDE,
+            beamdirection AS AZIMUTH,
+            '' AS ANTHEIGHT,
+            '' AS MECHTILT,
+            '' AS ELECTTILT,
+            '' AS MCC,
+            '' AS MNC,
+            lac AS LAC,
+            sac AS SAC,
+            rac AS RAC,
+            '' AS BCCH,
+            uarfcndl AS CHANNELDL,
+            uarfcnul AS CHANNELDUL,
+            band AS	FREQBAND,
+            '' AS BSIC,
+            primaryscramblingcode AS SC,
+            '' AS PCI,
+            primarycpichpower AS PCPICHPOWER,
+            '' AS ANTTYPE,
+            '' AS ANTBW,
+            '' AS ANTENNAHEIGHT,
+            vendorname AS VENDOR,
+            productname AS MODEL,
+            '' AS INFO1,
+            '' AS INFO2,
+            '' AS INFO3,
+            '' AS INFO4,
+            '' AS INFO5,
+            '' AS INFO6,
+            '' AS INFO7,
+            '' AS INFO8,
+            '' AS INFO9,
+            '' AS INFO10,
+            '' AS TCHARFCN,
+            '' AS HOP,
+            '' AS HSN,
+            '' AS MAIO
+            FROM RND_WCDMA WHERE logicalname != ''
+        ''')
 
     def rnd_lte(self):
         tables = ','.join(self.tables.keys())
