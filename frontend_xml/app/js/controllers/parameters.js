@@ -8,8 +8,8 @@ parameterControllers.controller('registerVRCtrl', ['$scope', '$http',
         });
   }]);
 
-parameterControllers.controller('createTemplateCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+parameterControllers.controller('createTemplateCtrl', ['$scope', '$http', '$location',
+    function ($scope, $http, $location) {
         $scope.lable_mo = 'MO';
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = {};
@@ -19,7 +19,7 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http',
         $scope.max_value = '';
         $scope.param = {};
         $scope.complete = function(data){
-            $scope.param_table = data;
+             $location.path('/predefined_templates');
         };
         $scope.onChangeNetwork = function(){
             $http.get('/data/get_mo/' + $scope.network.selected + '/').success(function(data) {
