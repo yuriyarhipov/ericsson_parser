@@ -69,7 +69,10 @@ class Table(object):
         elif self.table_name == 'neighbors_two_ways':
             return ['Source', 'Site_Source', 'Target', 'Site_Target', 'NEIGHBOR_MUTUAL_RELATION', 'SAME_SITE']
         elif self.table_name == 'BrightcommsRNDDate':
-            return ['NETWORK', 'SITENAME', 'SECTORID', 'SITEID', 'CID', 'Physical_Sector', 'Logical_Sector', 'Logical_Carrier', 'IPADDRESS', 'SITESTATUS', 'BSCRNC', 'LONGITUDE', 'LATITUDE', 'AZIMUTH', 'ANTHEIGHT', 'MECHTILT', 'ELECTTILT', 'MCC', 'MNC', 'LAC', 'SAC', 'RAC', 'BCCH', 'CHANNELDL', 'CHANNELDUL', 'FREQBAND', 'BSIC', 'SC', 'PCI', 'PCPICHPOWER', 'ANTTYPE', 'ANTBW', 'ANTENNAHEIGHT', 'VENDOR', 'MODEL', 'INFO1', 'INFO2', 'INFO3', 'INFO4', 'INFO5', 'INFO6', 'INFO7', 'INFO8', 'INFO9', 'INFO10', 'TCHARFCN', 'HOP', 'HSN', 'MAIO']
+            columns = ['NETWORK', 'SITENAME', 'SECTORID', 'SITEID', 'CID', 'Physical_Sector', 'Logical_Sector', 'Logical_Carrier', 'IPADDRESS', 'SITESTATUS', 'BSCRNC', 'LONGITUDE', 'LATITUDE', 'AZIMUTH', 'ANTHEIGHT', 'MECHTILT', 'ELECTTILT', 'MCC', 'MNC', 'LAC', 'SAC', 'RAC', 'BCCH', 'CHANNELDL', 'CHANNELDUL', 'FREQBAND', 'BSIC', 'SC', 'PCI', 'PCPICHPOWER', 'ANTTYPE', 'ANTBW', 'ANTENNAHEIGHT', 'VENDOR', 'MODEL', 'INFO1', 'INFO2', 'INFO3', 'INFO4', 'INFO5', 'INFO6', 'INFO7', 'INFO8', 'INFO9', 'INFO10', 'TCHARFCN', 'HOP', 'HSN', 'MAIO']
+            intra_columns = ThreeGMapIntraFreq(self.filename).columns[1:-3]
+            columns.extend(intra_columns)
+            return columns
 
 
         cursor = self.conn.cursor()
@@ -80,6 +83,9 @@ class Table(object):
     def get_data(self):
         if self.table_name == '3girat':
             return ThreeGIRAT(self.filename).data
+
+        elif self.table_name == 'BrightcommsRNDDate':
+            return BRI(self.filename).data
 
         elif self.table_name == 'map_intrafreq':
             data = ThreeGMapIntraFreq(self.filename)
@@ -486,7 +492,7 @@ class ThreeGMapIntraFreq:
         total = 0
         for cell in row:
             if cell != '':
-                total = total + len(cell.split('<br>'))
+                total = total + len(cell.split('\n'))
 
         free = 0
         list_full = 0
@@ -507,7 +513,7 @@ class ThreeGMapIntraFreq:
                     if t_data[source][i] == '':
                         r.append(neighbor)
                     else:
-                        r.append('%s <br> %s' % (t_data[source][i], neighbor))
+                        r.append('%s \n %s' % (t_data[source][i], neighbor))
                 else:
                     r.append(t_data[source][i])
             row = r
@@ -571,6 +577,86 @@ class ThreeGIRAT:
                 self.data.append([source, target_irat, priority, frequency_rt, relation_type, q_offset_1sn])
 
         self.data.sort()
+
+
+class BRI:
+    data = []
+
+    def __init__(self, filename):
+        self.filename = filename
+        self.conn = psycopg2.connect(
+            'host = %s dbname = %s user = %s password = %s' % (
+                settings.DATABASES['default']['HOST'],
+                settings.DATABASES['default']['NAME'],
+                settings.DATABASES['default']['USER'],
+                settings.DATABASES['default']['PASSWORD']))
+        self.intra = {row[0]: row for row in ThreeGMapIntraFreq(filename=self.filename).data}
+        self.main()
+
+
+
+    def main(self):
+        self.data = []
+        cursor = self.conn.cursor()
+        cursor.execute('''SELECT
+            '3G' AS NETWORK,
+            logicalname as SITENAME,
+            Utrancell AS SECTORID,
+            SITE AS SITEID,
+            cid  AS CID,
+            sector AS Physical_Sector,
+            '' AS Logical_Sector,
+            '' AS Logical_Carrier,
+            ipaddress AS IPADDRESS,
+            administrativestate AS SITESTATUS,
+            rnc AS BSCRNC,
+            longitude AS LONGITUDE,
+            latitude AS LATITUDE,
+            beamdirection AS AZIMUTH,
+            '' AS ANTHEIGHT,
+            '' AS MECHTILT,
+            '' AS ELECTTILT,
+            '' AS MCC,
+            '' AS MNC,
+            lac AS LAC,
+            sac AS SAC,
+            rac AS RAC,
+            '' AS BCCH,
+            uarfcndl AS CHANNELDL,
+            uarfcnul AS CHANNELDUL,
+            band AS	FREQBAND,
+            '' AS BSIC,
+            primaryscramblingcode AS SC,
+            '' AS PCI,
+            primarycpichpower AS PCPICHPOWER,
+            '' AS ANTTYPE,
+            '' AS ANTBW,
+            '' AS ANTENNAHEIGHT,
+            vendorname AS VENDOR,
+            productname AS MODEL,
+            '' AS INFO1,
+            '' AS INFO2,
+            '' AS INFO3,
+            '' AS INFO4,
+            '' AS INFO5,
+            '' AS INFO6,
+            '' AS INFO7,
+            '' AS INFO8,
+            '' AS INFO9,
+            '' AS INFO10,
+            '' AS TCHARFCN,
+            '' AS HOP,
+            '' AS HSN,
+            '' AS MAIO
+            FROM RND_WCDMA WHERE (logicalname != '') AND (filename=%s);''', (self.filename, ))
+
+        for row in cursor:
+            r = []
+            r.extend(row)
+            additional_values = self.intra.get(row[2], [])[1:-3]
+            r.extend(additional_values)
+            self.data.append(r)
+
 
 def get_excel(table_name, columns, data):
     static_path = settings.STATICFILES_DIRS[0]
