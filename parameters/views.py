@@ -69,7 +69,7 @@ def add_template(request):
 
 def predefined_templates(request):
     data = []
-    for qt in QueryTemplate.objects.filter(project=request.project).distinct('template_name').order_by('template_name'):
+    for qt in QueryTemplate.objects.filter().distinct('template_name').order_by('template_name'):
         data.append({'template_name': qt.template_name, 'network': qt.network})
     return HttpResponse(json.dumps(data), content_type='application/json')
 
