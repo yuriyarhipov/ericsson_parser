@@ -78,6 +78,8 @@ class Template(object):
             join_sql.append('(%s.Element2 = TOPOLOGY.SITE)' % table_name)
         if 'sectorcarrier' in columns:
             join_sql.append('(%s.SectorCarrier = TOPOLOGY.SectorCarrier)' % table_name)
+        if 'carrier' in columns:
+            join_sql.append('(%s.Carrier = TOPOLOGY.Carrier)' % table_name)
         join_sql = ' AND '.join(join_sql)
 
         sql = 'TOPOLOGY INNER JOIN %s ON (%s AND (%s.filename=TOPOLOGY.filename))' % (table_name, join_sql, table_name)

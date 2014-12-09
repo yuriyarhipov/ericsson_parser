@@ -18,8 +18,11 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http', '$loca
         $scope.min_value = '';
         $scope.max_value = '';
         $scope.param = {};
+        $scope.excel_complete = function(data){
+            $scope.param_table = data;
+        };
         $scope.complete = function(data){
-             $location.path('/predefined_templates');
+            $location.path('/predefined_templates');
         };
         $scope.onChangeNetwork = function(){
             $http.get('/data/get_mo/' + $scope.network.selected + '/').success(function(data) {

@@ -130,8 +130,8 @@ def upload_template(request):
     ws = wb.active
     for row in ws.iter_rows():
         if row[0].value != 'MO':
-            excel_mo = row[0].value #check_mo(mo_list, row[0].internal_value)
-            excel_param = row[1].value #check_param(excel_mo, row[1].internal_value, type)
+            excel_mo = row[0].value
+            excel_param = row[1].value
             if excel_mo and excel_param:
                 data.append(dict(mo=excel_mo, param=excel_param, min_value=row[2].value, max_value=row[3].value))
 
