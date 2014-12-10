@@ -50,15 +50,68 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http', '$loca
         };
   }]);
 
+
+parameterControllers.controller('editTemplateCtrl', ['$scope', '$http', '$location', '$routeParams',
+    function ($scope, $http, $location, $routeParams) {
+        var template = $routeParams.template;
+        $http.get('/data/edit_template/' + template + '/').success(function(data) {
+            console.log(data)
+            $scope.network.selected = data.network;
+            $scope.template_name = template;
+            $scope.param_table = data.param_table
+        });
+
+        $scope.lable_mo = 'MO';
+        $scope.networks = ['GSM', 'WCDMA', 'LTE'];
+        $scope.network = {};
+        $scope.param_table = [];
+        $scope.mo = {};
+        $scope.min_value = '';
+        $scope.max_value = '';
+        $scope.param = {};
+        $scope.excel_complete = function(data){
+            $scope.param_table = data;
+        };
+        $scope.complete = function(data){
+            $location.path('/predefined_templates');
+        };
+        $scope.onChangeNetwork = function(){
+            $http.get('/data/get_mo/' + $scope.network.selected + '/').success(function(data) {
+                $scope.tables = data;
+            });
+            if ($scope.network.selected == 'GSM'){
+                $scope.lable_mo = 'GSM file';
+            }
+            else{
+                $scope.lable_mo = 'MO';
+            }
+        };
+
+        $scope.onChangeMO = function(){
+            $http.get('/data/get_param/' + $scope.mo.selected + '/').success(function(data) {
+                $scope.columns = data;
+            });
+        };
+
+        $scope.onClickAddParam = function(){
+            var row = {'mo': $scope.mo.selected, 'param': $scope.param.selected, 'min_value': $scope.min_value, 'max_value':$scope.max_value}
+            $scope.param_table.push(row);
+            $scope.min_value = '';
+            $scope.max_value = '';
+        };
+  }]);
+
 parameterControllers.controller('predefinedTemplatesCtrl', ['$scope', '$http', '$location',
     function ($scope, $http, $location) {
         $http.get('/data/predefined_templates/').success(function(data) {
             $scope.templates = data;
         });
         $scope.onDeleteTemplate = function(tmp){
-            $http.get('/data/delete_template/' + tmp + '/');
-            $location.path('/predefined_templates');
-
+            $http.get('/data/delete_template/' + tmp + '/').success(function(){
+                $http.get('/data/predefined_templates/').success(function(data) {
+                    $scope.templates = data;
+                });
+            });
         };
   }]);
 

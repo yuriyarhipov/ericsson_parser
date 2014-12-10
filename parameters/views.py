@@ -76,7 +76,7 @@ def predefined_templates(request):
 
 def delete_template(request, template_name):
     QueryTemplate.objects.filter(project=request.project, template_name=template_name).delete()
-    return HttpResponse(json.dumps([]), content_type='application/json')
+    return HttpResponse(json.dumps({'sucess': 'ok', }), content_type='application/json')
 
 
 def get_template_cells(request, network):
@@ -135,4 +135,14 @@ def upload_template(request):
             if excel_mo and excel_param:
                 data.append(dict(mo=excel_mo, param=excel_param, min_value=row[2].value, max_value=row[3].value))
 
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def edit_template(request, template):
+    data = {}
+    data['template'] = template
+    data['param_table'] = []
+    for qt in QueryTemplate.objects.filter(template_name=template).all():
+        data['network'] = qt.network
+        data['param_table'].append({'mo': qt.mo, 'param': qt.param_name, 'min_value': qt.min_value, 'max_value': qt.max_value})
     return HttpResponse(json.dumps(data), content_type='application/json')
