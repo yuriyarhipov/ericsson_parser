@@ -17,7 +17,8 @@ var XmlApp = angular.module(
         'dashControllers',
         'parameterControllers',
         'measurementsControllers',
-        'ui.select'
+        'ui.select',
+        'ng-context-menu'
     ]);
 
 XmlApp.config(['$routeProvider',
