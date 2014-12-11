@@ -575,7 +575,6 @@ class ThreeGIRAT:
             q_offset_1sn = row[3]
             if source and target_irat:
                 self.data.append([source, target_irat, priority, frequency_rt, relation_type, q_offset_1sn])
-
         self.data.sort()
 
 
@@ -593,67 +592,144 @@ class BRI:
         self.intra = {row[0]: row for row in ThreeGMapIntraFreq(filename=self.filename).data}
         self.main()
 
+    def get_longitude(self, value):
+        result = (float(value) / 16777216) * 360
+        return str(result)[:5]
+
+    def get_latitude(self, value):
+        result = (float(value) / 8388608) * 90
+        return str(result)[:5]
 
 
     def main(self):
         self.data = []
         cursor = self.conn.cursor()
         cursor.execute('''SELECT
-            '3G' AS NETWORK,
             logicalname as SITENAME,
             Utrancell AS SECTORID,
             SITE AS SITEID,
             cid  AS CID,
             sector AS Physical_Sector,
-            '' AS Logical_Sector,
-            '' AS Logical_Carrier,
             ipaddress AS IPADDRESS,
             administrativestate AS SITESTATUS,
             rnc AS BSCRNC,
             longitude AS LONGITUDE,
             latitude AS LATITUDE,
             beamdirection AS AZIMUTH,
-            '' AS ANTHEIGHT,
-            '' AS MECHTILT,
-            '' AS ELECTTILT,
-            '' AS MCC,
-            '' AS MNC,
             lac AS LAC,
             sac AS SAC,
             rac AS RAC,
-            '' AS BCCH,
             uarfcndl AS CHANNELDL,
             uarfcnul AS CHANNELDUL,
             band AS	FREQBAND,
-            '' AS BSIC,
             primaryscramblingcode AS SC,
-            '' AS PCI,
             primarycpichpower AS PCPICHPOWER,
-            '' AS ANTTYPE,
-            '' AS ANTBW,
-            '' AS ANTENNAHEIGHT,
             vendorname AS VENDOR,
-            productname AS MODEL,
-            '' AS INFO1,
-            '' AS INFO2,
-            '' AS INFO3,
-            '' AS INFO4,
-            '' AS INFO5,
-            '' AS INFO6,
-            '' AS INFO7,
-            '' AS INFO8,
-            '' AS INFO9,
-            '' AS INFO10,
-            '' AS TCHARFCN,
-            '' AS HOP,
-            '' AS HSN,
-            '' AS MAIO
+            productname AS MODEL
             FROM RND_WCDMA WHERE (logicalname != '') AND (filename=%s);''', (self.filename, ))
 
         for row in cursor:
-            r = []
-            r.extend(row)
-            additional_values = self.intra.get(row[2], [])[1:-3]
+            network = '3G'
+            sitename = row[0]
+            sector_id = row[1]
+            site_id = row[2]
+            c_id = row[3]
+            physical_sector = row[4]
+            logical_sector = ''
+            logical_carrier = ''
+            ipaddress = row[5]
+            site_status = row[6]
+            bsc_rnc = row[7]
+            longitude = self.get_longitude(row[8])
+            latitude = self.get_latitude(row[9])
+            azimuth = row[10]
+            ant_height = ''
+            mechtilt = ''
+            electtilt = ''
+            mcc = ''
+            mnc = ''
+            lac = row[11]
+            sac = row[12]
+            rac = row[13]
+            bcch = ''
+            channel_dl = row[14]
+            channel_dul = row[15]
+            freq_band = row[16]
+            bsic = ''
+            sc = row[17]
+            pci = ''
+            pcpich_power = row[18]
+            ant_type = ''
+            ant_bw = ''
+            antenna_height = ''
+            vendor = row[19]
+            model = row[20]
+            info01 = ''
+            info02 = ''
+            info03 = ''
+            info04 = ''
+            info05 = ''
+            info06 = ''
+            info07 = ''
+            info08 = ''
+            info09 = ''
+            info10 = ''
+            tcharfcn = ''
+            hop = ''
+            hsn = ''
+            maio = ''
+            r = [
+                network,
+                sitename,
+                sector_id,
+                site_id,
+                c_id,
+                physical_sector,
+                logical_sector,
+                logical_carrier,
+                ipaddress,
+                site_status,
+                bsc_rnc,
+                longitude,
+                latitude,
+                azimuth,
+                ant_height,
+                mechtilt,
+                electtilt,
+                mcc,
+                mnc,
+                lac,
+                sac,
+                rac,
+                bcch,
+                channel_dl,
+                channel_dul,
+                freq_band,
+                bsic,
+                sc,
+                pci,
+                pcpich_power,
+                ant_type,
+                ant_bw,
+                antenna_height,
+                vendor,
+                model,
+                info01,
+                info02,
+                info03,
+                info04,
+                info05,
+                info06,
+                info07,
+                info08,
+                info09,
+                info10,
+                tcharfcn,
+                hop,
+                hsn,
+                maio
+            ]
+            additional_values = self.intra.get(row[1], [])[1:-3]
             r.extend(additional_values)
             self.data.append(r)
 
