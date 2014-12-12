@@ -69,9 +69,7 @@ class Table(object):
         elif self.table_name == 'neighbors_two_ways':
             return ['Source', 'Site_Source', 'Target', 'Site_Target', 'NEIGHBOR_MUTUAL_RELATION', 'SAME_SITE']
         elif self.table_name == 'BrightcommsRNDDate':
-            columns = ['NETWORK', 'SITENAME', 'SECTORID', 'SITEID', 'CID', 'Physical_Sector', 'Logical_Sector', 'Logical_Carrier', 'IPADDRESS', 'SITESTATUS', 'BSCRNC', 'LONGITUDE', 'LATITUDE', 'AZIMUTH', 'ANTHEIGHT', 'MECHTILT', 'ELECTTILT', 'MCC', 'MNC', 'LAC', 'SAC', 'RAC', 'BCCH', 'CHANNELDL', 'CHANNELDUL', 'FREQBAND', 'BSIC', 'SC', 'PCI', 'PCPICHPOWER', 'ANTTYPE', 'ANTBW', 'ANTENNAHEIGHT', 'VENDOR', 'MODEL', 'INFO1', 'INFO2', 'INFO3', 'INFO4', 'INFO5', 'INFO6', 'INFO7', 'INFO8', 'INFO9', 'INFO10', 'TCHARFCN', 'HOP', 'HSN', 'MAIO']
-            intra_columns = ThreeGMapIntraFreq(self.filename).columns[1:-3]
-            columns.extend(intra_columns)
+            columns = BRI(self.filename).columns
             return columns
 
 
@@ -412,7 +410,7 @@ class ThreeGMapInterFreq:
         total = 0
         for cell in row:
             if cell != '':
-                total = total + len(cell.split('<br>'))
+                total = total + len(cell.split('\n'))
 
         free = 0
         list_full = 0
@@ -433,7 +431,7 @@ class ThreeGMapInterFreq:
                     if t_data[source][i] == '':
                         r.append(neighbor)
                     else:
-                        r.append('%s <br> %s' % (t_data[source][i], neighbor))
+                        r.append('%s \n %s' % (t_data[source][i], neighbor))
                 else:
                     r.append(t_data[source][i])
             row = r
@@ -589,16 +587,53 @@ class BRI:
                 settings.DATABASES['default']['NAME'],
                 settings.DATABASES['default']['USER'],
                 settings.DATABASES['default']['PASSWORD']))
-        self.intra = {row[0]: row for row in ThreeGMapIntraFreq(filename=self.filename).data}
+        self.intra = []
+        self.inter = []
+        self.columns = ['NETWORK', 'SITENAME', 'SECTORID', 'SITEID', 'CID', 'Physical_Sector', 'Logical_Sector', 'Logical_Carrier', 'IPADDRESS', 'SITESTATUS', 'BSCRNC', 'LONGITUDE_ORIGIN', 'LONGITUDE', 'LATITUDE', 'AZIMUTH', 'ANTHEIGHT', 'MECHTILT', 'ELECTTILT', 'MCC', 'MNC', 'LAC', 'SAC', 'RAC', 'BCCH', 'CHANNELDL', 'CHANNELDUL', 'FREQBAND', 'BSIC', 'SC', 'PCI', 'PCPICHPOWER', 'ANTTYPE', 'ANTBW', 'ANTENNAHEIGHT', 'VENDOR', 'MODEL', 'INFO1', 'INFO2', 'INFO3', 'INFO4', 'INFO5', 'INFO6', 'INFO7', 'INFO8', 'INFO9', 'INFO10', 'TCHARFCN', 'HOP', 'HSN', 'MAIO']
+        self.get_intra()
+        self.get_inter()
         self.main()
+
+    def get_inter(self):
+        data = dict()
+        columns_count = 0
+        for row in ThreeGMapInterFreq(filename=self.filename).data:
+            r = []
+            for val in row[1: -3]:
+                if val != '':
+                    val = val.split('\n')
+                    r.extend(val)
+            if columns_count < len(r):
+                columns_count = len(r)
+            data[row[0]] = r
+        self.inter = data
+        self.inter_columns = ['INTER_NEIGHBOR_%s' % i for i in range(columns_count)]
+        self.columns.extend(self.inter_columns)
+
+
+    def get_intra(self):
+        data = dict()
+        columns_count = 0
+        for row in ThreeGMapIntraFreq(filename=self.filename).data:
+            r = []
+            for val in row[1: -3]:
+                if val != '':
+                    val = val.split('\n')
+                    r.extend(val)
+            if columns_count < len(r):
+                columns_count = len(r)
+            data[row[0]] = r
+        self.intra = data
+        self.intra_columns = ['INTRA_NEIGHBOR_%s' % i for i in range(columns_count)]
+        self.columns.extend(self.intra_columns)
 
     def get_longitude(self, value):
         result = (float(value) / 16777216) * 360
-        return str(result)[:5]
+        return "{:10.5f}".format(result)
 
     def get_latitude(self, value):
         result = (float(value) / 8388608) * 90
-        return str(result)[:5]
+        return "{:10.5f}".format(result)
 
 
     def main(self):
@@ -640,6 +675,7 @@ class BRI:
             ipaddress = row[5]
             site_status = row[6]
             bsc_rnc = row[7]
+            origin_longitude = row[8]
             longitude = self.get_longitude(row[8])
             latitude = self.get_latitude(row[9])
             azimuth = row[10]
@@ -690,6 +726,7 @@ class BRI:
                 ipaddress,
                 site_status,
                 bsc_rnc,
+                origin_longitude,
                 longitude,
                 latitude,
                 azimuth,
@@ -729,8 +766,14 @@ class BRI:
                 hsn,
                 maio
             ]
-            additional_values = self.intra.get(row[1], [])[1:-3]
-            r.extend(additional_values)
+            add_intra = self.intra.get(row[1], [])
+            if len(add_intra) < len(self.intra_columns):
+                add_intra.extend(['' for i in range(len(self.intra_columns)-len(add_intra))])
+            r.extend(add_intra)
+            add_inter = self.inter.get(row[1], [])
+            if len(add_inter) < len(self.inter_columns):
+                add_inter.extend(['' for i in range(len(self.inter_columns)-len(add_inter))])
+            r.extend(add_inter)
             self.data.append(r)
 
 
