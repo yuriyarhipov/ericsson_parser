@@ -101,7 +101,7 @@ def by_technology(request, network):
 
     elif network == 'LTE':
         filename = request.lte.filename
-        tables = request.wcdma.tables.split(',')
+        tables = request.lte.tables.split(',')
         tables.sort()
         data = [
             {'label': 'Topology', 'table': 'topology_lte', 'type': 'Additional table', 'filename': filename},
