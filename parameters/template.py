@@ -88,10 +88,17 @@ class Template(object):
     def get_tables_cna(self, sql_tables):
         tables = []
         result_columns = []
-
+        cell_index = 1
         for table_name, columns in sql_tables.iteritems():
             tables.append(table_name)
-            result_columns = result_columns + ['"%s"."%s"' % (table_name, column) for column in columns]
+            sql_columns = []
+            for column in columns:
+                if column.lower() == 'cell':
+                    sql_columns.append('"%s"."%s" AS CELL_%s' % (table_name, column, str(cell_index)))
+                    cell_index += 1
+                else:
+                    sql_columns.append('"%s"."%s"' % (table_name, column))
+        result_columns = result_columns + sql_columns
 
         sql_tables = ''
         root_table = tables[0]
