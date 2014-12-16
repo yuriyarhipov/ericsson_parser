@@ -171,7 +171,8 @@ class Tables:
             for field in self.data[table_name]:
                 row = dict()
                 for column in columns:
-                    row[column] = field.get(column, '')
+                    if column.lower() not in row:
+                        row[column.lower()] = field.get(column, '')
                 values.append(row)
             values_name = ['%(' + column + ')s' for column in columns]
             insert = 'INSERT INTO %s (%s) VALUES (%s)' % (table_name, ','.join(columns), ','.join(values_name))
