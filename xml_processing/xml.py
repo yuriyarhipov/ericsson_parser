@@ -184,7 +184,7 @@ class Tables:
         self.conn.commit()
 
     def create_table(self, table_name):
-        columns = set(self.tables[table_name])
+        columns = set([col.lower() for col in self.tables[table_name]])
         sql_columns = ['%s TEXT' % field for field in columns]
         self.cursor.execute('CREATE TABLE IF NOT EXISTS %s (%s);' % (table_name, ', '.join(sql_columns)))
         self.conn.commit()
