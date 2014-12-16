@@ -49,3 +49,10 @@ class Files(models.Model):
         columns = [desc[0] for desc in cursor.description]
         data = cursor.fetchall()
         return columns, data
+
+
+class SuperFile(models.Model):
+    filename = models.TextField()
+    files = models.TextField()
+    network = models.TextField()
+    project = models.ForeignKey(Project)

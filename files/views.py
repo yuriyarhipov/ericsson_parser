@@ -126,3 +126,12 @@ def compare_files(request):
 def delete_file(request, filename):
     Files.objects.filter(filename=filename).delete()
     return HttpResponse(json.dumps([]), content_type='application/json')
+
+def get_files(request, network):
+    project = request.project
+    data = [f.filename for f in Files.objects.filter(project = project, network=network)]
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+def save_superfile(request):
+
+    return HttpResponse(json.dumps({'status': 'ok'}), content_type='application/json')

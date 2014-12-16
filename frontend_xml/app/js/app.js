@@ -112,6 +112,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/dashboard/wcdma.html',
                 controller: 'dashWcdmaCtrl'
             }).
+            when('/superfile/',{
+                templateUrl: 'templates/files/superfile.html',
+                controller: 'superfileCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });

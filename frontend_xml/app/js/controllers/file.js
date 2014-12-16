@@ -160,7 +160,6 @@ filesControllers.controller('compareFilesCtrl', ['$scope', '$http',
         };
 
         $scope.complete = function(data){
-            console.log(data);
             if (data.compare_files){
                 $scope.hide_files = false;
                 $scope.compare_files = data.compare_files;
@@ -168,5 +167,21 @@ filesControllers.controller('compareFilesCtrl', ['$scope', '$http',
             if (data.compare_table){
                 $scope.compare_table = data.compare_table;
             }
+        };
+  }]);
+
+
+filesControllers.controller('superfileCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.networks = ['GSM', 'LTE', 'WCDMA'];
+        $scope.network = {};
+
+        $scope.onChangeNetwork = function(){
+            $http.get('/data/files/get_files/' + $scope.network.selected + '/').success(function(data){
+                $scope.files = data;
+            });
+        };
+        $scope.onSave = function(){
+            console.log($scope.selected_files);
         };
   }]);

@@ -1,0 +1,35 @@
+<form ng-upload="complete(content)" class="form-horizontal col-sm-10" role="form" action="/data/files/save_superfile/">
+<div class="row">
+    <div class="col-sm-12">
+        <div class="col-sm-4 form-group">
+            <input class="form-control" type="text" placeholder="Filename" name="filename">
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="col-sm-4 form-group">
+        <ui-select ng-change="onChangeNetwork()" ng-model="network.selected" theme="bootstrap"
+                    ng-disabled="disabled"
+                    reset-search-input="false">
+                    <ui-select-match placeholder="Network...">{{$select.selected}}</ui-select-match>
+                    <ui-select-choices repeat="net in networks | filter:$select.search">
+                        {{ net }}
+                    </ui-select-choices>
+        </ui-select>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="form-group col-sm-12">
+            <div class="checkbox" ng-repeat="f in files">
+                <label>
+                    <input name="files" type="checkbox" value="{{ f }}"> {{ f }}
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="col-sm-12">
+            <button ng-click="onSave()" class="btn btn-success" type="submit">Save</button>
+        </div>
+    </div>
+</div>
+</form>
