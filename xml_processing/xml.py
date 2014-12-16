@@ -164,15 +164,20 @@ class Tables:
     def load_data(self, task, current, interval_per_file):
         count = len(self.tables)
         interval = float(interval_per_file) / float(count)
-        for table_name, columns in self.tables.iteritems():
+        for table_name, source_columns in self.tables.iteritems():
+            columns = []
+            filtred_columns = []
+            for col in source_columns:
+                if col.lower() not in filtred_columns:
+                    columns.append(col)
+                    filtred_columns.append(col.lower())
             current = float(current) + float(interval)
             task.update_state(state="PROGRESS", meta={"current": int(current), "total": 99})
             values = []
             for field in self.data[table_name]:
                 row = dict()
                 for column in columns:
-                    if column.lower() not in row:
-                        row[column.lower()] = field.get(column, '')
+                    row[column] = field.get(column, '')
                 values.append(row)
             values_name = ['%(' + column + ')s' for column in columns]
             insert = 'INSERT INTO %s (%s) VALUES (%s)' % (table_name, ','.join(columns), ','.join(values_name))
