@@ -6,7 +6,7 @@ from django.conf import settings
 
 from celery.result import AsyncResult
 
-from .models import Files, UploadedFiles
+from .models import Files, UploadedFiles, SuperFile
 from tables.table import Table
 from files.compare import CompareFiles, CompareTable
 import tasks
@@ -40,6 +40,16 @@ def save_files(request):
 def files(request):
     project = request.project
     files = []
+
+    for super_f in SuperFile.objects.filter(project=project):
+        files.append({
+            'filename': super_f.filename,
+            'date': super_f.date.strftime('%m.%d.%Y'),
+            'file_type': 'superfile',
+            'network': super_f.network,
+            'description': super_f.files
+        })
+
     for f in Files.objects.filter(project=project):
         files.append({
             'filename': f.filename,
@@ -125,6 +135,7 @@ def compare_files(request):
 
 def delete_file(request, filename):
     Files.objects.filter(filename=filename).delete()
+    SuperFile.objects.filter(filename=filename).delete()
     return HttpResponse(json.dumps([]), content_type='application/json')
 
 def get_files(request, network):
@@ -133,5 +144,9 @@ def get_files(request, network):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 def save_superfile(request):
-
+    project = request.project
+    filename = request.POST.get('filename')
+    selected_files = request.POST.getlist('files')
+    network = Files.objects.filter(filename=selected_files[0], project=project).first().network
+    SuperFile.objects.create(filename=filename, files=selected_files, network=network, project=project)
     return HttpResponse(json.dumps({'status': 'ok'}), content_type='application/json')

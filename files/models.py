@@ -53,6 +53,7 @@ class Files(models.Model):
 
 class SuperFile(models.Model):
     filename = models.TextField()
+    date = models.DateTimeField(auto_now=True)
     files = models.TextField()
     network = models.TextField()
     project = models.ForeignKey(Project)
