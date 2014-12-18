@@ -208,7 +208,7 @@ class Topology:
             if sector not in result[rnc][site]:
                 result[rnc][site][sector] = OrderedDict()
 
-            if utrancell not in result[rnc][site][sector] and  (utrancell in utc):
+            if utrancell not in result[rnc][site][sector] and (utrancell in utc):
                 result[rnc][site][sector][utrancell] = utc[utrancell]
 
         return result

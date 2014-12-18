@@ -3,6 +3,7 @@ import json
 from django.http import HttpResponse
 
 from project.models import Project
+from tables.table import Topology
 
 
 def projects(request):
@@ -34,4 +35,21 @@ def treeview(request, project):
         {'id': 'WCDMA', 'label': 'WCDMA', 'children': project.get_network_tree('WCDMA')},
         {'id': 'LTE', 'label': 'LTE', 'children': project.get_network_tree('LTE')}
      ]
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+def topology_treeview(request):
+    data = []
+    wcdma = request.wcdma.filename
+    tree = Topology(wcdma).get_tree()
+    for rnc in tree:
+        rnc_children = []
+        for site in tree[rnc]:
+            site_children = []
+            for sector in tree[rnc][site]:
+                sector_children = []
+                for utrancell in tree[rnc][site][sector]:
+                    sector_children.append({'id': utrancell, 'label': utrancell, 'children': []})
+                site_children.append({'id': sector, 'label': sector, 'children': sector_children})
+            rnc_children.append({'id': site, 'label': site, 'children': site_children})
+        data.append({'id': rnc, 'label': rnc, 'children': rnc_children})
     return HttpResponse(json.dumps(data), content_type='application/json')

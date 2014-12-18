@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     url(r'^data/projects/$', project_views.projects),
     url(r'^data/save_project/$', project_views.save_project),
     url(r'^data/treeview/(\S+)/$', project_views.treeview),
+    url(r'^data/topology_treeview/$', project_views.topology_treeview),
 
     url(r'^data/get_cells/(\S+)/$', query_views.get_cells),
     url(r'^data/save_group_of_cells/$', query_views.save_group_of_cells),

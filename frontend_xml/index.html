@@ -148,16 +148,33 @@
     </div>
 </div>
 <div class="container-fluid">
-    <div class="col-md-3"
-        ng-controller="TreeViewCtrl"
-        data-angular-treeview="true"
-        data-tree-id="tree_view"
-        data-tree-model="treedata"
-        data-node-id="id"
-        data-node-label="label"
-        data-node-children="children">
+    <div class="col-md-4">
+        <tabset>
+            <tab heading="Project Treeview">
+                <div
+                    ng-controller="TreeViewCtrl"
+                    data-angular-treeview="true"
+                    data-tree-id="tree_view"
+                    data-tree-model="treedata"
+                    data-node-id="id"
+                    data-node-label="label"
+                    data-node-children="children">
+                </div>
+            </tab>
+            <tab heading="Topology Tree View">
+                <div
+                    ng-controller="TopologyTreeViewCtrl"
+                    data-angular-treeview="true"
+                    data-tree-id="topology_tree_view"
+                    data-tree-model="treedata"
+                    data-node-id="id"
+                    data-node-label="label"
+                    data-node-children="children">
+                </div>
+            </tab>
+        </tabset>
     </div>
-    <div ng-view class="col-md-9">
+    <div ng-view class="col-md-8">
     </div>
 </div>
 <div class="dropdown position-fixed" id="menu-1">

@@ -69,3 +69,12 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
         }, false);
     }
 ]);
+
+treeViewControllers.controller('TopologyTreeViewCtrl', ['$scope', '$http', '$cookies', 'activeProjectService', '$location',
+    function ($scope, $http, $cookies, activeProjectService, $location) {
+        $http.get('/data/topology_treeview/').success(function(data){
+            $scope.treedata = data;
+        });
+    }
+]);
+
