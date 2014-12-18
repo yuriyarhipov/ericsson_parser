@@ -77,4 +77,19 @@ treeViewControllers.controller('TopologyTreeViewCtrl', ['$scope', '$http', '$coo
         });
     }
 ]);
+treeViewControllers.controller('menuCtrl', ['$scope',
+    function ($scope) {
+        $scope.isCollapsed = false;
+        $scope.width = 8;
+        $scope.onClick = function(){
+            $scope.isCollapsed = !$scope.isCollapsed;
+            if ($scope.isCollapsed){
+                $scope.width = 12;
+            }
+            else {
+                $scope.width = 8;
+            }
+        };
 
+    }
+]);

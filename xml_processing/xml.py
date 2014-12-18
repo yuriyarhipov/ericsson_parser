@@ -12,8 +12,7 @@ from zipfile import ZipFile
 
 from django.conf import settings
 from files.models import Files
-from files.lic import License
-from files.hw import HardWare
+from tables.table import Topology
 
 
 def get_mo(mo):
@@ -283,6 +282,14 @@ class Tables:
               LEFT JOIN IubLink ON  (RBSLocalCell.Element2 = IubLink.Element2 AND RBSLocalCell.filename = IubLink.filename)
             ;''')
 
+    def create_topology_tree_view(self):
+        cursor = self.conn.cursor()
+        self.cursor.execute('CREATE TABLE IF NOT EXISTS TOPOLOGY_TREEVIEW (FILENAME TEXT, TREEVIEW JSON);')
+        self.conn.commit()
+        cursor.execute('SELECT DISTINCT filename FROM TOPOLOGY')
+        for row in cursor:
+            Topology(row[0]).create_tree_view()
+
     def topology_lte(self):
         tables = ','.join(self.tables.keys())
         if 'eutrancellfdd' not in tables.lower():
@@ -435,6 +442,7 @@ class Tables:
         self.fourgneighbors()
         self.threegneighborss()
         self.conn.commit()
+        self.create_topology_tree_view()
         self.cursor.close()
         self.conn.close()
         del self.tables

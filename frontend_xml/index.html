@@ -10,7 +10,6 @@
     <link href="/css/angular.treeview.css" rel="stylesheet" type="text/css"/>
     <link href="/css/select.min.css" rel="stylesheet" type="text/css"/>
     <link href="/css/main.css" rel="stylesheet" type="text/css"/>
-
     <script type='text/javascript' src='/js/angular.js'></script>
     <script type='text/javascript' src='/js/jquery.js'></script>
     <script type='text/javascript' src='/js/angular-route.min.js'></script>
@@ -147,8 +146,12 @@
         </div>
     </div>
 </div>
-<div class="container-fluid">
-    <div class="col-md-4">
+<div class="container-fluid" ng-controller="menuCtrl">
+    <div class="col-md-12">
+        <button class="btn btn-default" ng-click="onClick()">Tree view</button>
+    </div>
+
+    <div class="well col-md-4" collapse="isCollapsed">
         <tabset>
             <tab heading="Project Treeview">
                 <div
@@ -174,7 +177,7 @@
             </tab>
         </tabset>
     </div>
-    <div ng-view class="col-md-8">
+    <div ng-view class="well col-md-{{width}}">
     </div>
 </div>
 <div class="dropdown position-fixed" id="menu-1">

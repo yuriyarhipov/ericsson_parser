@@ -1,6 +1,7 @@
 import json
 
 from django.http import HttpResponse
+from django.db import connection
 
 from project.models import Project
 from tables.table import Topology
@@ -38,18 +39,11 @@ def treeview(request, project):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 def topology_treeview(request):
-    data = []
     wcdma = request.wcdma.filename
-    tree = Topology(wcdma).get_tree()
-    for rnc in tree:
-        rnc_children = []
-        for site in tree[rnc]:
-            site_children = []
-            for sector in tree[rnc][site]:
-                sector_children = []
-                for utrancell in tree[rnc][site][sector]:
-                    sector_children.append({'id': utrancell, 'label': utrancell, 'children': []})
-                site_children.append({'id': sector, 'label': sector, 'children': sector_children})
-            rnc_children.append({'id': site, 'label': site, 'children': site_children})
-        data.append({'id': rnc, 'label': rnc, 'children': rnc_children})
+    data = []
+    cursor = connection.cursor()
+    cursor.execute("SELECT TREEVIEW FROM TOPOLOGY_TREEVIEW WHERE filename='%s'" % (wcdma, ))
+    for row in cursor:
+        data = row[0]
+
     return HttpResponse(json.dumps(data), content_type='application/json')

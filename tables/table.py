@@ -2,6 +2,7 @@ import psycopg2
 import xlsxwriter
 import tempfile
 import re
+import json
 
 from zipfile import ZipFile
 from os.path import join
@@ -212,6 +213,28 @@ class Topology:
                 result[rnc][site][sector][utrancell] = utc[utrancell]
 
         return result
+
+    def create_tree_view(self):
+        data = []
+        tree = self.get_tree()
+        for rnc in tree:
+            rnc_children = []
+            for site in tree[rnc]:
+                site_children = []
+                for sector in tree[rnc][site]:
+                    sector_children = []
+                    for utrancell in tree[rnc][site][sector]:
+                        sector_children.append({'id': utrancell, 'label': utrancell, 'children': []})
+                    site_children.append({'id': sector, 'label': sector, 'children': sector_children})
+                rnc_children.append({'id': site, 'label': site, 'children': site_children})
+            data.append({'id': rnc, 'label': rnc, 'children': rnc_children})
+        cursor = self.conn.cursor()
+        print self.filename
+        print data
+        cursor.execute("DELETE FROM TOPOLOGY_TREEVIEW WHERE filename='%s'" % (self.filename,))
+        cursor.execute("INSERT INTO TOPOLOGY_TREEVIEW (FILENAME, TREEVIEW) VALUES ('%s', '%s')" % (self.filename, json.dumps(data)))
+        self.conn.commit()
+
 
 
 class ThreeGNeighborsTwoWays:
