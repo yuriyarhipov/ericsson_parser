@@ -112,7 +112,7 @@ class LTE:
         cells = self.convert_form_cells(cells, filename)
         if template and cells:
             params = self.get_params_with_min_max(template)
-            q = "SELECT  * FROM template_%s WHERE (filename = '%s') AND EUtrancell in (%s)" % (template, filename, ','.join(cells))
+            q = '''SELECT  * FROM "template_%s" WHERE (filename = '%s') AND EUtrancell in (%s)''' % (template, filename, ','.join(cells))
             print q
             self.cursor.execute(q)
             colnames = [desc[0] for desc in self.cursor.description]

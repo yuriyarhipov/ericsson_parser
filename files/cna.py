@@ -103,7 +103,7 @@ class CNA:
         cells = self.convert_form_cells(cells)
         if template and cells:
             params = self.get_params_with_min_max(template)
-            q = "SELECT  * FROM template_%s WHERE CELL in (%s)" % (template, ','.join(cells))
+            q = 'SELECT  * FROM "template_%s" WHERE CELL in (%s)' % (template, ','.join(cells))
             self.cursor.execute(q)
             colnames = [desc[0] for desc in self.cursor.description]
             data = []
