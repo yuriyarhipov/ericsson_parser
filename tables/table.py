@@ -229,8 +229,6 @@ class Topology:
                 rnc_children.append({'id': site, 'label': site, 'children': site_children})
             data.append({'id': rnc, 'label': rnc, 'children': rnc_children})
         cursor = self.conn.cursor()
-        print self.filename
-        print data
         cursor.execute("DELETE FROM TOPOLOGY_TREEVIEW WHERE filename='%s'" % (self.filename,))
         cursor.execute("INSERT INTO TOPOLOGY_TREEVIEW (FILENAME, TREEVIEW) VALUES ('%s', '%s')" % (self.filename, json.dumps(data)))
         self.conn.commit()
