@@ -38,7 +38,7 @@ def treeview(request, project):
      ]
     return HttpResponse(json.dumps(data), content_type='application/json')
 
-def topology_treeview(request):
+def topology_treeview(request, network):
     wcdma = request.wcdma.filename
     data = []
     cursor = connection.cursor()

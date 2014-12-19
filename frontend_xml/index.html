@@ -164,6 +164,14 @@
                 </div>
             </tab>
             <tab heading="Topology Tree View">
+                <ui-select ng-change="onChangeNetwork()" ng-model="network.selected" theme="bootstrap"
+                    ng-disabled="disabled"
+                    reset-search-input="false">
+                    <ui-select-match placeholder="Network...">{{$select.selected}}</ui-select-match>
+                    <ui-select-choices repeat="net in networks | filter:$select.search">
+                        {{ net }}
+                    </ui-select-choices>
+                </ui-select>
                 <div treecontrol class="tree-classic"
                     tree-model="topology_treedata"
                     options="treeOptions"

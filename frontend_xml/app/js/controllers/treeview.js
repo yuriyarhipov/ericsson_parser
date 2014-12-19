@@ -74,6 +74,10 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
 
 treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http',
     function ($scope, $cookies, $http) {
+        $scope.networks = ['GSM', 'WCDMA', 'LTE'];
+        $scope.network = {};
+        $scope.network.selected = 'GSM';
+
         $scope.treeOptions = {
             nodeChildren: "children",
             dirSelectable: true,
@@ -93,7 +97,7 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http',
             $scope.treedata = data;
         });
 
-        $http.get('/data/topology_treeview/').success(function(data){
+        $http.get('/data/topology_treeview/GSM/').success(function(data){
             $scope.topology_treedata = data;
         });
 
@@ -108,6 +112,12 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http',
             else {
                 $scope.width = 8;
             }
+        };
+
+        $scope.onChangeNetwork = function(data){
+            $http.get('/data/topology_treeview/' + $scope.network.selected +'/').success(function(data){
+                $scope.topology_treedata = data;
+            });
         };
 
     }
