@@ -8,7 +8,7 @@ var XmlApp = angular.module(
         'xmlControllers',
         'filesControllers',
         'ngUpload',
-        'angularTreeview',
+        'treeControl',
         'treeViewControllers',
         'activeProjectModule',
         'uploadFileModule',

@@ -12,12 +12,14 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
                 $scope.treedata = data;
             });
         });
+
         $scope.$on('uploadFile', function() {
             $http.get('/data/treeview/' + $cookies.active_project).success(function(data){
             $scope.treedata = data;
 
         });
         });
+
         $scope.$watch( 'tree_view.currentNode', function( newObj, oldObj ) {
             if( $scope.tree_view && angular.isObject($scope.tree_view.currentNode) ) {
                 var node_type = $scope.tree_view.currentNode.type;
@@ -70,17 +72,34 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
     }
 ]);
 
-treeViewControllers.controller('TopologyTreeViewCtrl', ['$scope', '$http', '$cookies', 'activeProjectService', '$location',
-    function ($scope, $http, $cookies, activeProjectService, $location) {
-        $http.get('/data/topology_treeview/').success(function(data){
+treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http',
+    function ($scope, $cookies, $http) {
+        $scope.treeOptions = {
+            nodeChildren: "children",
+            dirSelectable: true,
+            injectClasses: {
+                ul: "a1",
+                li: "a2",
+                liSelected: "a7",
+                iExpanded: "a3",
+                iCollapsed: "a4",
+                iLeaf: "a5",
+                label: "a6",
+                labelSelected: "a8"
+            }
+        };
+
+        $http.get('/data/treeview/' + $cookies.active_project).success(function(data){
             $scope.treedata = data;
         });
-    }
-]);
-treeViewControllers.controller('menuCtrl', ['$scope',
-    function ($scope) {
+
+        $http.get('/data/topology_treeview/').success(function(data){
+            $scope.topology_treedata = data;
+        });
+
         $scope.isCollapsed = false;
         $scope.width = 8;
+
         $scope.onClick = function(){
             $scope.isCollapsed = !$scope.isCollapsed;
             if ($scope.isCollapsed){

@@ -7,7 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/angular.treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/tree-control.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/tree-control-attribute.css" rel="stylesheet" type="text/css"/>
     <link href="/css/select.min.css" rel="stylesheet" type="text/css"/>
     <link href="/css/main.css" rel="stylesheet" type="text/css"/>
     <script type='text/javascript' src='/js/angular.js'></script>
@@ -15,7 +16,7 @@
     <script type='text/javascript' src='/js/angular-route.min.js'></script>
     <script type='text/javascript' src='/js/angular-cookies.min.js'></script>
     <script type='text/javascript' src='/js/ng-upload.min.js'></script>
-    <script type='text/javascript' src='/js/angular.treeview.min.js'></script>
+    <script type='text/javascript' src='/js/angular-tree-control.js'></script>
     <script type='text/javascript' src='/js/select.min.js'></script>
     <script type='text/javascript' src='/js/highcharts-ng.min.js'></script>
     <script type='text/javascript' src='/js/ui-bootstrap-tpls-0.11.2.min.js'></script>
@@ -154,25 +155,21 @@
     <div class="well col-md-4" collapse="isCollapsed">
         <tabset>
             <tab heading="Project Treeview">
-                <div
-                    ng-controller="TreeViewCtrl"
-                    data-angular-treeview="true"
-                    data-tree-id="tree_view"
-                    data-tree-model="treedata"
-                    data-node-id="id"
-                    data-node-label="label"
-                    data-node-children="children">
+                <div treecontrol class="tree-classic"
+                    tree-model="treedata"
+                    options="treeOptions"
+                    on-selection="showSelected(node)"
+                    selected-node="node1">
+                        {{node.label}}
                 </div>
             </tab>
             <tab heading="Topology Tree View">
-                <div
-                    ng-controller="TopologyTreeViewCtrl"
-                    data-angular-treeview="true"
-                    data-tree-id="topology_tree_view"
-                    data-tree-model="treedata"
-                    data-node-id="id"
-                    data-node-label="label"
-                    data-node-children="children">
+                <div treecontrol class="tree-classic"
+                    tree-model="topology_treedata"
+                    options="treeOptions"
+                    on-selection="showTopologySelected(node)"
+                    selected-node="node1">
+                        {{node.label}}
                 </div>
             </tab>
         </tabset>
