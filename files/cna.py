@@ -6,6 +6,7 @@ from project.models import Project
 from lib import fcount
 from os.path import basename
 
+
 class CNA:
 
     def __init__(self):
@@ -23,8 +24,6 @@ class CNA:
         cursor.execute('SELECT DISTINCT BSC, MSC, SECTORS FROM "%s" ORDER BY BSC' % (filename, ))
         for row in cursor:
             data[row[0]] = []
-
-
 
     def get_cells(self, filename):
         self.cursor.execute('SELECT DISTINCT CELL FROM "%s" ORDER BY CELL' % (filename, ))

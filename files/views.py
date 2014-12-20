@@ -132,7 +132,6 @@ def compare_files(request):
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 
-
 def delete_file(request, filename):
     Files.objects.filter(filename=filename).delete()
     SuperFile.objects.filter(filename=filename).delete()
@@ -147,6 +146,15 @@ def save_superfile(request):
     project = request.project
     filename = request.POST.get('filename')
     selected_files = request.POST.getlist('files')
-    network = Files.objects.filter(filename=selected_files[0], project=project).first().network
-    SuperFile.objects.create(filename=filename, files=selected_files, network=network, project=project)
+    source_file = Files.objects.filter(filename=selected_files[0], project=project).first()
+    network = source_file.network
+    file_type = source_file.file_type
+    vendor = source_file.vendor
+    SuperFile.objects.create(
+        filename=filename,
+        files=','.join(selected_files),
+        network=network,
+        project=project,
+        file_type=file_type,
+        vendor=vendor)
     return HttpResponse(json.dumps({'status': 'ok'}), content_type='application/json')

@@ -57,3 +57,5 @@ class SuperFile(models.Model):
     files = models.TextField()
     network = models.TextField()
     project = models.ForeignKey(Project)
+    file_type = models.CharField(max_length=50, blank=True)
+    vendor = models.TextField()

@@ -3,6 +3,7 @@ import psycopg2
 from django.conf import settings
 
 from query.models import GroupCells, QueryTemplate
+from files.models import SuperFile
 
 
 class WCDMA:
@@ -89,12 +90,19 @@ class WCDMA:
         return column
 
     def run_query(self, template, cells, filename):
+        if SuperFile.objects.filter(filename=filename).exists():
+            filename = SuperFile.objects.filter(filename=filename).first().description.split(',')
+        else:
+            filename = [filename, ]
+        filenames = ["'%s'" % f for f in filename]
+        filenames = ','.join(filenames)
+
         data = []
         columns = []
         cells = self.convert_form_cells(cells, filename)
         if template and cells:
             params = self.get_params_with_min_max(template)
-            q = '''SELECT * INTO TEMPORARY TEMP_TEMPLATE FROM "template_%s" WHERE (filename = '%s') AND Utrancell in (%s)''' % (template, filename, ','.join(cells))
+            q = '''SELECT * INTO TEMPORARY TEMP_TEMPLATE FROM "template_%s" WHERE (filename IN (%s)) AND Utrancell in (%s)''' % (template, filenames, ','.join(cells))
             self.cursor.execute(q)
             self.cursor.execute("SELECT DISTINCT * FROM TEMP_TEMPLATE")
 

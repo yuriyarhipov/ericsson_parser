@@ -8,7 +8,10 @@ class Project(models.Model):
 
     def get_list_files(self, network, file_type, vendor):
         from files.models import Files
-        return [f.filename for f in Files.objects.filter(project=self, network=network, file_type=file_type, vendor=vendor)]
+        from files.models import SuperFile
+        files = [f.filename for f in Files.objects.filter(project=self, network=network, file_type=file_type, vendor=vendor)]
+        superfiles = [f.filename for f in SuperFile.objects.filter(project=self, network=network, file_type=file_type, vendor=vendor)]
+        return files + superfiles
 
     def get_vendor_tree(self, network, vendor):
         data = []
@@ -79,7 +82,7 @@ class Project(models.Model):
         return data
 
 
-    def     get_tree(self, network, file_type, vendor):
+    def get_tree(self, network, file_type, vendor):
         data = []
         for f in self.get_list_files(network, file_type, vendor):
             data.append({'id': f, 'label': f, 'children': '', 'type': file_type, 'network': network})
