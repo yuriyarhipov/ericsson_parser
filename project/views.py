@@ -2,9 +2,7 @@ import json
 
 from django.http import HttpResponse
 from django.db import connection
-
 from project.models import Project
-from tables.table import Topology
 
 
 def projects(request):
@@ -39,10 +37,16 @@ def treeview(request, project):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 def topology_treeview(request, network):
-    wcdma = request.wcdma.filename
     data = []
+    filename = ''
+    if network == 'GSM':
+        filename = request.cna.filename
+    elif network == 'WCDMA':
+        filename = request.wcdma.filename
+    elif network == 'LTE':
+        filename = request.lte.filename
     cursor = connection.cursor()
-    cursor.execute("SELECT TREEVIEW FROM TOPOLOGY_TREEVIEW WHERE filename='%s'" % (wcdma, ))
+    cursor.execute("SELECT TREEVIEW FROM TOPOLOGY_TREEVIEW WHERE filename='%s'" % (filename, ))
     for row in cursor:
         data = row[0]
 

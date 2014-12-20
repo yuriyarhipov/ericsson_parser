@@ -17,6 +17,15 @@ class CNA:
                 settings.DATABASES['default']['PASSWORD']))
         self.cursor = self.conn.cursor()
 
+    def get_tree(self, filename):
+        data = {}
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT DISTINCT BSC, MSC, SECTORS FROM "%s" ORDER BY BSC' % (filename, ))
+        for row in cursor:
+            data[row[0]] = []
+
+
+
     def get_cells(self, filename):
         self.cursor.execute('SELECT DISTINCT CELL FROM "%s" ORDER BY CELL' % (filename, ))
         return [{'cell': r[0], 'type': 'Cells'} for r in self.cursor.fetchall()]
@@ -149,7 +158,7 @@ class CNA:
         cursor = self.conn.cursor()
         sql_columns = ', '.join(['"%s" TEXT' % col for col in columns])
 
-        cursor.execute('DROP TABLE IF EXISTS "%s"' % (table_name, ))
+        cursor.execute('DROP TABLE IF EXISTS "%s" CASCADE' % (table_name, ))
         cursor.execute('CREATE TABLE "%s" (%s) ' % (table_name, sql_columns))
 
     def save_cna(self, filename, project, description, vendor, file_type, network, task, current, available):
