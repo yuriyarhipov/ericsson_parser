@@ -3,7 +3,6 @@ import psycopg2
 from django.conf import settings
 
 from query.models import GroupCells, QueryTemplate
-from files.models import SuperFile
 
 
 class WCDMA:
@@ -90,6 +89,7 @@ class WCDMA:
         return column
 
     def run_query(self, template, cells, filename):
+        from files.models import SuperFile
         if SuperFile.objects.filter(filename=filename).exists():
             filename = SuperFile.objects.filter(filename=filename).first().description.split(',')
         else:
