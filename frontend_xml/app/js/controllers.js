@@ -11,14 +11,22 @@ xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectServ
         });
   }]);
 
-xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService', '$location',
-    function($scope, $cookies, activeProjectService, $location) {
+xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService','activeFileService' , '$location',
+    function($scope, $cookies, activeProjectService, $location, activeFileService) {
         $scope.activeProject = $cookies.active_project;
+        $scope.activeWCDMA = $cookies.wcdma;
         if (!$cookies.active_project){
             $location.path('/projects/');
         }
+
         $scope.$on('handleBroadcast', function() {
             $scope.activeProject = activeProjectService.project;
+        });
+
+        $scope.$on('activeFileBroadcast', function() {
+            $scope.activeWCDMA = $cookies.wcdma;
+            $scope.activeLTE = $cookies.lte;
+            $scope.activeGSM = $cookies.gsm;
         });
   }]);
 

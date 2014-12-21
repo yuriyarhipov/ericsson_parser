@@ -17,9 +17,16 @@ class Project(models.Model):
         data = []
         if network == 'WCDMA':
             wcdma_measurements = self.get_tree(network, 'WNCS OSS FILE', vendor)
-            wcdma_measurements.extend(self.get_tree(network, 'WMRR OSS FILE', vendor))
+            if wcdma_measurements:
+                wcdma_measurements.extend(self.get_tree(network, 'WMRR OSS FILE', vendor))
+            else:
+                wcdma_measurements = self.get_tree(network, 'WMRR OSS FILE', vendor)
+
             wcdma_licenses_hardware_info = self.get_tree(network, 'WCDMA LICENSE FILE OSS XML', vendor)
-            wcdma_licenses_hardware_info.extend(self.get_tree(network, 'WCDMA HARDWARE FILE OSS XML', vendor))
+            if wcdma_licenses_hardware_info:
+                wcdma_licenses_hardware_info.extend(self.get_tree(network, 'WCDMA HARDWARE FILE OSS XML', vendor))
+            else:
+                wcdma_licenses_hardware_info = self.get_tree(network, 'WCDMA HARDWARE FILE OSS XML', vendor)
 
             data.extend([
                 {'id': 'RNC',
@@ -40,7 +47,11 @@ class Project(models.Model):
             ])
         elif network == 'GSM':
             gsm_measurements = self.get_tree(network, 'GSM NCS OSS FILE', vendor)
-            gsm_measurements.extend(self.get_tree(network, 'GSM MRR OSS FILE', vendor))
+            if gsm_measurements:
+                gsm_measurements.extend(self.get_tree(network, 'GSM MRR OSS FILE', vendor))
+            else:
+                gsm_measurements = self.get_tree(network, 'GSM MRR OSS FILE', vendor)
+
             data.extend([
                 {'id': 'gsm_measurements',
                 'label': 'Network Measurements',
@@ -52,7 +63,11 @@ class Project(models.Model):
 
         elif network == 'LTE':
             lte_licenses_hardware_info = self.get_tree(network, 'LTE LICENSE FILE OSS XML', vendor)
-            lte_licenses_hardware_info.extend(self.get_tree(network, 'LTE HARDWARE FILE OSS XML', vendor))
+            if lte_licenses_hardware_info:
+                lte_licenses_hardware_info.extend(self.get_tree(network, 'LTE HARDWARE FILE OSS XML', vendor))
+            else:
+                lte_licenses_hardware_info = self.get_tree(network, 'LTE HARDWARE FILE OSS XML', vendor)
+
             data.extend([
                 {'id': 'RNC',
                 'label': 'Radio Network Configuration',
@@ -64,8 +79,6 @@ class Project(models.Model):
                 'label': 'Licenses & Hardware Info',
                 'children': lte_licenses_hardware_info},
             ])
-
-
         return data
 
     def get_network_tree(self, network):
@@ -79,11 +92,15 @@ class Project(models.Model):
                 'network': network,
                 'children': self.get_vendor_tree(network, vendor)
             })
+        if not data:
+            return {}
         return data
 
 
     def get_tree(self, network, file_type, vendor):
         data = []
         for f in self.get_list_files(network, file_type, vendor):
-            data.append({'id': f, 'label': f, 'children': '', 'type': file_type, 'network': network})
+            data.append({'id': f, 'label': f, 'children': '', 'type': file_type, 'network': network, 'menu': 'file'})
+        if not data:
+            return {}
         return data

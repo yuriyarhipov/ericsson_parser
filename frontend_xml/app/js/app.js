@@ -11,6 +11,7 @@ var XmlApp = angular.module(
         'treeControl',
         'treeViewControllers',
         'activeProjectModule',
+        'activeFileModule',
         'uploadFileModule',
         'queryControllers',
         'tableControllers',

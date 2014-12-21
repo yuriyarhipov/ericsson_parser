@@ -41,23 +41,40 @@ def files(request):
     project = request.project
     files = []
 
+    active_files = []
+
+    if request.lte:
+        active_files.append(request.lte.filename)
+    if request.cna:
+        active_files.append(request.cna.filename)
+    if request.wcdma:
+        active_files.append(request.wcdma.filename)
+
     for super_f in SuperFile.objects.filter(project=project):
+        status = 'uploaded'
+        if super_f.filename in active_files:
+            status = 'Active'
         files.append({
             'filename': super_f.filename,
             'date': super_f.date.strftime('%m.%d.%Y'),
             'file_type': 'superfile',
             'network': super_f.network,
-            'description': super_f.files
+            'description': super_f.files,
+            'status': status
         })
 
     for f in Files.objects.filter(project=project):
+        status = 'uploaded'
+        if f.filename in active_files:
+            status = 'Active'
         files.append({
             'filename': f.filename,
             'date': f.date.strftime('%m.%d.%Y'),
             'file_type': f.file_type,
             'network': f.network,
             'vendor': f.vendor,
-            'description': f.description
+            'description': f.description,
+            'status': status
         })
 
     uploaded_files = []

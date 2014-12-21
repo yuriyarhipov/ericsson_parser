@@ -72,8 +72,8 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
     }
 ]);
 
-treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http', 'activeProjectService',
-    function ($scope, $cookies, $http, activeProjectService) {
+treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http', 'activeProjectService', 'activeFileService', '$location',
+    function ($scope, $cookies, $http, activeProjectService, activeFileService, $location) {
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = {};
         $scope.network.selected = 'GSM';
@@ -127,6 +127,15 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http', 'acti
             loadData(project);
         });
 
+        $scope.showSelected = function(node){
+            var file_type = node.type;
+            var file_name = node.label;
+            activeFileService.setActiveFile(file_name, file_type);
 
+            if ((file_type == 'WCDMA RADIO OSS BULK CM XML FILE') || (file_type == 'WCDMA TRANSPORT OSS BULK CM XML FILE')){
+                $location.path('/explore/' + file_name + '/');
+            }
+
+        };
     }
 ]);

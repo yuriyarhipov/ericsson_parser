@@ -5,11 +5,12 @@ from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from table import Table, get_excel
-from files.models import Files
+from files.models import Files, SuperFile
 
 
 def table(request, filename, table_name):
-
+    if SuperFile.objects.filter(filename=filename, project=request.project).exists():
+        filename = SuperFile.objects.filter(filename=filename, project=request.project).first().files
     if table_name == 'rnd':
         active_file = request.COOKIES.get('active_file')
         if Files.objects.filter(filename__iexact=active_file, project=request.project).exists():

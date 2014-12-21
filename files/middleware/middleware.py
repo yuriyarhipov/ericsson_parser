@@ -8,6 +8,10 @@ class ActiveFiles(object):
         wcdma_filename = request.COOKIES.get('wcdma')
         lte_filename = request.COOKIES.get('lte')
         cna_filename = request.COOKIES.get('cna')
+        request.lte = None
+        request.cna = None
+        request.wcdma = None
+
 
         if Files.objects.filter(filename=wcdma_filename, project=project).exists():
             wcdma_file = Files.objects.get(filename=wcdma_filename, project=project)

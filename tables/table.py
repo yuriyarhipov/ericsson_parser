@@ -35,6 +35,7 @@ class Table(object):
                 settings.DATABASES['default']['PASSWORD']))
         self.table_name = table_name
         self.filename = filename
+        self.sql_filename = ["'%s'" % f.lower() for f in self.filename.split(',')]
         self.columns = self.get_columns()
 
     def sort_columns(self, columns):
@@ -121,7 +122,8 @@ class Table(object):
         order_columns = sql_columns
         if self.table_name == 'BrightcommsRNDDate':
             order_columns = 'SITENAME, SECTORID, SITEID, CID'
-        cursor.execute("SELECT %s FROM %s WHERE lower(filename)='%s' ORDER BY %s" % (sql_columns, self.table_name, self.filename.lower(), order_columns))
+        print "SELECT %s FROM %s WHERE lower(filename) IN (%s) ORDER BY %s" % (sql_columns, self.table_name, ','.join(self.sql_filename), order_columns)
+        cursor.execute("SELECT %s FROM %s WHERE lower(filename) IN (%s) ORDER BY %s" % (sql_columns, self.table_name, ','.join(self.sql_filename), order_columns))
         data = cursor.fetchall()
         return data
 

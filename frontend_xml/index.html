@@ -24,6 +24,7 @@
     <script type='text/javascript' src='/app/js/app.js'></script>
     <script type='text/javascript' src='/app/js/controllers.js'></script>
     <script type='text/javascript' src='/app/js/project.js'></script>
+    <script type='text/javascript' src='/app/js/active_file.js'></script>
     <script type='text/javascript' src='/app/js/upload_file.js'></script>
     <script type='text/javascript' src='/app/js/controllers/file.js'></script>
     <script type='text/javascript' src='/app/js/controllers/treeview.js'></script>
@@ -141,8 +142,14 @@
         </div>
         <div class="row">
             <div class="container" ng-controller="ActiveProjectCtrl">
-                <h5>Active project: <span ng-bind="activeProject"></span></h5>
-                <a href="#/add_file" class="btn btn-success">Add File</a>
+                <div class="col-md-12">
+                    <h5>Active project: <span ng-bind="activeProject"></span></h5>
+                    <h5>Active WCDMA: <span ng-bind="activeWCDMA"></span></h5>
+                    <h5>Active LTE: <span ng-bind="activeLTE"></span></h5>
+                    <h5>Active GSM: <span ng-bind="activeGSM"></span></h5>
+                    <a href="#/add_file" class="btn btn-success">Add File</a>
+                </div>
+
             </div>
         </div>
     </div>
@@ -159,8 +166,8 @@
                     tree-model="treedata"
                     options="treeOptions"
                     on-selection="showSelected(node)"
-                    selected-node="node1">
-                        {{node.label}}
+                    selected-node="selected_node">
+                       <span context-menu data-target="menu-{{node.menu}}">{{node.label}}</span>
                 </div>
             </tab>
             <tab heading="Topology Tree View">
@@ -185,12 +192,22 @@
     <div ng-view class="well col-md-{{width}}">
     </div>
 </div>
-<div class="dropdown position-fixed" id="menu-1">
+<div class="dropdown position-fixed" id="menu-file">
   <ul class="dropdown-menu" role="menu">
     <li>
       <a class="pointer" role="menuitem" tabindex="1"
          ng-click="panel.highlight = true">
-         set as Active
+         Delete file
+      </a>
+    </li>
+  </ul>
+</div>
+<div class="dropdown position-fixed" id="menu-bri">
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a class="pointer" role="menuitem" tabindex="1"
+         ng-click="panel.highlight = true">
+         Edit
       </a>
     </li>
   </ul>
