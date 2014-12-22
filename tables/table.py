@@ -122,7 +122,7 @@ class Table(object):
         order_columns = sql_columns
         if self.table_name == 'BrightcommsRNDDate':
             order_columns = 'SITENAME, SECTORID, SITEID, CID'
-        print "SELECT %s FROM %s WHERE lower(filename) IN (%s) ORDER BY %s" % (sql_columns, self.table_name, ','.join(self.sql_filename), order_columns)
+
         cursor.execute("SELECT %s FROM %s WHERE lower(filename) IN (%s) ORDER BY %s" % (sql_columns, self.table_name, ','.join(self.sql_filename), order_columns))
         data = cursor.fetchall()
         return data
