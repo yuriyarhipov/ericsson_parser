@@ -180,7 +180,7 @@ class CNA:
                 current = float(current) + float(interval)
                 self.add_row(table_name, columns, row)
                 task.update_state(state="PROGRESS", meta={"current": int(current), "total": 99})
-        Excel(project, table_name, xls_columns, xls_data).filename
+        Excel(project.project_name, table_name, xls_columns, xls_data).filename
         Files.objects.filter(filename=table_name, project=project).delete()
         Files.objects.create(
                 filename=table_name,
