@@ -2,7 +2,8 @@ from zipfile import ZipFile
 from django.conf import settings
 import tempfile
 import xlsxwriter
-from os.path import join
+from os.path import join, exists
+from os import makedirs
 
 
 class Excel:
@@ -18,7 +19,10 @@ class Excel:
 
     def main(self):
         static_path = settings.STATICFILES_DIRS[0]
-        archive_filename = join('%s/%s' % (static_path, self.project), self.table_name +'.zip')
+        file_path = '%s/%s' % (static_path, self.project)
+        if not exists(file_path):
+            makedirs(file_path)
+        archive_filename = join(file_path, self.table_name +'.zip')
         excel_filename = join(tempfile.mkdtemp(), self.table_name + '.xlsx')
         workbook = xlsxwriter.Workbook(excel_filename)
         worksheet = workbook.add_worksheet(self.table_name)
@@ -28,5 +32,5 @@ class Excel:
         zip = ZipFile(archive_filename, 'w')
         zip.write(excel_filename, arcname=self.table_name + '.xlsx')
         zip.close()
-        self.filename = archive_filename
+        self.filename = join('/static/%s' % self.project, self.table_name +'.zip')
 
