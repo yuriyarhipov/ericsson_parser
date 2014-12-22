@@ -16,7 +16,7 @@ xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activePro
         $scope.activeProject = $cookies.active_project;
         $scope.activeWCDMA = $cookies.wcdma;
         if (!$cookies.active_project){
-            $location.path('/projects/');
+            //$location.path('/projects/');
         }
 
         $scope.$on('handleBroadcast', function() {

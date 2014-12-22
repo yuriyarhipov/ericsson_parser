@@ -1,8 +1,8 @@
 import psycopg2
 from django.conf import settings
 from query.models import QueryTemplate, GroupCells
-from files.models import Files
-from project.models import Project
+from files.models import Files, ExcelFile
+from files.excel import Excel
 from lib import fcount
 from os.path import basename
 
@@ -166,16 +166,21 @@ class CNA:
         count = fcount(filename)
         with open(filename) as f:
             columns = []
-            for col in f.readline().split():
+            xls_columns = f.readline().split()
+            xls_data = []
+            for col in xls_columns:
                 if (col not in columns) and (len(columns) < 1550):
                     columns.append(col.lower())
 
             self.create_cna_tables(table_name, columns[:])
             interval = float(available)/float(count)
             for row in f:
+                if '---' not in row:
+                    xls_data.append(row)
                 current = float(current) + float(interval)
                 self.add_row(table_name, columns, row)
                 task.update_state(state="PROGRESS", meta={"current": int(current), "total": 99})
+        archive_name = Excel(project, network, table_name, xls_columns, xls_data).filename
         Files.objects.filter(filename=table_name, project=project).delete()
         Files.objects.create(
                 filename=table_name,

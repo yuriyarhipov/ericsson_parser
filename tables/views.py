@@ -6,6 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from table import Table, get_excel
 from files.models import Files, SuperFile
+from files.excel import Excel
 
 
 def table(request, filename, table_name):
@@ -34,7 +35,7 @@ def table(request, filename, table_name):
         columns = current_table.columns
 
     if request.GET.get('excel'):
-        return HttpResponseRedirect('/static/%s' % get_excel(table_name, columns, data))
+        return HttpResponseRedirect(Excel(request.project.project_name, table_name, columns, data).filename)
 
     page = request.GET.get('page', 1)
     data_length = len(data)

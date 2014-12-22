@@ -59,3 +59,9 @@ class SuperFile(models.Model):
     project = models.ForeignKey(Project)
     file_type = models.CharField(max_length=50, blank=True)
     vendor = models.TextField()
+
+class ExcelFile(models.Model):
+    filename = models.TextField()
+    table = models.TextField()
+    project = models.ForeignKey(Project)
+    excel_file = models.TextField()
