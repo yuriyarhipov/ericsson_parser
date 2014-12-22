@@ -176,7 +176,7 @@ class CNA:
             interval = float(available)/float(count)
             for row in f:
                 if '---' not in row:
-                    xls_data.append(row)
+                    xls_data.append(row.split())
                 current = float(current) + float(interval)
                 self.add_row(table_name, columns, row)
                 task.update_state(state="PROGRESS", meta={"current": int(current), "total": 99})
