@@ -57,10 +57,9 @@ class Files(models.Model):
 
     def get_param(self):
         cursor = connection.cursor()
-        data = []
+        tables = set()
+        params = set()
         if self.network in ['WCDMA', 'LTE']:
-            tables = set()
-            params = set()
             for f in Files.objects.filter(project=self.project, network=self.network):
                 tables = tables.union(set(f.tables.split(',')))
             for table in tables:
@@ -76,6 +75,9 @@ class Files(models.Model):
             params.discard('element2')
             params.discard('vendorname')
             params.discard('utrancell')
+        else:
+            cursor.execute('SELECT * FROM "%s" LIMIT 0' % self.filename)
+            params = set(desc[0] for desc in cursor.description)
 
         data = list(params)
         data.sort()

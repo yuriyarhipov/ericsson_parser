@@ -27,7 +27,6 @@ urlpatterns = patterns('',
     url(r'^data/by_technology/(\S+)/$', table_views.by_technology),
 
     url(r'^data/version_release/$', parameters_views.version_release),
-    url(r'^data/get_mo/(\S+)/$', parameters_views.get_mo),
     url(r'^data/get_param/(\S+)/$', parameters_views.get_param),
     url(r'^data/add_template/$', parameters_views.add_template),
     url(r'^data/predefined_templates/$', parameters_views.predefined_templates),

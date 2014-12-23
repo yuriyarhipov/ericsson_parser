@@ -30,25 +30,12 @@ def version_release(request):
     return HttpResponse(json.dumps({'columns': columns, 'data': data}), content_type='application/json')
 
 
-def get_mo(request, network):
-    data = []
-    project = request.project
-    if network == 'WCDMA':
-        data = request.wcdma.get_mo()
-    elif network == 'GSM':
-        data = [f.filename for f in Files.objects.filter(project=project, network='GSM')]
-    elif network == 'LTE':
-        data = request.lte.get_mo()
-    return HttpResponse(json.dumps(data), content_type='application/json')
-
-
 def get_param(request, network):
     data = []
-    project = request.project
     if network == 'WCDMA':
         data = request.wcdma.get_param()
     elif network == 'GSM':
-        data = [f.filename for f in Files.objects.filter(project=project, network='GSM')]
+        data = request.cna.get_param()
     elif network == 'LTE':
         data = request.lte.get_param()
 
@@ -67,7 +54,7 @@ def add_template(request):
     if network == 'WCDMA':
         select_mo_val = request.wcdma.get_mo(select_mo_param_val)
     elif network == 'GSM':
-        select_mo_val = request.cna.get_mo(select_mo_param_val)
+        select_mo_val = [request.cna.filename, ]
     elif network == 'LTE':
         select_mo_val = request.lte.get_mo(select_mo_param_val)
     print select_mo_val
