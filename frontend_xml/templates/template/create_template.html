@@ -34,19 +34,6 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label" for="mo">{{lable_mo}}:</label>
-            <div class="col-sm-9" id="mo">
-                <ui-select ng-change="onChangeMO()" ng-model="mo.selected" theme="bootstrap"
-                    ng-disabled="disabled"
-                    reset-search-input="false">
-                    <ui-select-match placeholder="...">{{$select.selected}}</ui-select-match>
-                    <ui-select-choices repeat="table in tables | filter:$select.search">
-                        {{table}}
-                    </ui-select-choices>
-                </ui-select>
-            </div>
-        </div>
-        <div class="form-group">
             <label class="col-sm-3 control-label" for="param">Parameter:</label>
             <div class="col-sm-9" id="param">
                 <ui-select ng-model="param.selected" theme="bootstrap"
@@ -60,13 +47,13 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label" for="min">Min:</label>
+            <label class="col-sm-3 control-label">Min:</label>
             <div class="col-sm-9">
                 <input ng-model="min_value" type="text" class="form-control">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label" for="max">Max:</label>
+            <label class="col-sm-3 control-label">Max:</label>
             <div class="col-sm-9">
                 <input ng-model="max_value" type="text" class="form-control">
             </div>
@@ -81,7 +68,6 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <td>MO</td>
                         <td>PARAMETER</td>
                         <td>MIN</td>
                         <td>MAX</td>
@@ -89,7 +75,6 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="row in param_table">
-                        <td>{{ row.mo }}<input type="hidden" name="mo" value="{{ row.mo }}"></td>
                         <td>{{ row.param }}<input type="hidden" name="param" value="{{ row.param }}"></td>
                         <td>{{ row.min_value }}<input type="hidden" name="min_value" value="{{ row.min_value }}"></td>
                         <td>{{ row.max_value }}<input type="hidden" name="max_value" value="{{ row.max_value }}"></td>

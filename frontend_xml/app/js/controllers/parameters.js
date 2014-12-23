@@ -25,25 +25,13 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http', '$loca
             $location.path('/predefined_templates');
         };
         $scope.onChangeNetwork = function(){
-            $http.get('/data/get_mo/' + $scope.network.selected + '/').success(function(data) {
-                $scope.tables = data;
-            });
-            if ($scope.network.selected == 'GSM'){
-                $scope.lable_mo = 'GSM file';
-            }
-            else{
-                $scope.lable_mo = 'MO';
-            }
-        };
-
-        $scope.onChangeMO = function(){
-            $http.get('/data/get_param/' + $scope.mo.selected + '/').success(function(data) {
+            $http.get('/data/get_param/' + $scope.network.selected + '/').success(function(data) {
                 $scope.columns = data;
             });
         };
 
         $scope.onClickAddParam = function(){
-            var row = {'mo': $scope.mo.selected, 'param': $scope.param.selected, 'min_value': $scope.min_value, 'max_value':$scope.max_value}
+            var row = {'param': $scope.param.selected, 'min_value': $scope.min_value, 'max_value':$scope.max_value}
             $scope.param_table.push(row);
             $scope.min_value = '';
             $scope.max_value = '';

@@ -37,7 +37,7 @@ class WCDMA:
         return [gc.group_name for gc in GroupCells.objects.filter(network='WCDMA').order_by('group_name')]
 
     def get_cells_from_rnc(self, rnc, filename):
-        self.cursor.execute("select DISTINCT UtranCell from Topology where filename='%s' AND RNC='%s'" % (filename, rnc))
+        self.cursor.execute("select DISTINCT UtranCell from Topology where filename=%s AND RNC='%s'" % (filename, rnc))
         return [r[0] for r in self.cursor]
 
     def get_cells_from_group_cell(self, group_cells):
@@ -99,7 +99,7 @@ class WCDMA:
 
         data = []
         columns = []
-        cells = self.convert_form_cells(cells, filename)
+        cells = self.convert_form_cells(cells, filenames)
         if template and cells:
             params = self.get_params_with_min_max(template)
             q = '''SELECT * INTO TEMPORARY TEMP_TEMPLATE FROM "template_%s" WHERE (filename IN (%s)) AND Utrancell in (%s)''' % (template, filenames, ','.join(cells))

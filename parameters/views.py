@@ -42,13 +42,15 @@ def get_mo(request, network):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
-def get_param(request, mo):
-    cursor = connection.cursor()
-    if Files.objects.filter(filename=mo).exists():
-        cursor.execute('SELECT * FROM "%s" LIMIT 0;' % mo)
-    else:
-        cursor.execute('SELECT * FROM %s LIMIT 0;' % mo)
-    data = [desc[0] for desc in cursor.description]
+def get_param(request, network):
+    data = []
+    project = request.project
+    if network == 'WCDMA':
+        data = request.wcdma.get_param()
+    elif network == 'GSM':
+        data = [f.filename for f in Files.objects.filter(project=project, network='GSM')]
+    elif network == 'LTE':
+        data = request.lte.get_param()
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -62,6 +64,13 @@ def add_template(request):
     template_name = request.POST.get('template_name')
     project = request.project
     network = request.POST.get('network')
+    if network == 'WCDMA':
+        select_mo_val = request.wcdma.get_mo(select_mo_param_val)
+    elif network == 'GSM':
+        select_mo_val = request.cna.get_mo(select_mo_param_val)
+    elif network == 'LTE':
+        select_mo_val = request.lte.get_mo(select_mo_param_val)
+    print select_mo_val
     Template().save_template(project, network, template_name, select_mo_val, select_mo_param_val, min_values, max_values)
     Template().check_tables()
     return HttpResponse(json.dumps(data), content_type='application/json')

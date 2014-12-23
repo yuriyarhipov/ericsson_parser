@@ -34,13 +34,18 @@ class Files(models.Model):
             cells = wcdma.get_cells(self.filename)
         return cells
 
-    def get_mo(self):
+    def get_mo(self, params):
         data = []
-        for f in Files.objects.filter(file_type=self.file_type):
-            data.extend(f.tables.split(','))
-        data = set(data)
-        data = list(data)
-        data.sort()
+        cursor = connection.cursor()
+        if self.network in ['WCDMA', 'LTE']:
+            tables = set()
+            for f in Files.objects.filter(project=self.project, network=self.network):
+                tables = tables.union(set(f.tables.split(',')))
+            for table in tables:
+                cursor.execute('SELECT * FROM %s LIMIT 0;' % table)
+                for param in params:
+                    if param in [desc[0] for desc in cursor.description]:
+                        data.append(table)
         return data
 
     def get_data(self):
@@ -49,6 +54,33 @@ class Files(models.Model):
         columns = [desc[0] for desc in cursor.description]
         data = cursor.fetchall()
         return columns, data
+
+    def get_param(self):
+        cursor = connection.cursor()
+        data = []
+        if self.network in ['WCDMA', 'LTE']:
+            tables = set()
+            params = set()
+            for f in Files.objects.filter(project=self.project, network=self.network):
+                tables = tables.union(set(f.tables.split(',')))
+            for table in tables:
+                cursor.execute('SELECT * FROM %s LIMIT 0;' % table)
+                table_params = set(desc[0] for desc in cursor.description)
+                if 'utrancell' in table_params:
+                    params = params.union(set(desc[0] for desc in cursor.description))
+            params.discard('mo')
+            params.discard('version')
+            params.discard('vendor')
+            params.discard('element')
+            params.discard('element1')
+            params.discard('element2')
+            params.discard('vendorname')
+            params.discard('utrancell')
+
+        data = list(params)
+        data.sort()
+        return data
+
 
 
 class SuperFile(models.Model):
