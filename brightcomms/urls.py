@@ -35,6 +35,8 @@ urlpatterns = patterns('',
     url(r'^data/run_template/$', parameters_views.run_template),
     url(r'^data/upload_template/$', parameters_views.upload_template),
     url(r'^data/edit_template/(\S+)/$', parameters_views.edit_template),
+    url(r'^data/save_automatic_site_query/$', parameters_views.save_automatic_site_query),
+    url(r'^data/automatic_site_query/$', parameters_views.automatic_site_query),
 
     url(r'^data/save_file/$', files_views.save_files),
     url(r'^data/files/$', files_views.files),
@@ -54,4 +56,5 @@ urlpatterns = patterns('',
 
 
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )

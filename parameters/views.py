@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 
 from openpyxl import load_workbook
 
@@ -8,12 +9,11 @@ from django.db import connection
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
-from query.models import QueryTemplate
+from query.models import QueryTemplate, SiteQuery
 from files.wcdma import WCDMA
 from files.cna import CNA
 from files.lte import LTE
 from files.views import handle_uploaded_file
-from files.models import Files
 from template import Template
 from tables.table import get_excel
 
@@ -142,3 +142,18 @@ def edit_template(request, template):
         data['network'] = qt.network
         data['param_table'].append({'mo': qt.mo, 'param': qt.param_name, 'min_value': qt.min_value, 'max_value': qt.max_value})
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def save_automatic_site_query(request):
+    filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
+    data = Template.site_query(project=request.project, filename=filename)
+    return HttpResponse(json.dumps({'data': data}), content_type='application/json')
+
+
+def automatic_site_query(request):
+    data = OrderedDict()
+    for query in SiteQuery.objects.filter(project=request.project):
+        if query.site not in data:
+            data[query.site] = []
+        data[query.site].append([query.param_name, query.param_min, query.param_max])
+    return HttpResponse(json.dumps({'data': data}), content_type='application/json')

@@ -117,6 +117,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/files/superfile.html',
                 controller: 'superfileCtrl'
             }).
+            when('/set_automatic_site_query/',{
+                templateUrl: 'templates/query/set_automatic_site_query.html',
+                controller: 'automaticSiteQueryCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });

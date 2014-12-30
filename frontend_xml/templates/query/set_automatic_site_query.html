@@ -1,0 +1,35 @@
+<form ng-upload="complete(content)" class="form-horizontal col-sm-6" role="form" action="/data/save_automatic_site_query/" upload-options-enable-rails-csrf>
+    <div class="form-group">
+        <label for="file" class="col-sm-3 control-label">File</label>
+        <div class="col-sm-9">
+            <input type="file" id="file" name="uploaded_file">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-9">
+            <button type="submit" ng-disabled="$isLoading" class="btn btn-success">Upload</button>
+            <button class="btn btn-default" type="reset">Cancel</button>
+        </div>
+
+    </div>
+</form>
+<div class="col-md-12" ng-repeat="(site, params) in site_query">
+    <h4>{{ site }}</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <td class="col-md-10"></td>
+                <td class="col-md-1">Min</td>
+                <td class="col-md-1">Max</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="param in params">
+                <td>{{ param.0 }}</td>
+                <td>{{ param.1 }}</td>
+                <td>{{ param.2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

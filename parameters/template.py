@@ -1,5 +1,8 @@
+from collections import OrderedDict
+from openpyxl import load_workbook
+
 from files.models import Files
-from query.models import QueryTemplate
+from query.models import QueryTemplate, SiteQuery
 from django.conf import settings
 from collections import OrderedDict
 import psycopg2
@@ -185,5 +188,26 @@ class Template(object):
             elif f.network == 'LTE':
                 return 'eutrancell'
         return 'CELL'
+
+    @staticmethod
+    def site_query(project, filename):
+        data = OrderedDict()
+        wb = load_workbook(filename=filename, use_iterators=True)
+        ws = wb.active
+        SiteQuery.objects.all().delete()
+        for row in ws.iter_rows():
+            if row[0].value == '**':
+                site_name = row[1].value
+            else:
+                param_name = row[1].value
+                param_min = row[2].value if row[2].value else ''
+                param_max = row[3].value if row[3].value else ''
+
+                if site_name not in data:
+                    data[site_name] = []
+                data[site_name].append([param_name, param_min, param_max])
+                SiteQuery.objects.create(project=project, site=site_name, param_name=param_name, param_min=param_min, param_max=param_max)
+
+        return data
 
 

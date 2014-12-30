@@ -62,3 +62,15 @@ queryControllers.controller('GroupsCtrl', ['$scope', '$http',
             });
 
   }]);
+
+queryControllers.controller('automaticSiteQueryCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $http.get('data/automatic_site_query/').success(function(data){
+            $scope.site_query = data.data;
+        });
+
+        $scope.complete = function(data){
+            $scope.site_query = data.data;
+        }
+
+  }]);

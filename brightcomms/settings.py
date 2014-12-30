@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'project',
     'files',
     'query',
+    'rest_framework',
 )
 
 MIDDLEWARE_CLASSES = (
