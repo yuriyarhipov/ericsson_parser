@@ -121,6 +121,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/query/set_automatic_site_query.html',
                 controller: 'automaticSiteQueryCtrl'
             }).
+            when('/parameters_overview/',{
+                templateUrl: 'templates/query/parameters_overview.html',
+                controller: 'parameters_overviewCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });

@@ -74,3 +74,13 @@ queryControllers.controller('automaticSiteQueryCtrl', ['$scope', '$http',
         }
 
   }]);
+
+queryControllers.controller('parameters_overviewCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.onChange = function(){
+            var site = $scope.site;
+            $http.get('/data/get_site_query/' + site + '/').success(function(data){
+                $scope.tabs = data.tabs;
+            });
+        };
+  }]);

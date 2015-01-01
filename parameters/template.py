@@ -69,7 +69,6 @@ class Template(object):
         sql = 'TOPOLOGY_LTE INNER JOIN %s ON ((%s.%s = TOPOLOGY_LTE.%s) AND (%s.filename=TOPOLOGY_LTE.filename))' % (table_name, table_name, sql_key, topology_key, table_name)
         return sql
 
-
     def get_join_wcdma(self, table_name):
         columns = self.get_columns(table_name)
         join_sql = []
@@ -189,8 +188,41 @@ class Template(object):
                 return 'eutrancell'
         return 'CELL'
 
-    @staticmethod
-    def site_query(project, filename):
+    def get_site_query_value(self, filename, site, param, table):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT %s FROM %s WHERE (filename='%s') AND (Element2='%s')" % (param, table, filename, site))
+        if cursor.rowcount > 0:
+            return cursor.fetchall()[0][0]
+
+    def check_columns(self, column, table_name):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE (lower(column_name)=%s) AND (lower(table_name)=%s)", (column.lower(), table_name.lower()))
+        return cursor.rowcount > 0
+
+
+    def get_site_query(self, site, filename):
+        cursor = self.conn.cursor()
+        wcdma_tables = dict()
+        params = dict()
+        for f in Files.objects.filter(network='WCDMA'):
+            for table in f.tables.split(','):
+                wcdma_tables[table.lower()] = ''
+
+        for sq in SiteQuery.objects.all():
+            if sq.site not in params:
+                params[sq.site] = dict()
+
+            cursor.execute("SELECT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE lower(column_name)='%s'" % (sq.param_name.lower(), ))
+            for row in cursor:
+                if row[0].lower() in wcdma_tables:
+                    if self.check_columns('element2', row[0].lower()):
+                        value = self.get_site_query_value(filename, site, sq.param_name, row[0])
+                    params[sq.site][sq.param_name] = value
+        return params
+
+
+    def site_query(self, project, filename):
+        Files.objects.filter(project=project, network='WCDMA', )
         data = OrderedDict()
         wb = load_workbook(filename=filename, use_iterators=True)
         ws = wb.active

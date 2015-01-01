@@ -57,7 +57,6 @@ def add_template(request):
         select_mo_val = [request.cna.filename, ]
     elif network == 'LTE':
         select_mo_val = request.lte.get_mo(select_mo_param_val)
-    print select_mo_val
     Template().save_template(project, network, template_name, select_mo_val, select_mo_param_val, min_values, max_values)
     Template().check_tables()
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -146,7 +145,7 @@ def edit_template(request, template):
 
 def save_automatic_site_query(request):
     filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
-    data = Template.site_query(project=request.project, filename=filename)
+    data = Template().site_query(project=request.project, filename=filename)
     return HttpResponse(json.dumps({'data': data}), content_type='application/json')
 
 
@@ -157,3 +156,14 @@ def automatic_site_query(request):
             data[query.site] = []
         data[query.site].append([query.param_name, query.param_min, query.param_max])
     return HttpResponse(json.dumps({'data': data}), content_type='application/json')
+
+
+def get_site_query(request, site):
+    data = dict()
+    data['tabs'] = []
+    params = Template().get_site_query(site, request.wcdma.filename)
+    for tab_name, tab_params in params.iteritems():
+        data['tabs'].append({'title': tab_name, 'content': tab_params})
+
+    return HttpResponse(json.dumps(data), content_type='application/json')
+

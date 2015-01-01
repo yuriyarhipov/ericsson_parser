@@ -1,0 +1,15 @@
+<div class="col-md-12">
+    <div class="col-md-3 form-group">
+        <input class="form-control" type="text" ng-model="site" ng-change="onChange()" placeholder="Search Site">
+    </div>
+</div>
+<div class="col-md-12">
+    <tabset>
+        <tab ng-repeat="tab in tabs" heading="{{tab.title}}">
+            <ul class="list-group" ng-repeat="(key, value) in tab.content">
+                <li class="list-group-item"><span class="badge">{{ value }}</span>{{ key }}</li>
+            </ul>
+
+        </tab>
+    </tabset>
+</div>
