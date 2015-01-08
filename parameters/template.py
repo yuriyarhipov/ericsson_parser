@@ -188,9 +188,9 @@ class Template(object):
                 return 'eutrancell'
         return 'CELL'
 
-    def get_site_query_value(self, filename, site, param, table):
+    def get_site_query_value(self, filename, column, value, param, table):
         cursor = self.conn.cursor()
-        cursor.execute("SELECT %s FROM %s WHERE (filename='%s') AND (Element2='%s')" % (param, table, filename, site))
+        cursor.execute("SELECT %s FROM %s WHERE (filename='%s') AND (lower(%s)='%s')" % (param, table, filename, column, value.lower()))
         if cursor.rowcount > 0:
             return cursor.fetchall()[0][0]
 
@@ -199,6 +199,29 @@ class Template(object):
         cursor.execute("SELECT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE (lower(column_name)=%s) AND (lower(table_name)=%s)", (column.lower(), table_name.lower()))
         return cursor.rowcount > 0
 
+    def get_element2_value(self, filename, utrancell):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT Site FROM Topology WHERE (filename='%s') AND (lower(Utrancell)=lower('%s'))" % (filename, utrancell))
+        for row in cursor:
+            return row[0]
+
+    def check_value(self, value, p_min, p_max):
+        status = 'default'
+        if p_min and value:
+            value = value.strip()
+            p_min = p_min.strip()
+            p_max = p_max.strip()
+            if p_min.lower() in ['true', 'false']:
+                if value:
+                    status = 'success'
+                else:
+                    status = 'danger'
+
+            elif (float(value) >= float(p_min)) and (float(value) <= float(p_max)):
+                status = 'success'
+            else:
+                status = 'danger'
+        return [value, status]
 
     def get_site_query(self, site, filename):
         cursor = self.conn.cursor()
@@ -215,9 +238,15 @@ class Template(object):
             cursor.execute("SELECT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE lower(column_name)='%s'" % (sq.param_name.lower(), ))
             for row in cursor:
                 if row[0].lower() in wcdma_tables:
-                    if self.check_columns('element2', row[0].lower()):
-                        value = self.get_site_query_value(filename, site, sq.param_name, row[0])
-                    params[sq.site][sq.param_name] = value
+                    if not params[sq.site].get(sq.param_name):
+                        if self.check_columns('utrancell', row[0].lower()):
+                            value = self.get_site_query_value(filename, 'utrancell', site, sq.param_name, row[0])
+                            params[sq.site][sq.param_name] = self.check_value(value, sq.param_min, sq.param_max)
+                        elif self.check_columns('element2', row[0].lower()):
+                            element2 = self.get_element2_value(filename, site)
+                            if element2:
+                                value = self.get_site_query_value(filename, 'element2', element2, sq.param_name, row[0])
+                                params[sq.site][sq.param_name] = self.check_value(value, sq.param_min, sq.param_max)
         return params
 
 
