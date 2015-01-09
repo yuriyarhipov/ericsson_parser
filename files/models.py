@@ -65,7 +65,7 @@ class Files(models.Model):
             for table in tables:
                 cursor.execute('SELECT * FROM %s LIMIT 0;' % table)
                 table_params = set(desc[0] for desc in cursor.description)
-                if 'utrancell' in table_params:
+                if ('utrancell' in table_params) or ('element1' in table_params) or ('element2' in table_params):
                     params = params.union(set(desc[0] for desc in cursor.description))
             params.discard('mo')
             params.discard('version')
