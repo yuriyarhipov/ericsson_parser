@@ -44,7 +44,7 @@ class Files(models.Model):
             for table in tables:
                 cursor.execute('SELECT * FROM %s LIMIT 0;' % table)
                 for param in params:
-                    if param in [desc[0] for desc in cursor.description]:
+                    if param.lower() in [desc[0] for desc in cursor.description]:
                         data.append(table)
         return data
 
