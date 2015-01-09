@@ -34,8 +34,7 @@ class Files(models.Model):
             cells = wcdma.get_cells(self.filename)
         return cells
 
-    def get_mo(self, params):
-        data = []
+    def get_mo(self, param):
         cursor = connection.cursor()
         if self.network in ['WCDMA', 'LTE']:
             tables = set()
@@ -43,10 +42,9 @@ class Files(models.Model):
                 tables = tables.union(set(f.tables.split(',')))
             for table in tables:
                 cursor.execute('SELECT * FROM %s LIMIT 0;' % table)
-                for param in params:
-                    if param.lower() in [desc[0] for desc in cursor.description]:
-                        data.append(table)
-        return data
+                columns = [desc[0] for desc in cursor.description]
+                if (param.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns)):
+                    return table
 
     def get_data(self):
         cursor = connection.cursor()

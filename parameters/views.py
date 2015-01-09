@@ -52,11 +52,25 @@ def add_template(request):
     project = request.project
     network = request.POST.get('network')
     if network == 'WCDMA':
-        select_mo_val = request.wcdma.get_mo(select_mo_param_val)
+        i = 0
+        select_mo_param_val = []
+        select_mo_val = []
+        min_values = []
+        max_values = []
+        for param in request.POST.getlist('param'):
+            print param
+            mo = request.wcdma.get_mo(param)
+            if mo:
+                select_mo_val.append(mo)
+                select_mo_param_val.append(param)
+                min_values.append(request.POST.getlist('min_value')[i])
+                max_values.append(request.POST.getlist('max_value')[i])
+            i += 1
+
     elif network == 'GSM':
         select_mo_val = [request.cna.filename, ]
     elif network == 'LTE':
-        select_mo_val = request.lte.get_mo(select_mo_param_val)
+        select_mo_val, select_mo_param_val = request.lte.get_mo(select_mo_param_val)
     Template().save_template(project, network, template_name, select_mo_val, select_mo_param_val, min_values, max_values)
     Template().check_tables()
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -124,11 +138,10 @@ def upload_template(request):
     wb = load_workbook(filename=filename, use_iterators=True)
     ws = wb.active
     for row in ws.iter_rows():
-        if row[0].value != 'MO':
-            excel_mo = row[0].value
-            excel_param = row[1].value
-            if excel_mo and excel_param:
-                data.append(dict(mo=excel_mo, param=excel_param, min_value=row[2].value, max_value=row[3].value))
+        if row[0].value != 'PARAMETER':
+            excel_param = row[0].value
+            if excel_param:
+                data.append(dict(param=excel_param, min_value=row[1].value, max_value=row[2].value))
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 
