@@ -47,7 +47,7 @@ def topology_treeview(request, network):
         filename = request.lte.filename
     cursor = connection.cursor()
     cursor.execute("SELECT TREEVIEW FROM TOPOLOGY_TREEVIEW WHERE filename='%s'" % (filename, ))
-    for row in cursor:
-        data = row[0]
+    #for row in cursor:
+    #    data = row[0]
 
     return HttpResponse(json.dumps(data), content_type='application/json')
