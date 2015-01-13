@@ -12,7 +12,7 @@ activeFileModule.factory('activeFileService', function($rootScope, $cookies) {
             $cookies.wcdma = filename;
         }
         if ((file_type == 'LTE RADIO eNodeB BULK CM XML FILE') || (file_type == 'LTE TRANSPORT eNodeB BULK CM XML FILE')){
-            $cookies.wcdma = filename;
+            $cookies.lte = filename;
         }
         if (file_type == 'GSM BSS CNA  OSS FILE'){
             $cookies.gsm = filename;

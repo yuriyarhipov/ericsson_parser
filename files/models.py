@@ -27,6 +27,26 @@ class Files(models.Model):
     network = models.TextField()
     project = models.ForeignKey(Project)
 
+    def get_active_file(self, project, network, filename):
+        file_type = ''
+        if Files.objects.filter(filename=filename, project=project).exists():
+            return Files.objects.get(filename=filename, project=project)
+
+        if SuperFile.objects.filter(filename=filename, project=project).exists():
+            return SuperFile.objects.get(filename=filename, project=project)
+
+        if SuperFile.objects.filter(project=project, network=network).exists():
+            return SuperFile.objects.filter(project=project, network=network).first()
+
+        if network == 'WCDMA':
+            file_type = ['WCDMA RADIO OSS BULK CM XML FILE', ]
+        elif network == 'LTE':
+            file_type = ['LTE RADIO eNodeB BULK CM XML FILE', ]
+        elif network == 'GSM':
+            file_type = ['GSM BSS CNA  OSS FILE', ]
+
+        return Files.objects.filter(project=project, file_type__in=file_type, network=network).first()
+
     def get_cells(self):
         cells = []
         if ('XML FILE' in self.file_type) and (self.network == 'WCDMA'):

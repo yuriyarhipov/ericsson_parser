@@ -171,8 +171,8 @@ filesControllers.controller('compareFilesCtrl', ['$scope', '$http',
   }]);
 
 
-filesControllers.controller('superfileCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+filesControllers.controller('superfileCtrl', ['$scope', '$http', '$location',
+    function ($scope, $http, $location) {
         $scope.networks = ['GSM', 'LTE', 'WCDMA'];
         $scope.network = {};
 
@@ -182,6 +182,6 @@ filesControllers.controller('superfileCtrl', ['$scope', '$http',
             });
         };
         $scope.onSave = function(){
-            console.log($scope.selected_files);
+            $location.path('/files_hub');
         };
   }]);

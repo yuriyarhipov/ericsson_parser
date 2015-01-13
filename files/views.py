@@ -103,7 +103,7 @@ def measurements(request, file_type):
 def licenses(request):
     project = request.project
     data = []
-    for f in Files.objects.filter(project=project, file_type='license'):
+    for f in Files.objects.filter(project=project, file_type__in=['WCDMA LICENSE FILE OSS XML', 'LTE LICENSE FILE OSS XML']):
         data.append({'filename': f.filename, 'file_type': f.file_type, 'network': f.network})
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -117,7 +117,7 @@ def license(request, filename, table):
 def hardwares(request):
     project = request.project
     data = []
-    for f in Files.objects.filter(project=project, file_type='hardware'):
+    for f in Files.objects.filter(project=project, file_type__in=['WCDMA HARDWARE FILE OSS XML', 'LTE HARDWARE FILE OSS XML']):
         data.append({'filename': f.filename, 'file_type': f.file_type, 'network': f.network})
     return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -167,6 +167,7 @@ def save_superfile(request):
     network = source_file.network
     file_type = source_file.file_type
     vendor = source_file.vendor
+    SuperFile.objects.filter(filename=filename, network=network, project=project).delete()
     SuperFile.objects.create(
         filename=filename,
         files=','.join(selected_files),
