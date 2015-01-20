@@ -642,25 +642,24 @@ class Processing:
         if header is not None:
             self.vendorName = header.get('vendorName')
 
-        attrs = [attr for attr in root.iterfind('.//{genericNrm.xsd}attributes')]
-        count = len(attrs)
-        interval = float(interval_per_file) / float(count)
+
+
 
         i = 0
-        for attribute in attrs:
+        for attribute in root.iterfind('.//{genericNrm.xsd}attributes'):
             self.get_table(attribute)
-            current = float(current) + float(interval)
-            i += 1
-            if i == 1000:
-                i = 0
-                task.update_state(state="PROGRESS", meta={"current": int(current), "total": 99})
+            i = i + 1
+            print "OK%s" % i
+
 
 
 class Xml(object):
     def save_xml(self, filename, project, description, vendor, file_type, network, current_task, current,
                  interval_per_file):
         xml = Processing(filename)
+        print "OK0"
         xml.parse_data(current_task, current, interval_per_file / 2)
+        print "OK1"
         current += interval_per_file / 2
         tables = Tables(xml.data, xml.tables, xml.filename)
         tables.create_tables(current_task, current, interval_per_file / 2)

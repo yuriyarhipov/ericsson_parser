@@ -185,3 +185,20 @@ filesControllers.controller('superfileCtrl', ['$scope', '$http', '$location',
             $location.path('/files_hub');
         };
   }]);
+
+filesControllers.controller('setCnaTemplateCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        function get_template(){
+            $http.get('/data/files/get_cna_template/').success(function(data){
+                $scope.tables = data;
+            });
+        }
+        get_template();
+        $scope.complete = function(data){
+            $scope.tables = data;
+            get_template();
+        };
+
+
+
+  }]);

@@ -1,12 +1,13 @@
 import json
 
+from openpyxl import load_workbook
 
 from django.http import HttpResponse
 from django.conf import settings
 
 from celery.result import AsyncResult
 
-from .models import Files, UploadedFiles, SuperFile
+from .models import Files, UploadedFiles, SuperFile, CNATemplate
 from tables.table import Table
 from files.compare import CompareFiles, CompareTable
 import tasks
@@ -154,10 +155,12 @@ def delete_file(request, filename):
     SuperFile.objects.filter(filename=filename).delete()
     return HttpResponse(json.dumps([]), content_type='application/json')
 
+
 def get_files(request, network):
     project = request.project
     data = [f.filename for f in Files.objects.filter(project = project, network=network)]
     return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 def save_superfile(request):
     project = request.project
@@ -176,3 +179,29 @@ def save_superfile(request):
         file_type=file_type,
         vendor=vendor)
     return HttpResponse(json.dumps({'status': 'ok'}), content_type='application/json')
+
+
+def set_cna_template(request):
+    project = request.project
+    CNATemplate.objects.filter(project=project).delete()
+
+    filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
+    wb = load_workbook(filename=filename)
+
+    for sheet_name in wb.get_sheet_names():
+        ws = wb.get_sheet_by_name(sheet_name)
+        columns = []
+        for col in ws.columns:
+            columns.append(col[0].value)
+        CNATemplate.objects.create(project=project, table_name=sheet_name, columns=','.join(columns))
+
+    return HttpResponse(json.dumps([]), content_type='application/json')
+
+
+def get_cna_template(request):
+    tables = []
+    project = request.project
+    for cna_template in CNATemplate.objects.filter(project=project):
+        tables.append({'table_name': cna_template.table_name, 'columns': cna_template.columns})
+
+    return HttpResponse(json.dumps(tables), content_type='application/json')

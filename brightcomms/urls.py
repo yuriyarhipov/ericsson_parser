@@ -50,6 +50,8 @@ urlpatterns = patterns('',
     url(r'^data/delete_file/(\S+)/$', files_views.delete_file),
     url(r'^data/files/get_files/(\S+)/$', files_views.get_files),
     url(r'^data/files/save_superfile/$', files_views.save_superfile),
+    url(r'^data/files/set_cna_template/$', files_views.set_cna_template),
+    url(r'^data/files/get_cna_template/$', files_views.get_cna_template),
 
     url(r'^data/dash_num_sectors/$', dash_view.dash_num_sectors),
     url(r'^data/dash_model_eq/$', dash_view.dash_model_eq),

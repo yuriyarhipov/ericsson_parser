@@ -117,3 +117,9 @@ class ExcelFile(models.Model):
     table = models.TextField()
     project = models.ForeignKey(Project)
     excel_file = models.TextField()
+
+
+class CNATemplate(models.Model):
+    project = models.ForeignKey(Project)
+    table_name = models.TextField()
+    columns = models.TextField()

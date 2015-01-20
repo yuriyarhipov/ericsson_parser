@@ -125,6 +125,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/query/parameters_overview.html',
                 controller: 'parameters_overviewCtrl'
             }).
+            when('/set_cna_template/',{
+                templateUrl: 'templates/files/set_cna_template.html',
+                controller: 'setCnaTemplateCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });
