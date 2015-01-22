@@ -644,7 +644,8 @@ class Processing:
             self.vendorName = header.get('vendorName')
 
         for attribute in root.iterfind('.//{genericNrm.xsd}attributes'):
-            parse_xml.delay(self.filename, attribute)
+            pass
+            #parse_xml.delay(self.filename, attribute)
             #self.get_table(attribute)
 
 

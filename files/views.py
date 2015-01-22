@@ -89,7 +89,7 @@ def files(request):
             'filename': f.filename,
             'date': f.date.strftime('%m.%d.%Y'),
             'file_type': f.file_type,
-            'status': int(status),
+            'status': 'processing',
         })
     return HttpResponse(json.dumps({'files': files, 'uploaded_files': uploaded_files}), content_type='application/json')
 
