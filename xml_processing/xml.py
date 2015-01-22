@@ -13,6 +13,7 @@ from zipfile import ZipFile
 from django.conf import settings
 from files.models import Files
 from tables.table import Topology
+from files.tasks import parse_xml
 
 
 def get_mo(mo):
@@ -642,14 +643,11 @@ class Processing:
         if header is not None:
             self.vendorName = header.get('vendorName')
 
-
-
-
-        i = 0
         for attribute in root.iterfind('.//{genericNrm.xsd}attributes'):
-            self.get_table(attribute)
-            i = i + 1
-            print "OK%s" % i
+            parse_xml.delay(self.filename, attribute)
+            #self.get_table(attribute)
+
+
 
 
 
@@ -657,12 +655,10 @@ class Xml(object):
     def save_xml(self, filename, project, description, vendor, file_type, network, current_task, current,
                  interval_per_file):
         xml = Processing(filename)
-        print "OK0"
         xml.parse_data(current_task, current, interval_per_file / 2)
-        print "OK1"
-        current += interval_per_file / 2
-        tables = Tables(xml.data, xml.tables, xml.filename)
-        tables.create_tables(current_task, current, interval_per_file / 2)
+        #current += interval_per_file / 2
+        #tables = Tables(xml.data, xml.tables, xml.filename)
+        #tables.create_tables(current_task, current, interval_per_file / 2)
         Files.objects.filter(filename=xml.filename, project=project).delete()
         Files.objects.create(
             filename=xml.filename,

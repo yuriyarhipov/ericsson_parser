@@ -1,10 +1,11 @@
 import psycopg2
 from django.conf import settings
 from query.models import QueryTemplate, GroupCells
-from files.models import Files, ExcelFile
+from files.models import Files, ExcelFile, CNATemplate
 from files.excel import Excel
 from lib import fcount
 from os.path import basename
+from files import tasks
 
 
 class CNA:
@@ -137,7 +138,7 @@ class CNA:
         #files = [f.table_name[1:] for f in CNATable.objects.filter(active=False)]
         return# root_file, files
 
-    def add_row(self, table_name, columns, row):
+    def add_row(self, filename, tables, columns, row):
         if '---' not in row:
             row = row.split()
             values = row[:1500]
@@ -146,7 +147,7 @@ class CNA:
             sql_columns = ['"%s"' % col for col in columns]
             sql_values = ["'%s'" % val for val in values]
             cursor = self.conn.cursor()
-            cursor.execute('INSERT INTO "%s" (%s) VALUES (%s)' % (table_name, ', '.join(sql_columns), ', '.join(sql_values)))
+            #cursor.execute('INSERT INTO "%s" (%s) VALUES (%s)' % (table_name, ', '.join(sql_columns), ', '.join(sql_values)))
 
 
     def create_cna_tables(self, table_name, columns):
@@ -162,25 +163,24 @@ class CNA:
 
     def save_cna(self, filename, project, description, vendor, file_type, network, task, current, available):
         table_name = basename(filename).split('.')[0]
+        tables = dict()
 
-        count = fcount(filename)
+        for cna_template in CNATemplate.objects.filter(project=project):
+            tables[cna_template.table_name] = cna_template.columns.split(',')
+
         with open(filename) as f:
             columns = []
             xls_columns = f.readline().split()
-            xls_data = []
+
             for col in xls_columns:
                 if (col not in columns) and (len(columns) < 1550):
                     columns.append(col.lower())
 
             self.create_cna_tables(table_name, columns[:])
-            interval = float(available)/float(count)
+
             for row in f:
-                if '---' not in row:
-                    xls_data.append(row.split())
-                current = float(current) + float(interval)
-                self.add_row(table_name, columns, row)
-                task.update_state(state="PROGRESS", meta={"current": int(current), "total": 99})
-        Excel(project.project_name, table_name, xls_columns, xls_data).filename
+                tasks.parse_cna_row.delay(basename(filename), tables, columns, row)
+
         Files.objects.filter(filename=table_name, project=project).delete()
         Files.objects.create(
                 filename=table_name,

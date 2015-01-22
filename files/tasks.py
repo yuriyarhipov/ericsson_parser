@@ -15,7 +15,7 @@ def worker(filename, project,  description, vendor, file_type, network):
     from files.measurements import Measurements
     from files.lic import License
     from files.hw import HardWare
-    from files.models import UploadedFiles
+    from files.models import UploadedFiles, CNATemplate
 
     xml_types = [
         'WCDMA RADIO OSS BULK CM XML FILE',
@@ -77,6 +77,28 @@ def worker(filename, project,  description, vendor, file_type, network):
 
     task.update_state(state='PROGRESS', meta={"current": 99, "total": 99})
     UploadedFiles.objects.filter(filename=filename).delete()
+
+
+@celery.task
+def parse_cna_row(filename, tables, columns, row):
+    from files.cna import CNA
+    CNA().add_row(filename, tables, columns, row)
+
+@celery.task
+def parse_xml(filename, node):
+    import re
+    return None
+    path = re.compile('\{.*\}')
+    table_name = None
+
+
+    data = node.find(".//{genericNrm.xsd}vsDataType")
+    if data is not None:
+        table_name = data.text[6:]
+    #else:
+    #    table_name = path.sub('', parent.tag)
+    print table_name
+
 
 @celery.task
 def delete_file(filename):
