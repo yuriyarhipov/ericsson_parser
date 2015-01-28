@@ -8,6 +8,7 @@ from os.path import basename
 from files import tasks
 
 
+
 class CNA:
 
     def __init__(self):
@@ -139,17 +140,22 @@ class CNA:
         return# root_file, files
 
     def add_rows(self, filename, tables, columns, rows):
+
         for table, table_columns in tables.iteritems():
             sql_columns = []
             sql_values = []
+            index_columns = []
+            for col in table_columns:
+                if col in columns:
+                    sql_columns.append('"%s"' % col)
+                    index_columns.append(columns.index(col))
+
+            sql_columns.append('"%s"' % 'filename')
             for row in rows:
                 sql_row = []
-                sql_columns = []
-                for col in table_columns:
-                    if col in columns:
-                        sql_columns.append('"%s"' % col)
-                        sql_row.append("'%s'" % row[columns.index(col)])
-                sql_columns.append('"%s"' % 'filename')
+                for index_column in index_columns:
+                    sql_row.append("'%s'" % row[index_column])
+
                 sql_row.append("'%s'" % filename)
                 sql_values.append('(%s)' % ','.join(sql_row))
 
@@ -159,7 +165,8 @@ class CNA:
             sql = 'INSERT INTO "%s" (%s) VALUES %s' % (table, sql_columns, sql_values)
             cursor = self.conn.cursor()
             cursor.execute(sql)
-            self.conn.commit()
+        self.conn.commit()
+
 
 
     def create_cna_table(self, table_name, columns):

@@ -1,5 +1,6 @@
 from djcelery import celery
 from celery import current_task
+from celery.task.control import revoke
 
 from django.conf import settings
 
@@ -77,12 +78,14 @@ def worker(filename, project,  description, vendor, file_type, network):
 
     task.update_state(state='PROGRESS', meta={"current": 99, "total": 99})
     UploadedFiles.objects.filter(filename=filename).delete()
+    #revoke(worker.request.id, terminate=True)
 
 
 @celery.task
 def parse_cna_rows(filename, tables, columns, rows):
     from files.cna import CNA
     CNA().add_rows(filename, tables, columns, rows)
+    #revoke(parse_cna_rows.request.id, terminate=True)
 
 @celery.task
 def parse_xml(filename, node):
@@ -97,7 +100,7 @@ def parse_xml(filename, node):
         table_name = data.text[6:]
     #else:
     #    table_name = path.sub('', parent.tag)
-    print table_name
+
 
 
 @celery.task
