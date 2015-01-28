@@ -4,7 +4,7 @@ tableControllers.controller('TableCtrl', ['$scope', '$http', '$routeParams',
     function ($scope, $http, $routeParams) {
         $scope.filename = $routeParams.filename;
         $scope.tablename = $routeParams.table_name;
-        $http.get('/data/table/' + $scope.filename + '/' + $scope.tablename).success(function(data) {
+        $http.get('/data/table/' + $scope.filename + '/' + $scope.tablename + '/').success(function(data) {
             $scope.columns = data.columns;
             $scope.data = data.data;
             $scope.totalItems = data.count;

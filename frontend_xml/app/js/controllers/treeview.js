@@ -24,6 +24,7 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
             if( $scope.tree_view && angular.isObject($scope.tree_view.currentNode) ) {
                 var node_type = $scope.tree_view.currentNode.type;
                 var network = $scope.tree_view.currentNode.network;
+                console.log('OK');
                 if ((node_type == 'xml') && (network == '3g')){
                     var wcdma = $scope.tree_view.currentNode.id;
                     $cookies.wcdma = wcdma;
@@ -99,9 +100,9 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http', 'acti
         }
         loadData($cookies.active_project);
 
-        $http.get('/data/topology_treeview/GSM/').success(function(data){
-            $scope.topology_treedata = data;
-        });
+        //$http.get('/data/topology_treeview/GSM/').success(function(data){
+        //    $scope.topology_treedata = data;
+        //});
 
         $scope.isCollapsed = false;
         $scope.width = 8;
@@ -135,7 +136,9 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http', 'acti
             if ((file_type == 'WCDMA RADIO OSS BULK CM XML FILE') || (file_type == 'WCDMA TRANSPORT OSS BULK CM XML FILE')){
                 $location.path('/explore/' + file_name + '/');
             }
-
+            if (file_type == 'GSM BSS CNA  OSS FILE'){
+                $location.path('/explore/' + file_name + '/');
+            }
         };
     }
 ]);

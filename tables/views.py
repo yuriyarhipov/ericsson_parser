@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from table import Table, get_excel
-from files.models import Files, SuperFile
+from files.models import Files, SuperFile, CNATemplate
 from files.excel import Excel
 
 
@@ -71,11 +71,22 @@ def rnd(request):
 
 
 def explore(request, filename):
-    if filename == 'tables':
-        filename = request.wcdma.filename
-    tables = [{'table': table, 'filename': filename} for table in request.wcdma.tables.split(',')]
+    project = request.project
+    tree_file = None
+    tables = []
+
+    if Files.objects.filter(project=project, filename=filename).exists():
+        tree_file = Files.objects.filter(project=project, filename=filename).first()
+        if tree_file.network == 'GSM':
+            if tree_file.file_type == 'GSM BSS CNA  OSS FILE':
+                tables = [{'table': cna_tables.table_name, 'filename': filename} for cna_tables in CNATemplate.objects.all()]
+
+    else:
+        tables = [{'table': table, 'filename': filename} for table in request.wcdma.tables.split(',')]
+
     tables.sort()
     return HttpResponse(json.dumps(tables), content_type='application/json')
+
 
 def by_technology(request, network):
     data = []

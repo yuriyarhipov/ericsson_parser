@@ -76,8 +76,8 @@ class Table(object):
 
 
         cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM %s LIMIT 0' % (self.table_name, ))
-        columns = [desc[0] for desc in cursor.description]
+        cursor.execute('SELECT * FROM "%s" LIMIT 0' % (self.table_name, ))
+        columns = ['"%s"' % desc[0] for desc in cursor.description]
         return self.sort_columns(columns)
 
     def get_data(self):
@@ -123,7 +123,7 @@ class Table(object):
         if self.table_name == 'BrightcommsRNDDate':
             order_columns = 'SITENAME, SECTORID, SITEID, CID'
 
-        cursor.execute("SELECT %s FROM %s WHERE lower(filename) IN (%s) ORDER BY %s" % (sql_columns, self.table_name, ','.join(self.sql_filename), order_columns))
+        cursor.execute('SELECT %s FROM "%s" WHERE lower(filename) IN (%s) ORDER BY %s' % (sql_columns, self.table_name, ','.join(self.sql_filename), order_columns))
         data = cursor.fetchall()
         return data
 

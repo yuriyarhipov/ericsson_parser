@@ -62,7 +62,7 @@ def worker(filename, project,  description, vendor, file_type, network):
 
     if network == 'GSM':
         if file_type in cna_types:
-            CNA().save_cna(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
+            CNA().save_cna(work_file, project, description, vendor, file_type, network)
 
     if file_type in measurements_types:
         Measurements().save_file(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
@@ -80,9 +80,9 @@ def worker(filename, project,  description, vendor, file_type, network):
 
 
 @celery.task
-def parse_cna_row(filename, tables, columns, row):
+def parse_cna_rows(filename, tables, columns, rows):
     from files.cna import CNA
-    CNA().add_row(filename, tables, columns, row)
+    CNA().add_rows(filename, tables, columns, rows)
 
 @celery.task
 def parse_xml(filename, node):

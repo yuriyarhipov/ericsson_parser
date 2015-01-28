@@ -138,48 +138,61 @@ class CNA:
         #files = [f.table_name[1:] for f in CNATable.objects.filter(active=False)]
         return# root_file, files
 
-    def add_row(self, filename, tables, columns, row):
-        if '---' not in row:
-            row = row.split()
-            values = row[:1500]
-            columns = columns[:1500]
+    def add_rows(self, filename, tables, columns, rows):
+        for table, table_columns in tables.iteritems():
+            sql_columns = []
+            sql_values = []
+            for row in rows:
+                sql_row = []
+                sql_columns = []
+                for col in table_columns:
+                    if col in columns:
+                        sql_columns.append('"%s"' % col)
+                        sql_row.append("'%s'" % row[columns.index(col)])
+                sql_columns.append('"%s"' % 'filename')
+                sql_row.append("'%s'" % filename)
+                sql_values.append('(%s)' % ','.join(sql_row))
 
-            sql_columns = ['"%s"' % col for col in columns]
-            sql_values = ["'%s'" % val for val in values]
+            sql_columns = ','.join(sql_columns)
+            sql_values = ','.join(sql_values)
+
+            sql = 'INSERT INTO "%s" (%s) VALUES %s' % (table, sql_columns, sql_values)
             cursor = self.conn.cursor()
-            #cursor.execute('INSERT INTO "%s" (%s) VALUES (%s)' % (table_name, ', '.join(sql_columns), ', '.join(sql_values)))
+            cursor.execute(sql)
+            self.conn.commit()
 
-
-    def create_cna_tables(self, table_name, columns):
-        columns = columns[:1500]
-        self.create_cna_table(table_name, columns)
 
     def create_cna_table(self, table_name, columns):
         cursor = self.conn.cursor()
-        sql_columns = ', '.join(['"%s" TEXT' % col for col in columns])
+        cursor.execute("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE (lower(table_name)=%s)", (table_name.lower(), ))
+        if cursor.rowcount > 0:
+            added_columns = []
+        else:
+            sql_columns = ', '.join(['"%s" TEXT' % col for col in columns])
+            cursor.execute('CREATE TABLE "%s" (%s) ' % (table_name, sql_columns))
 
-        cursor.execute('DROP TABLE IF EXISTS "%s" CASCADE' % (table_name, ))
-        cursor.execute('CREATE TABLE "%s" (%s) ' % (table_name, sql_columns))
 
-    def save_cna(self, filename, project, description, vendor, file_type, network, task, current, available):
+    def save_cna(self, filename, project, description, vendor, file_type, network):
+        row_count = 1000
         table_name = basename(filename).split('.')[0]
         tables = dict()
 
         for cna_template in CNATemplate.objects.filter(project=project):
-            tables[cna_template.table_name] = cna_template.columns.split(',')
+            columns = [col.lower() for col in cna_template.columns.split(',')]
+            columns.append('filename')
+            tables[cna_template.table_name] = columns
+            self.create_cna_table(cna_template.table_name, columns)
 
         with open(filename) as f:
-            columns = []
-            xls_columns = f.readline().split()
+            columns = [col.lower() for col in f.readline().split()]
 
-            for col in xls_columns:
-                if (col not in columns) and (len(columns) < 1550):
-                    columns.append(col.lower())
-
-            self.create_cna_tables(table_name, columns[:])
-
+            rows = []
             for row in f:
-                tasks.parse_cna_row.delay(basename(filename), tables, columns, row)
+                if '---' not in row:
+                    rows.append(row.split())
+                    if len(rows) == row_count:
+                        tasks.parse_cna_rows.delay(basename(filename), tables, columns, rows)
+                        rows = []
 
         Files.objects.filter(filename=table_name, project=project).delete()
         Files.objects.create(
