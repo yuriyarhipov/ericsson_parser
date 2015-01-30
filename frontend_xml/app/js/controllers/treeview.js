@@ -73,8 +73,8 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
     }
 ]);
 
-treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http', 'activeProjectService', 'activeFileService', '$location',
-    function ($scope, $cookies, $http, activeProjectService, activeFileService, $location) {
+treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$http', 'activeProjectService', 'activeFileService', '$location',
+    function ($scope, $timeout, $cookies, $http, activeProjectService, activeFileService, $location) {
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = {};
         $scope.network.selected = 'GSM';
@@ -93,12 +93,14 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$cookies', '$http', 'acti
                 labelSelected: "a8"
             }
         };
-        function loadData(project){
-            $http.get('/data/treeview/' + project + '/').success(function(data){
+        var loadData = function (){
+            $http.get('/data/treeview/' + $cookies.active_project + '/').success(function(data){
                 $scope.treedata = data;
             });
-        }
-        loadData($cookies.active_project);
+            $timeout(loadData, 1500);
+        };
+        $timeout(loadData, 0);
+
 
         //$http.get('/data/topology_treeview/GSM/').success(function(data){
         //    $scope.topology_treedata = data;

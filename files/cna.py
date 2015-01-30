@@ -184,26 +184,26 @@ class CNA:
         table_name = basename(filename).split('.')[0]
         tables = dict()
 
-        for cna_template in CNATemplate.objects.filter(project=project):
-            columns = [col.lower() for col in cna_template.columns.split(',')]
-            columns.append('filename')
-            tables[cna_template.table_name] = columns
-            self.create_cna_table(cna_template.table_name, columns)
+        #for cna_template in CNATemplate.objects.filter(project=project):
+        #    columns = [col.lower() for col in cna_template.columns.split(',')]
+        #    columns.append('filename')
+        #    tables[cna_template.table_name] = columns
+        #    self.create_cna_table(cna_template.table_name, columns)
 
-        with open(filename) as f:
-            columns = [col.lower() for col in f.readline().split()]
+        #with open(filename) as f:
+        #    columns = [col.lower() for col in f.readline().split()]
 
-            rows = []
-            for row in f:
-                if '---' not in row:
-                    rows.append(row.split())
-                    if len(rows) == row_count:
-                        tasks.parse_cna_rows.delay(basename(filename), tables, columns, rows)
-                        rows = []
+        #    rows = []
+        #    for row in f:
+        #        if '---' not in row:
+        #            rows.append(row.split())
+        #            if len(rows) == row_count:
+        #                        tasks.parse_cna_rows.delay(basename(filename), tables, columns, rows)
+        #                rows = []
 
-        Files.objects.filter(filename=table_name, project=project).delete()
+        Files.objects.filter(filename=basename(filename), project=project).delete()
         Files.objects.create(
-                filename=table_name,
+                filename=basename(filename),
                 file_type=file_type,
                 project=project,
                 tables='',
