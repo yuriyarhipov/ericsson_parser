@@ -8,7 +8,6 @@ from os.path import basename
 from files import tasks
 
 
-
 class CNA:
 
     def __init__(self):
@@ -176,7 +175,7 @@ class CNA:
         else:
             sql_columns = ', '.join(['"%s" TEXT' % col for col in columns])
             print sql_columns
-            cursor.execute('CREATE TABLE "%s" (%s) ' % (table_name, sql_columns))
+            cursor.execute('CREATE TABLE "%s" (%s) ' % (table_name.lower(), sql_columns))
 
 
     def save_cna(self, filename, project, description, vendor, file_type, network):
