@@ -169,15 +169,12 @@ class Template(object):
         select = self.get_tables(sql_tables, network)
         return 'CREATE OR REPLACE VIEW "template_%s" AS %s' % (template_name, select)
 
-    def create_template_table(self, template_name):
+    def create_template_table(self, project, template_name):
         self.cursor.execute('DROP VIEW IF EXISTS "template_%s"' % template_name)
         sql_select = self.get_select(template_name)
         self.cursor.execute(sql_select)
         self.conn.commit()
 
-    def check_tables(self):
-        for template in QueryTemplate.objects.all().order_by('template_name').distinct('template_name'):
-            self.create_template_table(template.template_name)
 
     def get_sql_compare_id(self, filename):
         f = Files.objects.filter(filename=filename).first()

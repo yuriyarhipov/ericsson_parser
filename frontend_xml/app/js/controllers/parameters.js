@@ -21,8 +21,9 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http', '$loca
         $scope.excel_complete = function(data){
             $scope.param_table = data;
         };
+                        
         $scope.complete = function(data){
-            $location.path('/predefined_templates');
+            //                                                                                  $location.path('/predefined_templates');
         };
         $scope.onChangeNetwork = function(){
             $http.get('/data/get_param/' + $scope.network.selected + '/').success(function(data) {
@@ -124,10 +125,17 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
                 }
                 $scope.template = $scope.templates[0];
             });
-            $http.get('/data/get_template_cells/' + $scope.network).success(function(data) {
-                $scope.data_cells = data;
+
+            $http.get('/data/get_network_files/' + $scope.network +'/').success(function(data){
+                $scope.files = data.files;
+                $scope.file = data.files[0];
+                $http.get('/data/get_template_cells/' + $scope.network + '/' + $scope.file + '/').success(function(data) {
+                    $scope.data_cells = data;
+                });
             });
         };
+
+
 
         $scope.onAddCell = function(){
             $scope.group_cells = $scope.group_cells.concat($scope.selected_cells);
@@ -156,7 +164,7 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
         };
 
         $scope.onClickRun = function(){
-            $scope.url='/data/run_template/?network='+ $scope.network + '&template=' + $scope.template;
+            $scope.url='/data/run_template/?network='+ $scope.network + '&template=' + $scope.template + '&file=' + $scope.file;
             var length_cells = $scope.group_cells.length;
             for (var i = 0; i<length_cells; i++){
                 $scope.url = $scope.url +'&cell=' + $scope.group_cells[i].cell;

@@ -5,6 +5,7 @@ from openpyxl import load_workbook
 from django.http import HttpResponse
 
 from query.models import GroupCells
+from files.cna import CNA
 from files.views import handle_uploaded_file
 
 
@@ -12,6 +13,9 @@ def get_cells(request, technology):
     data = []
     if (technology == 'WCDMA') and request.wcdma:
         data = request.wcdma.get_cells()
+    elif (technology == 'GSM') and request.gsm:
+        data = CNA().get_cells(request.gsm.filename)
+
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 

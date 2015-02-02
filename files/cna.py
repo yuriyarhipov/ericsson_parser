@@ -28,7 +28,7 @@ class CNA:
             data[row[0]] = []
 
     def get_cells(self, filename):
-        self.cursor.execute('SELECT DISTINCT CELL FROM "%s" ORDER BY CELL' % (filename, ))
+        self.cursor.execute('''SELECT DISTINCT CELL FROM "BA_List" WHERE filename='%s' ORDER BY CELL''' % (filename, ))
         return [{'cell': r[0], 'type': 'Cells'} for r in self.cursor.fetchall()]
 
     def get_mo(self, query):
@@ -168,7 +168,6 @@ class CNA:
         self.conn.commit()
 
 
-
     def create_cna_table(self, table_name, columns):
         cursor = self.conn.cursor()
         cursor.execute("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE (lower(table_name)=%s)", (table_name.lower(), ))
@@ -181,25 +180,23 @@ class CNA:
 
     def save_cna(self, filename, project, description, vendor, file_type, network):
         row_count = 1000
-        table_name = basename(filename).split('.')[0]
         tables = dict()
 
-        #for cna_template in CNATemplate.objects.filter(project=project):
-        #    columns = [col.lower() for col in cna_template.columns.split(',')]
-        #    columns.append('filename')
-        #    tables[cna_template.table_name] = columns
-        #    self.create_cna_table(cna_template.table_name, columns)
+        for cna_template in CNATemplate.objects.filter(project=project):
+            columns = [col.lower() for col in cna_template.columns.split(',')]
+            columns.append('filename')
+            tables[cna_template.table_name] = columns
+            self.create_cna_table(cna_template.table_name, columns)
 
-        #with open(filename) as f:
-        #    columns = [col.lower() for col in f.readline().split()]
-
-        #    rows = []
-        #    for row in f:
-        #        if '---' not in row:
-        #            rows.append(row.split())
-        #            if len(rows) == row_count:
-        #                        tasks.parse_cna_rows.delay(basename(filename), tables, columns, rows)
-        #                rows = []
+        with open(filename) as f:
+            columns = [col.lower() for col in f.readline().split()]
+            rows = []
+            for row in f:
+                if '---' not in row:
+                    rows.append(row.split())
+                    if len(rows) == row_count:
+                        tasks.parse_cna_rows.delay(basename(filename), tables, columns, rows)
+                        rows = []
 
         Files.objects.filter(filename=basename(filename), project=project).delete()
         Files.objects.create(
@@ -211,3 +208,54 @@ class CNA:
                 vendor=vendor,
                 network=network)
         self.conn.commit()
+
+
+    def get_table_name(self, tables, param):
+        for table, columns in tables.iteritems():
+            if param.lower() in columns:
+                return table
+
+    def create_template(self, template_name):
+        cursor = self.conn.cursor()
+        tables = dict()
+        sql = None
+
+        for cna_template in CNATemplate.objects.all():
+            tables[cna_template.table_name] = [col.lower() for col in cna_template.columns.split(',')]
+
+        sql_tables = []
+        sql_columns = []
+        for qt in QueryTemplate.objects.filter(template_name=template_name):
+            if qt.param_name.lower() not in ['cell', 'bsc']:
+                table_name = self.get_table_name(tables, qt.param_name)
+                if table_name:
+                    sql_tables.append('"%s"' % table_name)
+                    sql_columns.append('"%s"' % qt.param_name)
+
+        if len(sql_tables) == 1:
+            sql = 'CREATE OR REPLACE VIEW "template_%s" AS SELECT DISTINCT CELL, BSC, FileName, %s FROM %s' % (
+                template_name,
+                ','.join(sql_columns),
+                sql_tables[0])
+        elif len(sql_tables) > 1:
+            sql_where = []
+            for sql_table in sql_tables[1:]:
+                sql_where.append('(%s.CELL = %s.CELL)' % (sql_tables[0], sql_table))
+                sql_where.append('(%s.BSC = %s.BSC)' % (sql_tables[0], sql_table))
+
+            sql = 'CREATE OR REPLACE VIEW "template_%s" AS SELECT DISTINCT %s.CELL, %s.BSC, %s.FileName, %s FROM %s WHERE %s' % (
+                template_name,
+                sql_tables[0],
+                sql_tables[0],
+                sql_tables[0],
+                ','.join(sql_columns),
+                ','.join(sql_tables),
+                ' AND '.join(sql_where))
+
+        if sql:
+            print sql
+            cursor.execute(sql)
+            self.conn.commit()
+
+
+

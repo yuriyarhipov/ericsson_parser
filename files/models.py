@@ -94,8 +94,10 @@ class Files(models.Model):
             params.discard('vendorname')
             params.discard('utrancell')
         else:
-            cursor.execute('SELECT * FROM "%s" LIMIT 0' % self.filename)
-            params = set(desc[0] for desc in cursor.description)
+            columns = []
+            for cna_template in CNATemplate.objects.filter(project=self.project):
+                columns.extend(cna_template.columns.split(','))
+            params = set(columns)
 
         data = list(params)
         data.sort()

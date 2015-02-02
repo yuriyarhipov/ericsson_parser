@@ -14,6 +14,7 @@ from files.wcdma import WCDMA
 from files.cna import CNA
 from files.lte import LTE
 from files.views import handle_uploaded_file
+from files.models import Files
 from template import Template
 from tables.table import get_excel
 
@@ -35,7 +36,7 @@ def get_param(request, network):
     if network == 'WCDMA':
         data = request.wcdma.get_param()
     elif network == 'GSM':
-        data = request.cna.get_param()
+        data = request.gsm.get_param()
     elif network == 'LTE':
         data = request.lte.get_param()
 
@@ -44,35 +45,27 @@ def get_param(request, network):
 
 def add_template(request):
     data = []
-    select_mo_val = request.POST.getlist('mo')
-    select_mo_param_val = request.POST.getlist('param')
+    param_values = request.POST.getlist('param')
     min_values = request.POST.getlist('min_value')
     max_values = request.POST.getlist('min_value')
     template_name = request.POST.get('template_name')
     project = request.project
     network = request.POST.get('network')
-    if network == 'WCDMA':
-        i = 0
-        select_mo_param_val = []
-        select_mo_val = []
-        min_values = []
-        max_values = []
-        for param in request.POST.getlist('param'):
-            print param
-            mo = request.wcdma.get_mo(param)
-            if mo:
-                select_mo_val.append(mo)
-                select_mo_param_val.append(param)
-                min_values.append(request.POST.getlist('min_value')[i])
-                max_values.append(request.POST.getlist('max_value')[i])
-            i += 1
+    QueryTemplate.objects.filter(project=request.project, template_name=template_name).delete()
+    for i in range(0, len(param_values)):
+        QueryTemplate.objects.create(
+            project=project,
+            network=network,
+            template_name=template_name,
+            param_name=param_values[i],
+            min_value=min_values[i],
+            max_value=max_values[i],
+            )
 
-    elif network == 'GSM':
-        select_mo_val = [request.cna.filename, ]
-    elif network == 'LTE':
-        select_mo_val, select_mo_param_val = request.lte.get_mo(select_mo_param_val)
-    Template().save_template(project, network, template_name, select_mo_val, select_mo_param_val, min_values, max_values)
-    Template().check_tables()
+    if network == 'GSM':
+        CNA().create_template(template_name)
+
+
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
@@ -88,10 +81,10 @@ def delete_template(request, template_name):
     return HttpResponse(json.dumps({'sucess': 'ok', }), content_type='application/json')
 
 
-def get_template_cells(request, network):
+def get_template_cells(request, network, filename):
     data = []
     if network == 'GSM':
-        data = CNA().get_cells(request.cna.filename)
+        data = CNA().get_cells(filename)
     elif network == 'WCDMA':
         wcdma = WCDMA()
         data = wcdma.get_cells(request.wcdma.filename)
@@ -105,13 +98,14 @@ def run_template(request):
     template = request.GET.get('template')
     cells = request.GET.getlist('cell')
     network = request.GET.get('network')
+    file = request.GET.get('file')
 
     if network == 'GSM':
-        columns, data = CNA().run_query(template, cells, request.cna.filename)
+        columns, data = CNA().run_query(template, cells, file)
     elif network == 'WCDMA':
-        columns, data = WCDMA().run_query(template, cells, request.wcdma.filename)
+        columns, data = WCDMA().run_query(template, cells, file)
     elif network == 'LTE':
-        columns, data = LTE().run_query(template, cells, request.lte.filename)
+        columns, data = LTE().run_query(template, cells, file)
 
     if request.GET.get('excel'):
         excel_data = []
@@ -179,4 +173,10 @@ def get_site_query(request, site):
         data['tabs'].append({'title': tab_name, 'content': tab_params})
 
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+def get_network_files(request, network):
+    data = dict()
+    data['files'] = [f.filename for f in Files.objects.filter(project=request.project, network=network)]
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
 
