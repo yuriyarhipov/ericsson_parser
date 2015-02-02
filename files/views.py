@@ -170,14 +170,15 @@ def save_superfile(request):
     network = source_file.network
     file_type = source_file.file_type
     vendor = source_file.vendor
-    SuperFile.objects.filter(filename=filename, network=network, project=project).delete()
-    SuperFile.objects.create(
-        filename=filename,
-        files=','.join(selected_files),
-        network=network,
-        project=project,
-        file_type=file_type,
-        vendor=vendor)
+    tasks.superfile.delay(filename, selected_files)
+    #SuperFile.objects.filter(filename=filename, network=network, project=project).delete()
+    #SuperFile.objects.create(
+    #    filename=filename,
+    #    files=','.join(selected_files),
+    #    network=network,
+    #    project=project,
+    #    file_type=file_type,
+    #    vendor=vendor)
     return HttpResponse(json.dumps({'status': 'ok'}), content_type='application/json')
 
 

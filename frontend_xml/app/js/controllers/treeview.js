@@ -99,7 +99,7 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
             });
             $timeout(loadData, 1500);
         };
-        //$timeout(loadData, 0);
+        $timeout(loadData, 0);
 
 
         //$http.get('/data/topology_treeview/GSM/').success(function(data){

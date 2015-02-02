@@ -64,6 +64,10 @@ def add_template(request):
 
     if network == 'GSM':
         CNA().create_template(template_name)
+    elif network == 'WCDMA':
+        Template().create_template_table(request.wcdma, template_name)
+    elif network == 'LTE':
+        Template().create_template_table(request.lte, template_name)
 
 
     return HttpResponse(json.dumps(data), content_type='application/json')

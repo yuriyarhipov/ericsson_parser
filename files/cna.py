@@ -175,6 +175,7 @@ class CNA:
             added_columns = []
         else:
             sql_columns = ', '.join(['"%s" TEXT' % col for col in columns])
+            print sql_columns
             cursor.execute('CREATE TABLE "%s" (%s) ' % (table_name, sql_columns))
 
 
@@ -253,9 +254,26 @@ class CNA:
                 ' AND '.join(sql_where))
 
         if sql:
-            print sql
             cursor.execute(sql)
             self.conn.commit()
+
+    def create_superfile(self, filename, files):
+        cursor = self.conn.cursor()
+        for cna_template in CNATemplate.objects.all():
+            table_name = cna_template.table_name
+            columns = ['"%s"' % col.lower() for col in cna_template.columns.split(',')]
+            sql_files = ["'%s'" % f.lower() for f in files]
+            sql = '''INSERT INTO "%s" SELECT DISTINCT  %s, '%s' as filename FROM "%s" WHERE lower(filename) in (%s)''' % (
+                table_name,
+                ','.join(columns),
+                filename,
+                table_name,
+                ','.join(sql_files)
+            )
+            cursor.execute(sql)
+        self.conn.commit()
+
+
 
 
 

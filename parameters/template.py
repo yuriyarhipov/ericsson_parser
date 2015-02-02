@@ -24,7 +24,6 @@ class Template(object):
                 settings.DATABASES['default']['PASSWORD']))
         self.cursor = self.conn.cursor()
 
-
     def save_template(self, project, network, template_name, mo, params, min_values, max_values):
         self.template_name = template_name
         self.network = network
@@ -156,10 +155,11 @@ class Template(object):
         elif network == 'GSM':
             return self.get_tables_cna(sql_tables)
 
-    def get_select(self, template_name):
+    def get_select(self, file, template_name):
         sql_tables = OrderedDict()
         for template in QueryTemplate.objects.filter(template_name=template_name).order_by('id'):
-            table_name = template.mo
+            table_name = file.get_mo(template.param_name)
+            print table_name
             column = template.param_name
             network = template.network
             if table_name not in sql_tables:
@@ -169,9 +169,9 @@ class Template(object):
         select = self.get_tables(sql_tables, network)
         return 'CREATE OR REPLACE VIEW "template_%s" AS %s' % (template_name, select)
 
-    def create_template_table(self, project, template_name):
+    def create_template_table(self, file, template_name):
         self.cursor.execute('DROP VIEW IF EXISTS "template_%s"' % template_name)
-        sql_select = self.get_select(template_name)
+        sql_select = self.get_select(file, template_name)
         self.cursor.execute(sql_select)
         self.conn.commit()
 

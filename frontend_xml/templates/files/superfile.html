@@ -1,4 +1,4 @@
-<form ng-upload="complete(content)" class="form-horizontal col-sm-10" role="form" action="/data/files/save_superfile/">
+<form ng-upload="onSave()" class="form-horizontal col-sm-10" role="form" action="/data/files/save_superfile/">
 <div class="row">
     <div class="col-sm-12">
         <div class="col-sm-4 form-group">
@@ -28,7 +28,7 @@
     </div>
     <div class="col-sm-12">
         <div class="col-sm-12">
-            <button ng-click="onSave()" class="btn btn-success" type="submit">Save</button>
+            <button class="btn btn-success" type="submit">Save</button>
         </div>
     </div>
 </div>

@@ -81,8 +81,9 @@ def explore(request, filename):
             if tree_file.file_type == 'GSM BSS CNA  OSS FILE':
                 tables = [{'table': cna_tables.table_name, 'filename': filename} for cna_tables in CNATemplate.objects.all()]
 
-    else:
-        tables = [{'table': table, 'filename': filename} for table in request.wcdma.tables.split(',')]
+
+        else:
+            tables = [{'table': table, 'filename': filename} for table in request.wcdma.tables.split(',')]
 
     tables.sort()
     return HttpResponse(json.dumps(tables), content_type='application/json')

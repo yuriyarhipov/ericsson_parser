@@ -117,5 +117,24 @@ class WCDMA:
                 data.append(row)
         return columns, data
 
-
+    def create_superfile(self, filename, files, tables):
+        cursor = self.conn.cursor()
+        for table in tables:
+            cursor.execute('SELECT * FROM "%s"' % table.lower())
+            columns = [desc[0] for desc in cursor.description]
+            columns.remove('filename')
+            insert_columns = ['"%s"' % col.lower() for col in columns]
+            columns.append('filename')
+            sql_columns = ['"%s"' % col.lower() for col in columns]
+            sql_files = ["'%s'" % f.lower() for f in files]
+            sql = '''INSERT INTO "%s" (%s) SELECT DISTINCT  %s, '%s' as filename FROM "%s" WHERE lower(filename) in (%s)''' % (
+                table.lower(),
+                ','.join(sql_columns),
+                ','.join(insert_columns),
+                filename,
+                table.lower(),
+                ','.join(sql_files)
+            )
+            cursor.execute(sql)
+        self.conn.commit()
 

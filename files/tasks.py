@@ -10,13 +10,14 @@ def worker(filename, project,  description, vendor, file_type, network):
     if not project:
         return
 
+    from os.path import basename
     from archive import XmlPack
     from xml_processing.xml import Xml
     from files.cna import CNA
     from files.measurements import Measurements
     from files.lic import License
     from files.hw import HardWare
-    from files.models import UploadedFiles, CNATemplate
+    from files.models import UploadedFiles, CNATemplate, Files
 
     xml_types = [
         'WCDMA RADIO OSS BULK CM XML FILE',
@@ -59,6 +60,16 @@ def worker(filename, project,  description, vendor, file_type, network):
 
     if network in ['WCDMA', 'LTE']:
         if file_type in xml_types:
+            Files.objects.filter(filename=basename(work_file), project=project).delete()
+            UploadedFiles.objects.filter(filename=filename).delete()
+            Files.objects.create(
+                filename=basename(work_file),
+                file_type=file_type,
+                project=project,
+                tables='',
+                description=description,
+                vendor=vendor,
+                network=network)
             Xml().save_xml(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
 
     if network == 'GSM':
@@ -79,6 +90,30 @@ def worker(filename, project,  description, vendor, file_type, network):
     task.update_state(state='PROGRESS', meta={"current": 99, "total": 99})
     UploadedFiles.objects.filter(filename=filename).delete()
     #revoke(worker.request.id, terminate=True)
+
+@celery.task
+def superfile(filename, files):
+    from files.models import Files
+    from files.cna import CNA
+    from files.wcdma import WCDMA
+
+    root_file = Files.objects.filter(filename=files[0]).first()
+    Files.objects.filter(filename=filename,project=root_file.project).delete()
+    Files.objects.create(
+        filename=filename,
+        file_type=root_file.file_type,
+        project=root_file.project,
+        tables=root_file.tables,
+        description='superfile',
+        vendor=root_file.vendor,
+        network=root_file.network)
+    if root_file.network == 'GSM':
+        CNA().create_superfile(filename, files)
+    elif root_file.network == 'WCDMA':
+        tables = root_file.tables.split(',')
+        WCDMA().create_superfile(filename, files, tables)
+
+
 
 
 @celery.task

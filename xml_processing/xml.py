@@ -644,11 +644,7 @@ class Processing:
             self.vendorName = header.get('vendorName')
 
         for attribute in root.iterfind('.//{genericNrm.xsd}attributes'):
-            print 'OK'#parse_xml.delay(self.filename, None)
-            #self.get_table(attribute)
-
-
-
+            self.get_table(attribute)
 
 
 class Xml(object):
@@ -656,9 +652,8 @@ class Xml(object):
                  interval_per_file):
         xml = Processing(filename)
         xml.parse_data(current_task, current, interval_per_file / 2)
-        #current += interval_per_file / 2
-        #tables = Tables(xml.data, xml.tables, xml.filename)
-        #tables.create_tables(current_task, current, interval_per_file / 2)
+        tables = Tables(xml.data, xml.tables, xml.filename)
+        tables.create_tables(current_task, current, interval_per_file / 2)
         Files.objects.filter(filename=xml.filename, project=project).delete()
         Files.objects.create(
             filename=xml.filename,
