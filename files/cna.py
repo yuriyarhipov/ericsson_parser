@@ -27,7 +27,7 @@ class CNA:
             data[row[0]] = []
 
     def get_cells(self, filename):
-        self.cursor.execute('''SELECT DISTINCT CELL FROM "%s" WHERE filename='%s' ORDER BY CELL''' % ('ba_list', filename, ))
+        self.cursor.execute('''SELECT DISTINCT CELL FROM "umfi" WHERE filename='%s' ORDER BY CELL''' % (filename, ))
         return [{'cell': r[0], 'type': 'Cells'} for r in self.cursor.fetchall()]
 
     def get_mo(self, query):
@@ -174,7 +174,6 @@ class CNA:
             added_columns = []
         else:
             sql_columns = ', '.join(['"%s" TEXT' % col for col in columns])
-            print sql_columns
             cursor.execute('CREATE TABLE "%s" (%s) ' % (table_name.lower(), sql_columns))
 
 
@@ -229,25 +228,25 @@ class CNA:
             if qt.param_name.lower() not in ['cell', 'bsc']:
                 table_name = self.get_table_name(tables, qt.param_name)
                 if table_name:
-                    sql_tables.append('"%s"' % table_name)
+                    sql_tables.append('"%s"' % table_name.lower())
                     sql_columns.append('"%s"' % qt.param_name)
 
         if len(sql_tables) == 1:
             sql = 'CREATE OR REPLACE VIEW "template_%s" AS SELECT DISTINCT CELL, BSC, FileName, %s FROM %s' % (
                 template_name,
                 ','.join(sql_columns),
-                sql_tables[0])
+                sql_tables[0].lower())
         elif len(sql_tables) > 1:
             sql_where = []
             for sql_table in sql_tables[1:]:
-                sql_where.append('(%s.CELL = %s.CELL)' % (sql_tables[0], sql_table))
-                sql_where.append('(%s.BSC = %s.BSC)' % (sql_tables[0], sql_table))
+                sql_where.append('(%s.CELL = %s.CELL)' % (sql_tables[0].lower(), sql_table.lower()))
+                sql_where.append('(%s.BSC = %s.BSC)' % (sql_tables[0].lower(), sql_table.lower()))
 
             sql = 'CREATE OR REPLACE VIEW "template_%s" AS SELECT DISTINCT %s.CELL, %s.BSC, %s.FileName, %s FROM %s WHERE %s' % (
                 template_name,
-                sql_tables[0],
-                sql_tables[0],
-                sql_tables[0],
+                sql_tables[0].lower(),
+                sql_tables[0].lower(),
+                sql_tables[0].lower(),
                 ','.join(sql_columns),
                 ','.join(sql_tables),
                 ' AND '.join(sql_where))

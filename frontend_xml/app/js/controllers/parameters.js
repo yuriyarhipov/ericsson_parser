@@ -62,7 +62,7 @@ parameterControllers.controller('editTemplateCtrl', ['$scope', '$http', '$locati
             $scope.param_table = data;
         };
         $scope.complete = function(data){
-            $location.path('/predefined_templates');
+            $location.path('/predefined_templates/');
         };
         $scope.onChangeNetwork = function(){
             $http.get('/data/get_mo/' + $scope.network.selected + '/').success(function(data) {
@@ -134,6 +134,15 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
                 });
             });
         };
+
+        $scope.onChangeFile = function(){
+            $http.get('/data/get_template_cells/' + $scope.network + '/' + $scope.file + '/').success(function(data) {
+                $scope.data_cells = data;
+            });
+
+        };
+
+
 
 
 

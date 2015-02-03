@@ -14,6 +14,7 @@
             <label class="col-sm-3 control-label" for="file">File:</label>
             <div class="col-sm-9">
                 <select
+                        ng-change="onChangeFile()"
                         ng-model="file"
                         ng-options="file for file in files track by file"
                         class="form-control"
