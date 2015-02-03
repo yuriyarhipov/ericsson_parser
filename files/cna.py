@@ -27,7 +27,7 @@ class CNA:
             data[row[0]] = []
 
     def get_cells(self, filename):
-        self.cursor.execute('''SELECT DISTINCT CELL FROM "BA_List" WHERE filename='%s' ORDER BY CELL''' % (filename, ))
+        self.cursor.execute('''SELECT DISTINCT CELL FROM "%s" WHERE filename='%s' ORDER BY CELL''' % ('ba_list', filename, ))
         return [{'cell': r[0], 'type': 'Cells'} for r in self.cursor.fetchall()]
 
     def get_mo(self, query):
