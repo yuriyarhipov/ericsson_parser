@@ -161,7 +161,7 @@ class CNA:
             sql_columns = ','.join(sql_columns)
             sql_values = ','.join(sql_values)
 
-            sql = 'INSERT INTO "%s" (%s) VALUES %s' % (table, sql_columns, sql_values)
+            sql = 'INSERT INTO "%s" (%s) VALUES %s' % (table.lower(), sql_columns, sql_values)
             cursor = self.conn.cursor()
             cursor.execute(sql)
         self.conn.commit()
