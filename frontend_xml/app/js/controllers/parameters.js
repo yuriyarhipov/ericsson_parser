@@ -23,7 +23,7 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http', '$loca
         };
                         
         $scope.complete = function(data){
-            //                                                                                  $location.path('/predefined_templates');
+            $location.path('/predefined_templates');
         };
         $scope.onChangeNetwork = function(){
             $http.get('/data/get_param/' + $scope.network.selected + '/').success(function(data) {
@@ -61,19 +61,15 @@ parameterControllers.controller('editTemplateCtrl', ['$scope', '$http', '$locati
         $scope.excel_complete = function(data){
             $scope.param_table = data;
         };
-        $scope.complete = function(data){
+        $scope.complete = function(){
+
             $location.path('/predefined_templates/');
         };
         $scope.onChangeNetwork = function(){
+
             $http.get('/data/get_mo/' + $scope.network.selected + '/').success(function(data) {
                 $scope.tables = data;
             });
-            if ($scope.network.selected == 'GSM'){
-                $scope.lable_mo = 'GSM file';
-            }
-            else{
-                $scope.lable_mo = 'MO';
-            }
         };
 
         $scope.onChangeMO = function(){
