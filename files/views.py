@@ -51,23 +51,8 @@ def files(request):
     if request.wcdma:
         active_files.append(request.wcdma.filename)
 
-    for super_f in SuperFile.objects.filter(project=project):
-        status = 'uploaded'
-        if super_f.filename in active_files:
-            status = 'Active'
-        files.append({
-            'filename': super_f.filename,
-            'date': super_f.date.strftime('%m.%d.%Y'),
-            'file_type': 'superfile',
-            'network': super_f.network,
-            'description': super_f.files,
-            'status': status
-        })
-
     for f in Files.objects.filter(project=project):
         status = 'uploaded'
-        if f.filename in active_files:
-            status = 'Active'
         files.append({
             'filename': f.filename,
             'date': f.date.strftime('%m.%d.%Y'),
@@ -158,7 +143,7 @@ def delete_file(request, filename):
 
 def get_files(request, network):
     project = request.project
-    data = [f.filename for f in Files.objects.filter(project = project, network=network)]
+    data = [f.filename for f in Files.objects.filter(project=project, network=network)]
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 

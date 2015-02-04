@@ -16,7 +16,7 @@ def projects(request):
 def save_project(request):
     data = {'status': 'error', 'message': 'Sorry, Internal Error'}
     if request.POST:
-        project_name = request.POST.get('project_name')
+        project_name = request.POST.get('project_name').replace(' ', '_')
         if Project.objects.filter(project_name=project_name).exists():
             data = {'status': 'error', 'message': 'Sorry, A project with name "%s" exists' % project_name}
         else:
