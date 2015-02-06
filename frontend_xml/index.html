@@ -181,6 +181,14 @@
                         {{ net }}
                     </ui-select-choices>
                 </ui-select>
+                <ui-select ng-change="onChangeRoot()" ng-model="root.selected" theme="bootstrap"
+                    ng-disabled="disabled"
+                    reset-search-input="false">
+                    <ui-select-match>{{$select.selected}}</ui-select-match>
+                    <ui-select-choices repeat="root in roots">
+                        {{ root }}
+                    </ui-select-choices>
+                </ui-select>
                 <div treecontrol class="tree-classic"
                     tree-model="topology_treedata"
                     options="treeOptions"

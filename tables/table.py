@@ -217,8 +217,9 @@ class Topology:
         return result
 
     def create_tree_view(self):
-        data = []
         tree = self.get_tree()
+        cursor = self.conn.cursor()
+        cursor.execute("DELETE FROM TOPOLOGY_TREEVIEW WHERE filename='%s'" % (self.filename,))
         for rnc in tree:
             rnc_children = []
             for site in tree[rnc]:
@@ -229,10 +230,7 @@ class Topology:
                         sector_children.append({'id': utrancell, 'label': utrancell, 'children': []})
                     site_children.append({'id': sector, 'label': sector, 'children': sector_children})
                 rnc_children.append({'id': site, 'label': site, 'children': site_children})
-            data.append({'id': rnc, 'label': rnc, 'children': rnc_children})
-        cursor = self.conn.cursor()
-        cursor.execute("DELETE FROM TOPOLOGY_TREEVIEW WHERE filename='%s'" % (self.filename,))
-        cursor.execute("INSERT INTO TOPOLOGY_TREEVIEW (FILENAME, TREEVIEW) VALUES ('%s', '%s')" % (self.filename, json.dumps(data)))
+            cursor.execute("INSERT INTO TOPOLOGY_TREEVIEW (FILENAME, TREEVIEW, ROOT) VALUES ('%s', '%s', '%s')" % (self.filename, json.dumps(rnc_children), rnc))
         self.conn.commit()
 
 

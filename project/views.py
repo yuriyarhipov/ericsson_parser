@@ -36,7 +36,7 @@ def treeview(request, project):
      ]
     return HttpResponse(json.dumps(data), content_type='application/json')
 
-def topology_treeview(request, network):
+def topology_treeview(request, network, root):
     data = []
     filename = ''
     if network == 'GSM':
@@ -46,8 +46,25 @@ def topology_treeview(request, network):
     elif network == 'LTE':
         filename = request.lte.filename
     cursor = connection.cursor()
-    cursor.execute("SELECT TREEVIEW FROM TOPOLOGY_TREEVIEW WHERE filename='%s'" % (filename, ))
-    #for row in cursor:
-    #    data = row[0]
-
+    cursor.execute("SELECT TREEVIEW FROM TOPOLOGY_TREEVIEW WHERE (filename='%s') AND (root='%s')" % (filename, root, ))
+    for row in cursor:
+        data.extend(row[0])
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+def get_topology_roots(request, network):
+    data = []
+    filename = ''
+    if network == 'GSM':
+        filename = request.cna.filename
+    elif network == 'WCDMA':
+        filename = request.wcdma.filename
+    elif network == 'LTE':
+        filename = request.lte.filename
+    cursor = connection.cursor()
+    cursor.execute("SELECT DISTINCT root FROM TOPOLOGY_TREEVIEW WHERE filename='%s'" % (filename, ))
+    for row in cursor:
+        data.append(row[0])
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+

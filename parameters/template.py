@@ -268,4 +268,14 @@ class Template(object):
 
         return data
 
+    def get_sites(self, filename):
+        data = []
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT DISTINCT Utrancell FROM Topology WHERE (filename='%s')" % (filename, ))
+        for row in cursor:
+            data.append(row[0])
+        return data
+
+
+
 

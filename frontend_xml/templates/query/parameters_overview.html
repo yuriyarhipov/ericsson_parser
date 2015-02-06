@@ -1,6 +1,13 @@
 <div class="col-md-12">
     <div class="col-md-3 form-group">
-        <input class="form-control" type="text" ng-model="site" ng-change="onChange()" placeholder="Search Site">
+        <ui-select ng-change="onChange()" ng-model="site.selected" theme="bootstrap"
+            ng-disabled="disabled"
+            reset-search-input="false">
+            <ui-select-match placeholder="Search Site">{{$select.selected}}</ui-select-match>
+            <ui-select-choices repeat="cells in utrancell">
+                {{ cells }}
+            </ui-select-choices>
+        </ui-select>
     </div>
 </div>
 <div class="col-md-12">

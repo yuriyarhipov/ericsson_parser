@@ -285,7 +285,7 @@ class Tables:
 
     def create_topology_tree_view(self):
         cursor = self.conn.cursor()
-        self.cursor.execute('CREATE TABLE IF NOT EXISTS TOPOLOGY_TREEVIEW (FILENAME TEXT, TREEVIEW JSON);')
+        self.cursor.execute('CREATE TABLE IF NOT EXISTS TOPOLOGY_TREEVIEW (FILENAME TEXT, ROOT TEXT, TREEVIEW JSON);')
         self.conn.commit()
         cursor.execute('SELECT DISTINCT filename FROM TOPOLOGY')
         for row in cursor:

@@ -24,7 +24,6 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
             if( $scope.tree_view && angular.isObject($scope.tree_view.currentNode) ) {
                 var node_type = $scope.tree_view.currentNode.type;
                 var network = $scope.tree_view.currentNode.network;
-                console.log('OK');
                 if ((node_type == 'xml') && (network == '3g')){
                     var wcdma = $scope.tree_view.currentNode.id;
                     $cookies.wcdma = wcdma;
@@ -78,6 +77,7 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = {};
         $scope.network.selected = 'GSM';
+        $scope.root = {};
 
         $scope.treeOptions = {
             nodeChildren: "children",
@@ -97,14 +97,18 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
             $http.get('/data/treeview/' + $cookies.active_project + '/').success(function(data){
                 $scope.treedata = data;
             });
-            $timeout(loadData, 1500);
+            $timeout(loadData, 150000);
         };
         $timeout(loadData, 0);
 
+        function LoadTopology(network, root){
+            $http.get('/data/topology_treeview/' + network +'/' + root + '/').success(function(data){
+                $scope.topology_treedata = data;
+            });
 
-        //$http.get('/data/topology_treeview/GSM/').success(function(data){
-        //    $scope.topology_treedata = data;
-        //});
+        }
+
+        LoadTopology('GSM', '');
 
         $scope.isCollapsed = false;
         $scope.width = 8;
@@ -120,9 +124,15 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
         };
 
         $scope.onChangeNetwork = function(data){
-            $http.get('/data/topology_treeview/' + $scope.network.selected +'/').success(function(data){
-                $scope.topology_treedata = data;
+            $http.get('/data/get_topology_roots/' + $scope.network.selected +'/').success(function(data){
+                $scope.roots = data;
+                $scope.root.selected = $scope.roots[0];
+                LoadTopology($scope.network.selected, $scope.root.selected);
             });
+        };
+
+        $scope.onChangeRoot = function(){
+            LoadTopology($scope.network.selected, $scope.root.selected);
         };
 
         $scope.$on('handleBroadcast', function() {

@@ -175,8 +175,13 @@ def get_site_query(request, site):
     params = Template().get_site_query(site, request.wcdma.filename)
     for tab_name, tab_params in params.iteritems():
         data['tabs'].append({'title': tab_name, 'content': tab_params})
-
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def get_sites(request):
+    data = Template().get_sites(request.wcdma.filename)
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 def get_network_files(request, network):
     data = dict()
