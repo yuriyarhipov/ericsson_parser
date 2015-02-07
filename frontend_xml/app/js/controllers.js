@@ -11,12 +11,12 @@ xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectServ
         });
   }]);
 
-xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService','activeFileService' , '$location',
-    function($scope, $cookies, activeProjectService, $location, activeFileService) {
+xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService', '$location',
+    function($scope, $cookies, activeProjectService, $location) {
         $scope.activeProject = $cookies.active_project;
         $scope.activeWCDMA = $cookies.wcdma;
         if (!$cookies.active_project){
-            //$location.path('/projects/');
+            $location.path('/projects/');
         }
 
         $scope.$on('handleBroadcast', function() {
@@ -30,12 +30,13 @@ xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activePro
         });
   }]);
 
-xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location',
-    function ($scope, $http, $location) {
+xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location', 'activeProjectService',
+    function ($scope, $http, $location, activeProjectService) {
         $scope.project_data = {};
 
         $scope.processForm = function(){
             $http.post('/data/save_project/', $.param($scope.project_data)).success(function(){
+                activeProjectService.setProject($scope.project_data['project_name']);
                 $location.path('/projects');
             });
 
