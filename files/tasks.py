@@ -4,32 +4,6 @@ from celery.task.control import revoke
 
 from django.conf import settings
 
-
-@celery.task
-def save_rows(filename, rows):
-    from xml_processing.xml import Tables
-    tables = dict()
-    data = dict()
-
-    for row in rows:
-        table_name = row.get('table')
-        fields = row.get('fields')
-
-        if table_name and (table_name not in data):
-            data[table_name] = []
-            tables[table_name] = set()
-
-        columns = tables[table_name]
-        data[table_name].append(fields)
-        if columns:
-            tables[table_name] = columns | set(fields.keys())
-        else:
-            tables[table_name] = set(fields.keys())
-
-    tables = Tables(data, tables, filename)
-    tables.create_tables()
-
-
 @celery.task
 def worker(filename, project, description, vendor, file_type, network):
     if not project:

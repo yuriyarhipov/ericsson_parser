@@ -1,19 +1,12 @@
 import re
 import psycopg2
-import tempfile
-import xlsxwriter
-from openpyxl import load_workbook
 
 from lxml import etree
 from os.path import basename
-from celery import current_task
-from os.path import join
-from zipfile import ZipFile
 
-from django.conf import settings
 from files.models import Files
 from tables.table import Topology
-from files.tasks import parse_xml, save_rows
+
 
 
 
@@ -519,10 +512,36 @@ class Processing(object):
         fields = self.get_fields(elem, table_name)
         self.write_to_database(table_name, fields)
 
+    def save_rows(self):
+        tables = dict()
+        data = dict()
+
+        for row in self.rows:
+
+            table_name = row.get('table')
+            fields = row.get('fields')
+
+            if table_name and (table_name not in data):
+                data[table_name] = []
+                tables[table_name] = set()
+
+            columns = tables[table_name]
+            data[table_name].append(fields)
+            if columns:
+                tables[table_name] = columns | set(fields.keys())
+            else:
+                tables[table_name] = set(fields.keys())
+
+        tables = Tables(data, tables, self.filename)
+        tables.create_tables()
+        del(tables)
+        del(data)
+        print 'done'
+
     def write_to_database(self, table, fields):
         self.rows.append(dict(table=table, fields=fields))
         if len(self.rows) > 10000:
-            save_rows.delay(self.filename, self.rows)
+            self.save_rows()
             self.rows = []
 
     def main(self):
@@ -537,7 +556,6 @@ class Processing(object):
 
 
 class Xml(object):
-
     def save_xml(self, filename, project, description, vendor, file_type, network):
         xml = Processing(filename)
         Files.objects.filter(filename=xml.filename, project=project).delete()
@@ -545,7 +563,7 @@ class Xml(object):
             filename=xml.filename,
             file_type=file_type,
             project=project,
-            tables=','.join(xml.tables.keys()),
+            tables=','.join([]),
             description=description,
             vendor=vendor,
             network=network)
