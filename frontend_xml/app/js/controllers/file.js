@@ -205,6 +205,7 @@ filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams'
     function ($scope, $http, $routeParams, $timeout, $location) {
         var id = $routeParams.id;
         var current = 1;
+        $scope.dynamic = 1;
         var getStatus = function(){
             $http.get('/data/files/status/' + id + '/').success(function(data) {
                 if (('"SUCCESS"' == data) && (current > 1)){

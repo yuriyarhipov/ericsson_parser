@@ -557,6 +557,7 @@ class Processing(object):
             self.current += (float(1)/float(5000))
             if self.current > 97:
                 self.current = float(97)
+
         self.task.update_state(state="PROGRESS", meta={"current": int(100)})
         self.conn.commit()
 
