@@ -2,6 +2,7 @@ from djcelery import celery
 from celery import current_task
 
 from django.conf import settings
+from celery.task.control import revoke
 
 
 @celery.task
@@ -105,6 +106,7 @@ def worker(filename, project, description, vendor, file_type, network):
             current_task)
 
     task.update_state(state='PROGRESS', meta={"current": 100, })
+    revoke(worker.request.id, terminate=True)
 
 
 @celery.task
