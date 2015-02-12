@@ -136,6 +136,8 @@ class HardWare(object):
         unit_position = self.get_attr('unitPosition', unit)
         manufacturer_data = self.get_attr('manufacturerData', unit)
 
+
+
         return id, inventory_unit_type, vendor_unit_family_type, vendor_unit_type_number, vendor_name, serial_number, unit_position, manufacturer_data
 
     def parse_managed_element(self, node):
