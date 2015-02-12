@@ -7,9 +7,6 @@ from os.path import basename
 from files.models import Files
 from tables.table import Topology
 
-
-
-
 class Tables:
     def __init__(self, data, tables, filename):
         self.data = data
@@ -328,6 +325,7 @@ class Processing(object):
     path = re.compile('\{.*\}')
     ver = re.compile('^\D+')
     stop_list = ['ManagementNode', ]
+    db_tables = set()
 
     def __init__(self, filename):
         self.filename = filename
@@ -532,13 +530,14 @@ class Processing(object):
             else:
                 tables[table_name] = set(fields.keys())
 
-        tables = Tables(data, tables, self.filename)
+        tables = Tables(data, tables, basename(self.filename))
         tables.create_tables()
         del(tables)
         del(data)
         print 'done'
 
     def write_to_database(self, table, fields):
+        self.db_tables.add(table)
         self.rows.append(dict(table=table, fields=fields))
         if len(self.rows) > 10000:
             self.save_rows()
@@ -563,7 +562,7 @@ class Xml(object):
             filename=xml.filename,
             file_type=file_type,
             project=project,
-            tables=','.join([]),
+            tables=','.join(list(xml.db_tables)),
             description=description,
             vendor=vendor,
             network=network)
