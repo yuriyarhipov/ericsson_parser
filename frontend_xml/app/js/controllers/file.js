@@ -68,8 +68,9 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
             $scope.CurrentTypeFile = $scope.TypeFile[0];
         };
 
-        $scope.complete = function(){
-            $location.path('/files_hub');
+        $scope.complete = function(data){
+            var id = data.id;
+            $location.path('/status/' + id + '/');
         }
   }]);
 
@@ -198,7 +199,26 @@ filesControllers.controller('setCnaTemplateCtrl', ['$scope', '$http',
             $scope.tables = data;
             get_template();
         };
+  }]);
 
-
-
+filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams', '$timeout', '$location',
+    function ($scope, $http, $routeParams, $timeout, $location) {
+        var id = $routeParams.id;
+        var current = 1;
+        var getStatus = function(){
+            $http.get('/data/files/status/' + id + '/').success(function(data) {
+                if (('"SUCCESS"' == data) && (current > 1)){
+                    $location.path('/files_hub');
+                }
+                current = data.current;
+                if (current > 99){
+                    $location.path('/files_hub');
+                }
+                if (current){
+                    $scope.dynamic = current;
+                }
+            });
+            $timeout(getStatus, 5000);
+        };
+        $timeout(getStatus, 0);
   }]);

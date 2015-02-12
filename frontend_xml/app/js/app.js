@@ -129,6 +129,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/files/set_cna_template.html',
                 controller: 'setCnaTemplateCtrl'
             }).
+            when('/status/:id/',{
+                templateUrl: 'templates/files/upload.html',
+                controller: 'uploadFileCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });

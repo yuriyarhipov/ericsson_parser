@@ -1,8 +1,8 @@
 from djcelery import celery
 from celery import current_task
-from celery.task.control import revoke
 
 from django.conf import settings
+
 
 @celery.task
 def worker(filename, project, description, vendor, file_type, network):
@@ -16,7 +16,7 @@ def worker(filename, project, description, vendor, file_type, network):
     from files.measurements import Measurements
     from files.lic import License
     from files.hw import HardWare
-    from files.models import UploadedFiles, CNATemplate, Files
+    from files.models import Files
 
     xml_types = [
         'WCDMA RADIO OSS BULK CM XML FILE',
@@ -46,50 +46,66 @@ def worker(filename, project, description, vendor, file_type, network):
         'LTE HARDWARE FILE OSS XML'
     ]
 
-
     work_file = XmlPack(filename).get_files()[0]
-
     task = current_task
-    UploadedFiles.objects.create(filename=filename, project=project, description=task.request.id, vendor=vendor, file_type=file_type, network=network)
-    task.update_state(state="PROGRESS",
-            meta={"current": 0, "total": 99})
-    interval_per_file = float(99)/float(1)
-
-    current = 0
+    task.update_state(state="PROGRESS", meta={"current": 1})
 
     if network in ['WCDMA', 'LTE']:
         if file_type in xml_types:
-            Files.objects.filter(filename=basename(work_file), project=project).delete()
-            UploadedFiles.objects.filter(filename=filename).delete()
-            Files.objects.create(
+            Files.objects.filter(
                 filename=basename(work_file),
-                file_type=file_type,
-                project=project,
-                tables='',
-                description=description,
-                vendor=vendor,
-                network=network)
+                project=project).delete()
             Xml().save_xml(
-                work_file, project, description, vendor, file_type, network)
+                work_file,
+                project,
+                description,
+                vendor,
+                file_type,
+                network,
+                task)
 
     if network == 'GSM':
         if file_type in cna_types:
-            CNA().save_cna(work_file, project, description, vendor, file_type, network)
+            CNA().save_cna(
+                work_file,
+                project,
+                description,
+                vendor,
+                file_type,
+                network)
 
     if file_type in measurements_types:
-        Measurements().save_file(work_file, project, description, vendor, file_type, network, current_task, current, interval_per_file)
+        Measurements().save_file(
+            work_file,
+            project,
+            description,
+            vendor,
+            file_type,
+            network,
+            current_task)
 
     if file_type in license_types:
         lic = License(work_file)
-        lic.parse_data(project, description, vendor, file_type, network, current_task, current, interval_per_file)
+        lic.parse_data(
+            project,
+            description,
+            vendor,
+            file_type,
+            network,
+            current_task)
 
     if file_type in hardware_types:
         hw = HardWare(work_file)
-        hw.parse_data(project, description, vendor, file_type, network, current_task, current, interval_per_file)
+        hw.parse_data(
+            project,
+            description,
+            vendor,
+            file_type,
+            network,
+            current_task)
 
-    task.update_state(state='PROGRESS', meta={"current": 99, "total": 99})
-    UploadedFiles.objects.filter(filename=filename).delete()
-    #revoke(worker.request.id, terminate=True)
+    task.update_state(state='PROGRESS', meta={"current": 100, })
+
 
 @celery.task
 def superfile(filename, files):
@@ -98,7 +114,7 @@ def superfile(filename, files):
     from files.wcdma import WCDMA
 
     root_file = Files.objects.filter(filename=files[0]).first()
-    Files.objects.filter(filename=filename,project=root_file.project).delete()
+    Files.objects.filter(filename=filename, project=root_file.project).delete()
     Files.objects.create(
         filename=filename,
         file_type=root_file.file_type,
@@ -114,28 +130,10 @@ def superfile(filename, files):
         WCDMA().create_superfile(filename, files, tables)
 
 
-
-
 @celery.task
 def parse_cna_rows(filename, tables, columns, rows):
     from files.cna import CNA
     CNA().add_rows(filename, tables, columns, rows)
-    #revoke(parse_cna_rows.request.id, terminate=True)
-
-@celery.task
-def parse_xml(filename, node):
-    import re
-    return None
-    path = re.compile('\{.*\}')
-    table_name = None
-
-
-    data = node.find(".//{genericNrm.xsd}vsDataType")
-    if data is not None:
-        table_name = data.text[6:]
-    #else:
-    #    table_name = path.sub('', parent.tag)
-
 
 
 @celery.task
@@ -155,7 +153,8 @@ def delete_file(filename):
 
     tables = File.objects.filter(filename=filename).first().tables.split(',')
     for table_name in tables:
-        cursor.execute('DELETE FROM '+table_name+' WHERE filename=%s;',(filename, ))
+        cursor.execute('DELETE FROM ' + table_name + ' WHERE filename=%s;',
+        (filename, ))
     Template().check_tables()
     conn.commit()
     cursor.close()

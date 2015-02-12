@@ -326,12 +326,14 @@ class Processing(object):
     ver = re.compile('^\D+')
     stop_list = ['ManagementNode', ]
     db_tables = set()
+    current = float(1)
 
-    def __init__(self, filename):
+    def __init__(self, filename, task):
         self.filename = filename
         self.conn = psycopg2.connect(
             'host = localhost dbname = xml2 user = postgres password = 1297536'
         )
+        self.task = task
         self.main()
 
     def parse_mo(self, mo):
@@ -534,7 +536,6 @@ class Processing(object):
         tables.create_tables()
         del(tables)
         del(data)
-        print 'done'
 
     def write_to_database(self, table, fields):
         self.db_tables.add(table)
@@ -542,24 +543,30 @@ class Processing(object):
         if len(self.rows) > 10000:
             self.save_rows()
             self.rows = []
+            self.task.update_state(state="PROGRESS", meta={"current": int(self.current)})
 
     def main(self):
         context = etree.iterparse(
             self.filename,
             events=('end',),
             tag='{genericNrm.xsd}attributes')
+
         for event, elem in context:
             self.parse_elem(elem)
             elem.clear()
+            self.current += (float(1)/float(5000))
+            if self.current > 97:
+                self.current = float(97)
+        self.task.update_state(state="PROGRESS", meta={"current": int(100)})
         self.conn.commit()
 
 
 class Xml(object):
-    def save_xml(self, filename, project, description, vendor, file_type, network):
-        xml = Processing(filename)
-        Files.objects.filter(filename=xml.filename, project=project).delete()
+    def save_xml(self, filename, project, description, vendor, file_type, network, task):
+        xml = Processing(filename, task)
+        Files.objects.filter(filename=basename(xml.filename), project=project).delete()
         Files.objects.create(
-            filename=xml.filename,
+            filename=basename(xml.filename),
             file_type=file_type,
             project=project,
             tables=','.join(list(xml.db_tables)),

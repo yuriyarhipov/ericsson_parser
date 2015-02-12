@@ -26,6 +26,12 @@ def handle_uploaded_file(files):
     return result
 
 
+def status(request, id):
+    job = AsyncResult(id)
+    data = job.result or job.state
+    return HttpResponse(json.dumps(data), mimetype='application/json')
+
+
 def save_files(request):
     project = request.project
     description = request.POST.get('description')
@@ -33,8 +39,8 @@ def save_files(request):
     file_type = request.POST.get('file_type')
     network = request.POST.get('network')
     filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
-    tasks.worker.delay(filename, project, description, vendor, file_type, network)
-    data = dict()
+    job = tasks.worker.delay(filename, project, description, vendor, file_type, network)
+    data = dict(id=job.id)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
