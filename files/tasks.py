@@ -7,7 +7,7 @@ from django.conf import settings
 
 @celery.task
 def save_rows(filename, rows):
-    # from xml_processing.xml import Tables
+    from xml_processing.xml import Tables
     tables = dict()
     data = dict()
 
@@ -26,8 +26,8 @@ def save_rows(filename, rows):
         else:
             tables[table_name] = set(fields.keys())
 
-    # tables = Tables(data, tables, filename)
-    # tables.create_tables()
+    tables = Tables(data, tables, filename)
+    tables.create_tables()
 
 
 @celery.task
