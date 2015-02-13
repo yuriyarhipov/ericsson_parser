@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.conf import settings
 
 from celery.result import AsyncResult
+from celery.exceptions import TaskRevokedError
 
 from .models import Files, UploadedFiles, SuperFile, CNATemplate
 from tables.table import Table
@@ -29,7 +30,14 @@ def handle_uploaded_file(files):
 def status(request, id):
     job = AsyncResult(id)
     data = job.result or job.state
-    return HttpResponse(json.dumps(data), mimetype='application/json')
+
+    try:
+        json_data = json.dumps(data)
+    except:
+        data = {'current': 100, }
+        json_data = json.dumps(data)
+
+    return HttpResponse(json_data, mimetype='application/json')
 
 
 def save_files(request):

@@ -206,13 +206,21 @@ filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams'
         var id = $routeParams.id;
         var current = 1;
         $scope.dynamic = 1;
+        var refer = false;
         var getStatus = function(){
+            if (refer) {
+                return
+            }
             $http.get('/data/files/status/' + id + '/').success(function(data) {
                 if (('"SUCCESS"' == data) && (current > 1)){
+                    current = 0;
+                    refer = true;
                     $location.path('/files_hub');
                 }
                 current = data.current;
                 if (current > 99){
+                    current = 0;
+                    refer = true;
                     $location.path('/files_hub');
                 }
                 if (current){
