@@ -227,7 +227,9 @@ filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams'
                     $scope.dynamic = current;
                 }
             });
-            $timeout(getStatus, 5000);
+            if (!refer) {
+                $timeout(getStatus, 5000);
+            }
         };
         $timeout(getStatus, 0);
   }]);
