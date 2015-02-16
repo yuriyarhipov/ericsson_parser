@@ -303,18 +303,23 @@ class Tables:
         for table_name in self.tables:
             self.table(table_name)
         self.load_data()
-        # self.topology()
-        # self.topology_lte()
-        # self.rnd_wcdma()
-        # self.rnd_lte()
-        # self.fourgneighbors()
-        # self.threegneighborss()
         self.conn.commit()
-        # self.create_topology_tree_view()
         self.cursor.close()
         self.conn.close()
         del self.tables
         del self.data
+
+    def create_additional_tables(self):
+        self.topology()
+        self.topology_lte()
+        self.rnd_wcdma()
+        self.rnd_lte()
+        self.fourgneighbors()
+        self.threegneighborss()
+        self.create_topology_tree_view()
+        self.conn.commit()
+        self.cursor.close()
+        self.conn.close()
 
 
 class Processing(object):
@@ -558,6 +563,8 @@ class Processing(object):
             if self.current > 97:
                 self.current = float(97)
 
+        tables = Tables([], [], basename(self.filename))
+        tables.create_additional_tables()
         self.task.update_state(state="PROGRESS", meta={"current": int(100)})
         self.conn.commit()
 
