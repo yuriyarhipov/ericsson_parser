@@ -563,7 +563,7 @@ class Processing(object):
             if self.current > 97:
                 self.current = float(97)
 
-        tables = Tables(dict(), dict(t_name=[] for t_name in self.db_tables), basename(self.filename))
+        tables = Tables(dict(), {t_name: [] for t_name in self.db_tables}, basename(self.filename))
         tables.create_additional_tables()
         self.task.update_state(state="PROGRESS", meta={"current": int(100)})
         self.conn.commit()
