@@ -79,6 +79,7 @@ class Tables:
             self.create_table(table_name)
 
     def fourgneighbors(self):
+        print self.tables
         if 'EUtrancellFDD'.lower() not in [t.lower() for t in self.tables]:
             return
 
