@@ -332,7 +332,6 @@ class Processing(object):
     stop_list = ['ManagementNode', ]
     db_tables = set()
     current = float(1)
-    tables = dict()
 
     def __init__(self, filename, task):
         self.filename = filename
@@ -519,6 +518,7 @@ class Processing(object):
         self.write_to_database(table_name, fields)
 
     def save_rows(self):
+        tables = dict()
         data = dict()
 
         for row in self.rows:
@@ -528,17 +528,18 @@ class Processing(object):
 
             if table_name and (table_name not in data):
                 data[table_name] = []
-                self.tables[table_name] = set()
+                tables[table_name] = set()
 
-            columns = self.tables[table_name]
+            columns = tables[table_name]
             data[table_name].append(fields)
             if columns:
-                self.tables[table_name] = columns | set(fields.keys())
+                tables[table_name] = columns | set(fields.keys())
             else:
-                self.tables[table_name] = set(fields.keys())
+                tables[table_name] = set(fields.keys())
 
-        tables = Tables(data, self.tables, basename(self.filename))
+        tables = Tables(data, tables, basename(self.filename))
         tables.create_tables()
+        del(tables)
         del(data)
 
     def write_to_database(self, table, fields):
@@ -562,7 +563,7 @@ class Processing(object):
             if self.current > 97:
                 self.current = float(97)
 
-        tables = Tables(dict(), self.tables, basename(self.filename))
+        tables = Tables(dict(), dict(t_name=[] for t_name in self.db_tables), basename(self.filename))
         tables.create_additional_tables()
         self.task.update_state(state="PROGRESS", meta={"current": int(100)})
         self.conn.commit()
