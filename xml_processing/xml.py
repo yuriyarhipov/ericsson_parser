@@ -319,7 +319,6 @@ class Tables:
         self.threegneighborss()
         self.create_topology_tree_view()
         self.conn.commit()
-        self.cursor.close()
         self.conn.close()
 
 
