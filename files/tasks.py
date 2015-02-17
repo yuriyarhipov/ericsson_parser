@@ -73,7 +73,8 @@ def worker(filename, project, description, vendor, file_type, network):
                 description,
                 vendor,
                 file_type,
-                network)
+                network,
+                task)
 
     if file_type in measurements_types:
         Measurements().save_file(
@@ -131,11 +132,6 @@ def superfile(filename, files):
         tables = root_file.tables.split(',')
         WCDMA().create_superfile(filename, files, tables)
 
-
-@celery.task
-def parse_cna_rows(filename, tables, columns, rows):
-    from files.cna import CNA
-    CNA().add_rows(filename, tables, columns, rows)
 
 
 @celery.task

@@ -175,10 +175,11 @@ class CNA:
         else:
             sql_columns = ', '.join(['"%s" TEXT' % col for col in columns])
             cursor.execute('CREATE TABLE "%s" (%s) ' % (table_name.lower(), sql_columns))
+        self.conn.commit()
 
 
-    def save_cna(self, filename, project, description, vendor, file_type, network):
-        row_count = 1000
+    def save_cna(self, filename, project, description, vendor, file_type, network, task):
+        row_count = 100
         tables = dict()
 
         for cna_template in CNATemplate.objects.filter(project=project):
@@ -190,12 +191,15 @@ class CNA:
         with open(filename) as f:
             columns = [col.lower() for col in f.readline().split()]
             rows = []
+            i = 0
             for row in f:
                 if '---' not in row:
                     rows.append(row.split())
                     if len(rows) == row_count:
-                        tasks.parse_cna_rows.delay(basename(filename), tables, columns, rows)
+                        CNA().add_rows(basename(filename), tables, columns, rows)
                         rows = []
+                        i += 1
+                        task.update_state(state="PROGRESS", meta={"current": int(i)})
 
         Files.objects.filter(filename=basename(filename), project=project).delete()
         Files.objects.create(
