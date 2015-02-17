@@ -193,7 +193,6 @@ class CNA:
             rows = []
             i = 0
             for row in f:
-                print row
                 if '---' not in row:
                     rows.append(row.split())
                     if len(rows) == row_count:
