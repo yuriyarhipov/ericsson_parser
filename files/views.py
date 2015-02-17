@@ -192,8 +192,10 @@ def set_cna_template(request):
         ws = wb.get_sheet_by_name(sheet_name)
         columns = []
         for col in ws.columns:
-            columns.append(col[0].value)
-        CNATemplate.objects.create(project=project, table_name=sheet_name, columns=','.join(columns))
+            if col[0].value:
+                columns.append(col[0].value)
+        sql_columns = ','.join(columns)
+        CNATemplate.objects.create(project=project, table_name=sheet_name, columns=sql_columns)
 
     return HttpResponse(json.dumps([]), content_type='application/json')
 
@@ -201,7 +203,7 @@ def set_cna_template(request):
 def get_cna_template(request):
     tables = []
     project = request.project
-    for cna_template in CNATemplate.objects.filter(project=project):
+    for cna_template in CNATemplate.objects.filter(project=project).order_by('table_name'):
         tables.append({'table_name': cna_template.table_name, 'columns': cna_template.columns})
 
     return HttpResponse(json.dumps(tables), content_type='application/json')
