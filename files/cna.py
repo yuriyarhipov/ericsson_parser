@@ -31,7 +31,6 @@ class CNA:
         return [{'cell': r[0], 'type': 'Cells'} for r in self.cursor.fetchall()]
 
     def get_mo(self, query):
-
         mo = [f.filename for f in Files.objects.filter(file_type='CNA')]
         data = []
         for m in mo:
@@ -40,7 +39,6 @@ class CNA:
                     data.append(dict(id=m, text=m))
             else:
                 data.append(dict(id=m, text=m))
-
         data.sort()
         return data
 

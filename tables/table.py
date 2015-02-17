@@ -41,15 +41,15 @@ class Table(object):
     def sort_columns(self, columns):
         result = []
         fixed_columns = [
-            'MO',
-            'Version',
-            'Vendor',
-            'Element',
-            'Element1',
-            'Element2',
-            'UtranCell',
-            'SectorCarrier',
-            'Carrier'
+            'mo',
+            'version',
+            'vendor',
+            'element',
+            'element1',
+            'element2',
+            'utrancell',
+            'sectorcarrier',
+            'carrier'
         ]
         exists_columns = [column.lower() for column in columns]
         for column in fixed_columns:
