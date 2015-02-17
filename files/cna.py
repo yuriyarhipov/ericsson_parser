@@ -254,7 +254,6 @@ class CNA:
                 ','.join(sql_columns),
                 ','.join(sql_tables),
                 ' AND '.join(sql_where))
-
         if sql:
             cursor.execute(sql)
             self.conn.commit()

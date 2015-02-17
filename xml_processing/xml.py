@@ -75,7 +75,7 @@ class Tables:
         column_names = set(row[0].lower() for row in self.cursor)
         if column_names:
             self.check_table(table_name, column_names)
-            self.cursor.execute('DELETE FROM ' + table_name + ' WHERE filename=%s;', (self.filename, ))
+            #self.cursor.execute('DELETE FROM ' + table_name + ' WHERE filename=%s;', (self.filename, ))
         else:
             self.create_table(table_name)
 

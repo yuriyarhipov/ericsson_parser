@@ -48,8 +48,8 @@ class Template(object):
 
     def get_columns(self, table_name):
         cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM %s LIMIT 0;' % table_name)
-        return [desc[0].lower() for desc in cursor.description]
+        cursor.execute("SELECT column_name FROM information_schema.columns WHERE lower(table_name)='%s';" % table_name.lower())
+        return [r[0].lower() for r in cursor]
 
     def get_join_lte(self, table_name):
         columns = self.get_columns(table_name)
@@ -159,7 +159,6 @@ class Template(object):
         sql_tables = OrderedDict()
         for template in QueryTemplate.objects.filter(template_name=template_name).order_by('id'):
             table_name = file.get_mo(template.param_name)
-            print table_name
             column = template.param_name
             network = template.network
             if table_name not in sql_tables:

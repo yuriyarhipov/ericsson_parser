@@ -61,8 +61,8 @@ class Files(models.Model):
             for f in Files.objects.filter(project=self.project, network=self.network):
                 tables = tables.union(set(f.tables.split(',')))
             for table in tables:
-                cursor.execute('SELECT * FROM %s LIMIT 0;' % table)
-                columns = [desc[0] for desc in cursor.description]
+                cursor.execute("SELECT column_name FROM information_schema.columns WHERE lower(table_name)='%s';" % table.lower())
+                columns = [r[0] for r in cursor]
                 if (param.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns)):
                     return table
 
@@ -79,12 +79,12 @@ class Files(models.Model):
         params = set()
         if self.network in ['WCDMA', 'LTE']:
             for f in Files.objects.filter(project=self.project, network=self.network):
-                tables = tables.union(set(f.tables.split(',')))
+                tables = f.tables.split(',')
             for table in tables:
-                cursor.execute('SELECT * FROM %s LIMIT 0;' % table)
-                table_params = set(desc[0] for desc in cursor.description)
+                cursor.execute("SELECT column_name FROM information_schema.columns WHERE lower(table_name)='%s';" % table.lower())
+                table_params = [r[0] for r in cursor]
                 if ('utrancell' in table_params) or ('element1' in table_params) or ('element2' in table_params):
-                    params = params.union(set(desc[0] for desc in cursor.description))
+                    params = params.union(set(table_params))
             params.discard('mo')
             params.discard('version')
             params.discard('vendor')
