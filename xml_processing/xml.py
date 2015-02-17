@@ -8,8 +8,9 @@ from files.models import Files
 from tables.table import Topology
 
 class Tables:
-    def __init__(self, data, tables, filename):
+    def __init__(self, data, tables, network, filename):
         self.data = data
+        self.network = network
         self.tables = tables
         self.filename = filename
         self.file_type = 'WCDMA' if 'UtranCell' in data.keys() else 'LTE'
@@ -79,8 +80,7 @@ class Tables:
             self.create_table(table_name)
 
     def fourgneighbors(self):
-        print self.tables
-        if 'EUtrancellFDD'.lower() not in [t.lower() for t in self.tables]:
+        if self.network != 'LTE':
             return
 
         self.cursor.execute('DROP TABLE IF EXISTS FourGNeighbors;')
@@ -160,8 +160,7 @@ class Tables:
             Topology(row[0]).create_tree_view()
 
     def topology_lte(self):
-        tables = ','.join(self.tables.keys())
-        if 'eutrancellfdd' not in tables.lower():
+        if self.network != 'LTE':
             return
 
         self.cursor.execute('DROP TABLE IF EXISTS TOPOLOGY_LTE;')
@@ -242,10 +241,8 @@ class Tables:
                 (Sector.filename=UtranCell.filename)
             ;''')
 
-
     def rnd_lte(self):
-        tables = ','.join(self.tables.keys())
-        if 'eutrancellfdd' not in tables.lower():
+        if self.network != 'LTE':
             return
         self.cursor.execute('DROP TABLE IF EXISTS RND_LTE;')
         self.cursor.execute('''
@@ -333,8 +330,9 @@ class Processing(object):
     db_tables = set()
     current = float(1)
 
-    def __init__(self, filename, task):
+    def __init__(self, filename, network, task):
         self.filename = filename
+        self.network = network
         self.conn = psycopg2.connect(
             'host = localhost dbname = xml2 user = postgres password = 1297536'
         )
@@ -537,7 +535,7 @@ class Processing(object):
             else:
                 tables[table_name] = set(fields.keys())
 
-        tables = Tables(data, tables, basename(self.filename))
+        tables = Tables(data, tables, self.network, basename(self.filename))
         tables.create_tables()
         del(tables)
         del(data)
@@ -563,7 +561,7 @@ class Processing(object):
             if self.current > 97:
                 self.current = float(97)
 
-        tables = Tables(dict(), {t_name: [] for t_name in self.db_tables}, basename(self.filename))
+        tables = Tables(dict(), {t_name: [] for t_name in self.db_tables}, self.network, basename(self.filename))
         tables.create_additional_tables()
         self.task.update_state(state="PROGRESS", meta={"current": int(100)})
         self.conn.commit()
@@ -571,7 +569,7 @@ class Processing(object):
 
 class Xml(object):
     def save_xml(self, filename, project, description, vendor, file_type, network, task):
-        xml = Processing(filename, task)
+        xml = Processing(filename, network, task)
         Files.objects.filter(filename=basename(xml.filename), project=project).delete()
         Files.objects.create(
             filename=basename(xml.filename),
