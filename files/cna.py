@@ -172,7 +172,8 @@ class CNA:
             added_columns = []
         else:
             sql_columns = ', '.join(['"%s" TEXT' % col for col in columns])
-            cursor.execute('CREATE TABLE "%s" (%s) ' % (table_name.lower(), sql_columns))
+            sql = 'CREATE TABLE "%s" (%s) ' % (table_name.lower(), sql_columns)
+            cursor.execute(sql)
         self.conn.commit()
 
 
@@ -224,14 +225,16 @@ class CNA:
         for cna_template in CNATemplate.objects.all():
             tables[cna_template.table_name] = [col.lower() for col in cna_template.columns.split(',')]
 
-        sql_tables = []
-        sql_columns = []
+        sql_tables = set()
+        sql_columns = set()
         for qt in QueryTemplate.objects.filter(template_name=template_name):
             if qt.param_name.lower() not in ['cell', 'bsc']:
                 table_name = self.get_table_name(tables, qt.param_name)
                 if table_name:
-                    sql_tables.append('"%s"' % table_name.lower())
-                    sql_columns.append('"%s"' % qt.param_name)
+                    sql_tables.add('"%s"' % table_name.lower())
+                    sql_columns.add('"%s"' % qt.param_name)
+        sql_tables = list(sql_tables)
+        sql_columns = list(sql_columns)
 
         if len(sql_tables) == 1:
             sql = 'CREATE OR REPLACE VIEW "template_%s" AS SELECT DISTINCT CELL, BSC, FileName, %s FROM %s' % (
