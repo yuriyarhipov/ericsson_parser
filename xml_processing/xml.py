@@ -80,6 +80,7 @@ class Tables:
             self.create_table(table_name)
 
     def fourgneighbors(self):
+        return
         if self.network != 'LTE':
             return
 
