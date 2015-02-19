@@ -91,9 +91,12 @@ def explore(request, filename):
 
 def by_technology(request, network):
     data = []
+    file_filter = request.GET.get('filter')
     project = request.project
     if network == 'GSM':
-        data = [{'label': f.filename, 'table': f.filename, 'type': 'CNA Table', 'filename': f.filename} for f in Files.objects.filter(network='GSM', project=project)]
+        filename = request.gsm.filename
+        for cna_table in CNATemplate.objects.all():
+            data.append({'label': cna_table.table_name, 'table': cna_table.table_name, 'type': 'CNA Table', 'filename': filename})
 
     elif network == 'WCDMA':
         filename = request.wcdma.filename
@@ -123,4 +126,13 @@ def by_technology(request, network):
         ]
         data.extend([{'label': table, 'table': table, 'type': 'XML table', 'filename': filename} for table in tables])
 
-    return HttpResponse(json.dumps(data), content_type='application/json')
+    data_result = []
+
+    for f in data:
+        if file_filter and f.get('label'):
+            if file_filter.lower() in f.get('label').lower():
+                data_result.append(f)
+        else:
+            data_result.append(f)
+
+    return HttpResponse(json.dumps(data_result), content_type='application/json')

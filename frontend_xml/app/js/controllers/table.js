@@ -30,9 +30,16 @@ tableControllers.controller('byTechnologyCtrl', ['$scope', '$http',
         $http.get('/data/by_technology/GSM/').success(function(data) {
             $scope.data = data;
         });
+
         $scope.onChangeNetwork = function(){
             $http.get('/data/by_technology/' + $scope.network).success(function(data) {
                 $scope.data = data;
             });
         };
+
+        $scope.onFilter = function(){
+            $http.get('/data/by_technology/' + $scope.network + '?filter=' + $scope.file_filter).success(function(data) {
+                $scope.data = data;
+            });
+        }
   }]);
