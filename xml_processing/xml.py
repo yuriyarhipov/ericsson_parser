@@ -6,6 +6,7 @@ from os.path import basename
 
 from files.models import Files
 from tables.table import Topology
+from files.excel import ExcelFile
 
 class Tables:
     def __init__(self, data, tables, network, filename):
@@ -580,3 +581,4 @@ class Xml(object):
             description=description,
             vendor=vendor,
             network=network)
+        ExcelFile(project, basename(filename))

@@ -1,11 +1,13 @@
 import psycopg2
-from django.conf import settings
-from query.models import QueryTemplate, GroupCells
-from files.models import Files, ExcelFile, CNATemplate
-from files.excel import Excel
-from lib import fcount
 from os.path import basename
-from files import tasks
+
+from django.conf import settings
+
+from query.models import QueryTemplate, GroupCells
+from files.models import Files, CNATemplate
+from files.excel import ExcelFile
+
+
 
 
 class CNA:
@@ -210,6 +212,7 @@ class CNA:
                 vendor=vendor,
                 network=network)
         self.conn.commit()
+        ExcelFile(project, basename(filename))
 
 
     def get_table_name(self, tables, param):

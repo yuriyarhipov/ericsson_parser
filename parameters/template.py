@@ -252,6 +252,7 @@ class Template(object):
         wb = load_workbook(filename=filename, use_iterators=True)
         ws = wb.active
         SiteQuery.objects.all().delete()
+
         for row in ws.iter_rows():
             if row[0].value == '**':
                 site_name = row[1].value

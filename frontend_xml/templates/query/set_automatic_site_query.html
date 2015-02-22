@@ -1,5 +1,15 @@
 <form ng-upload="complete(content)" class="form-horizontal col-sm-6" role="form" action="/data/save_automatic_site_query/" upload-options-enable-rails-csrf>
     <div class="form-group">
+        <label for="network" class="col-sm-3 control-label">File</label>
+        <div class="col-sm-9">
+            <select ng-model="form_data.network" ng-change="onChangeNetwork()" class="form-control" id="network" name="network">
+                <option value="GSM">GSM</option>
+                <option value="WCDMA">WCDMA</option>
+                <option value="LTE">LTE</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
         <label for="file" class="col-sm-3 control-label">File</label>
         <div class="col-sm-9">
             <input type="file" id="file" name="uploaded_file">

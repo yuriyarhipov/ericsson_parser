@@ -4,13 +4,14 @@ from openpyxl import load_workbook
 
 from django.http import HttpResponse
 from django.conf import settings
+from django.shortcuts import HttpResponseRedirect
 
 from celery.result import AsyncResult
-from celery.exceptions import TaskRevokedError
 
 from .models import Files, UploadedFiles, SuperFile, CNATemplate
 from tables.table import Table
 from files.compare import CompareFiles, CompareTable
+from files.excel import ExcelFile
 import tasks
 
 
@@ -195,7 +196,8 @@ def set_cna_template(request):
             if col[0].value:
                 columns.append(col[0].value)
         sql_columns = ','.join(columns)
-        CNATemplate.objects.create(project=project, table_name=sheet_name, columns=sql_columns)
+        table_name = sheet_name.strip().replace(' ', '_')
+        CNATemplate.objects.create(project=project, table_name=table_name, columns=sql_columns)
 
     return HttpResponse(json.dumps([]), content_type='application/json')
 
@@ -207,3 +209,21 @@ def get_cna_template(request):
         tables.append({'table_name': cna_template.table_name, 'columns': cna_template.columns})
 
     return HttpResponse(json.dumps(tables), content_type='application/json')
+
+
+def get_excel(request, network):
+    filename = ''
+    if network == 'GSM':
+        filename = request.gsm.filename
+    elif network == 'WCDMA':
+        filename = request.wcdma.filename
+    elif network == 'LTE':
+        filename = request.lte.filename
+
+
+    return HttpResponseRedirect(ExcelFile(request.project, filename).excel_filename)
+
+
+
+
+

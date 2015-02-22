@@ -20,6 +20,7 @@ class QueryTemplate(models.Model):
 
 class SiteQuery(models.Model):
     project = models.ForeignKey(Project)
+    network = models.CharField(max_length=255)
     site = models.TextField()
     param_name = models.TextField()
     param_min = models.TextField(blank=True)

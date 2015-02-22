@@ -71,7 +71,11 @@ queryControllers.controller('automaticSiteQueryCtrl', ['$scope', '$http',
 
         $scope.complete = function(data){
             $scope.site_query = data.data;
-        }
+        };
+
+        $scope.onChangeNetwork = function(){
+          console.log("OK");
+        };
 
   }]);
 

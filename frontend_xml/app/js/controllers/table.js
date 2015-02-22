@@ -41,5 +41,5 @@ tableControllers.controller('byTechnologyCtrl', ['$scope', '$http',
             $http.get('/data/by_technology/' + $scope.network + '?filter=' + $scope.file_filter).success(function(data) {
                 $scope.data = data;
             });
-        }
+        };
   }]);
