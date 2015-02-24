@@ -182,7 +182,6 @@ class CNA:
     def save_cna(self, filename, project, description, vendor, file_type, network, task):
         row_count = 100
         tables = dict()
-
         for cna_template in CNATemplate.objects.filter(project=project):
             columns = [col.lower() for col in cna_template.columns.split(',')]
             columns.append('filename')
@@ -213,7 +212,6 @@ class CNA:
                 network=network)
         self.conn.commit()
         ExcelFile(project, basename(filename))
-
 
     def get_table_name(self, tables, param):
         for table, columns in tables.iteritems():

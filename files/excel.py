@@ -71,8 +71,8 @@ class ExcelFile:
 
         if f.network in ['WCDMA', 'LTE', ]:
             tables = f.tables.split(',')
-        elif f.network == 'CNA':
-            tables = [ cna_t.table_name for cna_t in CNATemplate.objects.filter(project=self.project)]
+        elif f.network == 'GSM':
+            tables = [cna_t.table_name for cna_t in CNATemplate.objects.filter(project=self.project)]
 
         excel_filename = join(tempfile.mkdtemp(), self.filename + '.xlsx')
         workbook = xlsxwriter.Workbook(excel_filename)
