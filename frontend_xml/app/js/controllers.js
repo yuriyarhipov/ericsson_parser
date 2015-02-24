@@ -18,15 +18,38 @@ xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activePro
         if (!$cookies.active_project){
             $location.path('/projects/');
         }
+        $scope.activeWCDMA = 'red';
+        $scope.activeLTE = 'red';
+        $scope.activeGSM = 'red';
+
+        if ('gsm' in $cookies){
+            $scope.activeGSM = 'green';
+        }
+        if ('lte' in $cookies){
+            $scope.activeLTE = 'green';
+        }
+        if ('wcdma' in $cookies){
+            $scope.activeWCDMA = 'green';
+        }
 
         $scope.$on('handleBroadcast', function() {
             $scope.activeProject = activeProjectService.project;
         });
 
         $scope.$on('activeFileBroadcast', function() {
-            $scope.activeWCDMA = $cookies.wcdma;
-            $scope.activeLTE = $cookies.lte;
-            $scope.activeGSM = $cookies.gsm;
+            $scope.activeWCDMA = 'red';
+        $scope.activeLTE = 'red';
+        $scope.activeGSM = 'red';
+
+        if ('gsm' in $cookies){
+            $scope.activeGSM = 'green';
+        }
+        if ('lte' in $cookies){
+            $scope.activeLTE = 'green';
+        }
+        if ('wcdma' in $cookies){
+            $scope.activeWCDMA = 'green';
+        }
         });
   }]);
 

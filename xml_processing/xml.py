@@ -162,6 +162,7 @@ class Tables:
             Topology(row[0]).create_tree_view()
 
     def topology_lte(self):
+        return
         if self.network != 'LTE':
             return
 

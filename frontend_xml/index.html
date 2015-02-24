@@ -38,14 +38,14 @@
 <body>
 <div class="row">
     <div class="navbar navbar-default" role="navigation">
-        <div class="container-fluid">
-            <div class="col-md-2">
+        <div class="container-fluid" style="background-color: #ff9722">
+            <div class="col-md-2" style="background-color: #ff9722">
                 <a href="/">
                     <img width="120" src="/static/logo.png" id="logo">
                 </a>
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav" style="background-color: #ff9722">
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             Projects <span class="caret"></span>
@@ -142,20 +142,20 @@
                 </ul>
             </div>
         </div>
-        <div class="row">
-            <div class="container" ng-controller="ActiveProjectCtrl">
+    </div>
+</div>
+
+            <div class="container-fluid" ng-controller="ActiveProjectCtrl">
                 <div class="col-md-12">
-                    <span><a href="#/add_file" class="btn btn-success">Add File</a></span>
+                    <span><a href="#/add_file" class="btn btn-success">Files Hub</a></span>
                     <span>Active project: <span ng-bind="activeProject"></span></span>
-                    <span>Active WCDMA: <span ng-bind="activeWCDMA"></span></span>
-                    <span>Active LTE: <span ng-bind="activeLTE"></span></span>
-                    <span>Active GSM: <span ng-bind="activeGSM"></span></span>
+                    <span>Active WCDMA: <span><img src="/static/{{ activeWCDMA }}.png"></span></span>
+                    <span>Active LTE: <span><img src="/static/{{ activeLTE }}.png"></span></span>
+                    <span>Active GSM: <span><img src="/static/{{ activeGSM }}.png"></span></span>
                 </div>
 
             </div>
-        </div>
-    </div>
-</div>
+
 <div class="container-fluid" ng-controller="menuCtrl">
     <div class="col-md-12">
         <button class="btn btn-default" ng-click="onClick()">Tree view</button>
