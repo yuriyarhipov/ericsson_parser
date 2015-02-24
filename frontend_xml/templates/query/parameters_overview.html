@@ -1,5 +1,12 @@
 <div class="col-md-12">
     <div class="col-md-3 form-group">
+        <select ng-model="network" ng-change="onChangeNetwork()" class="form-control" id="network" name="network">
+            <option value="GSM" selected>GSM</option>
+            <option value="WCDMA">WCDMA</option>
+            <option value="LTE">LTE</option>
+        </select>
+    </div>
+    <div class="col-md-3 form-group">
         <ui-select ng-change="onChange()" ng-model="site.selected" theme="bootstrap"
             ng-disabled="disabled"
             reset-search-input="false">

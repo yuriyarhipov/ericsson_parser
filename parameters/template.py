@@ -220,39 +220,16 @@ class Template(object):
         return [value, status]
 
     def get_site_query(self, site, filename):
-        cursor = self.conn.cursor()
-        wcdma_tables = dict()
-        params = dict()
-        for f in Files.objects.filter(network='WCDMA'):
-            for table in f.tables.split(','):
-                wcdma_tables[table.lower()] = ''
-
-        for sq in SiteQuery.objects.all():
-            if sq.site not in params:
-                params[sq.site] = dict()
-
-            cursor.execute("SELECT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE lower(column_name)='%s'" % (sq.param_name.lower(), ))
-            for row in cursor:
-                if row[0].lower() in wcdma_tables:
-                    if not params[sq.site].get(sq.param_name):
-                        if self.check_columns('utrancell', row[0].lower()):
-                            value = self.get_site_query_value(filename, 'utrancell', site, sq.param_name, row[0])
-                            params[sq.site][sq.param_name] = self.check_value(value, sq.param_min, sq.param_max)
-                        elif self.check_columns('element2', row[0].lower()):
-                            element2 = self.get_element2_value(filename, site)
-                            if element2:
-                                value = self.get_site_query_value(filename, 'element2', element2, sq.param_name, row[0])
-                                params[sq.site][sq.param_name] = self.check_value(value, sq.param_min, sq.param_max)
+        sourcefile = Files.objects.filter(filename=filename).first()
+        params = sourcefile.get_site_query(site)
         return params
 
 
-    def site_query(self, project, filename):
-        Files.objects.filter(project=project, network='WCDMA', )
+    def site_query(self, project, network, filename):
         data = OrderedDict()
         wb = load_workbook(filename=filename, use_iterators=True)
         ws = wb.active
-        SiteQuery.objects.all().delete()
-
+        SiteQuery.objects.filter(network=network).delete()
         for row in ws.iter_rows():
             if row[0].value == '**':
                 site_name = row[1].value
@@ -260,20 +237,33 @@ class Template(object):
                 param_name = row[1].value
                 param_min = row[2].value if row[2].value else ''
                 param_max = row[3].value if row[3].value else ''
-
-                if site_name not in data:
-                    data[site_name] = []
-                data[site_name].append([param_name, param_min, param_max])
-                SiteQuery.objects.create(project=project, site=site_name, param_name=param_name, param_min=param_min, param_max=param_max)
-
+                if param_name:
+                    if site_name not in data:
+                        data[site_name] = []
+                    data[site_name].append([param_name, param_min, param_max])
+                    SiteQuery.objects.create(
+                        project=project,
+                        network=network,
+                        site=site_name,
+                        param_name=param_name,
+                        param_min=param_min,
+                        param_max=param_max)
         return data
 
     def get_sites(self, filename):
         data = []
         cursor = self.conn.cursor()
-        cursor.execute("SELECT DISTINCT Utrancell FROM Topology WHERE (filename='%s')" % (filename, ))
-        for row in cursor:
-            data.append(row[0])
+
+        source_file = Files.objects.filter(filename=filename).first()
+        if source_file:
+            if source_file.network == 'WCDMA':
+                cursor.execute("SELECT DISTINCT Utrancell FROM Topology WHERE (filename='%s')" % (filename, ))
+                for row in cursor:
+                    data.append(row[0])
+            elif source_file.network == 'LTE':
+                pass
+            elif source_file.network == 'GSM':
+                pass
         return data
 
 

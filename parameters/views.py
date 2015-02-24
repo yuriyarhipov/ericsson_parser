@@ -155,31 +155,45 @@ def edit_template(request, template):
 
 
 def save_automatic_site_query(request):
+    network = request.POST.get('network')
     filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
-    data = Template().site_query(project=request.project, filename=filename)
+    data = Template().site_query(project=request.project, network=network, filename=filename)
     return HttpResponse(json.dumps({'data': data}), content_type='application/json')
 
 
-def automatic_site_query(request):
+def automatic_site_query(request, network):
     data = OrderedDict()
-    for query in SiteQuery.objects.filter(project=request.project):
+    for query in SiteQuery.objects.filter(project=request.project, network=network):
         if query.site not in data:
             data[query.site] = []
         data[query.site].append([query.param_name, query.param_min, query.param_max])
     return HttpResponse(json.dumps({'data': data}), content_type='application/json')
 
 
-def get_site_query(request, site):
+def get_site_query(request, network, site):
     data = dict()
     data['tabs'] = []
-    params = Template().get_site_query(site, request.wcdma.filename)
+    if network == 'WCDMA':
+        source_file = request.wcdma.filename
+    elif network == 'LTE':
+        source_file = request.lte.filename
+    elif network == 'GSM':
+        source_file = request.gsm.filename
+
+    params = Template().get_site_query(site, source_file)
     for tab_name, tab_params in params.iteritems():
         data['tabs'].append({'title': tab_name, 'content': tab_params})
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
-def get_sites(request):
-    data = Template().get_sites(request.wcdma.filename)
+def get_sites(request, network):
+    if network == 'WCDMA':
+        source_file = request.wcdma.filename
+    elif network == 'LTE':
+        source_file = request.lte.filename
+    elif network == 'GSM':
+        source_file = request.gsm.filename
+    data = Template().get_sites(source_file)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 

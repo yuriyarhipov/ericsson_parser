@@ -3,6 +3,8 @@ from django.db import connection
 
 from project.models import Project
 from files.wcdma import WCDMA
+from query.models import SiteQuery
+
 
 
 class UploadedFiles(models.Model):
@@ -103,6 +105,53 @@ class Files(models.Model):
         data.sort()
         return data
 
+
+    def get_site_query(self, site):
+        cursor = connection.cursor()
+        params = dict()
+        for sq in SiteQuery.objects.filter(project=self.project, network=self.network):
+            if sq.site not in params:
+                params[sq.site] = dict()
+            if sq.param_name not in params[sq.site]:
+                params[sq.site][sq.param_name] = []
+
+            sql = "SELECT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE lower(column_name)='%s'" % (sq.param_name.lower(), )
+            cursor.execute(sql)
+            tables = [row[0] for row in cursor]
+            if sq.network == 'WCDMA':
+                for table in tables:
+                    sql = "SELECT lower(column_name) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name='%s'" % (table, )
+                    cursor.execute(sql)
+                    columns = [row[0] for row in cursor]
+                    if 'utrancell' in columns:
+                        sql = "SELECT %s FROM %s WHERE (lower(utrancell)='%s') AND (filename='%s')" % (
+                            sq.param_name.lower(),
+                            table,
+                            site.lower(),
+                            self.filename
+                        )
+                        cursor.execute(sql)
+                        for row in cursor:
+                            params[sq.site][sq.param_name] = self.check_value(row[0], sq.param_min, sq.param_max)
+        return params
+
+    def check_value(self, value, p_min, p_max):
+        status = 'default'
+        if p_min and value:
+            value = value.strip()
+            p_min = p_min.strip()
+            p_max = p_max.strip()
+            if p_min.lower() in ['true', 'false']:
+                if value:
+                    status = 'success'
+                else:
+                    status = 'danger'
+
+            elif (float(value) >= float(p_min)) and (float(value) <= float(p_max)):
+                status = 'success'
+            else:
+                status = 'danger'
+        return [value, status]
 
 
 class SuperFile(models.Model):

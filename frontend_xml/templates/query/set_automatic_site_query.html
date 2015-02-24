@@ -2,8 +2,8 @@
     <div class="form-group">
         <label for="network" class="col-sm-3 control-label">File</label>
         <div class="col-sm-9">
-            <select ng-model="form_data.network" ng-change="onChangeNetwork()" class="form-control" id="network" name="network">
-                <option value="GSM">GSM</option>
+            <select ng-model="network" ng-change="onChangeNetwork()" class="form-control" id="network" name="network">
+                <option value="GSM" selected>GSM</option>
                 <option value="WCDMA">WCDMA</option>
                 <option value="LTE">LTE</option>
             </select>

@@ -65,7 +65,8 @@ queryControllers.controller('GroupsCtrl', ['$scope', '$http',
 
 queryControllers.controller('automaticSiteQueryCtrl', ['$scope', '$http',
     function ($scope, $http) {
-        $http.get('data/automatic_site_query/').success(function(data){
+        $scope.network = 'GSM';
+        $http.get('data/automatic_site_query/' + $scope.network + '/').success(function(data){
             $scope.site_query = data.data;
         });
 
@@ -74,20 +75,30 @@ queryControllers.controller('automaticSiteQueryCtrl', ['$scope', '$http',
         };
 
         $scope.onChangeNetwork = function(){
-          console.log("OK");
+            $http.get('data/automatic_site_query/' + $scope.network + '/').success(function(data){
+                $scope.site_query = data.data;
+            });
         };
 
   }]);
 
 queryControllers.controller('parameters_overviewCtrl', ['$scope', '$http',
     function ($scope, $http) {
+        $scope.network = 'GSM';
+
+        $scope.onChangeNetwork = function(){
+            $http.get('/data/get_sites/' + $scope.network + '/').success(function(data){
+                $scope.utrancell = data;
+            });
+        };
 
         $scope.site = {};
-        $http.get('/data/get_sites/').success(function(data){
+        $http.get('/data/get_sites/' + $scope.network + '/').success(function(data){
             $scope.utrancell = data;
         });
+
         $scope.onChange = function(){
-            $http.get('/data/get_site_query/' + $scope.site.selected + '/').success(function(data){
+            $http.get('/data/get_site_query/' + $scope.network + '/' + $scope.site.selected + '/').success(function(data){
                 $scope.tabs = data.tabs;
             });
         };
