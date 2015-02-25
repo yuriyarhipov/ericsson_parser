@@ -130,8 +130,6 @@ class Table(object):
         if self.table_name == 'BrightcommsRNDDate':
             order_columns = 'SITENAME, SECTORID, SITEID, CID'
 
-
-        print 'SELECT DISTINCT %s FROM "%s" WHERE lower(filename) IN (%s) ORDER BY %s' % (sql_columns, self.table_name.lower(), ','.join(self.sql_filename), order_columns)
         cursor.execute('SELECT DISTINCT %s FROM "%s" WHERE lower(filename) IN (%s) ORDER BY %s' % (sql_columns, self.table_name.lower(), ','.join(self.sql_filename), order_columns))
         data = cursor.fetchall()
         return data

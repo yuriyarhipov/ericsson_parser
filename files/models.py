@@ -105,6 +105,23 @@ class Files(models.Model):
         data.sort()
         return data
 
+    def get_site_query_value(self, filename, column, value, param, table):
+        cursor = connection.cursor()
+        cursor.execute("SELECT %s FROM %s WHERE (filename='%s') AND (lower(%s)='%s')" % (param, table, filename, column, value.lower()))
+        if cursor.rowcount > 0:
+            return cursor.fetchall()[0][0]
+
+    def check_columns(self, column, table_name):
+        cursor = connection.cursor()
+        cursor.execute("SELECT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE (lower(column_name)=%s) AND (lower(table_name)=%s)", (column.lower(), table_name.lower()))
+        return cursor.rowcount > 0
+
+    def get_element2_value(self, filename, utrancell):
+        cursor = connection.cursor()
+        cursor.execute("SELECT Site FROM Topology WHERE (filename='%s') AND (lower(Utrancell)=lower('%s'))" % (filename, utrancell))
+        for row in cursor:
+            return row[0]
+
     def get_site_query(self, site):
         cursor = connection.cursor()
         params = dict()
@@ -132,9 +149,19 @@ class Files(models.Model):
                         cursor.execute(sql)
                         for row in cursor:
                             params[sq.site][sq.param_name] = self.check_value(row[0], sq.param_min, sq.param_max)
+                    elif 'element2' in columns:
+                        element2 = self.get_element2_value(self.filename, site)
+                        if element2:
+                            value = self.get_site_query_value(
+                                self.filename,
+                                'element2',
+                                element2,
+                                sq.param_name,
+                                table)
+                            params[sq.site][sq.param_name] = self.check_value(value, sq.param_min, sq.param_max)
+
             elif sq.network == 'GSM':
                 for table in tables:
-                    print table
                     if not params[sq.site][sq.param_name]:
                         sql = '''SELECT "%s" FROM %s WHERE (lower(cell)='%s') AND (filename='%s')''' % (
                                 sq.param_name.lower(),
@@ -145,6 +172,8 @@ class Files(models.Model):
                         cursor.execute(sql)
                         for row in cursor:
                             params[sq.site][sq.param_name] = self.check_value(row[0], sq.param_min, sq.param_max)
+            if params[sq.site][sq.param_name] == []:
+                params[sq.site].pop(sq.param_name)
         return params
 
     def check_value(self, value, p_min, p_max):
