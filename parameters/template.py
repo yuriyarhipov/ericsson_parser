@@ -221,6 +221,8 @@ class Template(object):
 
     def get_site_query(self, site, filename):
         sourcefile = Files.objects.filter(filename=filename).first()
+        print filename
+        print site
         params = sourcefile.get_site_query(site)
         return params
 
