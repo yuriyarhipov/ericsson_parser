@@ -105,7 +105,6 @@ class Files(models.Model):
         data.sort()
         return data
 
-
     def get_site_query(self, site):
         cursor = connection.cursor()
         params = dict()
@@ -134,6 +133,7 @@ class Files(models.Model):
                         for row in cursor:
                             params[sq.site][sq.param_name] = self.check_value(row[0], sq.param_min, sq.param_max)
             elif sq.network == 'GSM':
+                print '1'
                 for table in tables:
                     if not params[sq.site][sq.param_name]:
                         sql = '''SELECT "%s" FROM %s WHERE (lower(cell)='%s') AND (filename='%s')''' % (
@@ -143,6 +143,7 @@ class Files(models.Model):
                                 self.filename
                         )
                         cursor.execute(sql)
+                        print sql
                         for row in cursor:
                             params[sq.site][sq.param_name] = self.check_value(row[0], sq.param_min, sq.param_max)
         return params
