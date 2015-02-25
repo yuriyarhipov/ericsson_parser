@@ -133,7 +133,6 @@ class Files(models.Model):
                         for row in cursor:
                             params[sq.site][sq.param_name] = self.check_value(row[0], sq.param_min, sq.param_max)
             elif sq.network == 'GSM':
-                print '1'
                 for table in tables:
                     print table
                     if not params[sq.site][sq.param_name]:
