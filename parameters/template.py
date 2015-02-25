@@ -259,13 +259,13 @@ class Template(object):
             if source_file.network == 'WCDMA':
                 cursor.execute("SELECT DISTINCT Utrancell FROM Topology WHERE (filename='%s')" % (filename, ))
                 for row in cursor:
-                    data.append(row[0])
+                    data.append(dict(name=row[0]))
             elif source_file.network == 'LTE':
                 pass
             elif source_file.network == 'GSM':
                 cursor.execute("SELECT DISTINCT CELL FROM COMMON_CELL_DATA WHERE (filename='%s')" % (filename, ))
                 for row in cursor:
-                    data.append(row[0])
+                    data.append(dict(name=row[0]))
         return data
 
 
