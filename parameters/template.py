@@ -263,8 +263,9 @@ class Template(object):
             elif source_file.network == 'LTE':
                 pass
             elif source_file.network == 'GSM':
-                cursor.execute("SELECT DISTINCT CELL FROM BA_List WHERE (filename='%s')" % (filename, ))
+                cursor.execute("SELECT DISTINCT CELL FROM COMMON_CELL_DATA WHERE (filename='%s')" % (filename, ))
                 for row in cursor:
+                    print row
                     data.append(row[0])
         return data
 
