@@ -135,6 +135,7 @@ class Files(models.Model):
             elif sq.network == 'GSM':
                 print '1'
                 for table in tables:
+                    print table
                     if not params[sq.site][sq.param_name]:
                         sql = '''SELECT "%s" FROM %s WHERE (lower(cell)='%s') AND (filename='%s')''' % (
                                 sq.param_name.lower(),
