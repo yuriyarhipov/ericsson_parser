@@ -9,9 +9,9 @@
     <div class="form-group col-sm-4">
         <input type="text" class="form-control" placeholder="Filter" ng-change="onFilter()" ng-model="file_filter">
     </div>
-</div>
-<div class="row">
-    <a href="/data/files/get_excel/{{ network }}/">Download Excel</a>
+    <div class="form-group col-sm-4">
+        <a class="btn btn-default" href="/data/files/get_excel/{{ network }}/">Download ALL</a>
+    </div>
 </div>
 <div class="row">
     <table class="table table-bordered table-striped">

@@ -265,7 +265,6 @@ class Template(object):
             elif source_file.network == 'GSM':
                 cursor.execute("SELECT DISTINCT CELL FROM COMMON_CELL_DATA WHERE (filename='%s')" % (filename, ))
                 for row in cursor:
-                    print row
                     data.append(row[0])
         return data
 
