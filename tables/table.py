@@ -42,17 +42,17 @@ class Table(object):
     def sort_columns(self, columns):
         result = []
         fixed_columns = [
-            '"mo"',
-            '"version"',
-            '"vendor"',
-            '"element"',
-            '"element1"',
-            '"element2"',
-            '"utranCell"',
-            '"sectorCarrier"',
-            '"carrier"',
-            '"cell"',
-            '"bsc"',
+            'MO',
+            'Version',
+            'Vendor',
+            'Element',
+            'Element1',
+            'Element2',
+            'UtranCell',
+            'SectorCarrier',
+            'Carrier',
+            'Cell',
+            'BSC',
         ]
         exists_columns = [column.lower() for column in columns]
         for column in fixed_columns:
@@ -66,7 +66,7 @@ class Table(object):
     def get_columns(self):
         source_file = Files.objects.filter(filename=self.filename).first()
         if source_file.network == 'GSM':
-            columns = ['"%s"' % col.lower() for col in CNATemplate.objects.filter(table_name=self.table_name).first().columns.split(',')]
+            columns = ['%s' % col for col in CNATemplate.objects.filter(table_name=self.table_name).first().columns.split(',')]
             return columns
         if self.table_name in ['map_intrafreq', 'map_interfreq', 'map_gsmirat', 'hw_summary']:
             return
@@ -84,7 +84,7 @@ class Table(object):
 
         cursor = self.conn.cursor()
         cursor.execute('SELECT * FROM "%s" LIMIT 0' % (self.table_name.lower(), ))
-        columns = ['"%s"' % desc[0] for desc in cursor.description]
+        columns = ['%s' % desc[0] for desc in cursor.description]
         return self.sort_columns(columns)
 
     def get_data(self):
@@ -125,11 +125,13 @@ class Table(object):
             return data
 
         cursor = self.conn.cursor()
-        sql_columns = ','.join(self.columns)
+        sql_columns = ','.join(['"%s"' % col.lower() for col in self.columns])
         order_columns = sql_columns
         if self.table_name == 'BrightcommsRNDDate':
             order_columns = 'SITENAME, SECTORID, SITEID, CID'
 
+
+        print 'SELECT DISTINCT %s FROM "%s" WHERE lower(filename) IN (%s) ORDER BY %s' % (sql_columns, self.table_name.lower(), ','.join(self.sql_filename), order_columns)
         cursor.execute('SELECT DISTINCT %s FROM "%s" WHERE lower(filename) IN (%s) ORDER BY %s' % (sql_columns, self.table_name.lower(), ','.join(self.sql_filename), order_columns))
         data = cursor.fetchall()
         return data
