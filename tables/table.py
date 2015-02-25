@@ -11,6 +11,7 @@ from collections import OrderedDict
 from django.conf import settings
 
 from files.hw import HardWare
+from files.models import Files, CNATemplate
 
 
 def get_mo(mo):
@@ -63,6 +64,10 @@ class Table(object):
         return result
 
     def get_columns(self):
+        source_file = Files.objects.filter(filename=self.filename).first()
+        if source_file.network == 'GSM':
+            columns = ['"%s"' % col.lower() for col in CNATemplate.objects.filter(table_name=self.table_name).first().columns.split(',')]
+            return columns
         if self.table_name in ['map_intrafreq', 'map_interfreq', 'map_gsmirat', 'hw_summary']:
             return
 

@@ -95,7 +95,7 @@ def by_technology(request, network):
     project = request.project
     if network == 'GSM':
         filename = request.gsm.filename
-        for cna_table in CNATemplate.objects.all():
+        for cna_table in CNATemplate.objects.all().order_by('table_name'):
             data.append({'label': cna_table.table_name, 'table': cna_table.table_name, 'type': 'CNA Table', 'filename': filename})
 
     elif network == 'WCDMA':
