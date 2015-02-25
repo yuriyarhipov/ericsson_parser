@@ -75,8 +75,11 @@ def worker(filename, project, description, vendor, file_type, network):
                 file_type,
                 network,
                 task)
-
+    print file_type
+    print measurements_types
     if file_type in measurements_types:
+        print "ok!!"
+        print work_file
         Measurements().save_file(
             work_file,
             project,

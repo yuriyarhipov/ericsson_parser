@@ -245,6 +245,7 @@ class Tables:
             ;''')
 
     def rnd_lte(self):
+        return
         if self.network != 'LTE':
             return
         self.cursor.execute('DROP TABLE IF EXISTS RND_LTE;')

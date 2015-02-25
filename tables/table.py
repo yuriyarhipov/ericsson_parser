@@ -41,15 +41,17 @@ class Table(object):
     def sort_columns(self, columns):
         result = []
         fixed_columns = [
-            'MO',
-            'Version',
-            'Vendor',
-            'Element',
-            'Element1',
-            'Element2',
-            'UtranCell',
-            'SectorCarrier',
-            'Carrier'
+            '"mo"',
+            '"version"',
+            '"vendor"',
+            '"element"',
+            '"element1"',
+            '"element2"',
+            '"utranCell"',
+            '"sectorCarrier"',
+            '"carrier"',
+            '"cell"',
+            '"bsc"',
         ]
         exists_columns = [column.lower() for column in columns]
         for column in fixed_columns:
@@ -77,7 +79,7 @@ class Table(object):
 
         cursor = self.conn.cursor()
         cursor.execute('SELECT * FROM "%s" LIMIT 0' % (self.table_name.lower(), ))
-        columns = ['%s' % desc[0] for desc in cursor.description]
+        columns = ['"%s"' % desc[0] for desc in cursor.description]
         return self.sort_columns(columns)
 
     def get_data(self):

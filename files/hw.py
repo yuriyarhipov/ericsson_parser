@@ -151,13 +151,14 @@ class HardWare(object):
             product_name = self.get_values(manufacturer_data).get('ProductName', '')
             self.write_data([self.filename, managed_element, managed_element_type, user_label, inventory_unit, inventory_unit_type, vendor_unit_family_type, vendor_unit_type_number, vendor_name, serial_number, unit_position, manufacturer_data, product_name])
 
-    def parse_data(self, project, description, vendor, file_type, network, task, current, interval_per_file):
+    def parse_data(self, project, description, vendor, file_type, network, task):
+        current = 5
         self.create_table()
         tree = etree.parse(self.path)
         root = tree.getroot()
         nodes = root.findall('.//{http://www.3gpp.org/ftp/specs/archive/32_series/32.625#genericNrm}ManagedElement')
         count = len(nodes)
-        interval = float(interval_per_file)/float(count)
+        interval = float(100)/float(count)
         for node in nodes:
             self.parse_managed_element(node)
             current = float(current) + float(interval)

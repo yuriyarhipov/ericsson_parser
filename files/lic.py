@@ -89,14 +89,14 @@ class License(object):
         year = attr_date.get('Year')
         return '%s.%s.%s' % (day, month, year)
 
-    def parse_data(self, project, description, vendor, file_type, network, task, current, interval_per_file):
+    def parse_data(self, project, description, vendor, file_type, network, task):
         self.create_table()
         tree = etree.parse(self.path)
         root = tree.getroot()
         networks = root.findall('.//NetworkElement')
         count = len(networks)
-        interval = float(interval_per_file)/float(count)
-
+        interval = float(100)/float(count)
+        current = 0
         for attribute in networks:
             self.parse_network(attribute)
             current = float(current) + float(interval)
