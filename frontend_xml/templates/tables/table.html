@@ -2,6 +2,9 @@
     <a href="/data/table/{{ filename }}/{{ tablename }}?excel=ok">Download Excel</a>
 </div>
 <div class="row">
+    <h2>{{ tablename }}</h2>
+</div>
+<div class="row">
     <pagination max-size="5" items-per-page="itemsPerPage" ng-change="pageChanged()" boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
 </div>
 <div class="row">
