@@ -10,7 +10,7 @@
         <ui-select ng-change="onChange()" ng-model="site.selected" theme="bootstrap"
             ng-disabled="disabled"
             reset-search-input="false">
-            <ui-select-match placeholder="Search Site">{{ $site.selected }}</ui-select-match>
+            <ui-select-match>{{$select.selected.name}}</ui-select-match>
             <ui-select-choices repeat="cells in utrancell | filter: { name: $select.search }">
                 {{ cells.name }}
             </ui-select-choices>

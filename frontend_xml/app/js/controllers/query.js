@@ -98,7 +98,7 @@ queryControllers.controller('parameters_overviewCtrl', ['$scope', '$http',
         });
 
         $scope.onChange = function(){
-            $http.get('/data/get_site_query/' + $scope.network + '/' + $scope.site.selected + '/').success(function(data){
+            $http.get('/data/get_site_query/' + $scope.network + '/' + $scope.site.selected.name + '/').success(function(data){
                 $scope.tabs = data.tabs;
             });
         };
