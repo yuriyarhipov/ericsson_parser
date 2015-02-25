@@ -153,16 +153,20 @@ class Files(models.Model):
             value = value.strip()
             p_min = p_min.strip()
             p_max = p_max.strip()
-            if p_min.lower() in ['true', 'false']:
-                if value:
+            try:
+                if p_min.lower() in ['true', 'false']:
+                    if value:
+                        status = 'success'
+                    else:
+                        status = 'danger'
+
+                elif (float(value) >= float(p_min)) and (float(value) <= float(p_max)):
                     status = 'success'
                 else:
                     status = 'danger'
+            except:
+                pass
 
-            elif (float(value) >= float(p_min)) and (float(value) <= float(p_max)):
-                status = 'success'
-            else:
-                status = 'danger'
         return [value, status]
 
 
