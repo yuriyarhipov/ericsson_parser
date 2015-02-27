@@ -75,7 +75,7 @@ class Template(object):
             join_sql.append('(%s.UtranCell = TOPOLOGY.UtranCell)' % table_name)
         if 'element1' in columns:
             join_sql.append('(%s.Element1 = TOPOLOGY.RNC)' % table_name)
-        if 'element2' in columns:
+        elif 'element2' in columns:
             join_sql.append('(%s.Element2 = TOPOLOGY.SITE)' % table_name)
         if 'sectorcarrier' in columns:
             join_sql.append('(%s.SectorCarrier = TOPOLOGY.SectorCarrier)' % table_name)
