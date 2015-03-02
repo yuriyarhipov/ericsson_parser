@@ -81,7 +81,6 @@ class Tables:
             self.create_table(table_name)
 
     def fourgneighbors(self):
-        return
         if self.network != 'LTE':
             return
 
@@ -105,6 +104,8 @@ class Tables:
             ;''')
 
     def threegneighborss(self):
+        if self.network == 'LTE':
+            return
         self.cursor.execute('DROP TABLE IF EXISTS ThreeGNeighbors;')
         self.cursor.execute('''
           SELECT DISTINCT
@@ -134,6 +135,8 @@ class Tables:
         ''')
 
     def topology(self):
+        if self.network == 'LTE':
+            return
         self.cursor.execute('DROP TABLE IF EXISTS TOPOLOGY CASCADE;')
         self.cursor.execute('''
             SELECT DISTINCT
@@ -154,6 +157,8 @@ class Tables:
             ;''')
 
     def create_topology_tree_view(self):
+        if self.network == 'LTE':
+            return
         cursor = self.conn.cursor()
         self.cursor.execute('CREATE TABLE IF NOT EXISTS TOPOLOGY_TREEVIEW (FILENAME TEXT, ROOT TEXT, TREEVIEW JSON);')
         self.conn.commit()
@@ -162,7 +167,6 @@ class Tables:
             Topology(row[0]).create_tree_view()
 
     def topology_lte(self):
-        return
         if self.network != 'LTE':
             return
 
@@ -180,18 +184,14 @@ class Tables:
                 TPTM2.mmeName mmeName_2
             INTO TOPOLOGY_LTE
             FROM EUtrancellFDD
-                INNER JOIN SectorEquipmentFunction ON SectorEquipmentFunction.EUtrancellFDD=EUtrancellFDD.EUtrancellFDD
-                INNER JOIN TermPointToMme TPTM1 ON TPTM1.Element2=EUtrancellFDD.Element2
-                INNER JOIN TermPointToMme TPTM2 ON TPTM2.Element2=EUtrancellFDD.Element2
-            WHERE
-                (TPTM1.TermPointToMme='1') AND
-                (TPTM2.TermPointToMme='2') AND
-                (EUtrancellFDD.filename=SectorEquipmentFunction.filename) AND
-                (EUtrancellFDD.filename=TPTM1.filename) AND
-                (EUtrancellFDD.filename=TPTM2.filename)
+                LEFT JOIN SectorEquipmentFunction ON ((SectorEquipmentFunction.EUtrancellFDD=EUtrancellFDD.EUtrancellFDD) AND ((EUtrancellFDD.filename=SectorEquipmentFunction.filename)))
+                INNER JOIN TermPointToMme TPTM1 ON ((TPTM1.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=TPTM1.filename) AND (TPTM1.TermPointToMme='1'))
+                INNER JOIN TermPointToMme TPTM2 ON ((TPTM2.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=TPTM2.filename) AND (TPTM2.TermPointToMme='2'))
             ;''')
 
     def rnd_wcdma(self):
+        if self.network == 'LTE':
+            return
         self.cursor.execute('DROP VIEW IF EXISTS BrightcommsRNDDate;')
         self.cursor.execute('DROP TABLE IF EXISTS RND_WCDMA;')
         self.cursor.execute('''
@@ -245,7 +245,6 @@ class Tables:
             ;''')
 
     def rnd_lte(self):
-        return
         if self.network != 'LTE':
             return
         self.cursor.execute('DROP TABLE IF EXISTS RND_LTE;')
@@ -486,6 +485,8 @@ class Processing(object):
         elif table_name == 'EUtranCellRelation':
             ac = self.parse_mo(result.get('adjacentCell'))
             result['Target'] = ac.get('EUtranCellFDD')
+            if 'EUtranCellFDD' not in result:
+                result['EUtranCellFDD'] = result['Target']
 
         elif table_name == 'CoverageRelation':
             tc = self.parse_mo(result.get('utranCellRef'))
