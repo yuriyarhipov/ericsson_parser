@@ -69,8 +69,12 @@ class ExcelFile:
 
         f = Files.objects.filter(project=self.project, filename=self.filename).first()
 
-        if f.network in ['WCDMA', 'LTE', ]:
-            tables = f.tables.split(',')
+        if f.network == 'WCDMA':
+            tables = ['Topology', 'RND']
+            tables.extend(f.tables.split(','))
+        elif f.network == 'LTE':
+            tables = ['Topology_LTE', 'RND_LTE']
+            tables.extend(f.tables.split(','))
         elif f.network == 'GSM':
             tables = [cna_t.table_name for cna_t in CNATemplate.objects.filter(project=self.project)]
 

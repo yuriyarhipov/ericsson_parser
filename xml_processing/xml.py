@@ -120,7 +120,7 @@ class Tables:
             as RelationType,
             nodeRelationType,
             CASE
-              WHEN frequencyRelationType = '1' T8HEN 'INTER_RNC'
+              WHEN frequencyRelationType = '1' THEN 'INTER_RNC'
               ELSE 'INTRA_RNC'
             END
             as node_RelationType,
