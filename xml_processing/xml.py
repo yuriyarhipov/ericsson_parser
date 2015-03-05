@@ -7,6 +7,8 @@ from os.path import basename
 from files.models import Files
 from tables.table import Topology
 from files.excel import ExcelFile
+from query.models import QueryTemplate
+from parameters.template import Template
 
 class Tables:
     def __init__(self, data, tables, network, filename):
@@ -585,3 +587,6 @@ class Xml(object):
             vendor=vendor,
             network=network)
         ExcelFile(project, basename(filename))
+        for qt in QueryTemplate.objects.filter(project=project, network=network).distinct('template_name'):
+            print qt.template_name
+            Template().create_template_table(qt.template_name)

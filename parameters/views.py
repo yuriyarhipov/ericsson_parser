@@ -86,6 +86,9 @@ def delete_template(request, template_name):
     QueryTemplate.objects.filter(project=request.project, template_name=template_name).delete()
     return HttpResponse(json.dumps({'sucess': 'ok', }), content_type='application/json')
 
+def get_templates(request, network):
+    templates = [qt.template_name for qt in QueryTemplate.objects.filter(project=request.project, network=network, status='ready').distinct('template_name')]
+    return HttpResponse(json.dumps(templates), content_type='application/json')
 
 def get_template_cells(request, network, filename):
     data = []

@@ -13,9 +13,9 @@ def create_parameters_table(f, network, template_name):
     if network == 'GSM':
         CNA().create_template(template_name)
     elif network == 'WCDMA':
-        Template().create_template_table(f, template_name)
+        Template().create_template_table(template_name)
     elif network == 'LTE':
-        Template().create_template_table(f, template_name)
+        Template().create_template_table(template_name)
 
 
 @celery.task
@@ -88,11 +88,8 @@ def worker(filename, project, description, vendor, file_type, network):
                 file_type,
                 network,
                 task)
-    print file_type
-    print measurements_types
+
     if file_type in measurements_types:
-        print "ok!!"
-        print work_file
         Measurements().save_file(
             work_file,
             project,

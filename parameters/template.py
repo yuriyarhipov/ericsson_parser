@@ -169,11 +169,21 @@ class Template(object):
         select = self.get_tables_wcdma_untrancell(sql_tables, untracells, filenames)
         return select
 
-    def get_select(self, file, template_name):
+    def get_table_from_column(self, column_name):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT DISTINCT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE (lower(column_name)='%s')" % (column_name.lower(), ))
+        tables = [row[0]for row in cursor]
+        for table in tables:
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE lower(table_name)='%s';" % table.lower())
+            columns = [r[0] for r in cursor]
+            if (column_name.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns)):
+                return table
+
+    def get_select(self, template_name):
         sql_tables = OrderedDict()
         network = 'WCDMA'
         for template in QueryTemplate.objects.filter(template_name=template_name).order_by('id'):
-            table_name = file.get_mo(template.param_name)
+            table_name = self.get_table_from_column(template.param_name)
             column = template.param_name
             network = template.network
             if table_name not in sql_tables:
@@ -181,13 +191,16 @@ class Template(object):
             sql_tables[table_name].append(column)
         return self.get_tables(sql_tables, network, "template_%s" % template_name)
 
-    def create_template_table(self, file, template_name):
+    def create_template_table(self, template_name):
+        QueryTemplate.objects.filter(template_name=template_name).update(status='in process')
         self.cursor.execute('DROP TABLE IF EXISTS "template_%s"' % template_name)
-        sql_select = self.get_select(file, template_name)
-        self.cursor.execute(sql_select)
-        self.conn.commit()
-        QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
-
+        sql_select = self.get_select(template_name)
+        try:
+            self.cursor.execute(sql_select)
+            self.conn.commit()
+            QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
+        except:
+            QueryTemplate.objects.filter(template_name=template_name).update(status='error')
 
     def get_sql_compare_id(self, filename):
         f = Files.objects.filter(filename=filename).first()

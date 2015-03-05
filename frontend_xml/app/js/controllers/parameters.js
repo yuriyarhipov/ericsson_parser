@@ -111,15 +111,11 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
         $scope.hideForm = false;
 
         $scope.onChangeNetwork = function(){
-            $http.get('/data/predefined_templates/').success(function(data) {
-                $scope.templates = [];
-                var templates_length = data.length;
-                for (var i = 0; i < templates_length; i++){
-                    if (data[i].network == $scope.network){
-                        $scope.templates.push(data[i].template_name);
-                    }
+            $http.get('/data/get_templates/' + $scope.network +'/').success(function(data) {
+                $scope.templates = data;
+                if (data.length > 0){
+                    $scope.template = $scope.templates[0];
                 }
-                $scope.template = $scope.templates[0];
             });
 
             $http.get('/data/get_network_files/' + $scope.network +'/').success(function(data){
