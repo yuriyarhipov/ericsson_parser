@@ -103,11 +103,10 @@ class WCDMA:
         columns = []
         cells = self.convert_form_cells(cells, filenames)
         if template and cells:
-            sql = Template().run_wcdma_template(Files.objects.filter(filename=root_filename).first(), template, cells, filenames)
             params = self.get_params_with_min_max(template)
-            #q = '''SELECT * INTO TEMPORARY TEMP_TEMPLATE FROM "template_%s" WHERE (filename IN (%s)) AND Utrancell in (%s)''' % (template, filenames, ','.join(cells))
-            #self.cursor.execute(q)
-            self.cursor.execute(sql)
+            q = '''SELECT * INTO TEMPORARY TEMP_TEMPLATE FROM "template_%s" WHERE (filename IN (%s)) AND Utrancell in (%s)''' % (template, filenames, ','.join(cells))
+            self.cursor.execute(q)
+            self.cursor.execute("SELECT DISTINCT * FROM TEMP_TEMPLATE")
 
             colnames = [desc[0] for desc in self.cursor.description]
             data = []
