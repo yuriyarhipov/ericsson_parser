@@ -74,7 +74,7 @@ class ExcelFile:
             tables.extend(f.tables.split(','))
         elif f.network == 'LTE':
             tables = ['Topology_LTE', 'RND_LTE']
-            tables.extend(f.tables.split(','))
+            tables.extend(list(set(f.tables.split(','))))
         elif f.network == 'GSM':
             tables = [cna_t.table_name for cna_t in CNATemplate.objects.filter(project=self.project)]
 
