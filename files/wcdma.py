@@ -102,7 +102,7 @@ class WCDMA:
         cells = self.convert_form_cells(cells, filenames)
         if template and cells:
             params = self.get_params_with_min_max(template)
-            q = '''SELECT * INTO TEMPORARY TEMP_TEMPLATE FROM "template_%s" WHERE (filename IN (%s)) AND Utrancell in (%s)''' % (template, filenames, ','.join(cells))
+            q = '''SELECT * INTO TEMPORARY TEMP_TEMPLATE FROM "template_%s" WHERE (filename IN (%s)) AND Utrancell in (%s) LIMIT 100''' % (template, filenames, ','.join(cells))
             self.cursor.execute(q)
             self.cursor.execute("SELECT DISTINCT * FROM TEMP_TEMPLATE")
 
