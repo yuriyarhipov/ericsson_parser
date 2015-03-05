@@ -73,7 +73,7 @@ class Template(object):
         join_sql = []
         if 'utrancell' in columns:
             join_sql.append('(%s.UtranCell = TOPOLOGY.UtranCell)' % table_name)
-        elif 'element1' in columns:
+        if 'element1' in columns:
             join_sql.append('(%s.Element1 = TOPOLOGY.RNC)' % table_name)
         elif 'element2' in columns:
             join_sql.append('(%s.Element2 = TOPOLOGY.SITE)' % table_name)
@@ -201,6 +201,15 @@ class Template(object):
             sql_tables[table_name].append(column)
         return self.get_tables(sql_tables, network, "template_%s" % template_name)
 
+    def create_indexes(self, template_name):
+        qt = QueryTemplate.objects.filter(template_name=template_name).first()
+        network = qt.network
+        cursor = self.conn.cursor()
+        if network == 'WCDMA':
+            cursor.execute('CREATE INDEX ON "template_%s" (filename);' % template_name)
+            cursor.execute('CREATE INDEX ON "template_%s" (utrancell);' % template_name)
+        self.conn.commit()
+
     def create_template_table(self, template_name):
         QueryTemplate.objects.filter(template_name=template_name).update(status='in process')
         self.cursor.execute('DROP TABLE IF EXISTS "template_%s"' % template_name)
@@ -208,6 +217,7 @@ class Template(object):
         try:
             self.cursor.execute(sql_select)
             self.conn.commit()
+            self.create_indexes(template_name)
             QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
         except:
             QueryTemplate.objects.filter(template_name=template_name).update(status='error')
