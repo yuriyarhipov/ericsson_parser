@@ -71,7 +71,9 @@ class ExcelFile:
 
         if f.network == 'WCDMA':
             tables = ['Topology', 'RND']
-            tables.extend(f.tables.split(','))
+            for t in f.tables.split(','):
+                if t.lower() not in tables:
+                    tables.append(t.lower())
         elif f.network == 'LTE':
             tables = ['Topology_LTE', 'RND_LTE']
             tables.extend(list(set(f.tables.split(','))))
