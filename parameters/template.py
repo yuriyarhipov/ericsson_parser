@@ -144,7 +144,7 @@ class Template(object):
 
         sql_columns = ', '.join(result_columns)
         sql_join = ' '.join(tables)
-        sql = 'SELECT DISTINCT TOPOLOGY.RNC, TOPOLOGY.UTRANCELL, TOPOLOGY.SITE, Topology.SectorCarrier, Topology.SectorAntena, Topology.Carrier, TOPOLOGY.filename,  %s FROM Topology %s' % (sql_columns, sql_join)
+        sql = 'SELECT TOPOLOGY.RNC, TOPOLOGY.UTRANCELL, TOPOLOGY.SITE, Topology.SectorCarrier, Topology.SectorAntena, Topology.Carrier, TOPOLOGY.filename,  %s FROM Topology %s' % (sql_columns, sql_join)
         return sql
 
     def get_tables(self, sql_tables, network):
