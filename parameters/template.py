@@ -144,7 +144,7 @@ class Template(object):
 
         sql_columns = ', '.join(result_columns)
         sql_join = ' '.join(tables)
-        sql = 'SELECT TOPOLOGY.RNC, TOPOLOGY.UTRANCELL, TOPOLOGY.SITE, Topology.SectorCarrier, Topology.SectorAntena, Topology.Carrier, TOPOLOGY.filename,  %s  INTO %s FROM Topology %s' % (sql_columns, template_name, sql_join)
+        sql = 'SELECT TOPOLOGY.RNC, TOPOLOGY.UTRANCELL, TOPOLOGY.SITE, Topology.SectorCarrier, Topology.SectorAntena, Topology.Carrier, TOPOLOGY.filename,  %s  INTO "%s" FROM Topology %s' % (sql_columns, template_name, sql_join)
         return sql
 
 
