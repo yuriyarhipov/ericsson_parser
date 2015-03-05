@@ -588,5 +588,4 @@ class Xml(object):
             network=network)
         ExcelFile(project, basename(filename))
         for qt in QueryTemplate.objects.filter(project=project, network=network).distinct('template_name'):
-            print qt.template_name
             Template().create_template_table(qt.template_name)
