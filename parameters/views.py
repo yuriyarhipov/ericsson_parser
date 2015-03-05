@@ -17,6 +17,7 @@ from files.views import handle_uploaded_file
 from files.models import Files
 from template import Template
 from tables.table import get_excel
+from files import tasks
 
 
 def version_release(request):
@@ -60,12 +61,13 @@ def add_template(request):
             param_name=param_values[i],
             min_value=min_values[i],
             max_value=max_values[i],
+            status='in process'
             )
 
     if network == 'GSM':
         CNA().create_template(template_name)
     elif network == 'WCDMA':
-        Template().create_template_table(request.wcdma, template_name)
+        tasks.create_parameters_table.delay(request.wcdma, network, template_name)
     elif network == 'LTE':
         Template().create_template_table(request.lte, template_name)
 
@@ -76,7 +78,7 @@ def add_template(request):
 def predefined_templates(request):
     data = []
     for qt in QueryTemplate.objects.filter().distinct('template_name').order_by('template_name'):
-        data.append({'template_name': qt.template_name, 'network': qt.network})
+        data.append({'template_name': qt.template_name, 'network': qt.network, 'status': qt.status})
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 

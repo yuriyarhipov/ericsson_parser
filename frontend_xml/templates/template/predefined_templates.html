@@ -4,6 +4,7 @@
             <tr>
                 <td>Template</td>
                 <td>Network</td>
+                <td>Status</td>
                 <td></td>
             </tr>
         </thead>
@@ -11,6 +12,7 @@
             <tr ng-repeat="template in templates">
                 <td><a href="#/edit_template/{{ template.template_name }}">{{ template.template_name }}</a></td>
                 <td>{{ template.network }}</td>
+                <td>{{ template.status }}</td>
                 <td><span ng-click="onDeleteTemplate(template.template_name)"><a href="/#/predefined_templates">Delete</a></span></td>
             </tr>
         </tbody>

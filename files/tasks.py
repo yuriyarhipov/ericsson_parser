@@ -6,6 +6,19 @@ from celery.task.control import revoke
 
 
 @celery.task
+def create_parameters_table(f, network, template_name):
+    from files.cna import CNA
+    from parameters.template import Template
+
+    if network == 'GSM':
+        CNA().create_template(template_name)
+    elif network == 'WCDMA':
+        Template().create_template_table(f, template_name)
+    elif network == 'LTE':
+        Template().create_template_table(f, template_name)
+
+
+@celery.task
 def worker(filename, project, description, vendor, file_type, network):
     if not project:
         return
