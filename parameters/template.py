@@ -73,7 +73,7 @@ class Template(object):
         join_sql = []
         if 'utrancell' in columns:
             join_sql.append('(%s.UtranCell = TOPOLOGY.UtranCell)' % table_name)
-        if 'element1' in columns:
+        elif 'element1' in columns:
             join_sql.append('(%s.Element1 = TOPOLOGY.RNC)' % table_name)
         elif 'element2' in columns:
             join_sql.append('(%s.Element2 = TOPOLOGY.SITE)' % table_name)
@@ -170,14 +170,24 @@ class Template(object):
         return select
 
     def get_table_from_column(self, column_name):
+        valid_tables = []
+        for f in Files.objects.filter(network='WCDMA'):
+            valid_tables.extend([t.lower() for t in f.tables.split(',')])
+
         cursor = self.conn.cursor()
         cursor.execute("SELECT DISTINCT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE (lower(column_name)='%s')" % (column_name.lower(), ))
-        tables = [row[0]for row in cursor]
+        tables = []
+        for row in cursor:
+            if row[0].lower() in valid_tables:
+                tables.append(row[0].lower())
+        if 'utrancell' in tables:
+            tables = ['utrancell', ]
         for table in tables:
-            cursor.execute("SELECT column_name FROM information_schema.columns WHERE lower(table_name)='%s';" % table.lower())
-            columns = [r[0] for r in cursor]
-            if (column_name.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns)):
-                return table
+            if 'template_' not in table:
+                cursor.execute("SELECT column_name FROM information_schema.columns WHERE lower(table_name)='%s';" % table.lower())
+                columns = [r[0] for r in cursor]
+                if (column_name.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns)):
+                    return table
 
     def get_select(self, template_name):
         sql_tables = OrderedDict()
@@ -195,12 +205,12 @@ class Template(object):
         QueryTemplate.objects.filter(template_name=template_name).update(status='in process')
         self.cursor.execute('DROP TABLE IF EXISTS "template_%s"' % template_name)
         sql_select = self.get_select(template_name)
-        print sql_select
-        self.cursor.execute(sql_select)
-        self.conn.commit()
-        QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
-        #except:
-        #    QueryTemplate.objects.filter(template_name=template_name).update(status='error')
+        try:
+            self.cursor.execute(sql_select)
+            self.conn.commit()
+            QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
+        except:
+            QueryTemplate.objects.filter(template_name=template_name).update(status='error')
 
     def get_sql_compare_id(self, filename):
         f = Files.objects.filter(filename=filename).first()
