@@ -147,6 +147,22 @@ class Template(object):
         sql = 'SELECT TOPOLOGY.RNC, TOPOLOGY.UTRANCELL, TOPOLOGY.SITE, Topology.SectorCarrier, Topology.SectorAntena, Topology.Carrier, TOPOLOGY.filename,  %s FROM Topology %s' % (sql_columns, sql_join)
         return sql
 
+    def get_tables_wcdma_untrancell(self, sql_tables, utrancells, filenames):
+        tables = []
+        result_columns = []
+        for table_name, columns in sql_tables.iteritems():
+            sql_columns = ','.join(['%s.%s' % (table_name, col) for col in columns])
+            sql_join = self.get_join_wcdma(table_name)
+            sql_utrancells = ','.join(utrancells)
+            table_sql = 'INNER JOIN (SELECT DISTINCT Topology.UtranCell, Topology.filename, %s FROM %s WHERE (Topology.UtranCell in (%s)) AND (Topology.filename IN (%s))) AS T_%s ON ((Topology.Utrancell=T_%s.Utrancell) AND (Topology.filename=T_%s.filename))' % (sql_columns, sql_join, sql_utrancells, filenames, table_name, table_name, table_name)
+            tables.append(table_sql)
+            result_columns.extend(['T_%s.%s' % (table_name, col) for col in columns])
+
+        sql_columns = ', '.join(result_columns)
+        sql_join = ' '.join(tables)
+        sql = 'SELECT TOPOLOGY.RNC, TOPOLOGY.UTRANCELL, TOPOLOGY.SITE, Topology.SectorCarrier, Topology.SectorAntena, Topology.Carrier, TOPOLOGY.filename,  %s FROM Topology %s' % (sql_columns, sql_join)
+        return sql
+
     def get_tables(self, sql_tables, network):
         if network == 'WCDMA':
             return self.get_tables_wcdma(sql_tables)
@@ -154,6 +170,18 @@ class Template(object):
             return self.get_tables_lte(sql_tables)
         elif network == 'GSM':
             return self.get_tables_cna(sql_tables)
+
+    def run_wcdma_template(self, file, template_name, untracells, filenames):
+        sql_tables = OrderedDict()
+        for template in QueryTemplate.objects.filter(template_name=template_name).order_by('id'):
+            table_name = file.get_mo(template.param_name)
+            column = template.param_name
+            if table_name not in sql_tables:
+                sql_tables[table_name] = []
+            sql_tables[table_name].append(column)
+
+        select = self.get_tables_wcdma_untrancell(sql_tables, untracells, filenames)
+        return select
 
     def get_select(self, file, template_name):
         sql_tables = OrderedDict()
