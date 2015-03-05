@@ -96,7 +96,7 @@ def get_template_cells(request, network, filename):
         data = CNA().get_cells(filename)
     elif network == 'WCDMA':
         wcdma = WCDMA()
-        data = wcdma.get_cells(request.wcdma.filename)
+        data = wcdma.get_cells(filename)
     elif network == 'LTE':
         data = LTE().get_cells(request.lte.filename)
 
