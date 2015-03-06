@@ -205,22 +205,25 @@ class Template(object):
         qt = QueryTemplate.objects.filter(template_name=template_name).first()
         network = qt.network
         cursor = self.conn.cursor()
-        if network == 'WCDMA':
-            cursor.execute('CREATE INDEX ON "template_%s" (filename);' % template_name)
-            cursor.execute('CREATE INDEX ON "template_%s" (utrancell);' % template_name)
-        self.conn.commit()
+        try:
+            if network == 'WCDMA':
+                cursor.execute('CREATE INDEX ON "template_%s" (filename);' % template_name)
+                cursor.execute('CREATE INDEX ON "template_%s" (utrancell);' % template_name)
+                self.conn.commit()
+        except:
+            return
 
     def create_template_table(self, template_name):
         QueryTemplate.objects.filter(template_name=template_name).update(status='in process')
         self.cursor.execute('DROP TABLE IF EXISTS "template_%s"' % template_name)
         sql_select = self.get_select(template_name)
-        #try:
-        self.cursor.execute(sql_select)
-        self.conn.commit()
-        self.create_indexes(template_name)
-        QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
-        #except:
-        #    QueryTemplate.objects.filter(template_name=template_name).update(status='error')
+        try:
+            self.cursor.execute(sql_select)
+            self.conn.commit()
+            self.create_indexes(template_name)
+            QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
+        except:
+            QueryTemplate.objects.filter(template_name=template_name).update(status='error')
 
     def get_sql_compare_id(self, filename):
         f = Files.objects.filter(filename=filename).first()
