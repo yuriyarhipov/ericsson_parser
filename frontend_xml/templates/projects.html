@@ -4,12 +4,14 @@
             <tr>
                 <td>Project name</td>
                 <td>Created</td>
+                <td></td>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="project in projects">
                 <td><a  href="" ng-click="setActiveProject(project.project_name)">{{ project.project_name }}</a></td>
                 <td>{{ project.created }}</td>
+                <td><a href="" ng-click="onDeleteProject(project.project_name)">delete</a></td>
             </tr>
         </tbody>
     </table>

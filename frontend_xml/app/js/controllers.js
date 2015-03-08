@@ -9,6 +9,12 @@ xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectServ
         $http.get('/data/projects/').success(function(data) {
             $scope.projects = data;
         });
+
+        $scope.onDeleteProject = function(project_name){
+            $http.post('/data/delete_projects/' + project_name + '/').success(function(data) {
+                $scope.projects = data;
+            });
+        };
   }]);
 
 xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService', '$location',

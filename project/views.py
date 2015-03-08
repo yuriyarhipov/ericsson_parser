@@ -26,6 +26,16 @@ def save_project(request):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
+def delete_projects(request, project_name):
+    data = []
+    Project.objects.filter(project_name=project_name).delete()
+    for project in Project.objects.all().order_by('project_name'):
+        data.append({'project_name': project.project_name, 'created': project.created.strftime('%m.%d.%Y')})
+
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+
 def treeview(request, project):
     project = Project.objects.get(project_name=project)
     data = [
