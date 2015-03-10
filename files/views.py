@@ -196,7 +196,10 @@ def set_cna_template(request):
             if col[0].value:
                 columns.append(col[0].value)
         sql_columns = ','.join(columns)
-        table_name = sheet_name.strip().replace(' ', '_')
+
+        table_name = sheet_name.split('-')
+        table_name = table_name[len(table_name)-1]
+        table_name = table_name.strip().replace(' ', '_')
         CNATemplate.objects.create(project=project, table_name=table_name, columns=sql_columns)
 
     return HttpResponse(json.dumps([]), content_type='application/json')
