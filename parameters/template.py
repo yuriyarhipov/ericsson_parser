@@ -136,11 +136,12 @@ class Template(object):
         tables = []
         result_columns = []
         for table_name, columns in sql_tables.iteritems():
-            sql_columns = ','.join(['%s.%s' % (table_name, col) for col in columns])
-            sql_join = self.get_join_wcdma(table_name)
-            table_sql = 'INNER JOIN (SELECT DISTINCT Topology.UtranCell, Topology.filename, %s FROM %s) AS T_%s ON ((Topology.Utrancell=T_%s.Utrancell) AND (Topology.filename=T_%s.filename))' % (sql_columns, sql_join, table_name, table_name, table_name)
-            tables.append(table_sql)
-            result_columns.extend(['T_%s.%s' % (table_name, col) for col in columns])
+            if table_name and columns:
+                sql_columns = ','.join(['%s.%s' % (table_name, col) for col in columns])
+                sql_join = self.get_join_wcdma(table_name)
+                table_sql = 'INNER JOIN (SELECT DISTINCT Topology.UtranCell, Topology.filename, %s FROM %s) AS T_%s ON ((Topology.Utrancell=T_%s.Utrancell) AND (Topology.filename=T_%s.filename))' % (sql_columns, sql_join, table_name, table_name, table_name)
+                tables.append(table_sql)
+                result_columns.extend(['T_%s.%s' % (table_name, col) for col in columns])
 
         sql_columns = ', '.join(result_columns)
         sql_join = ' '.join(tables)
@@ -198,7 +199,8 @@ class Template(object):
             network = template.network
             if table_name not in sql_tables:
                 sql_tables[table_name] = []
-            sql_tables[table_name].append(column)
+            if column not in sql_tables[table_name]:
+                sql_tables[table_name].append(column)
         return self.get_tables(sql_tables, network, "template_%s" % template_name)
 
     def create_indexes(self, template_name):
@@ -217,13 +219,13 @@ class Template(object):
         QueryTemplate.objects.filter(template_name=template_name).update(status='in process')
         self.cursor.execute('DROP TABLE IF EXISTS "template_%s"' % template_name)
         sql_select = self.get_select(template_name)
-        try:
-            self.cursor.execute(sql_select)
-            self.conn.commit()
-            self.create_indexes(template_name)
-            QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
-        except:
-            QueryTemplate.objects.filter(template_name=template_name).update(status='error')
+        #try:
+        self.cursor.execute(sql_select)
+        self.conn.commit()
+        self.create_indexes(template_name)
+        QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
+        #except:
+        #    QueryTemplate.objects.filter(template_name=template_name).update(status='error')
 
     def get_sql_compare_id(self, filename):
         f = Files.objects.filter(filename=filename).first()
