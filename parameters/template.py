@@ -219,13 +219,13 @@ class Template(object):
         QueryTemplate.objects.filter(template_name=template_name).update(status='in process')
         self.cursor.execute('DROP TABLE IF EXISTS "template_%s"' % template_name)
         sql_select = self.get_select(template_name)
-        #try:
-        self.cursor.execute(sql_select)
-        self.conn.commit()
-        self.create_indexes(template_name)
-        QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
-        #except:
-        #    QueryTemplate.objects.filter(template_name=template_name).update(status='error')
+        try:
+            self.cursor.execute(sql_select)
+            self.conn.commit()
+            self.create_indexes(template_name)
+            QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
+        except:
+            QueryTemplate.objects.filter(template_name=template_name).update(status='error')
 
     def get_sql_compare_id(self, filename):
         f = Files.objects.filter(filename=filename).first()
