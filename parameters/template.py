@@ -68,8 +68,9 @@ class Template(object):
         sql = 'TOPOLOGY_LTE INNER JOIN %s ON ((%s.%s = TOPOLOGY_LTE.%s) AND (%s.filename=TOPOLOGY_LTE.filename))' % (table_name, table_name, sql_key, topology_key, table_name)
         return sql
 
-    def get_join_wcdma(self, table_name):
+    def get_join_wcdma(self, table_name, filename, cells):
         columns = self.get_columns(table_name)
+        sql_cells = ','.join(cells)
         join_sql = []
         if 'utrancell' in columns:
             join_sql.append('(%s.UtranCell = TOPOLOGY.UtranCell)' % table_name)
@@ -83,7 +84,12 @@ class Template(object):
             join_sql.append('(%s.Carrier = TOPOLOGY.Carrier)' % table_name)
         join_sql = ' AND '.join(join_sql)
 
-        sql = 'TOPOLOGY INNER JOIN %s ON (%s AND (%s.filename=TOPOLOGY.filename))' % (table_name, join_sql, table_name)
+        sql = 'TOPOLOGY INNER JOIN %s ON (%s AND (%s.filename IN (%s)) AND (Topology.UtranCell IN (%s)) )' % (
+            table_name,
+            join_sql,
+            table_name,
+            filename,
+            sql_cells)
         return sql
 
     def get_tables_cna(self, sql_tables):
@@ -129,46 +135,34 @@ class Template(object):
 
         sql_columns = ', '.join(result_columns)
         sql_join = ' '.join(tables)
-        sql = 'SELECT TOPOLOGY_LTE.CID, TOPOLOGY_LTE.SITE, TOPOLOGY_LTE.EUtrancell, TOPOLOGY_LTE.filename, %s FROM TOPOLOGY_LTE %s' % (sql_columns, sql_join)
+        sql = 'SELECT DISTINCT TOPOLOGY_LTE.CID, TOPOLOGY_LTE.SITE, TOPOLOGY_LTE.EUtrancell, TOPOLOGY_LTE.filename, %s FROM TOPOLOGY_LTE %s' % (sql_columns, sql_join)
         return sql
 
-    def get_tables_wcdma(self, sql_tables, template_name):
+    def get_tables_wcdma(self, sql_tables, filename, cells):
         tables = []
         result_columns = []
         for table_name, columns in sql_tables.iteritems():
             if table_name and columns:
                 sql_columns = ','.join(['%s.%s' % (table_name, col) for col in columns])
-                sql_join = self.get_join_wcdma(table_name)
+                sql_join = self.get_join_wcdma(table_name, filename, cells)
                 table_sql = 'INNER JOIN (SELECT DISTINCT Topology.UtranCell, Topology.filename, %s FROM %s) AS T_%s ON ((Topology.Utrancell=T_%s.Utrancell) AND (Topology.filename=T_%s.filename))' % (sql_columns, sql_join, table_name, table_name, table_name)
                 tables.append(table_sql)
                 result_columns.extend(['T_%s.%s' % (table_name, col) for col in columns])
 
         sql_columns = ', '.join(result_columns)
         sql_join = ' '.join(tables)
-        sql = 'SELECT TOPOLOGY.RNC, TOPOLOGY.UTRANCELL, TOPOLOGY.SITE, Topology.SectorCarrier, Topology.SectorAntena, Topology.Carrier, TOPOLOGY.filename,  %s  INTO "%s" FROM Topology %s' % (sql_columns, template_name, sql_join)
+        sql = 'SELECT TOPOLOGY.RNC, TOPOLOGY.UTRANCELL, TOPOLOGY.SITE, Topology.SectorCarrier, Topology.SectorAntena, Topology.Carrier, TOPOLOGY.filename,  %s  FROM Topology %s' % (sql_columns, sql_join)
         return sql
 
 
-
-    def get_tables(self, sql_tables, network, table_name):
+    def get_tables(self, sql_tables, network, filename, cells):
         if network == 'WCDMA':
-            return self.get_tables_wcdma(sql_tables, table_name)
+            return self.get_tables_wcdma(sql_tables, filename, cells)
         elif network == 'LTE':
-            return self.get_tables_lte(sql_tables)
+            return self.get_tables_lte(sql_tables, cells)
         elif network == 'GSM':
-            return self.get_tables_cna(sql_tables)
+            return self.get_tables_cna(sql_tables, cells)
 
-    def run_wcdma_template(self, file, template_name, untracells, filenames):
-        sql_tables = OrderedDict()
-        for template in QueryTemplate.objects.filter(template_name=template_name).order_by('id'):
-            table_name = file.get_mo(template.param_name)
-            column = template.param_name
-            if table_name not in sql_tables:
-                sql_tables[table_name] = []
-            sql_tables[table_name].append(column)
-
-        select = self.get_tables_wcdma_untrancell(sql_tables, untracells, filenames)
-        return select
 
     def get_table_from_column(self, column_name):
         valid_tables = []
@@ -190,7 +184,7 @@ class Template(object):
                 if (column_name.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns)):
                     return table
 
-    def get_select(self, template_name):
+    def get_select(self, template_name, filename, cells):
         sql_tables = OrderedDict()
         network = 'WCDMA'
         for template in QueryTemplate.objects.filter(template_name=template_name).order_by('id'):
@@ -201,7 +195,7 @@ class Template(object):
                 sql_tables[table_name] = []
             if column not in sql_tables[table_name]:
                 sql_tables[table_name].append(column)
-        return self.get_tables(sql_tables, network, "template_%s" % template_name)
+        return self.get_tables(sql_tables, network, filename, cells)
 
     def create_indexes(self, template_name):
         qt = QueryTemplate.objects.filter(template_name=template_name).first()
@@ -214,18 +208,6 @@ class Template(object):
                 self.conn.commit()
         except:
             return
-
-    def create_template_table(self, template_name):
-        QueryTemplate.objects.filter(template_name=template_name).update(status='in process')
-        self.cursor.execute('DROP TABLE IF EXISTS "template_%s"' % template_name)
-        sql_select = self.get_select(template_name)
-        try:
-            self.cursor.execute(sql_select)
-            self.conn.commit()
-            self.create_indexes(template_name)
-            QueryTemplate.objects.filter(template_name=template_name).update(status='ready')
-        except:
-            QueryTemplate.objects.filter(template_name=template_name).update(status='error')
 
     def get_sql_compare_id(self, filename):
         f = Files.objects.filter(filename=filename).first()

@@ -16,7 +16,6 @@ class QueryTemplate(models.Model):
     param_name = models.CharField(max_length=255)
     min_value = models.CharField(max_length=255)
     max_value = models.CharField(max_length=255)
-    status = models.CharField(max_length=50)
 
 
 class SiteQuery(models.Model):

@@ -60,16 +60,15 @@ def add_template(request):
             template_name=template_name,
             param_name=param_values[i],
             min_value=min_values[i],
-            max_value=max_values[i],
-            status='in process'
+            max_value=max_values[i]
             )
 
-    if network == 'GSM':
-        CNA().create_template(template_name)
-    elif network == 'WCDMA':
-        tasks.create_parameters_table.delay(request.wcdma, network, template_name)
-    elif network == 'LTE':
-        Template().create_template_table(request.lte, template_name)
+    #if network == 'GSM':
+    #    CNA().create_template(template_name)
+    #elif network == 'WCDMA':
+    #    tasks.create_parameters_table.delay(request.wcdma, network, template_name)
+    #elif network == 'LTE':
+    #    Template().create_template_table(request.lte, template_name)
 
 
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -78,7 +77,7 @@ def add_template(request):
 def predefined_templates(request):
     data = []
     for qt in QueryTemplate.objects.filter().distinct('template_name').order_by('template_name'):
-        data.append({'template_name': qt.template_name, 'network': qt.network, 'status': qt.status})
+        data.append({'template_name': qt.template_name, 'network': qt.network})
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
@@ -87,7 +86,7 @@ def delete_template(request, template_name):
     return HttpResponse(json.dumps({'sucess': 'ok', }), content_type='application/json')
 
 def get_templates(request, network):
-    templates = [qt.template_name for qt in QueryTemplate.objects.filter(project=request.project, network=network, status='ready').distinct('template_name')]
+    templates = [qt.template_name for qt in QueryTemplate.objects.filter(project=request.project, network=network).distinct('template_name')]
     return HttpResponse(json.dumps(templates), content_type='application/json')
 
 def get_template_cells(request, network, filename):

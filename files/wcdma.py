@@ -90,6 +90,7 @@ class WCDMA:
 
     def run_query(self, template, cells, filename):
         from files.models import SuperFile
+        from parameters.template import Template
         if SuperFile.objects.filter(filename=filename).exists():
             filename = SuperFile.objects.filter(filename=filename).first().description.split(',')
         else:
@@ -102,9 +103,11 @@ class WCDMA:
         cells = self.convert_form_cells(cells, filenames)
         if template and cells:
             params = self.get_params_with_min_max(template)
-            q = '''SELECT * INTO TEMPORARY TEMP_TEMPLATE FROM "template_%s" WHERE (filename IN (%s)) AND Utrancell in (%s)''' % (template, filenames, ','.join(cells))
-            self.cursor.execute(q)
-            self.cursor.execute("SELECT DISTINCT * FROM TEMP_TEMPLATE")
+            sql = Template().get_select(template, filenames, cells)
+            print filename
+            print cells
+            print sql
+            self.cursor.execute(sql)
             colnames = [desc[0] for desc in self.cursor.description]
             data = []
 
