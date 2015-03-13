@@ -119,13 +119,14 @@ class Template(object):
                 sql_tables = '%s %s' % (root_table, ' '.join(temp_tables))
 
         sql_columns = ','.join(result_columns)
-        sql = 'SELECT "%s".CELL, %s FROM %s WHERE "%s".CELL IN (%s)' % (
+        sql = '''SELECT DISTINCT "%s".CELL, %s FROM %s WHERE ("%s".CELL IN (%s)) AND ("%s".filename='%s')''' % (
             root_table,
             sql_columns,
             sql_tables,
             root_table,
-            sql_cells)
-        print sql
+            sql_cells,
+            root_table,
+            filename)
         return sql
 
 
@@ -260,7 +261,6 @@ class Template(object):
         sourcefile = Files.objects.filter(filename=filename).first()
         params = sourcefile.get_site_query(site)
         return params
-
 
     def site_query(self, project, network, filename):
         data = OrderedDict()

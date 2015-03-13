@@ -25,7 +25,6 @@ class Measurements(object):
 
             sql_columns = []
             for field in columns:
-                print field
                 sql_columns.append('"%s" TEXT' % field)
 
             self.cursor.execute('DROP TABLE IF EXISTS "%s"' % table_name)

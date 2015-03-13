@@ -113,7 +113,6 @@ class LTE:
         if template and cells:
             params = self.get_params_with_min_max(template)
             q = '''SELECT  * FROM "template_%s" WHERE (filename = '%s') AND EUtrancell in (%s)''' % (template, filename, ','.join(cells))
-            print q
             self.cursor.execute(q)
             colnames = [desc[0] for desc in self.cursor.description]
             data = []
