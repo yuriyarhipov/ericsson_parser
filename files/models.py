@@ -133,7 +133,10 @@ class Files(models.Model):
 
             sql = "SELECT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE lower(column_name)='%s'" % (sq.param_name.lower(), )
             cursor.execute(sql)
-            tables = [row[0] for row in cursor]
+            tables = []
+            for row in cursor:
+                if 'template' in row[0]:
+                    tables.append(row[0])
             if sq.network in ['WCDMA', 'LTE']:
                 for table in tables:
                     sql = "SELECT lower(column_name) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name='%s'" % (table, )
