@@ -135,7 +135,7 @@ class Files(models.Model):
             cursor.execute(sql)
             tables = []
             for row in cursor:
-                if 'template' in row[0]:
+                if 'template' not in row[0]:
                     tables.append(row[0])
             if sq.network in ['WCDMA', 'LTE']:
                 for table in tables:
