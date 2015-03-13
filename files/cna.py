@@ -106,22 +106,21 @@ class CNA:
                     result = False
         return result
 
-    def run_query(self, template, cells, filename):
+    def run_query(self, template, cells, filenames):
+        from parameters.template import Template
         data = []
         columns = []
         cells = self.convert_form_cells(cells)
         if template and cells:
+            sql = Template().get_select(template, filenames, cells)
             params = self.get_params_with_min_max(template)
-            q = 'SELECT  * FROM "template_%s" WHERE CELL in (%s)' % (template, ','.join(cells))
-            self.cursor.execute(q)
+            self.cursor.execute(sql)
             colnames = [desc[0] for desc in self.cursor.description]
             data = []
-
             columns = [self.get_right_column_name(col, template) for col in colnames]
             for r in self.cursor:
                 row = []
                 for i in range(0, len(r)):
-
                     row.append([r[i], self.get_status(colnames[i], r[i], params), ])
                 data.append(row)
         return columns, data

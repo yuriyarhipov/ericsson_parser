@@ -92,9 +92,10 @@ class Template(object):
             sql_cells)
         return sql
 
-    def get_tables_cna(self, sql_tables):
+    def get_tables_cna(self, sql_tables, filename, cells):
         tables = []
         result_columns = []
+        sql_cells = ','.join(cells)
         cell_index = 1
         for table_name, columns in sql_tables.iteritems():
             tables.append(table_name)
@@ -118,7 +119,13 @@ class Template(object):
                 sql_tables = '%s %s' % (root_table, ' '.join(temp_tables))
 
         sql_columns = ','.join(result_columns)
-        sql = 'SELECT "%s".CELL, %s FROM %s' % (root_table, sql_columns, sql_tables)
+        sql = 'SELECT "%s".CELL, %s FROM %s WHERE "%s".CELL IN (%s)' % (
+            root_table,
+            sql_columns,
+            sql_tables,
+            root_table,
+            sql_cells)
+        print sql
         return sql
 
 
@@ -161,27 +168,23 @@ class Template(object):
         elif network == 'LTE':
             return self.get_tables_lte(sql_tables, cells)
         elif network == 'GSM':
-            return self.get_tables_cna(sql_tables, cells)
+            return self.get_tables_cna(sql_tables, filename, cells)
 
 
     def get_table_from_column(self, column_name):
-        valid_tables = []
-        for f in Files.objects.filter(network='WCDMA'):
-            valid_tables.extend([t.lower() for t in f.tables.split(',')])
-
         cursor = self.conn.cursor()
         cursor.execute("SELECT DISTINCT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE (lower(column_name)='%s')" % (column_name.lower(), ))
         tables = []
         for row in cursor:
-            if row[0].lower() in valid_tables:
-                tables.append(row[0].lower())
+            tables.append(row[0].lower())
+
         if 'utrancell' in tables:
             tables = ['utrancell', ]
         for table in tables:
             if 'template_' not in table:
                 cursor.execute("SELECT column_name FROM information_schema.columns WHERE lower(table_name)='%s';" % table.lower())
                 columns = [r[0] for r in cursor]
-                if (column_name.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns)):
+                if (column_name.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns) or ('cell')):
                     return table
 
     def get_select(self, template_name, filename, cells):

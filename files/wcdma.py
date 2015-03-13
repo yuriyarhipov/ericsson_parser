@@ -60,8 +60,6 @@ class WCDMA:
                 real_cells.append(cell)
         return set("'%s'" % cell for cell in set(real_cells))
 
-
-
     def get_params_with_min_max(self, template):
         params = dict()
         for t in QueryTemplate.objects.filter(template_name=template):
@@ -104,9 +102,6 @@ class WCDMA:
         if template and cells:
             params = self.get_params_with_min_max(template)
             sql = Template().get_select(template, filenames, cells)
-            print filename
-            print cells
-            print sql
             self.cursor.execute(sql)
             colnames = [desc[0] for desc in self.cursor.description]
             data = []
