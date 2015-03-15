@@ -51,8 +51,9 @@ class Template(object):
         cursor.execute("SELECT column_name FROM information_schema.columns WHERE lower(table_name)='%s';" % table_name.lower())
         return [r[0].lower() for r in cursor]
 
-    def get_join_lte(self, table_name):
+    def get_join_lte(self, table_name, filename, cells):
         columns = self.get_columns(table_name)
+        sql_cells = ','.join(cells)
         sql_key = ''
         topology_key = ''
         if 'eutrancell' in columns:
@@ -65,7 +66,15 @@ class Template(object):
             sql_key = 'Element2'
             topology_key = 'SITE'
 
-        sql = 'TOPOLOGY_LTE INNER JOIN %s ON ((%s.%s = TOPOLOGY_LTE.%s) AND (%s.filename=TOPOLOGY_LTE.filename))' % (table_name, table_name, sql_key, topology_key, table_name)
+        sql = 'TOPOLOGY_LTE INNER JOIN %s ON ((%s.%s = TOPOLOGY_LTE.%s) AND (%s.filename=TOPOLOGY_LTE.filename) AND (%s.filename IN (%s)) AND (TOPOLOGY_LTE.EUtrancell in (%s)))' % (
+            table_name,
+            table_name,
+            sql_key,
+            topology_key,
+            table_name,
+            table_name,
+            filename,
+            sql_cells)
         return sql
 
     def get_join_wcdma(self, table_name, filename, cells):
@@ -131,12 +140,12 @@ class Template(object):
 
 
 
-    def get_tables_lte(self, sql_tables):
+    def get_tables_lte(self, sql_tables, filename, cells):
         tables = []
         result_columns = []
         for table_name, columns in sql_tables.iteritems():
             sql_columns = ','.join(['%s.%s' % (table_name, col) for col in columns])
-            sql_join = self.get_join_lte(table_name)
+            sql_join = self.get_join_lte(table_name,filename, cells)
             table_sql = 'INNER JOIN (SELECT DISTINCT TOPOLOGY_LTE.EUtrancell, TOPOLOGY_LTE.filename, %s FROM %s) AS T_%s ON ((TOPOLOGY_LTE.EUtrancell=T_%s.EUtrancell) AND (TOPOLOGY_LTE.filename=T_%s.filename))' % (sql_columns, sql_join, table_name, table_name, table_name)
             tables.append(table_sql)
             result_columns.extend(['T_%s.%s' % (table_name, col) for col in columns])
@@ -167,7 +176,7 @@ class Template(object):
         if network == 'WCDMA':
             return self.get_tables_wcdma(sql_tables, filename, cells)
         elif network == 'LTE':
-            return self.get_tables_lte(sql_tables, cells)
+            return self.get_tables_lte(sql_tables, filename, cells)
         elif network == 'GSM':
             return self.get_tables_cna(sql_tables, filename, cells)
 

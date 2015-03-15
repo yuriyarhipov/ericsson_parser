@@ -107,13 +107,22 @@ class LTE:
         return column
 
     def run_query(self, template, cells, filename):
+        from files.models import SuperFile
+        from parameters.template import Template
+        if SuperFile.objects.filter(filename=filename).exists():
+            filename = SuperFile.objects.filter(filename=filename).first().description.split(',')
+        else:
+            filename = [filename, ]
+        filenames = ["'%s'" % f for f in filename]
+        filenames = ','.join(filenames)
+
         data = []
         columns = []
         cells = self.convert_form_cells(cells, filename)
         if template and cells:
             params = self.get_params_with_min_max(template)
-            q = '''SELECT  * FROM "template_%s" WHERE (filename = '%s') AND EUtrancell in (%s)''' % (template, filename, ','.join(cells))
-            self.cursor.execute(q)
+            sql = Template().get_select(template, filenames, cells)
+            self.cursor.execute(sql)
             colnames = [desc[0] for desc in self.cursor.description]
             data = []
 
