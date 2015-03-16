@@ -252,6 +252,7 @@ class Tables:
         self.cursor.execute('DROP TABLE IF EXISTS RND_LTE;')
         self.cursor.execute('''
             SELECT
+                DISTINCT
                 EUtrancellFDD.filename,
                 EUtrancellFDD.Element2 Site,
                 EUtrancellFDD.EUtrancellFDD,
@@ -289,17 +290,14 @@ class Tables:
                 Antennaunit.mechanicalAntennaTilt
             INTO RND_LTE
             FROM EUtrancellFDD
-                INNER JOIN SectorEquipmentFunction ON SectorEquipmentFunction.EUtrancellFDD=EUtrancellFDD.EUtrancellFDD
-                INNER JOIN MeContext ON MeContext.Element2=EUtrancellFDD.Element2
-                INNER JOIN ManagedElement ON ManagedElement.Element2=EUtrancellFDD.Element2
-                INNER JOIN AntennaSubunit ON AntennaSubunit.Element2=EUtrancellFDD.Element2
-                INNER JOIN Antennaunit ON Antennaunit.Element2=EUtrancellFDD.Element2
-            WHERE
-                (EUtrancellFDD.filename=SectorEquipmentFunction.filename) AND
-                (EUtrancellFDD.filename=MeContext.filename) AND
-                (EUtrancellFDD.filename=ManagedElement.filename) AND
-                (EUtrancellFDD.filename=AntennaSubunit.filename) AND
-                (EUtrancellFDD.filename=Antennaunit.filename)
+                LEFT JOIN SectorEquipmentFunction ON (
+                    (SectorEquipmentFunction.EUtrancellFDD=EUtrancellFDD.EUtrancellFDD) AND
+                    (EUtrancellFDD.filename=SectorEquipmentFunction.filename))
+                INNER JOIN MeContext ON ((MeContext.Element2=EUtrancellFDD.Element2) AND
+                    (EUtrancellFDD.filename=MeContext.filename))
+                INNER JOIN ManagedElement ON ((ManagedElement.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=ManagedElement.filename))
+                INNER JOIN AntennaSubunit ON ((AntennaSubunit.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=AntennaSubunit.filename))
+                INNER JOIN Antennaunit ON ((Antennaunit.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=Antennaunit.filename))
             ;''')
 
     def create_tables(self):
@@ -587,5 +585,3 @@ class Xml(object):
             vendor=vendor,
             network=network)
         ExcelFile(project, basename(filename))
-        for qt in QueryTemplate.objects.filter(project=project, network=network).distinct('template_name'):
-            Template().create_template_table(qt.template_name)

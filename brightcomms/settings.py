@@ -94,7 +94,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATICFILES_DIRS = ['/opt/xml/frontend_xml/static', ]
+STATICFILES_DIRS = ['/home/arhipov/work/xml/frontend_xml/static', ]
 STATIC_URL = '/static/'
 
 
