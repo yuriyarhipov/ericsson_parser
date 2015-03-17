@@ -53,6 +53,9 @@ class Table(object):
             'Carrier',
             'Cell',
             'BSC',
+            'Site',
+            'EUtrancellFDD',
+
         ]
         exists_columns = [column.lower() for column in columns]
         for column in fixed_columns:
