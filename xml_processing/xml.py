@@ -171,9 +171,32 @@ class Tables:
     def topology_lte(self):
         if self.network != 'LTE':
             return
-
-        self.cursor.execute('DROP TABLE IF EXISTS TOPOLOGY_LTE;')
         self.cursor.execute('''
+            CREATE TABLE sectorequipmentfunction
+                    (
+                      reservedby text,
+                      eutrancellfdd text,
+                      confoutputpower text,
+                      mixedmoderadio text,
+                      administrativestate text,
+                      userlabel text,
+                      element2 text,
+                      sectorequipmentfunction text,
+                      fqband text,
+                      mo text,
+                      filename text,
+                      antennaunitgroup text,
+                      version text,
+                      rfbranchref text,
+                      sectorpower text,
+                      vendorname text
+                )
+        '''
+        )
+
+        #self.cursor.execute('DROP TABLE IF EXISTS TOPOLOGY_LTE;')
+        self.cursor.execute('''
+            CREATE OR REPLACE VIEW TOPOLOGY_LTE AS
             SELECT
                 EUtrancellFDD.filename,
                 EUtrancellFDD.Element2 Site,
@@ -184,7 +207,6 @@ class Tables:
                 SectorEquipmentFunction.AntennaUnitGroup,
                 TPTM1.mmeName mmeName_1,
                 TPTM2.mmeName mmeName_2
-            INTO TOPOLOGY_LTE
             FROM EUtrancellFDD
                 LEFT JOIN SectorEquipmentFunction ON ((SectorEquipmentFunction.EUtrancellFDD=EUtrancellFDD.EUtrancellFDD) AND ((EUtrancellFDD.filename=SectorEquipmentFunction.filename)))
                 INNER JOIN TermPointToMme TPTM1 ON ((TPTM1.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=TPTM1.filename) AND (TPTM1.TermPointToMme='1'))
@@ -232,8 +254,6 @@ class Tables:
                 UtranCell.sac,
                 UtranCell.cellreserved,
                 UtranCell.administrativeState
-            INTO
-                RND_WCDMA
             FROM
                 Sector
                 INNER JOIN Topology ON ((Sector.element2=Topology.site) AND (Sector.sector=Topology.sector))
@@ -249,8 +269,10 @@ class Tables:
     def rnd_lte(self):
         if self.network != 'LTE':
             return
-        self.cursor.execute('DROP TABLE IF EXISTS RND_LTE;')
+
+
         self.cursor.execute('''
+            CREATE OR REPLACE VIEW RND_LTE AS
             SELECT
                 DISTINCT
                 EUtrancellFDD.filename,
@@ -288,7 +310,6 @@ class Tables:
                 SectorEquipmentFunction.sectorPower,
                 AntennaSubunit.totalTilt,
                 Antennaunit.mechanicalAntennaTilt
-            INTO RND_LTE
             FROM EUtrancellFDD
                 LEFT JOIN SectorEquipmentFunction ON (
                     (SectorEquipmentFunction.EUtrancellFDD=EUtrancellFDD.EUtrancellFDD) AND
