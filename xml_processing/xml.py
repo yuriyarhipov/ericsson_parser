@@ -7,8 +7,7 @@ from os.path import basename
 from files.models import Files
 from tables.table import Topology
 from files.excel import ExcelFile
-from query.models import QueryTemplate
-from parameters.template import Template
+
 
 class Tables:
     def __init__(self, data, tables, network, filename):
@@ -78,7 +77,6 @@ class Tables:
         column_names = set(row[0].lower() for row in self.cursor)
         if column_names:
             self.check_table(table_name, column_names)
-            #self.cursor.execute('DELETE FROM ' + table_name + ' WHERE filename=%s;', (self.filename, ))
         else:
             self.create_table(table_name)
 
@@ -172,7 +170,7 @@ class Tables:
         if self.network != 'LTE':
             return
         self.cursor.execute('''
-            CREATE TABLE sectorequipmentfunction
+            CREATE TABLE IF NOT EXISTS sectorequipmentfunction
                     (
                       reservedby text,
                       eutrancellfdd text,
