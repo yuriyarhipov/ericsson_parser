@@ -119,7 +119,6 @@ class Files(models.Model):
     def get_element2_value(self, filename, utrancell):
 
         cursor = connection.cursor()
-        print self.network
         if self.network == 'WCDMA':
             cursor.execute("SELECT Site FROM Topology WHERE (filename='%s') AND (lower(Utrancell)=lower('%s'))" % (filename, utrancell))
         elif self.network == 'LTE':
