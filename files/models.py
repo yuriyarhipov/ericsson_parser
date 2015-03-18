@@ -117,8 +117,13 @@ class Files(models.Model):
         return cursor.rowcount > 0
 
     def get_element2_value(self, filename, utrancell):
+
         cursor = connection.cursor()
-        cursor.execute("SELECT Site FROM Topology WHERE (filename='%s') AND (lower(Utrancell)=lower('%s'))" % (filename, utrancell))
+        print self.network
+        if self.network == 'WCDMA':
+            cursor.execute("SELECT Site FROM Topology WHERE (filename='%s') AND (lower(Utrancell)=lower('%s'))" % (filename, utrancell))
+        elif self.network == 'LTE':
+            cursor.execute("SELECT Site FROM Topology_LTE WHERE (filename='%s') AND (lower(eutrancell)=lower('%s'))" % (filename, utrancell))
         for row in cursor:
             return row[0]
 
@@ -142,6 +147,7 @@ class Files(models.Model):
                     sql = "SELECT lower(column_name) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name='%s'" % (table, )
                     cursor.execute(sql)
                     columns = [row[0] for row in cursor]
+
                     if 'utrancell' in columns:
                         sql = "SELECT %s FROM %s WHERE (lower(utrancell)='%s') AND (filename='%s')" % (
                             sq.param_name.lower(),
@@ -152,7 +158,18 @@ class Files(models.Model):
                         cursor.execute(sql)
                         for row in cursor:
                             params[sq.site][sq.param_name] = self.check_value(row[0], sq.param_min, sq.param_max)
-                    elif 'element2' in columns:
+                    elif 'eutrancellfdd' in columns:
+                        sql = "SELECT %s FROM %s WHERE (lower(eutrancellfdd)='%s') AND (filename='%s')" % (
+                            sq.param_name.lower(),
+                            table,
+                            site.lower(),
+                            self.filename
+                        )
+                        cursor.execute(sql)
+                        for row in cursor:
+                            params[sq.site][sq.param_name] = self.check_value(row[0], sq.param_min, sq.param_max)
+
+                    elif ('element2' in columns) and (sq.network!='LTE'):
                         element2 = self.get_element2_value(self.filename, site)
                         if element2:
                             value = self.get_site_query_value(

@@ -307,7 +307,9 @@ class Template(object):
                 for row in cursor:
                     data.append(dict(name=row[0]))
             elif source_file.network == 'LTE':
-                pass
+                cursor.execute("SELECT DISTINCT EUtrancell FROM Topology_LTE WHERE (filename='%s')" % (filename, ))
+                for row in cursor:
+                    data.append(dict(name=row[0]))
             elif source_file.network == 'GSM':
                 cursor.execute("SELECT DISTINCT CELL FROM COMMON_CELL_DATA WHERE (filename='%s')" % (filename, ))
                 for row in cursor:
