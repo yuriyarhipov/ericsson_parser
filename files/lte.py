@@ -123,6 +123,7 @@ class LTE:
             params = self.get_params_with_min_max(template)
             sql = Template().get_select(template, filenames, cells)
             self.cursor.execute(sql)
+            print sql
             colnames = [desc[0] for desc in self.cursor.description]
             data = []
 
