@@ -207,8 +207,8 @@ class Tables:
                 TPTM2.mmeName mmeName_2
             FROM EUtrancellFDD
                 LEFT JOIN SectorEquipmentFunction ON ((SectorEquipmentFunction.EUtrancellFDD=EUtrancellFDD.EUtrancellFDD) AND ((EUtrancellFDD.filename=SectorEquipmentFunction.filename)))
-                INNER JOIN TermPointToMme TPTM1 ON ((TPTM1.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=TPTM1.filename) AND (TPTM1.TermPointToMme='1'))
-                INNER JOIN TermPointToMme TPTM2 ON ((TPTM2.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=TPTM2.filename) AND (TPTM2.TermPointToMme='2'))
+                LEFT JOIN TermPointToMme TPTM1 ON ((TPTM1.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=TPTM1.filename) AND (TPTM1.TermPointToMme='1'))
+                LEFT JOIN TermPointToMme TPTM2 ON ((TPTM2.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=TPTM2.filename) AND (TPTM2.TermPointToMme='2'))
             ;''')
 
     def rnd_wcdma(self):
