@@ -252,6 +252,7 @@ class Tables:
                 UtranCell.sac,
                 UtranCell.cellreserved,
                 UtranCell.administrativeState
+                INTO RND_WCDMA
             FROM
                 Sector
                 INNER JOIN Topology ON ((Sector.element2=Topology.site) AND (Sector.sector=Topology.sector))
