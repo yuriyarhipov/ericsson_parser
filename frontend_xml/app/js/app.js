@@ -133,6 +133,9 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/files/upload.html',
                 controller: 'uploadFileCtrl'
             }).
+            when('/about/',{
+                templateUrl: 'templates/about.html',
+            }).
             otherwise({
                 redirectTo: '/'
             });
