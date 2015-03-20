@@ -97,7 +97,7 @@ def get_template_cells(request, network, filename):
         wcdma = WCDMA()
         data = wcdma.get_cells(filename)
     elif network == 'LTE':
-        data = LTE().get_cells(request.lte.filename)
+        data = LTE().get_cells(filename)
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 

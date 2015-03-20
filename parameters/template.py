@@ -191,10 +191,10 @@ class Template(object):
         if 'utrancell' in tables:
             tables = ['utrancell', ]
         for table in tables:
-            if 'template_' not in table:
+            if ('template_' not in table) and (table.lower() in file_tables):
                 cursor.execute("SELECT column_name FROM information_schema.columns WHERE lower(table_name)='%s';" % table.lower())
                 columns = [r[0] for r in cursor]
-                if (column_name.lower() in columns) and (table.lower() in file_tables) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns) or ('cell')):
+                if (column_name.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns) or ('cell')):
                     return table
 
     def get_select(self, template_name, filename, cells):
@@ -205,12 +205,13 @@ class Template(object):
 
         for template in QueryTemplate.objects.filter(template_name=template_name).order_by('id'):
             table_name = self.get_table_from_column(template.param_name, file_columns)
-            column = template.param_name
-            network = template.network
-            if table_name not in sql_tables:
-                sql_tables[table_name] = []
-            if column not in sql_tables[table_name]:
-                sql_tables[table_name].append(column)
+            if table_name:
+                column = template.param_name
+                network = template.network
+                if table_name not in sql_tables:
+                    sql_tables[table_name] = []
+                if column not in sql_tables[table_name]:
+                    sql_tables[table_name].append(column)
         return self.get_tables(sql_tables, network, filename, cells)
 
     def create_indexes(self, template_name):
