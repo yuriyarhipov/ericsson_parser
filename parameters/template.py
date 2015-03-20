@@ -181,7 +181,7 @@ class Template(object):
             return self.get_tables_cna(sql_tables, filename, cells)
 
 
-    def get_table_from_column(self, column_name):
+    def get_table_from_column(self, column_name, file_tables):
         cursor = self.conn.cursor()
         cursor.execute("SELECT DISTINCT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE (lower(column_name)='%s')" % (column_name.lower(), ))
         tables = []
@@ -194,14 +194,17 @@ class Template(object):
             if 'template_' not in table:
                 cursor.execute("SELECT column_name FROM information_schema.columns WHERE lower(table_name)='%s';" % table.lower())
                 columns = [r[0] for r in cursor]
-                if (column_name.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns) or ('cell')):
+                if (column_name.lower() in columns) and (table.lower() in file_tables) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns) or ('cell')):
                     return table
 
     def get_select(self, template_name, filename, cells):
         sql_tables = OrderedDict()
         network = 'WCDMA'
+        clear_filename = filename.replace("'", '')
+        file_columns = set(t.lower() for t in Files.objects.filter(filename=clear_filename).first().tables.split(','))
+
         for template in QueryTemplate.objects.filter(template_name=template_name).order_by('id'):
-            table_name = self.get_table_from_column(template.param_name)
+            table_name = self.get_table_from_column(template.param_name, file_columns)
             column = template.param_name
             network = template.network
             if table_name not in sql_tables:
