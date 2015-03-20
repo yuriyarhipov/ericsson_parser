@@ -93,9 +93,10 @@ class Template(object):
             join_sql.append('(%s.Carrier = TOPOLOGY.Carrier)' % table_name)
         join_sql = ' AND '.join(join_sql)
 
-        sql = 'TOPOLOGY INNER JOIN %s ON (%s AND (%s.filename IN (%s)) AND (Topology.UtranCell IN (%s)) )' % (
+        sql = 'TOPOLOGY INNER JOIN %s ON (%s AND (TOPOLOGY.filename=%s.filename) AND (%s.filename IN (%s)) AND (Topology.UtranCell IN (%s)) )' % (
             table_name,
             join_sql,
+            table_name,
             table_name,
             filename,
             sql_cells)
