@@ -12,7 +12,7 @@ djcelery.setup_loader()
 
 ## Celery config ##
 
-BROKER_URL = "amqp://guest:guest@localhost:5672//"
+BROKER_URL = "amqp://guest:guest@localhost:5672/xml_host/"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -94,7 +94,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATICFILES_DIRS = ['/opt/xml/frontend_xml/static', ]
+STATICFILES_DIRS = ['/opt/xmlapp/xml/frontend_xml/static', ]
 STATIC_URL = '/static/'
 
 
