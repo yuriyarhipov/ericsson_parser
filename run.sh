@@ -1,6 +1,3 @@
 export C_FORCE_ROOT="true"
-service nginx restart &
-service postgresql restart &
-service rabbitmq-server restart
-gunicorn_django --bind localhost:8001 &
+gunicorn_django --bind xml.yura.cc:8002 &
 python manage.py celeryd -l info &
