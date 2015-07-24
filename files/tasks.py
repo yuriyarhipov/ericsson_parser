@@ -3,6 +3,7 @@ from celery import current_task
 
 from django.conf import settings
 from celery.task.control import revoke
+from os.path import basename
 
 
 @celery.task
@@ -171,3 +172,11 @@ def delete_file(filename):
     cursor.close()
     conn.close()
     delete_file(filename)
+
+
+@celery.task
+def create_table(table, rows, network, filename):
+    from xml_processing.xml import Tables
+    Tables().write_data(table, rows, network, filename)
+    revoke(worker.request.id, terminate=True)
+

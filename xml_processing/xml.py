@@ -7,78 +7,76 @@ from os.path import basename
 from files.models import Files
 from tables.table import Topology
 from files.excel import ExcelFile
+from files.tasks import create_table
 
 
 class Tables:
-    def __init__(self, data, tables, network, filename):
-        self.data = data
-        self.network = network
-        self.tables = tables
-        self.filename = filename
-        self.file_type = 'WCDMA' if 'UtranCell' in data.keys() else 'LTE'
+
+    def __init__(self):
         self.conn = psycopg2.connect(
             'host = localhost dbname = xml2 user = postgres password = 1297536'
         )
-        self.cursor = self.conn.cursor()
 
-    def check_table(self, table_name, columns):
-        exists_columns = set([c.lower() for c in self.tables[table_name]])
-        missed_columns = exists_columns - columns
+    def write_data(self, table, rows, network, filename):
+        cursor = self.conn.cursor()
+        columns = set()
+        for row in rows:
+            for col in row.keys():
+                columns.add(col)
+        columns = list(columns)
+        self.create_table(table, columns)
+
+        sql_values = []
+        for row in rows:
+            sql_row = []
+            for col in columns:
+                sql_row.append("'%s'" % row.get(col, 'None'))
+            sql_values.append("(%s)" % ','.join(sql_row))
+
+        insert = 'INSERT INTO %s (%s) VALUES %s' % (
+            table,
+            ','.join(columns),
+            ','.join(sql_values))
+        try:
+            cursor.execute(insert)
+        except:
+            print insert
+            raise
+        cursor.close()
+        self.conn.commit()
+
+    def check_table(self, table_name, exist_column_names, columns):
+        cursor = self.conn.cursor()
+        new_columns = [c.lower() for c in columns]
+        missed_columns = set(new_columns) - set(exist_column_names)
         for column in missed_columns:
-            self.cursor.execute('ALTER TABLE %s ADD COLUMN %s text;' % (
+            cursor.execute('ALTER TABLE %s ADD COLUMN %s text;' % (
                 table_name,
                 column))
         self.conn.commit()
         self.add_indexes(table_name, missed_columns)
 
-    def load_data(self):
-        for table_name, source_columns in self.tables.iteritems():
-            columns = []
-            filtred_columns = []
-            for col in source_columns:
-                if col.lower() not in filtred_columns:
-                    columns.append(col)
-                    filtred_columns.append(col.lower())
-
-            values = []
-            for field in self.data[table_name]:
-                row = dict()
-                for column in columns:
-                    row[column] = field.get(column, '')
-                values.append(row)
-            values_name = ['%(' + column + ')s' for column in columns]
-            insert = 'INSERT INTO %s (%s) VALUES (%s)' % (
-                table_name,
-                ','.join(columns),
-                ','.join(values_name))
-            self.cursor.executemany(insert, values)
-
     def add_indexes(self, table_name, columns):
+        cursor = self.conn.cursor()
         for column in columns:
             if column.lower() in ['utrancell', 'element1', 'element2']:
-                self.cursor.execute('CREATE INDEX ON %s (%s)' % (table_name, column))
+                cursor.execute('CREATE INDEX ON %s (%s)' % (table_name, column))
         self.conn.commit()
 
-    def create_table(self, table_name):
-        columns = []
-        for column in self.tables[table_name]:
-            if column.lower() not in columns:
-                columns.append(column.lower())
-
-        sql_columns = ['%s TEXT' % field for field in columns]
-        self.cursor.execute('CREATE TABLE IF NOT EXISTS %s (%s);' % (table_name, ', '.join(sql_columns)))
-        self.conn.commit()
-        self.add_indexes(table_name, self.tables[table_name])
-
-    def table(self, table_name):
-        self.cursor.execute(
+    def create_table(self, table_name, columns):
+        cursor = self.conn.cursor()
+        cursor.execute(
             'SELECT column_name FROM information_schema.columns WHERE table_catalog = %s AND table_name=%s;',
             ('xml2', table_name.lower()))
-        column_names = set(row[0].lower() for row in self.cursor)
-        if column_names:
-            self.check_table(table_name, column_names)
+        exist_column_names = [row[0].lower() for row in cursor]
+
+        if exist_column_names:
+            self.check_table(table_name, exist_column_names, columns)
         else:
-            self.create_table(table_name)
+            sql_columns = ['%s TEXT' % field.lower() for field in columns]
+            cursor.execute('CREATE TABLE IF NOT EXISTS %s (%s);' % (table_name, ', '.join(sql_columns)))
+            self.conn.commit()
+            #self.add_indexes(table_name, self.tables[table_name])
 
     def fourgneighbors(self):
         if self.network != 'LTE':
@@ -320,16 +318,6 @@ class Tables:
                 INNER JOIN Antennaunit ON ((Antennaunit.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=Antennaunit.filename))
             ;''')
 
-    def create_tables(self):
-        for table_name in self.tables:
-            self.table(table_name)
-        self.load_data()
-        self.conn.commit()
-        self.cursor.close()
-        self.conn.close()
-        del self.tables
-        del self.data
-
     def create_additional_tables(self):
         self.topology()
         self.topology_lte()
@@ -352,6 +340,7 @@ class Processing(object):
     stop_list = ['ManagementNode', ]
     db_tables = set()
     current = float(1)
+    data = dict()
 
     def __init__(self, filename, network, task):
         self.filename = filename
@@ -511,7 +500,6 @@ class Processing(object):
         elif table_name == 'CoverageRelation':
             tc = self.parse_mo(result.get('utranCellRef'))
             result['Target_coverage'] = tc.get('UtranCell', '')
-
         return result
 
     def get_mo(self, node):
@@ -538,40 +526,10 @@ class Processing(object):
         if table_name in self.stop_list:
             return
         fields = self.get_fields(elem, table_name)
-        self.write_to_database(table_name, fields)
 
-    def save_rows(self):
-        tables = dict()
-        data = dict()
-
-        for row in self.rows:
-
-            table_name = row.get('table')
-            fields = row.get('fields')
-
-            if table_name and (table_name not in data):
-                data[table_name] = []
-                tables[table_name] = set()
-
-            columns = tables[table_name]
-            data[table_name].append(fields)
-            if columns:
-                tables[table_name] = columns | set(fields.keys())
-            else:
-                tables[table_name] = set(fields.keys())
-
-        tables = Tables(data, tables, self.network, basename(self.filename))
-        tables.create_tables()
-        del(tables)
-        del(data)
-
-    def write_to_database(self, table, fields):
-        self.db_tables.add(table)
-        self.rows.append(dict(table=table, fields=fields))
-        if len(self.rows) > 10000:
-            self.save_rows()
-            self.rows = []
-            self.task.update_state(state="PROGRESS", meta={"current": int(self.current)})
+        if table_name not in self.data:
+            self.data[table_name] = []
+        self.data[table_name].append(fields)
 
     def main(self):
         context = etree.iterparse(
@@ -582,12 +540,15 @@ class Processing(object):
         for event, elem in context:
             self.parse_elem(elem)
             elem.clear()
-            self.current += (float(1)/float(5000))
+            self.current += (float(1) / float(5000))
             if self.current > 97:
                 self.current = float(97)
+        self.data.get('PmService')
+        for table_name, rows in self.data.iteritems():
+            create_table.delay(table_name, rows, self.network, self.filename)
 
-        tables = Tables(dict(), {t_name: [] for t_name in self.db_tables}, self.network, basename(self.filename))
-        tables.create_additional_tables()
+        #tables = Tables(dict(), {t_name: [] for t_name in self.db_tables}, self.network, basename(self.filename))
+        #tables.create_additional_tables()
         self.task.update_state(state="PROGRESS", meta={"current": int(100)})
         self.conn.commit()
 
@@ -600,7 +561,7 @@ class Xml(object):
             filename=basename(xml.filename),
             file_type=file_type,
             project=project,
-            tables=','.join(list(xml.db_tables)),
+            tables=','.join(list(xml.data.keys())),
             description=description,
             vendor=vendor,
             network=network)
