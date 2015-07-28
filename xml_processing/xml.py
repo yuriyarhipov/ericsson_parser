@@ -547,7 +547,8 @@ class Processing(object):
         for event, elem in context:
             i += 1
             if i == 10000:
-                val += 1
+                if val < 87:
+                    val += 1
                 i = 0
                 self.task.update_state(state="PROGRESS", meta={"current": int(val)})
             self.parse_elem(elem)
