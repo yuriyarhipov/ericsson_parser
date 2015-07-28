@@ -8,10 +8,13 @@
     <pagination max-size="5" items-per-page="itemsPerPage" ng-change="pageChanged()" boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
 </div>
 <div class="row">
-    <table class="table table-bordered table-striped">
+    <table st-table="rowCollection" class="table table-striped">
         <thead>
             <tr>
-                <td ng-repeat="column in columns">{{ column }}</td>
+                <th  st-sort="{{ column }}" ng-repeat="column in columns">{{ column }}</th>
+            </tr>
+            <tr>
+                <th colspan="5"><input st-search="" class="form-control" placeholder="search ..." type="text"/></th>
             </tr>
         </thead>
         <tbody>

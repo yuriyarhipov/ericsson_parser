@@ -19,7 +19,8 @@ var XmlApp = angular.module(
         'parameterControllers',
         'measurementsControllers',
         'ui.select',
-        'ng-context-menu'
+        'ng-context-menu',
+        'smart-table'
     ]);
 
 XmlApp.config(['$routeProvider',
