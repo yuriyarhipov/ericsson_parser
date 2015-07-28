@@ -77,7 +77,7 @@ class Tables:
             sql_columns = ['%s TEXT' % field.lower() for field in columns]
             cursor.execute('CREATE TABLE IF NOT EXISTS %s (%s);' % (table_name, ', '.join(sql_columns)))
             self.conn.commit()
-            #self.add_indexes(table_name, self.tables[table_name])
+            self.add_indexes(table_name, columns)
 
     def fourgneighbors(self):
         if self.network != 'LTE':
