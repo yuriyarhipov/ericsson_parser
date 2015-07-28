@@ -175,8 +175,21 @@ def delete_file(filename):
 
 
 @celery.task
-def create_table(table, rows, network, filename):
+def create_table(table, rows, network, filename, parent_task_id):
     from xml_processing.xml import Tables
+    from celery.result import AsyncResult
+    from files.models import FileTasks
+
     Tables().write_data(table, rows, network, filename)
-    revoke(worker.request.id, terminate=True)
+    ft = FileTasks.objects.get(task_id=parent_task_id)
+    tasks = ft.tasks.split(',')
+    status = True
+    for task_id in tasks:
+        if (not AsyncResult(task_id).ready()) and (task_id != create_table.request.id):
+            status = False
+            break
+    if status:
+        Tables().create_additional_tables(network)
+
+    revoke(create_table.request.id, terminate=True)
 

@@ -4,7 +4,7 @@ import psycopg2
 from lxml import etree
 from os.path import basename
 
-from files.models import Files
+from files.models import Files, FileTasks
 from tables.table import Topology
 from files.excel import ExcelFile
 from files.tasks import create_table
@@ -16,6 +16,7 @@ class Tables:
         self.conn = psycopg2.connect(
             'host = localhost dbname = xml2 user = postgres password = 1297536'
         )
+        self.cursor = self.conn.cursor()
 
     def write_data(self, table, rows, network, filename):
         cursor = self.conn.cursor()
@@ -318,12 +319,17 @@ class Tables:
                 INNER JOIN Antennaunit ON ((Antennaunit.Element2=EUtrancellFDD.Element2) AND (EUtrancellFDD.filename=Antennaunit.filename))
             ;''')
 
-    def create_additional_tables(self):
+    def create_additional_tables(self, network):
+        self.network = network
+        print 'topology'
         self.topology()
         self.topology_lte()
+        print 'rnd'
         self.rnd_wcdma()
         self.rnd_lte()
+        print 'fourgneighbors'
         self.fourgneighbors()
+        print 'threegneighborss'
         self.threegneighborss()
         self.create_topology_tree_view()
         self.conn.commit()
@@ -540,15 +546,20 @@ class Processing(object):
         for event, elem in context:
             self.parse_elem(elem)
             elem.clear()
-            self.current += (float(1) / float(5000))
-            if self.current > 97:
-                self.current = float(97)
-        self.data.get('PmService')
+        tasks = []
         for table_name, rows in self.data.iteritems():
-            create_table.delay(table_name, rows, self.network, self.filename)
+            ct_task = create_table.delay(
+                table_name,
+                rows,
+                self.network,
+                self.filename,
+                self.task.request.id)
+            tasks.append(ct_task.id)
+        FileTasks.objects.create(
+            task_id=self.task.request.id,
+            tasks=','.join(tasks),
+            max_value=len(tasks))
 
-        #tables = Tables(dict(), {t_name: [] for t_name in self.db_tables}, self.network, basename(self.filename))
-        #tables.create_additional_tables()
         self.task.update_state(state="PROGRESS", meta={"current": int(100)})
         self.conn.commit()
 

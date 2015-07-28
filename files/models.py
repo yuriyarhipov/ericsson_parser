@@ -227,6 +227,7 @@ class SuperFile(models.Model):
     file_type = models.CharField(max_length=50, blank=True)
     vendor = models.TextField()
 
+
 class ExcelFile(models.Model):
     filename = models.TextField()
     table = models.TextField()
@@ -238,3 +239,10 @@ class CNATemplate(models.Model):
     project = models.ForeignKey(Project)
     table_name = models.TextField()
     columns = models.TextField()
+
+
+class FileTasks(models.Model):
+    task_id = models.TextField()
+    tasks = models.TextField()
+    max_value = models.IntegerField()
+

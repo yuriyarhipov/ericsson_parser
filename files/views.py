@@ -8,7 +8,7 @@ from django.shortcuts import HttpResponseRedirect
 
 from celery.result import AsyncResult
 
-from .models import Files, UploadedFiles, SuperFile, CNATemplate
+from .models import Files, UploadedFiles, SuperFile, CNATemplate, FileTasks
 from tables.table import Table
 from files.compare import CompareFiles, CompareTable
 from files.excel import ExcelFile
@@ -29,6 +29,17 @@ def handle_uploaded_file(files):
 
 
 def status(request, id):
+    if FileTasks.objects.filter(task_id=id):
+        ft = FileTasks.objects.get(task_id=id)
+        tasks = ft.tasks.split(',')
+        active_tasks = []
+        for task_id in tasks:
+            if not AsyncResult(task_id).ready():
+                active_tasks.append(task_id)
+        current = ft.max_value - len(active_tasks)
+        value = float(current) / float(ft.max_value) * 100
+        return HttpResponse(json.dumps({'current': int(value), }), mimetype='application/json')
+
     job = AsyncResult(id)
     data = job.result or job.state
 
