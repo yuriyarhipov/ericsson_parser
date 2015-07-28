@@ -175,10 +175,11 @@ def delete_file(filename):
 
 
 @celery.task
-def create_table(table, rows, network, filename, parent_task_id):
+def create_table(table, rows, network, filename, parent_task_id, project):
     from xml_processing.xml import Tables
     from celery.result import AsyncResult
     from files.models import FileTasks
+    from files.excel import ExcelFile
 
     Tables().write_data(table, rows, network, filename)
     ft = FileTasks.objects.get(task_id=parent_task_id)
@@ -190,6 +191,7 @@ def create_table(table, rows, network, filename, parent_task_id):
             break
     if status:
         Tables().create_additional_tables(network)
+        ExcelFile(project, basename(filename))
 
     revoke(create_table.request.id, terminate=True)
 

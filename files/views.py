@@ -234,7 +234,7 @@ def get_excel(request, network):
     elif network == 'LTE':
         filename = request.lte.filename
 
-
+    print 'OK'
     return HttpResponseRedirect(ExcelFile(request.project, filename).excel_filename)
 
 

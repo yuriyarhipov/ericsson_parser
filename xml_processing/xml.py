@@ -348,9 +348,10 @@ class Processing(object):
     current = float(1)
     data = dict()
 
-    def __init__(self, filename, network, task):
+    def __init__(self, filename, network, task, project):
         self.filename = filename
         self.network = network
+        self.project = project
         self.conn = psycopg2.connect(
             'host = localhost dbname = xml2 user = postgres password = 1297536'
         )
@@ -560,7 +561,8 @@ class Processing(object):
                 rows,
                 self.network,
                 self.filename,
-                self.task.request.id)
+                self.task.request.id,
+                self.project)
             tasks.append(ct_task.id)
         FileTasks.objects.create(
             task_id=self.task.request.id,
@@ -573,7 +575,7 @@ class Processing(object):
 
 class Xml(object):
     def save_xml(self, filename, project, description, vendor, file_type, network, task):
-        xml = Processing(filename, network, task)
+        xml = Processing(filename, network, task, project)
         Files.objects.filter(filename=basename(xml.filename), project=project).delete()
         Files.objects.create(
             filename=basename(xml.filename),
@@ -583,4 +585,4 @@ class Xml(object):
             description=description,
             vendor=vendor,
             network=network)
-        ExcelFile(project, basename(filename))
+

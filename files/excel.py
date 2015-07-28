@@ -63,6 +63,7 @@ class ExcelFile:
         if not exists(file_path):
             makedirs(file_path)
         archive_filename = join(file_path, self.filename +'.zip')
+        print archive_filename
         self.excel_filename = join('/static/%s' % self.project.project_name, self.filename +'.zip')
         if exists(archive_filename):
             return
