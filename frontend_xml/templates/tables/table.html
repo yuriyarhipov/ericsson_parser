@@ -13,9 +13,6 @@
             <tr>
                 <th  st-sort="{{ column }}" ng-repeat="column in columns">{{ column }}</th>
             </tr>
-            <tr>
-                <th colspan="5"><input st-search="" class="form-control" placeholder="search ..." type="text"/></th>
-            </tr>
         </thead>
         <tbody>
             <tr ng-repeat="row in data track by $index">
