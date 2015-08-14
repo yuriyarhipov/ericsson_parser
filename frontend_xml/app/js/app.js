@@ -20,7 +20,8 @@ var XmlApp = angular.module(
         'measurementsControllers',
         'ui.select',
         'ng-context-menu',
-        'smart-table'
+        'smart-table',
+        'openlayers-directive',
     ]);
 
 XmlApp.config(['$routeProvider',
@@ -133,6 +134,14 @@ XmlApp.config(['$routeProvider',
             when('/status/:id/',{
                 templateUrl: 'templates/files/upload.html',
                 controller: 'uploadFileCtrl'
+            }).
+            when('/maps/',{
+                templateUrl: 'templates/tables/maps.html',
+                controller: 'mapsCtrl'
+            }).
+            when('/map/:filename/',{
+                templateUrl: 'templates/tables/map.html',
+                controller: 'mapCtrl'
             }).
             when('/about/',{
                 templateUrl: 'templates/about.html',

@@ -1,0 +1,16 @@
+<div class="row">
+    <table st-table="rowCollection" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Filename</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="filename in data track by $index">
+                <td>
+                    <a href="#/map/{{ filename }}/">{{ filename }}</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -29,6 +29,17 @@ class Files(models.Model):
     network = models.TextField()
     project = models.ForeignKey(Project)
 
+    def get_map(self):
+        result = []
+        cursor = connection.cursor()
+        cursor.execute('SELECT DISTINCT latitude, longitude FROM rnd_wcdma WHERE filename=%s', (self.filename,))
+        for row in cursor:
+            try:
+                result.append({'lat': float(row[1]), 'lon': float(row[0])})
+            except:
+                pass
+        return result[:2]
+
     def get_active_file(self, project, network, filename):
         file_type = ''
         if Files.objects.filter(filename=filename, project=project).exists():

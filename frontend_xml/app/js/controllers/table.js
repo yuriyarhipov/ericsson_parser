@@ -24,6 +24,28 @@ tableControllers.controller('exploreCtrl', ['$scope', '$http', '$routeParams',
         });
   }]);
 
+tableControllers.controller('mapsCtrl', ['$scope', '$http', '$routeParams',
+    function ($scope, $http, $routeParams) {
+        $http.get('/data/maps/').success(function(data) {
+            $scope.data = data;
+        });
+  }]);
+
+tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'olData',
+    function ($scope, $http, $routeParams, olData) {
+        $http.get('/data/map/' + $routeParams.filename + '/').success(function(data) {
+            var markers = data;
+            angular.extend($scope, {
+                center: {
+                    lat: markers[0].lat,
+                    lon: markers[0].lon,
+                    zoom: 7
+                },
+                markers: markers
+            });
+        });
+  }]);
+
 tableControllers.controller('byTechnologyCtrl', ['$scope', '$http',
     function ($scope, $http) {
         $scope.network = 'GSM';

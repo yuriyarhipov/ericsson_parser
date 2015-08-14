@@ -1,0 +1,9 @@
+<div class="row">
+    <div class="col-md-12">
+        <openlayers  ol-center="center" ol-markers="markers" ol-controls="controls" width="100%" height="600px">
+            <ol-control name="scaleline"></ol-control>
+            <ol-control name="fullscreen"></ol-control>
+            <ol-marker ng-repeat="marker in markers" lat="marker.lat" lon="marker.lon"></ol-marker>
+        </openlayers>
+    </div>
+</div>

@@ -11,6 +11,8 @@
     <link href="/css/tree-control-attribute.css" rel="stylesheet" type="text/css"/>
     <link href="/css/select.min.css" rel="stylesheet" type="text/css"/>
     <link href="/css/main.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/angular-openlayers-directive.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/ol.css" rel="stylesheet" type="text/css"/>
     <script type='text/javascript' src='/js/angular.js'></script>
     <script type='text/javascript' src='/js/jquery.js'></script>
     <script type='text/javascript' src='/js/angular-route.min.js'></script>
@@ -34,6 +36,9 @@
     <script type='text/javascript' src='/app/js/controllers/parameters.js'></script>
     <script type='text/javascript' src='/app/js/controllers/dashboard.js'></script>
     <script type='text/javascript' src='/app/js/controllers/measurements.js'></script>
+    <script type='text/javascript' src='/js/ol.js'></script>
+    <script type='text/javascript' src='/js/angular-openlayers-directive.min.js'></script>
+    <script type='text/javascript' src='/js/angular-sanitize.min.js'></script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
 </head>
 <body>
@@ -62,7 +67,7 @@
                             Map & Cells <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="">Map</a></li>
+                            <li><a href="#/maps/">Map</a></li>
                             <li><a href="#/create_group_of_cells">Create group of cells</a></li>
                             <li><a href="#/groups">Group of cells</a></li>
                             <li><a href="#/table/rnd/rnd">Radio Network Data</a></li>

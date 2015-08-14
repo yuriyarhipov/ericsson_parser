@@ -28,6 +28,9 @@ urlpatterns = patterns('',
     url(r'^data/explore/(\S+)/$', table_views.explore),
     url(r'^data/by_technology/(\S+)/$', table_views.by_technology),
 
+    url(r'^data/maps/$', table_views.maps),
+    url(r'^data/map/(\S+)/$', table_views.map),
+
     url(r'^data/version_release/$', parameters_views.version_release),
     url(r'^data/get_param/(\S+)/$', parameters_views.get_param),
     url(r'^data/add_template/$', parameters_views.add_template),

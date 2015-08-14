@@ -51,7 +51,7 @@ def table(request, filename, table_name):
 
 
 def rnd(request):
-    columns =[]
+    columns = []
     data = []
     active_file = request.COOKIES.get('active_file')
     if Files.objects.filter(filename=active_file, project=request.project).exists():
@@ -135,4 +135,26 @@ def by_technology(request, network):
         else:
             data_result.append(f)
 
-    return HttpResponse(json.dumps(data_result), content_type='application/json')
+    return HttpResponse(
+        json.dumps(data_result),
+        content_type='application/json')
+
+
+def maps(request):
+    project = request.project
+    filenames = [f.filename for f in Files.objects.filter(project=project)]
+    return HttpResponse(
+        json.dumps(filenames),
+        content_type='application/json')
+
+
+def map(request, filename):
+    project = request.project
+    f = Files.objects.filter(project=project, filename=filename).first()
+    data = f.get_map()
+    print len(data)
+    return HttpResponse(
+        json.dumps(data),
+        content_type='application/json')
+
+
