@@ -68,6 +68,9 @@ urlpatterns = patterns('',
     url(r'^data/dash_model_eq/$', dash_view.dash_model_eq),
     url(r'^data/dash_cells_lac/$', dash_view.dash_cells_lac),
 
+    url(r'^data/audit/set_audit_template/$', table_views.set_audit_template),
+    url(r'^data/audit/get_audit_template/$', table_views.get_audit_template),
+
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))

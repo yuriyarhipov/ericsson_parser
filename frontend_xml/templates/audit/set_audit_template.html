@@ -3,7 +3,7 @@
     <div class="form-group">
         <label for="file" class="col-sm-3 control-label">Network</label>
         <div class="col-sm-9">
-            <select ng-model="network" class="form-control">
+            <select ng-model="network" class="form-control" name="network" ng-change="onChangeNetwork(network)">
                 <option value="GSM" selected>GSM</option>
                 <option value="WCDMA">WCDMA</option>
                 <option value="LTE">LTE</option>
@@ -24,3 +24,17 @@
         </div>
     </div>
 </form>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <td>Table Name</td>
+            <td>Columns</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="row in template">
+            <td>{{ row.param }}</td>
+            <td>{{ row.value }}</td>
+        </tr>
+    </tbody>
+</table>

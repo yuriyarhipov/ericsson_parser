@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from table import Table, get_excel
-from files.models import Files, SuperFile, CNATemplate
+from files.models import Files, SuperFile, CNATemplate, AuditTemplate
 from files.excel import Excel
 from django.conf import settings
 from openpyxl import load_workbook
@@ -174,14 +174,25 @@ def map(request, filename):
 
 def set_audit_template(request):
     project = request.project
-    CNATemplate.objects.filter(project=project).delete()
-
+    network = request.POST.get('network')
+    AuditTemplate.objects.filter(project=project, network=network).delete()
     filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
-    wb = load_workbook(filename=filename)
-
+    wb = load_workbook(filename=filename, use_iterators=True)
+    result = []
     for sheet_name in wb.get_sheet_names():
         ws = wb.get_sheet_by_name(sheet_name)
         for row in ws.iter_rows():
-            print row[0].value, row[1].value
+            if (row[0].value != 'Parameter') and (row[1].value):
+                result.append({'param': row[0].value, 'value': row[1].value})
+                AuditTemplate.objects.create(project=project, network=network, param=row[0].value, value=row[1].value)
 
-    return HttpResponse(json.dumps([]), content_type='application/json')
+    return HttpResponse(json.dumps(result), content_type='application/json')
+
+
+def get_audit_template(request):
+    project = request.project
+    network = request.GET.get('network')
+    result = []
+    for at in AuditTemplate.objects.filter(project=project, network__iexact=network):
+        result.append({'param': at.param, 'value': at.value})
+    return HttpResponse(json.dumps(result), content_type='application/json')

@@ -259,3 +259,9 @@ class FileTasks(models.Model):
     tasks = models.TextField()
     max_value = models.IntegerField()
 
+
+class AuditTemplate(models.Model):
+    project = models.ForeignKey(Project)
+    network = models.TextField()
+    param = models.TextField()
+    value = models.TextField()
