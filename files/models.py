@@ -40,7 +40,6 @@ class Files(models.Model):
                     'lon': (float(row[1]) / 16777216) * 360})
             except:
                 pass
-        print result
         return result
 
     def get_active_file(self, project, network, filename):
