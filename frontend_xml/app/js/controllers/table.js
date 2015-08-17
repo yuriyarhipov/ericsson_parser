@@ -33,6 +33,21 @@ tableControllers.controller('mapsCtrl', ['$scope', '$http', '$routeParams',
 
 tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'olData',
     function ($scope, $http, $routeParams, olData) {
+        var custom_point = new ol.style.Circle({
+            radius: 5,
+            fill: new ol.style.Fill({
+                color: '#0000ff',
+                opacity: 0.6
+            }),
+            stroke: new ol.style.Stroke({
+                color: '#000000',
+                opacity: 0.4
+            })
+        });
+        var custom_style = {
+                image: custom_point,
+            };
+
         $http.get('/data/map/' + $routeParams.filename + '/').success(function(data) {
             var markers = data;
             angular.extend($scope, {
@@ -41,7 +56,8 @@ tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'olDa
                     lon: markers[0].lon,
                     zoom: 7
                 },
-                markers: markers
+                markers: markers,
+                custom_style: custom_style
             });
         });
   }]);

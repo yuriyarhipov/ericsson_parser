@@ -35,10 +35,13 @@ class Files(models.Model):
         cursor.execute('SELECT DISTINCT latitude, longitude FROM rnd_wcdma WHERE filename=%s', (self.filename,))
         for row in cursor:
             try:
-                result.append({'lat': float(row[1]), 'lon': float(row[0])})
+                result.append({
+                    'lat': (float(row[0]) / 8388608) * 90,
+                    'lon': (float(row[1]) / 16777216) * 360})
             except:
                 pass
-        return result[:2]
+        print result
+        return result
 
     def get_active_file(self, project, network, filename):
         file_type = ''
