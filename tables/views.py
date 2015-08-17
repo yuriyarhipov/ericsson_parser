@@ -7,6 +7,21 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from table import Table, get_excel
 from files.models import Files, SuperFile, CNATemplate
 from files.excel import Excel
+from django.conf import settings
+from openpyxl import load_workbook
+
+
+def handle_uploaded_file(files):
+    path = settings.STATICFILES_DIRS[0]
+    result = []
+    for f in files:
+        filename = '/xml/'.join([path, f.name])
+        destination = open(filename, 'wb+')
+        for chunk in f.chunks():
+            destination.write(chunk)
+        destination.close()
+        result.append(filename)
+    return result
 
 
 def table(request, filename, table_name):
@@ -152,9 +167,29 @@ def map(request, filename):
     project = request.project
     f = Files.objects.filter(project=project, filename=filename).first()
     data = f.get_map()
-    print len(data)
     return HttpResponse(
         json.dumps(data),
         content_type='application/json')
 
 
+def set_audit_template(request):
+    project = request.project
+    CNATemplate.objects.filter(project=project).delete()
+
+    filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
+    wb = load_workbook(filename=filename)
+
+    for sheet_name in wb.get_sheet_names():
+        ws = wb.get_sheet_by_name(sheet_name)
+        columns = []
+        for col in ws.columns:
+            if col[0].value:
+                columns.append(col[0].value)
+        sql_columns = ','.join(columns)
+
+        table_name = sheet_name.split('-')
+        table_name = table_name[len(table_name) - 1]
+        table_name = table_name.strip().replace(' ', '_')
+        CNATemplate.objects.create(project=project, table_name=table_name, columns=sql_columns)
+
+    return HttpResponse(json.dumps([]), content_type='application/json')

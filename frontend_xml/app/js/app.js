@@ -22,6 +22,7 @@ var XmlApp = angular.module(
         'ng-context-menu',
         'smart-table',
         'openlayers-directive',
+        'auditControllers'
     ]);
 
 XmlApp.config(['$routeProvider',
@@ -130,6 +131,10 @@ XmlApp.config(['$routeProvider',
             when('/set_cna_template/',{
                 templateUrl: 'templates/files/set_cna_template.html',
                 controller: 'setCnaTemplateCtrl'
+            }).
+            when('/set_audit_template/',{
+                templateUrl: 'templates/audit/set_audit_template.html',
+                controller: 'setAuditTemplateCtrl'
             }).
             when('/status/:id/',{
                 templateUrl: 'templates/files/upload.html',
