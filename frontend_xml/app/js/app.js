@@ -136,6 +136,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/audit/set_audit_template.html',
                 controller: 'setAuditTemplateCtrl'
             }).
+            when('/run_network_audit/',{
+                templateUrl: 'templates/audit/run_network_audit.html',
+                controller: 'runNetworkAuditCtrl'
+            }).
             when('/status/:id/',{
                 templateUrl: 'templates/files/upload.html',
                 controller: 'uploadFileCtrl'
@@ -147,6 +151,14 @@ XmlApp.config(['$routeProvider',
             when('/map/:filename/',{
                 templateUrl: 'templates/tables/map.html',
                 controller: 'mapCtrl'
+            }).
+            when('/run_audit/',{
+                templateUrl: 'templates/audit/run_network_audit.html',
+                controller: 'runAuditCtrl'
+            }).
+            when('/wcdma_audit/',{
+                templateUrl: 'templates/audit/wcdma_audit.html',
+                controller: 'wcdmaAuditCtrl'
             }).
             when('/about/',{
                 templateUrl: 'templates/about.html',

@@ -196,3 +196,14 @@ def get_audit_template(request):
     for at in AuditTemplate.objects.filter(project=project, network__iexact=network):
         result.append({'param': at.param, 'value': at.value})
     return HttpResponse(json.dumps(result), content_type='application/json')
+
+
+def run_audit(request, network, filename):
+    project = request.project
+    result = []
+    for at in AuditTemplate.objects.filter(project=project, network=network):
+        result.append({
+            'param': at.param,
+            'recommended': at.value,
+            'value': at.check_param(filename)})
+    return HttpResponse(json.dumps(result), content_type='application/json')

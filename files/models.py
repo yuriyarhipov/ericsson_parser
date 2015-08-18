@@ -265,3 +265,32 @@ class AuditTemplate(models.Model):
     network = models.TextField()
     param = models.TextField()
     value = models.TextField()
+
+    def check_param(self, filename):
+        sql = '''
+            SELECT
+                table_name
+            FROM
+                INFORMATION_SCHEMA.COLUMNS
+            WHERE
+                (column_name='%s');''' % (self.param.lower())
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        if cursor.rowcount == 0:
+            return 0
+
+        table_name = cursor.fetchall()[0][0]
+        sql = '''
+            SELECT
+                %s
+            FROM
+                %s
+            WHERE
+                LOWER(filename)='%s'
+            ''' % (self.param, table_name, filename.lower())
+        cursor.execute(sql)
+        result = 0
+        for row in cursor:
+            if float(row[0]) == float(self.value):
+                result += 1
+        return result

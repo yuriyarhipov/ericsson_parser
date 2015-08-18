@@ -17,3 +17,26 @@ auditControllers.controller('setAuditTemplateCtrl', ['$scope', '$http',
             $scope.template = data;
         };
   }]);
+
+auditControllers.controller('runAuditCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.network = 'GSM';
+        $scope.selected_file = '';
+        $http.get('/data/files/get_files/GSM/').success(function(data){
+            $scope.files = data;
+        });
+
+        $scope.onChangeNetwork = function(network){
+            $http.get('/data/files/get_files/' + network + '/').success(function(data){
+                $scope.files = data;
+            });
+        };
+
+        $scope.runAudit = function(file){
+            $http.get('/data/audit/run_audit/' + $scope.network + '/' + file + '/').success(function(data){
+                $scope.table = data;
+            });
+        };
+
+
+  }]);

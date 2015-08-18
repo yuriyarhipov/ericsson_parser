@@ -1,0 +1,36 @@
+<form class="form">
+    <div class="form-group">
+        <label for="network" class="col-sm-3 control-label">Network:</label>
+        <div class="col-sm-9">
+            <select ng-model="network" class="form-control" name="network" ng-change="onChangeNetwork(network)" id="network">
+                <option value="GSM" selected>GSM</option>
+                <option value="WCDMA">WCDMA</option>
+                <option value="LTE">LTE</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="file" class="col-sm-3 control-label">File:</label>
+        <div class="col-sm-9">
+            <select class="form-control" id="file" ng-options="f for f in files" ng-model="selected_file">
+            <option value="">-- choose file --</option>
+            </select>
+        </div>
+    </div>
+    <button class="btn btn-default" ng-click="runAudit(selected_file)">Run Audit</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <td>Parameter</td>
+            <td>Total</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="row in table">
+            <td>{{ row.param }} (Recommended {{ row.recommended }})</td>
+            <td>{{ row.value }}</td>
+        </tr>
+    </tbody>
+</table>
