@@ -156,9 +156,9 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/audit/run_network_audit.html',
                 controller: 'runAuditCtrl'
             }).
-            when('/wcdma_audit/',{
-                templateUrl: 'templates/audit/wcdma_audit.html',
-                controller: 'wcdmaAuditCtrl'
+            when('/power_audit/',{
+                templateUrl: 'templates/audit/power_audit.html',
+                controller: 'powerAuditCtrl'
             }).
             when('/about/',{
                 templateUrl: 'templates/about.html',

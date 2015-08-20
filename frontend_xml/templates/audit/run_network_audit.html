@@ -20,17 +20,29 @@
     <button class="btn btn-default" ng-click="runAudit(selected_file)">Run Audit</button>
 </form>
 
+<div class="col-md-12">
+    <a href="/#">Download Excel</a>
+</div>
 <table class="table">
     <thead>
         <tr>
             <td>Parameter</td>
+            <td>Complaint List</td>
+            <td>No Complaint List</td>
             <td>Total</td>
+            <td>%</td>
         </tr>
     </thead>
     <tbody>
         <tr ng-repeat="row in table">
             <td>{{ row.param }} (Recommended {{ row.recommended }})</td>
-            <td>{{ row.value }}</td>
+            <td>{{ row.complaint }}</td>
+            <td>{{ row.not_complaint }}</td>
+            <td>{{ row.total }}</td>
+            <td>{{ row.percent }} %</td>
         </tr>
     </tbody>
 </table>
+<div class="col-md-12">
+    <highchart id="chart1" config="chartConfig" class="span10"></highchart>
+</div>

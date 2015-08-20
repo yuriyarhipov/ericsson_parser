@@ -208,6 +208,31 @@ class Files(models.Model):
                 params[sq.site].pop(sq.param_name)
         return params
 
+    def power_audit(self):
+        cursor = connection.cursor()
+        cursor.execute('''
+            SELECT DISTINCT
+                RBSLocalCell.SectorCarrier,
+                UtranCell.CID,
+                maximumTransmissionPower,
+                maxDlPowerCapability
+            FROM
+                UtranCell INNER JOIN rbslocalcell ON  (RBSLocalCell.LocalCellid = UtranCell.CID)
+            WHERE (UtranCell.filename = %s) AND (RBSLocalCell.filename=%s) ''', (self.filename, self.filename ))
+        sector_count = 0
+        miss_sectors = []
+        for row in cursor:
+
+            if (row[1] >= row[2]):
+                sector_count += 1
+            else:
+                miss_sectors.append({
+                    'id': row[1],
+                    'sector': row[0],
+                    'power': row[2],
+                    'cap': row[3]})
+        return {'sector_count': sector_count, 'miss_sectors': miss_sectors}
+
     def check_value(self, value, p_min, p_max):
         status = 'default'
         if p_min and value:
@@ -277,7 +302,7 @@ class AuditTemplate(models.Model):
         cursor = connection.cursor()
         cursor.execute(sql)
         if cursor.rowcount == 0:
-            return 0
+            return dict()
 
         table_name = cursor.fetchall()[0][0]
         sql = '''
@@ -289,8 +314,21 @@ class AuditTemplate(models.Model):
                 LOWER(filename)='%s'
             ''' % (self.param, table_name, filename.lower())
         cursor.execute(sql)
-        result = 0
+        complaint = 0
+        not_complaint = 0
+
+        result = dict()
         for row in cursor:
+            if float(row[0]) not in result:
+                result[float(row[0])] = 1
+            else:
+                result[float(row[0])] += 1
+
             if float(row[0]) == float(self.value):
-                result += 1
-        return result
+                complaint += 1
+            else:
+                not_complaint += 1
+        return {
+            'complaint': complaint,
+            'not_complaint': not_complaint,
+            'result': result}

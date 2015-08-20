@@ -193,7 +193,9 @@ def get_audit_template(request):
     project = request.project
     network = request.GET.get('network')
     result = []
-    for at in AuditTemplate.objects.filter(project=project, network__iexact=network):
+    for at in AuditTemplate.objects.filter(
+            project=project,
+            network__iexact=network):
         result.append({'param': at.param, 'value': at.value})
     return HttpResponse(json.dumps(result), content_type='application/json')
 
@@ -202,8 +204,31 @@ def run_audit(request, network, filename):
     project = request.project
     result = []
     for at in AuditTemplate.objects.filter(project=project, network=network):
+        value = at.check_param(filename)
+        complaint = value.get('complaint', 0)
+        not_complaint = value.get('not_complaint', 0)
+        total = complaint + not_complaint
+        if total != 0:
+            percent = int(float(complaint) / float(total) * 100)
+        else:
+            percent = 0
+
         result.append({
             'param': at.param,
             'recommended': at.value,
-            'value': at.check_param(filename)})
-    return HttpResponse(json.dumps(result), content_type='application/json')
+            'complaint': complaint,
+            'not_complaint': not_complaint,
+            'total': total,
+            'percent': percent})
+    chart = []
+    for param in result:
+        chart.append([param.get('param'), param.get('complaint')])
+    return HttpResponse(json.dumps({'table': result, 'chart': chart}), content_type='application/json')
+
+
+def power_audit(request, filename):
+    project = request.project
+    audit = Files.objects.get(project=project, filename=filename).power_audit()
+    chart = [audit.get(sector_count), len(audit.get('miss_sector'))]
+    table = audit.get('miss_sector')
+    return HttpResponse(json.dumps({'chart':chart, 'table': table}), content_type='application/json')
