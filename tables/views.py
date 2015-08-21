@@ -252,7 +252,7 @@ def excel_audit(request, network, filename):
 
     ae = AuditExcel()
     f = ae.create_file(result, project.project_name, filename)
-    #return HttpResponseRedirect(f)
+    return HttpResponseRedirect(f)
 
 
 def power_audit(request, filename):
