@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from table import Table, get_excel
 from files.models import Files, SuperFile, CNATemplate, AuditTemplate
-from files.excel import Excel
+from files.excel import Excel, PowerAuditExcel
 from django.conf import settings
 from openpyxl import load_workbook
 
@@ -229,6 +229,16 @@ def run_audit(request, network, filename):
 def power_audit(request, filename):
     project = request.project
     audit = Files.objects.get(project=project, filename=filename).power_audit()
-    chart = [audit.get(sector_count), len(audit.get('miss_sector'))]
-    table = audit.get('miss_sector')
-    return HttpResponse(json.dumps({'chart':chart, 'table': table}), content_type='application/json')
+    chart = [audit.get('sector_count'), len(audit.get('miss_sectors', []))]
+
+    table = audit.get('miss_sectors')
+    return HttpResponse(json.dumps({'chart': chart, 'table': table}), content_type='application/json')
+
+
+def excel_power_audit(request, filename):
+    project = request.project
+    audit = Files.objects.get(project=project, filename=filename).power_audit()
+    pa = PowerAuditExcel()
+    f = pa.create_file(audit, project.project_name, filename)
+    return HttpResponseRedirect(f)
+

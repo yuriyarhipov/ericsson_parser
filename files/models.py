@@ -223,7 +223,7 @@ class Files(models.Model):
         miss_sectors = []
         for row in cursor:
 
-            if (row[1] >= row[2]):
+            if (int(row[2]) >= int(row[3])):
                 sector_count += 1
             else:
                 miss_sectors.append({

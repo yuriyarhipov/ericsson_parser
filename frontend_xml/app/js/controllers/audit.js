@@ -100,7 +100,44 @@ auditControllers.controller('powerAuditCtrl', ['$scope', '$http',
 
         $scope.runAudit = function(file){
             $http.get('/data/audit/power_audit/' + file + '/').success(function(data){
-                $scope.table = data;
+                $scope.table = data.table;
+                $scope.chartConfig = {
+                    options: {
+                        chart: {
+                            type: 'column'
+                        },
+                    },
+                    series: [
+                        {
+                            data: data.chart,
+                            name: 'Criteria Fulfillment',
+                            dataLabels: {
+                                enabled: true,
+                                rotation: -90,
+                                color: '#FFFFFF',
+                                align: 'right',
+                                x: 4,
+                                y: 10,
+                                style: {
+                                    fontSize: '13px',
+                                    fontFamily: 'Verdana, sans-serif',
+                                    textShadow: '0 0 3px black'
+                                }
+                            }
+                        }
+                    ],
+                    title: {
+                        text: 'Criteria Fulfillment'
+                    },
+                    xAxis: {
+                        categories: ['Yes', 'No'],
+                        crosshair: true,
+                    },
+
+                    legend: {
+                        enabled: false
+                    },
+                };
             });
         };
   }]);

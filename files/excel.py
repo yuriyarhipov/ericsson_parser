@@ -95,7 +95,7 @@ class ExcelFile:
                     0,
                     0,
                     len(data),
-                    len(columns)-1,
+                    len(columns) - 1,
                     {'data': data,
                      'columns': columns})
         workbook.close()
@@ -104,4 +104,52 @@ class ExcelFile:
         zip.close()
 
 
+class PowerAuditExcel:
 
+    def create_file(self, audit, project, filename):
+        static_path = settings.STATICFILES_DIRS[0]
+        file_path = '%s/%s' % (static_path, project)
+        if not exists(file_path):
+            makedirs(file_path)
+        archive_filename = join(file_path, 'power_audit.zip')
+        filename = join('/static/%s' % project, 'power_audit.zip')
+
+        excel_filename = join(tempfile.mkdtemp(), 'power_audit.xlsx')
+        workbook = xlsxwriter.Workbook(excel_filename)
+        worksheet = workbook.add_worksheet()
+        bold = workbook.add_format({'bold': 1})
+        headings = ['Yes', 'No']
+        data_sector = audit.get('miss_sectors', [])
+        data = [
+            [audit.get('sector_count'), ],
+            [len(data_sector), ],
+        ]
+        worksheet.write_row('A1', headings, bold)
+        worksheet.write_column('A2', data[0])
+        worksheet.write_column('B2', data[1])
+
+        chart = workbook.add_chart({'type': 'column'})
+
+        chart.add_series({'values': '=Sheet1!$A$1:$A$5'})
+        chart.add_series({'values': '=Sheet1!$B$1:$B$5'})
+
+        worksheet.insert_chart('A4', chart)
+
+        table_headers = [
+            'CID',
+            'Sector',
+            'maximumTransmissionPower',
+            'maxDlPowerCapability']
+        worksheet.write_row('A20', table_headers, bold)
+        data = []
+        for row in data_sector:
+            data.append([row.get('id'), row.get('sector'), row.get('power'), row.get('cap')])
+
+        worksheet.add_table(20, 0, 20 + len(data), 3, {'data': data,})
+
+        workbook.close()
+
+        zip = ZipFile(archive_filename, 'w')
+        zip.write(excel_filename, arcname=filename + '.xlsx')
+        zip.close()
+        return excel_filename
