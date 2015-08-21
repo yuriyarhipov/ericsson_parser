@@ -153,3 +153,50 @@ class PowerAuditExcel:
         zip.write(excel_filename, arcname=filename + '.xlsx')
         zip.close()
         return join('/static/%s' % project, filename +'_power_audit.zip')
+
+
+class AuditExcel:
+
+    def create_file(self, audit, project, filename):
+        static_path = settings.STATICFILES_DIRS[0]
+        file_path = '%s/%s' % (static_path, project)
+        if not exists(file_path):
+            makedirs(file_path)
+        archive_filename = join(file_path, filename + '_audit.zip')
+
+        excel_filename = join(tempfile.mkdtemp(), '_audit.xlsx')
+        workbook = xlsxwriter.Workbook(excel_filename)
+        worksheet = workbook.add_worksheet()
+        data = []
+        for row in audit:
+            data.append([
+                row.get('param'),
+                row.get('complaint'),
+                row.get('not_complaint'),
+                row.get('total'),
+                row.get('percent')]
+            )
+        bold = workbook.add_format({'bold': 1})
+        columns = [
+            'Parameter',
+            'Complaint List',
+            'No Complaint List',
+            'Total',
+            '%']
+        worksheet.write_row('A1', columns, bold)
+        worksheet.add_table(1, 0, len(data) + 1, 4, {'data': data, })
+
+        chart = workbook.add_chart({'type': 'column'})
+        chart.add_series({
+            'categories': ['Sheet1', 3, 0, len(data), 0],
+            'values':     ['Sheet1', 3, 1, len(data), 1],
+            'line':       {'color': 'red'},
+        })
+        worksheet.insert_chart('G1', chart)
+
+        workbook.close()
+
+        zip = ZipFile(archive_filename, 'w')
+        zip.write(excel_filename, arcname=filename + '.xlsx')
+        zip.close()
+        return join('/static/%s' % project, filename + '_audit.zip')

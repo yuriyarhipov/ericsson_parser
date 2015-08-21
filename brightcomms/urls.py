@@ -71,6 +71,7 @@ urlpatterns = patterns('',
     url(r'^data/audit/set_audit_template/$', table_views.set_audit_template),
     url(r'^data/audit/get_audit_template/$', table_views.get_audit_template),
     url(r'^data/audit/run_audit/(\S+)/(\S+)/$', table_views.run_audit),
+    url(r'^data/audit/excel_audit/(\S+)/(\S+)/$', table_views.excel_audit),
     url(r'^data/audit/power_audit/(\S+)/$', table_views.power_audit),
     url(r'^data/audit/excel_power_audit/(\S+)/$', table_views.excel_power_audit),
 

@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from table import Table, get_excel
 from files.models import Files, SuperFile, CNATemplate, AuditTemplate
-from files.excel import Excel, PowerAuditExcel
+from files.excel import Excel, PowerAuditExcel, AuditExcel
 from django.conf import settings
 from openpyxl import load_workbook
 
@@ -224,6 +224,35 @@ def run_audit(request, network, filename):
     for param in result:
         chart.append([param.get('param'), param.get('complaint')])
     return HttpResponse(json.dumps({'table': result, 'chart': chart}), content_type='application/json')
+
+
+def excel_audit(request, network, filename):
+    project = request.project
+    result = []
+    for at in AuditTemplate.objects.filter(project=project, network=network):
+        value = at.check_param(filename)
+        complaint = value.get('complaint', 0)
+        not_complaint = value.get('not_complaint', 0)
+        total = complaint + not_complaint
+        if total != 0:
+            percent = int(float(complaint) / float(total) * 100)
+        else:
+            percent = 0
+
+        result.append({
+            'param': at.param,
+            'recommended': at.value,
+            'complaint': complaint,
+            'not_complaint': not_complaint,
+            'total': total,
+            'percent': percent})
+    chart = []
+    for param in result:
+        chart.append([param.get('param'), param.get('complaint')])
+
+    ae = AuditExcel()
+    f = ae.create_file(result, project.project_name, filename)
+    #return HttpResponseRedirect(f)
 
 
 def power_audit(request, filename):
