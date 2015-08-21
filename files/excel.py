@@ -111,8 +111,8 @@ class PowerAuditExcel:
         file_path = '%s/%s' % (static_path, project)
         if not exists(file_path):
             makedirs(file_path)
-        archive_filename = join(file_path, 'power_audit.zip')
-        filename = join('/static/%s' % project, 'power_audit.zip')
+        archive_filename = join(file_path, filename +'_power_audit.zip')
+
 
         excel_filename = join(tempfile.mkdtemp(), 'power_audit.xlsx')
         workbook = xlsxwriter.Workbook(excel_filename)
@@ -152,4 +152,4 @@ class PowerAuditExcel:
         zip = ZipFile(archive_filename, 'w')
         zip.write(excel_filename, arcname=filename + '.xlsx')
         zip.close()
-        return excel_filename
+        return join('/static/%s' % project, filename +'_power_audit.zip')
