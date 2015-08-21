@@ -1,0 +1,38 @@
+<form class="form">
+    <div class="form-group">
+        <label for="file" class="col-sm-3 control-label">File:</label>
+        <div class="col-sm-9">
+            <select class="form-control" id="file" ng-options="f for f in files" ng-model="selected_file">
+            <option value="">-- choose file --</option>
+            </select>
+        </div>
+    </div>
+    <button class="btn btn-default" ng-click="runAudit(selected_file)">Run Audit</button>
+</form>
+
+<div class="col-md-12">
+    <a href="/data/audit/excel_power_audit/{{ selected_file }}/">Download Excel</a>
+</div>
+
+<div class="col-md-12">
+    <highchart id="chart1" config="chartConfig" class="span10"></highchart>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <td>CID</td>
+            <td>Sector</td>
+            <td>maximumTransmissionPower</td>
+            <td>maxDlPowerCapability</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="row in table">
+            <td>{{ row.id }}</td>
+            <td>{{ row.sector }}</td>
+            <td>{{ row.power }}</td>
+            <td>{{ row.cap }}</td>
+        </tr>
+    </tbody>
+</table>
