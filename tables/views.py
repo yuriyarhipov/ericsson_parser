@@ -203,11 +203,13 @@ def get_audit_template(request):
 def run_audit(request, network, filename):
     project = request.project
     result = []
+    total = None
     for at in AuditTemplate.objects.filter(project=project, network=network):
         value = at.check_param(filename)
         complaint = value.get('complaint', 0)
-        not_complaint = value.get('not_complaint', 0)
-        total = complaint + not_complaint
+        if not total:
+            total = at.total(filename)
+        not_complaint = total - complaint
         if total != 0:
             percent = int(float(complaint) / float(total) * 100)
         else:

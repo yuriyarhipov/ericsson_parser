@@ -291,6 +291,17 @@ class AuditTemplate(models.Model):
     param = models.TextField()
     value = models.TextField()
 
+    def total(self, filename):
+        cursor = connection.cursor()
+        cursor.execute('''
+            SELECT DISTINCT
+                UtranCell
+            FROM
+                UtranCell
+            WHERE
+            filename=%s''', (filename, ))
+        return cursor.rowcount
+
     def check_param(self, filename):
         sql = '''
             SELECT
@@ -305,30 +316,20 @@ class AuditTemplate(models.Model):
             return dict()
 
         table_name = cursor.fetchall()[0][0]
+
         sql = '''
-            SELECT
+            SELECT DISTINCT
+                MO,
                 %s
             FROM
                 %s
             WHERE
                 LOWER(filename)='%s'
             ''' % (self.param, table_name, filename.lower())
+
         cursor.execute(sql)
         complaint = 0
-        not_complaint = 0
-
-        result = dict()
         for row in cursor:
-            if float(row[0]) not in result:
-                result[float(row[0])] = 1
-            else:
-                result[float(row[0])] += 1
-
-            if float(row[0]) == float(self.value):
+            if float(row[1]) == float(self.value):
                 complaint += 1
-            else:
-                not_complaint += 1
-        return {
-            'complaint': complaint,
-            'not_complaint': not_complaint,
-            'result': result}
+        return {'complaint': complaint, }
