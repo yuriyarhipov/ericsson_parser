@@ -215,7 +215,8 @@ class Files(models.Model):
                 RBSLocalCell.SectorCarrier,
                 UtranCell.CID,
                 maximumTransmissionPower,
-                maxDlPowerCapability
+                maxDlPowerCapability,
+                UtranCell.UtranCell
             FROM
                 UtranCell INNER JOIN rbslocalcell ON  (RBSLocalCell.LocalCellid = UtranCell.CID)
             WHERE (UtranCell.filename = %s) AND (RBSLocalCell.filename=%s) ''', (self.filename, self.filename ))
@@ -230,7 +231,8 @@ class Files(models.Model):
                     'id': row[1],
                     'sector': row[0],
                     'power': row[2],
-                    'cap': row[3]})
+                    'cap': row[3],
+                    'utrancell': row[4]})
         return {'sector_count': sector_count, 'miss_sectors': miss_sectors}
 
     def check_value(self, value, p_min, p_max):
@@ -290,6 +292,9 @@ class AuditTemplate(models.Model):
     network = models.TextField()
     param = models.TextField()
     value = models.TextField()
+
+    def audit_param(self, filname):
+        pass
 
     def total(self, filename):
         cursor = connection.cursor()

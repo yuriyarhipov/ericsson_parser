@@ -141,3 +141,12 @@ auditControllers.controller('powerAuditCtrl', ['$scope', '$http',
             });
         };
   }]);
+
+auditControllers.controller('auditParamCtrl', ['$scope', '$http', '$routeParams',
+    function ($scope, $http, $routeParams) {
+        $http.get('/data/audit/audit_param/' + $routeParams.network + '/' + $routeParams.filename + '/' + $routeParams.param_name + '/').success(function(data){
+            $scope.template = data;
+        });
+
+
+  }]);

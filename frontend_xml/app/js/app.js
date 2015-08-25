@@ -160,6 +160,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/audit/power_audit.html',
                 controller: 'powerAuditCtrl'
             }).
+            when('/audit_param/:network/:filename/:param_name/',{
+                templateUrl: 'templates/audit/audit_param.html',
+                controller: 'auditParamCtrl'
+            }).
             when('/about/',{
                 templateUrl: 'templates/about.html',
             }).
@@ -172,6 +176,5 @@ XmlApp.config(['$routeProvider',
 XmlApp.run(function($rootScope, $http, $cookies){
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
     $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-    $rootScope.width = 8;
 
 });

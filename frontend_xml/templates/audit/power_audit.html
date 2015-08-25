@@ -21,6 +21,7 @@
 <table class="table">
     <thead>
         <tr>
+            <td>UtranCell</td>
             <td>CID</td>
             <td>Sector</td>
             <td>maximumTransmissionPower</td>
@@ -29,6 +30,7 @@
     </thead>
     <tbody>
         <tr ng-repeat="row in table">
+            <td>{{ row.utrancell }}</td>
             <td>{{ row.id }}</td>
             <td>{{ row.sector }}</td>
             <td>{{ row.power }}</td>

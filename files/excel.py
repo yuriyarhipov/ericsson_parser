@@ -136,6 +136,7 @@ class PowerAuditExcel:
         worksheet.insert_chart('A4', chart)
 
         table_headers = [
+            'UtranCell',
             'CID',
             'Sector',
             'maximumTransmissionPower',
@@ -143,7 +144,7 @@ class PowerAuditExcel:
         worksheet.write_row('A20', table_headers, bold)
         data = []
         for row in data_sector:
-            data.append([row.get('id'), row.get('sector'), row.get('power'), row.get('cap')])
+            data.append([row.get('utrancell'), row.get('id'), row.get('sector'), row.get('power'), row.get('cap')])
 
         worksheet.add_table(20, 0, 20 + len(data), 3, {'data': data,})
 

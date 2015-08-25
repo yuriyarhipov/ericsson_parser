@@ -228,6 +228,16 @@ def run_audit(request, network, filename):
     return HttpResponse(json.dumps({'table': result, 'chart': chart}), content_type='application/json')
 
 
+def audit_param(request, network, filename, param_name):
+    project = request.project
+    result = []
+    chart = []
+    for row in AuditTemplate.objects.get(project=project, network=network, param=param_name).audit_param(filename):
+        pass
+    return HttpResponse(json.dumps({'table': result, 'chart': chart}), content_type='application/json')
+
+
+
 def excel_audit(request, network, filename):
     project = request.project
     result = []

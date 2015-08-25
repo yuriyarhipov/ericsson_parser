@@ -35,7 +35,11 @@
     </thead>
     <tbody>
         <tr ng-repeat="row in table">
-            <td>{{ row.param }} (Recommended {{ row.recommended }})</td>
+            <td><a
+                href="#audit_param/{{ network }}/{{ selected_file }}/{{ row.param }}/">
+                    {{ row.param }} (Recommended {{ row.recommended }})
+                </a>
+            </td>
             <td>{{ row.complaint }}</td>
             <td>{{ row.not_complaint }}</td>
             <td>{{ row.total }}</td>
