@@ -22,7 +22,8 @@ var XmlApp = angular.module(
         'ng-context-menu',
         'smart-table',
         'openlayers-directive',
-        'auditControllers'
+        'auditControllers',
+        'distanceControllers'
     ]);
 
 XmlApp.config(['$routeProvider',
@@ -159,6 +160,10 @@ XmlApp.config(['$routeProvider',
             when('/power_audit/',{
                 templateUrl: 'templates/audit/power_audit.html',
                 controller: 'powerAuditCtrl'
+            }).
+            when('/access_distance/',{
+                templateUrl: 'templates/distance/distance.html',
+                controller: 'accessDistanceCtrl'
             }).
             when('/audit_param/:network/:filename/:param_name/',{
                 templateUrl: 'templates/audit/audit_param.html',

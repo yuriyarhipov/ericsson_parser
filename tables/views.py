@@ -9,6 +9,7 @@ from files.models import Files, SuperFile, CNATemplate, AuditTemplate
 from files.excel import Excel, PowerAuditExcel, AuditExcel
 from django.conf import settings
 from openpyxl import load_workbook
+from files.distance import Distance
 
 
 def handle_uploaded_file(files):
@@ -283,3 +284,17 @@ def excel_power_audit(request, filename):
     f = pa.create_file(audit, project.project_name, filename)
     return HttpResponseRedirect(f)
 
+
+def get_sectors(request):
+    sectors = Distance().get_sectors()
+    return HttpResponse(json.dumps({'sectors': sectors}), content_type='application/json')
+
+
+def get_dates(request, sector):
+    dates = Distance().get_dates(sector)
+    return HttpResponse(json.dumps(dates), content_type='application/json')
+
+
+def get_chart(request, date, sector):
+    chart = Distance().get_chart(date, sector)
+    return HttpResponse(json.dumps(chart), content_type='application/json')

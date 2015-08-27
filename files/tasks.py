@@ -31,6 +31,7 @@ def worker(filename, project, description, vendor, file_type, network):
     from files.measurements import Measurements
     from files.lic import License
     from files.hw import HardWare
+    from files.distance import Distance
     from files.models import Files
 
     xml_types = [
@@ -61,11 +62,18 @@ def worker(filename, project, description, vendor, file_type, network):
         'LTE HARDWARE FILE OSS XML'
     ]
 
+    distance_files = [
+        'HISTOGRAM FILE COUNTER',
+    ]
+
     work_file = XmlPack(filename).get_files()[0]
     task = current_task
     task.update_state(state="PROGRESS", meta={"current": 1})
 
     if network in ['WCDMA', 'LTE']:
+        if file_type in distance_files:
+            Distance().write_file(work_file)
+
         if file_type in xml_types:
             Files.objects.filter(
                 filename=basename(work_file),
