@@ -15,18 +15,24 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
 
         $scope.onClick = function(date, sector){
             $http.get('/data/distance/get_chart/' + date + '/' + sector + '/').success(function(data){
+                $scope.table = data.table;
+                console.log(data.table);
                 $scope.chartConfig = {
                     options: {
                         chart: {
                             type: 'column'
                         },
                         tooltip: {
-                            pointFormat: 'Complaint <b>{point.y}</b>'
+                            formatter: function () {
+                                return 'Distance: <b>' + this.point.category + '</b><br/>' +
+                                'Propagation Delay: <b>'+this.point.y+'%</b> ';
+                            }
+
                         },
                     },
                     series: [
                         {
-                            data: data,
+                            data: data.chart,
                             name: 'Distance',
                             dataLabels: {
                                 enabled: true,

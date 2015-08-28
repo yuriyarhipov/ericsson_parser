@@ -296,5 +296,7 @@ def get_dates(request, sector):
 
 
 def get_chart(request, date, sector):
-    chart = Distance().get_chart(date, sector)
-    return HttpResponse(json.dumps(chart), content_type='application/json')
+    chart, table = Distance().get_chart(date, sector)
+    return HttpResponse(
+        json.dumps({'chart': chart, 'table': table}),
+        content_type='application/json')

@@ -72,7 +72,7 @@ def worker(filename, project, description, vendor, file_type, network):
 
     if network in ['WCDMA', 'LTE']:
         if file_type in distance_files:
-            Distance().write_file(work_file)
+            Distance().write_file(work_file, task)
 
         if file_type in xml_types:
             Files.objects.filter(

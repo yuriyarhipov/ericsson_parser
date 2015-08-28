@@ -2,13 +2,16 @@ from openpyxl import load_workbook
 from django.db import connection
 from os.path import basename
 from datetime import datetime
-
+from decimal import Decimal
 
 
 class Distance(object):
 
     def __init__(self):
         cursor = connection.cursor()
+        cursor.execute("SELECT to_regclass('public.Access_Distance')")
+        if cursor.rowcount == 1:
+            return
         cursor.execute('''CREATE TABLE IF NOT EXISTS Access_Distance (
             filename TEXT,
             RNC  TEXT,
@@ -21,7 +24,18 @@ class Distance(object):
             Utrancell TEXT,
             Distance REAL)
             ''')
-        connection.commit
+        cursor.execute('''
+            CREATE INDEX
+                utrancell_date_idx
+            ON
+                Access_Distance (Utrancell, date_id);''')
+        cursor.execute('''
+            CREATE INDEX
+                utrancell_idx
+            ON
+                Access_Distance (Utrancell);''')
+        connection.commit()
+
 
     def get_sectors(self):
         cursor = connection.cursor()
@@ -36,17 +50,57 @@ class Distance(object):
         return dates
 
     def get_chart(self, date, sector):
-
+        data = []
+        table = []
         cursor = connection.cursor()
-        cursor.execute("SELECT  distance, count(date_id) FROM Access_Distance WHERE (Utrancell=%s) GROUP BY distance ORDER BY distance", (sector, ))
-        return cursor.fetchall()
+        cursor.execute('''
+            SELECT
+                SUM(pmpropagationdelay)
+            FROM
+                Access_Distance
+            WHERE
+                (Utrancell=%s) AND (date_id=%s)''', (
+            sector,
+            datetime.strptime(date, '%d.%m.%Y')))
 
+        sum_samples = cursor.fetchall()[0][0]
 
-    def write_file(self, filename):
+        cursor.execute('''
+            SELECT
+                date_id,
+                distance,
+                pmpropagationdelay
+            FROM
+                Access_Distance
+            WHERE
+                (Utrancell=%s) AND (date_id=%s)
+            ORDER BY
+                distance''', (
+            sector,
+            datetime.strptime(date, '%d.%m.%Y')))
+
+        for row in cursor:
+            value = Decimal(row[2]) / Decimal(sum_samples) * 100
+            table.append({
+                'date': date,
+                'sector': sector,
+                'distance': row[1],
+                'samples': row[2],
+                'samples_percent': round(value, 2),
+                'total_samples': sum_samples})
+
+            data.append([
+                row[1],
+                round(value, 2), ]
+            )
+        return data, table
+
+    def write_file(self, filename, current_task):
         wb = load_workbook(filename=filename, use_iterators=True)
         ws = wb.active
-        data = []
         cursor = connection.cursor()
+        cursor.execute('DELETE FROM Access_Distance WHERE filename=%s',
+                       (basename(filename), ))
         i = 0
         for excel_row in ws.iter_rows():
             row = []
@@ -57,8 +111,24 @@ class Distance(object):
                     else:
                         row.append(0)
 
-                cursor.execute('INSERT INTO Access_Distance VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                    (basename(filename), row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
+                cursor.execute('''
+                    INSERT INTO
+                        Access_Distance
+                    VALUES
+                        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''', (
+                    basename(filename),
+                    row[0],
+                    row[1],
+                    row[2],
+                    row[3],
+                    row[4],
+                    row[5],
+                    row[6],
+                    row[7],
+                    row[8]))
             i += 1
-        connection.commit()
+            if i % 10000 == 0:
+                current_task.update_state(state="PROGRESS", meta={
+                    "current": int(i / 10000)})
 
+        connection.commit()
