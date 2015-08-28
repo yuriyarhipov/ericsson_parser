@@ -9,9 +9,7 @@ class Distance(object):
 
     def __init__(self):
         cursor = connection.cursor()
-        cursor.execute("SELECT to_regclass('public.Access_Distance')")
-        if cursor.rowcount == 1:
-            return
+
         cursor.execute('''CREATE TABLE IF NOT EXISTS Access_Distance (
             filename TEXT,
             RNC  TEXT,
@@ -24,16 +22,19 @@ class Distance(object):
             Utrancell TEXT,
             Distance REAL)
             ''')
-        cursor.execute('''
-            CREATE INDEX
-                utrancell_date_idx
-            ON
-                Access_Distance (Utrancell, date_id);''')
-        cursor.execute('''
-            CREATE INDEX
-                utrancell_idx
-            ON
-                Access_Distance (Utrancell);''')
+        try:
+            cursor.execute('''
+                CREATE INDEX
+                    utrancell_date_idx
+                ON
+                    Access_Distance (Utrancell, date_id);''')
+            cursor.execute('''
+                CREATE INDEX
+                    utrancell_idx
+                ON
+                    Access_Distance (Utrancell);''')
+        except:
+            pass
         connection.commit()
 
 
