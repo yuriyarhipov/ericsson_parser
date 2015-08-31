@@ -14,6 +14,11 @@
             </div>
     </div>
     <div class="form-group">
+        <div class="col-sm-2">
+            <button class="btn label label-success" ng-click="onClick('none', sector.selected)" class="btn btn-default">
+                Whole Period
+            </button>
+        </div>
         <div class="col-sm-1" ng-repeat="date in dates">
             <button class="btn label label-success" ng-click="onClick(date, sector.selected)" class="btn btn-default">{{ date }}</button>
         </div>

@@ -72,7 +72,7 @@ def worker(filename, project, description, vendor, file_type, network):
 
     if network in ['WCDMA', 'LTE']:
         if file_type in distance_files:
-            Distance().write_file(work_file, task)
+            Distance().write_file(project.id, work_file, task)
 
         if file_type in xml_types:
             Files.objects.filter(
@@ -202,4 +202,10 @@ def create_table(table, rows, network, filename, parent_task_id, project):
         ExcelFile(project, basename(filename))
 
     revoke(create_table.request.id, terminate=True)
+
+
+@celery.task
+def write_distance_file(project_id, filename, rows):
+    from files.distance import Distance
+    Distance().write_rows(project_id, filename, rows)
 
