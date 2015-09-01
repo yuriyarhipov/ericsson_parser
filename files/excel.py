@@ -240,8 +240,8 @@ class DistanceExcel(object):
         chart = workbook.add_chart({'type': 'column'})
         chart.add_series({
             'categories': ['Sheet1', 3, 2, len(data), 2],
-            'values':     ['Sheet1', 3, 4, len(data), 4],
-            'line':       {'color': 'red'},
+            'values': ['Sheet1', 3, 4, len(data), 4],
+            'line': {'color': 'red'},
         })
         worksheet.insert_chart('H1', chart)
 
@@ -250,4 +250,4 @@ class DistanceExcel(object):
         zip = ZipFile(archive_filename, 'w')
         zip.write(excel_filename, arcname=filename + '.xlsx')
         zip.close()
-        return join('/static/%s' % project, filename + '_audit.zip')
+        return join('/static/%s' % project, filename + '_distance.zip')
