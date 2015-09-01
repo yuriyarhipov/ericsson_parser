@@ -32,7 +32,7 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
                     'WCDMA LICENSE FILE OSS XML',
                     'WCDMA HARDWARE FILE OSS XML',
                     'HISTOGRAM FORMAT COUNTER',
-                    'HISTOGRAM FILE COUNTER'
+                    'HISTOGRAM FILE COUNTER - Access Distance'
                 ];
         $scope.CurrentNetwork = $scope.Network[0];
         $scope.CurrentTypeFile = $scope.TypeFile[0];
@@ -48,7 +48,7 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
                     'WCDMA LICENSE FILE OSS XML',
                     'WCDMA HARDWARE FILE OSS XML',
                     'HISTOGRAM FORMAT COUNTER',
-                    'HISTOGRAM FILE COUNTER'
+                    'HISTOGRAM FILE COUNTER - Access Distance'
                 ];
             }
             if ($scope.CurrentNetwork == 'GSM'){

@@ -201,3 +201,53 @@ class AuditExcel:
         zip.write(excel_filename, arcname=filename + '.xlsx')
         zip.close()
         return join('/static/%s' % project, filename + '_audit.zip')
+
+
+class DistanceExcel(object):
+
+    def create_file(self, project, filename, chart, table):
+        static_path = settings.STATICFILES_DIRS[0]
+        file_path = '%s/%s' % (static_path, project)
+        if not exists(file_path):
+            makedirs(file_path)
+        archive_filename = join(file_path, filename + '_distance.zip')
+
+        excel_filename = join(tempfile.mkdtemp(), '_distance.xlsx')
+        workbook = xlsxwriter.Workbook(excel_filename)
+        worksheet = workbook.add_worksheet()
+        data = []
+        for row in table:
+            data.append([
+                row.get('date'),
+                row.get('sector'),
+                row.get('distance'),
+                row.get('samples'),
+                row.get('samples_percent'),
+                row.get('total_samples')]
+            )
+
+        bold = workbook.add_format({'bold': 1})
+        columns = [
+            'Date',
+            'Sector',
+            'Distance',
+            'Samples',
+            'Percent',
+            'Total Samples']
+        worksheet.write_row('A1', columns, bold)
+        worksheet.add_table(1, 0, len(data) + 1, 5, {'data': data, })
+
+        chart = workbook.add_chart({'type': 'column'})
+        chart.add_series({
+            'categories': ['Sheet1', 3, 2, len(data), 2],
+            'values':     ['Sheet1', 3, 4, len(data), 4],
+            'line':       {'color': 'red'},
+        })
+        worksheet.insert_chart('H1', chart)
+
+        workbook.close()
+
+        zip = ZipFile(archive_filename, 'w')
+        zip.write(excel_filename, arcname=filename + '.xlsx')
+        zip.close()
+        return join('/static/%s' % project, filename + '_audit.zip')

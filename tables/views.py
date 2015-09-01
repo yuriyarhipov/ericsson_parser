@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from table import Table, get_excel
 from files.models import Files, SuperFile, CNATemplate, AuditTemplate
-from files.excel import Excel, PowerAuditExcel, AuditExcel
+from files.excel import Excel, PowerAuditExcel, AuditExcel, DistanceExcel
 from django.conf import settings
 from openpyxl import load_workbook
 from files.distance import Distance
@@ -287,7 +287,9 @@ def excel_power_audit(request, filename):
 
 def get_sectors(request):
     sectors = Distance().get_sectors()
-    return HttpResponse(json.dumps({'sectors': sectors}), content_type='application/json')
+    return HttpResponse(
+        json.dumps({'sectors': sectors}),
+        content_type='application/json')
 
 
 def get_dates(request, sector):
@@ -300,3 +302,11 @@ def get_chart(request, date, sector):
     return HttpResponse(
         json.dumps({'chart': chart, 'table': table}),
         content_type='application/json')
+
+
+def get_distance_excel(request, date, sector):
+    project = request.project
+    filename = '%s_%s' % (date, sector)
+    chart, table = Distance().get_chart(date, sector)
+    f = DistanceExcel().create_file(project.project_name, filename, chart, table)
+    return HttpResponseRedirect(f)

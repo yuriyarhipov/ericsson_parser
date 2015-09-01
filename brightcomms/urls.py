@@ -79,6 +79,7 @@ urlpatterns = patterns('',
     url(r'^data/distance/get_sectors/$', table_views.get_sectors),
     url(r'^data/distance/get_dates/(\S+)/$', table_views.get_dates),
     url(r'^data/distance/get_chart/(\S+)/(\S+)/$', table_views.get_chart),
+    url(r'^data/distance/get_excel/(\S+)/(\S+)/$', table_views.get_distance_excel),
 
 
     url(r'^admin/', include(admin.site.urls)),

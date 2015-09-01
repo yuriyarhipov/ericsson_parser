@@ -63,7 +63,7 @@ def worker(filename, project, description, vendor, file_type, network):
     ]
 
     distance_files = [
-        'HISTOGRAM FILE COUNTER',
+        'HISTOGRAM FILE COUNTER - Access Distance',
     ]
 
     work_file = XmlPack(filename).get_files()[0]

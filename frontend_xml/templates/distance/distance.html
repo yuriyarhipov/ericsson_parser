@@ -16,7 +16,7 @@
     <div class="form-group">
         <label for="sector" class="col-sm-1 control-label">Day:</label>
         <div class="col-sm-11" id="param">
-            <ui-select ng-model="day.selected" theme="bootstrap"
+            <ui-select ng-model="days.selected" theme="bootstrap"
                 ng-disabled="disabled"
                 reset-search-dinput="false"
                 on-select="onSelectDay($item, $model)">
@@ -29,7 +29,9 @@
                 Whole Period
             </button>
         </div>
-
+        <div class="form-group">
+            <a href="/data/distance/get_excel/{{ day }}/{{ sector.selected }}/">Download Excel</a>
+        </div>
         <div class="col-md-12">
             <highchart id="chart1" config="chartConfig"></highchart>
         </div>

@@ -3,11 +3,15 @@ var distanceControllers = angular.module('distanceControllers', []);
 auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
     function ($scope, $http) {
         $scope.sector = {};
+        $scope.days = {};
+        $scope.day = 'none';
         $http.get('/data/distance/get_sectors').success(function(data){
             $scope.sectors = data.sectors;
             $scope.sector.selected = $scope.sectors[0];
-            $scope.onSelectDay('none', NaN)
-
+            $scope.onSelectDay('none', NaN);
+            $http.get('/data/distance/get_dates/' + $scope.sectors[0] + '/').success(function(data){
+                $scope.dates = data;
+            });
         });
 
         $scope.onSelect = function($item, $model){
@@ -17,10 +21,11 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
         };
 
         $scope.onSelectDay = function($item, $model){
-            var day = $item;
+            var day = $scope.day = $item;
             var sector = $scope.sector.selected;
             $http.get('/data/distance/get_chart/' + day + '/' + sector + '/').success(function(data){
                 $scope.table = data.table;
+                $scope.chart = data.chart;
                 $scope.chartConfig = {
                     options: {
                         chart: {
