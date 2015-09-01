@@ -5,6 +5,9 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
         $scope.sector = {};
         $http.get('/data/distance/get_sectors').success(function(data){
             $scope.sectors = data.sectors;
+            $scope.sector.selected = $scope.sectors[0];
+            $scope.onSelectDay('none', NaN)
+
         });
 
         $scope.onSelect = function($item, $model){
@@ -13,10 +16,11 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
             });
         };
 
-        $scope.onClick = function(date, sector){
-            $http.get('/data/distance/get_chart/' + date + '/' + sector + '/').success(function(data){
+        $scope.onSelectDay = function($item, $model){
+            var day = $item;
+            var sector = $scope.sector.selected;
+            $http.get('/data/distance/get_chart/' + day + '/' + sector + '/').success(function(data){
                 $scope.table = data.table;
-                console.log(data.table);
                 $scope.chartConfig = {
                     options: {
                         chart: {

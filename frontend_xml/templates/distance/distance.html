@@ -1,7 +1,7 @@
 <form class="form">
     <div class="form-group">
-        <label for="sector" class="col-sm-3 control-label">Sector:</label>
-        <div class="col-sm-9" id="param">
+        <label for="sector" class="col-sm-1 control-label">Sector:</label>
+        <div class="col-sm-11" id="param">
             <ui-select ng-model="sector.selected" theme="bootstrap"
                 ng-disabled="disabled"
                 reset-search-input="false"
@@ -14,14 +14,22 @@
             </div>
     </div>
     <div class="form-group">
-        <div class="col-sm-2">
-            <button class="btn label label-success" ng-click="onClick('none', sector.selected)" class="btn btn-default">
+        <label for="sector" class="col-sm-1 control-label">Day:</label>
+        <div class="col-sm-11" id="param">
+            <ui-select ng-model="day.selected" theme="bootstrap"
+                ng-disabled="disabled"
+                reset-search-dinput="false"
+                on-select="onSelectDay($item, $model)">
+                <ui-select-match placeholder="Enter a day...">{{$select.selected}}</ui-select-match>
+                <ui-select-choices repeat="date in dates | filter:$select.search">
+                    {{ date }}
+                </ui-select-choices>
+            </ui-select>
+            <button class="btn btn-success" ng-click="onSelectDay('none')" class="btn btn-default">
                 Whole Period
             </button>
         </div>
-        <div class="col-sm-1" ng-repeat="date in dates">
-            <button class="btn label label-success" ng-click="onClick(date, sector.selected)" class="btn btn-default">{{ date }}</button>
-        </div>
+
         <div class="col-md-12">
             <highchart id="chart1" config="chartConfig"></highchart>
         </div>
