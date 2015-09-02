@@ -4,6 +4,7 @@ from django.db import connection
 from project.models import Project
 from files.wcdma import WCDMA
 from query.models import SiteQuery
+from math import radians
 
 
 
@@ -32,12 +33,13 @@ class Files(models.Model):
     def get_map(self):
         result = []
         cursor = connection.cursor()
-        cursor.execute('SELECT DISTINCT latitude, longitude FROM rnd_wcdma WHERE filename=%s', (self.filename,))
+        cursor.execute('SELECT DISTINCT latitude, longitude, beamdirection FROM rnd_wcdma WHERE filename=%s', (self.filename,))
         for row in cursor:
             try:
                 result.append({
                     'lat': (float(row[0]) / 8388608) * 90,
-                    'lon': (float(row[1]) / 16777216) * 360})
+                    'lon': (float(row[1]) / 16777216) * 360,
+                    'rotation': radians(float(row[2]))})
             except:
                 pass
         return result

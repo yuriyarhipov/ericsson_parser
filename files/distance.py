@@ -84,6 +84,7 @@ class Distance(object):
                 SELECT
                     date_id,
                     distance,
+                    sector,
                     pmpropagationdelay
                 FROM
                     Access_Distance

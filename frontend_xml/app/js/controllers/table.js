@@ -33,6 +33,21 @@ tableControllers.controller('mapsCtrl', ['$scope', '$http', '$routeParams',
 
 tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'olData',
     function ($scope, $http, $routeParams, olData) {
+        function custom_sector(rotation){
+            return {
+                image: {
+                    icon: {
+                        anchor: [0.5, 1],
+                        anchorXUnits: 'fraction',
+                        anchorYUnits: 'fraction',
+                        opacity: 0.90,
+                        rotation: rotation,
+                        src: '/static/sector3.png'
+                    }
+                }
+            };
+        }
+
         var custom_point = new ol.style.Circle({
             radius: 5,
             fill: new ol.style.Fill({
@@ -48,8 +63,19 @@ tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'olDa
                 image: custom_point,
             };
 
+
+
         $http.get('/data/map/' + $routeParams.filename + '/').success(function(data) {
-            var markers = data;
+            var markers = [];
+            for(i=0;i<data.length;i+=1){
+                console.log(data[i]);
+                markers.push({
+                    'lat':data[i].lat,
+                    'lon':data[i].lon,
+                    'sector': custom_sector(data[i].rotation)
+                })
+            };
+            console.log(markers[0]);
             angular.extend($scope, {
                 center: {
                     lat: markers[0].lat,
