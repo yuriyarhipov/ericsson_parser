@@ -3,6 +3,7 @@ from django.db import connection
 from os.path import basename
 from datetime import datetime
 from decimal import Decimal
+from files.models import Files
 
 
 class Distance(object):
@@ -110,7 +111,7 @@ class Distance(object):
             )
         return data, table
 
-    def write_file(self, project_id, filename, current_task):
+    def write_file(self, project, description, vendor, filename, current_task):
         wb = load_workbook(filename=filename, use_iterators=True)
         ws = wb.active
         cursor = connection.cursor()
@@ -133,7 +134,7 @@ class Distance(object):
                         sql_rows.append(cursor.mogrify(
                             '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                             (
-                                project_id,
+                                project.id,
                                 basename(filename),
                                 row[0],
                                 row[1],
@@ -157,5 +158,13 @@ class Distance(object):
                     "current": int(i / 10000)})
 
         connection.commit()
+        Files.objects.create(
+            filename=basename(filename),
+            file_type='HISTOGRAM FILE COUNTER - Access Distance',
+            project=project,
+            tables='',
+            description=description,
+            vendor=vendor,
+            network='WCDMA')
 
 
