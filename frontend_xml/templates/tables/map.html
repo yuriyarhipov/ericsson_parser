@@ -5,8 +5,7 @@
             <ol-control name="fullscreen"></ol-control>
             <ol-marker
                 ng-repeat="marker in markers"
-                lat="marker.lat"
-                lon="marker.lon"
+                ol-marker-properties="marker"
                 ol-style="marker.sector"></ol-marker>
         </openlayers>
     </div>

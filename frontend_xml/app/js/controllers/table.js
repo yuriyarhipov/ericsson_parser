@@ -72,10 +72,15 @@ tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'olDa
                 markers.push({
                     'lat':data[i].lat,
                     'lon':data[i].lon,
-                    'sector': custom_sector(data[i].rotation)
+                    'style': custom_sector(data[i].rotation),
+                    'label': {
+                        message: data[i].message,
+                        show: false,
+                        showOnMouseOver: true
+                    },
+
                 })
             };
-            console.log(markers[0]);
             angular.extend($scope, {
                 center: {
                     lat: markers[0].lat,

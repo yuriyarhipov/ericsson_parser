@@ -33,15 +33,18 @@ class Files(models.Model):
     def get_map(self):
         result = []
         cursor = connection.cursor()
-        cursor.execute('SELECT DISTINCT latitude, longitude, beamdirection FROM rnd_wcdma WHERE (latitude != longitude) AND (filename=%s)', (self.filename,))
+        cursor.execute('SELECT DISTINCT latitude, longitude, beamdirection, UtranCell FROM rnd_wcdma WHERE filename=%s', (self.filename,))
         for row in cursor:
             try:
                 lon = (float(row[1]) / 16777216) * 360
-                if (lon > -18) and (lon < -17):
-                    print row
+                lat = (float(row[0]) / 8388608) * 90
                 result.append({
-                    'lat': (float(row[0]) / 8388608) * 90,
-                    'lon': (float(row[1]) / 16777216) * 360,
+                    'lat': lat,
+                    'lon': lon,
+                    'message': 'UtranCell: %s, latitude: %s, longitude: %s' % (
+                        row[3],
+                        lat,
+                        lon),
                     'rotation': radians(float(row[2]))})
             except:
                 pass
