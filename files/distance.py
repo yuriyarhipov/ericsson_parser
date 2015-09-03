@@ -69,41 +69,68 @@ class Distance(object):
         if date != 'none':
             cursor.execute('''
                 SELECT
-                    date_id,
+                    Access_Distance.date_id,
                     distance,
-                    pmpropagationdelay
+                    pmpropagationdelay,
+                    date_sum.date_sum
                 FROM
                     Access_Distance
+                INNER JOIN (
+                    SELECT
+                        date_id,
+                        sum(pmpropagationdelay) date_sum
+                    FROM
+                        Access_Distance
+                    WHERE
+                        Utrancell=%s
+                    GROUP BY date_id)
+                    AS date_sum
+                ON
+                    (Access_Distance.date_id = date_sum.date_id)
                 WHERE
-                    (Utrancell=%s) AND (date_id=%s)
+                    (Utrancell=%s) AND (Access_Distance.date_id=%s)
                 ORDER BY
-                    distance, date_id''', (
+                    distance, Access_Distance.date_id;''', (
+                sector,
                 sector,
                 datetime.strptime(date, '%d.%m.%Y')))
         else:
             cursor.execute('''
                 SELECT
-                    date_id,
+                    Access_Distance.date_id,
                     distance,
-                    sector,
-                    pmpropagationdelay
+                    pmpropagationdelay,
+                    date_sum.date_sum
                 FROM
                     Access_Distance
+                INNER JOIN (
+                    SELECT
+                        date_id,
+                        sum(pmpropagationdelay) date_sum
+                    FROM
+                        Access_Distance
+                    WHERE
+                        Utrancell=%s
+                    GROUP BY date_id)
+                    AS date_sum
+                ON
+                    (Access_Distance.date_id = date_sum.date_id)
                 WHERE
                     (Utrancell=%s)
                 ORDER BY
-                    distance, date_id''', (
-                sector, ))
+                    distance, date_id
+                ''', (
+                sector, sector, ))
 
         for row in cursor:
-            value = Decimal(row[2]) / Decimal(sum_samples) * 100
+            value = Decimal(row[2]) / Decimal(row[3]) * 100
             table.append({
                 'date': row[0].strftime('%d.%m.%Y'),
                 'sector': sector,
                 'distance': float(row[1]),
                 'samples': int(row[2]),
                 'samples_percent': round(value, 2),
-                'total_samples': int(sum_samples)})
+                'total_samples': int(row[3])})
 
             data.append([
                 row[1],
