@@ -99,32 +99,50 @@ class Distance(object):
             title = 'Sector: %s %s' % (
                 sector,
                 date)
+            distances = dict()
+            for row in cursor:
+                value = Decimal(row[2]) / Decimal(row[3]) * 100
+                table.append({
+                    'date': row[0].strftime('%d.%m.%Y'),
+                    'sector': sector,
+                    'distance': float(row[1]),
+                    'dcvector': int(row[4]),
+                    'samples': int(row[2]),
+                    'samples_percent': round(value, 2),
+                    'total_samples': int(row[3])})
+                distances[int(row[4])] = float(row[1])
+                data.append([
+                    int(row[4]),
+                    round(value, 2), ]
+                )
         else:
             cursor.execute('''
                 SELECT
-                    Access_Distance.date_id,
+                    DIST_SUM.distance,
+                    DIST_SUM.dist_sum,
+                    DIST_SUM.DCVECTOR_INDEX,
+                    DATE_SUM.date_sum
+                FROM (
+                SELECT
                     distance,
-                    pmpropagationdelay,
-                    date_sum.date_sum,
+                    SUM(pmpropagationdelay) AS dist_sum,
                     DCVECTOR_INDEX
                 FROM
                     Access_Distance
-                INNER JOIN (
-                    SELECT
-                        date_id,
-                        sum(pmpropagationdelay) date_sum
-                    FROM
-                        Access_Distance
-                    WHERE
-                        Utrancell=%s
-                    GROUP BY date_id)
-                    AS date_sum
-                ON
-                    (Access_Distance.date_id = date_sum.date_id)
                 WHERE
                     (Utrancell=%s)
-                ORDER BY
-                    distance, date_id
+                GROUP BY
+                    distance,
+                    DCVECTOR_INDEX
+                ) AS DIST_SUM,
+                (
+                SELECT
+                    sum(pmpropagationdelay) date_sum
+                FROM
+                    Access_Distance
+                WHERE
+                    Utrancell=%s
+                ) AS date_sum ORDER BY DIST_SUM.distance
                 ''', (
                 sector, sector, ))
 
@@ -133,22 +151,21 @@ class Distance(object):
                 days[0][0].strftime('%d.%m.%Y'),
                 days[0][1].strftime('%d.%m.%Y'))
 
-        distances = dict()
-        for row in cursor:
-            value = Decimal(row[2]) / Decimal(row[3]) * 100
-            table.append({
-                'date': row[0].strftime('%d.%m.%Y'),
-                'sector': sector,
-                'distance': float(row[1]),
-                'dcvector': int(row[4]),
-                'samples': int(row[2]),
-                'samples_percent': round(value, 2),
-                'total_samples': int(row[3])})
-            distances[int(row[4])] = float(row[1])
-            data.append([
-                int(row[4]),
-                round(value, 2), ]
-            )
+            distances = dict()
+            for row in cursor:
+                value = Decimal(row[1]) / Decimal(row[3]) * 100
+                table.append({
+                    'sector': sector,
+                    'distance': float(row[0]),
+                    'dcvector': int(row[2]),
+                    'samples': int(row[1]),
+                    'samples_percent': round(value, 2),
+                    'total_samples': int(row[3])})
+                distances[int(row[2])] = float(row[0])
+                data.append([
+                    int(row[2]),
+                    round(value, 2), ]
+                )
         return data, table, title, distances
 
     def write_file(self, project, description, vendor, filename, current_task):
