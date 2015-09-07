@@ -169,6 +169,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/audit/audit_param.html',
                 controller: 'auditParamCtrl'
             }).
+            when('/cell_definition',{
+                templateUrl: 'templates/tables/cell_definition.html',
+                controller: 'cellDefCtrl'
+            }).
             when('/about/',{
                 templateUrl: 'templates/about.html',
             }).

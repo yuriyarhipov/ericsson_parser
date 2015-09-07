@@ -78,7 +78,6 @@ tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'olDa
                         show: false,
                         showOnMouseOver: true
                     },
-
                 })
             };
             angular.extend($scope, {
@@ -111,4 +110,12 @@ tableControllers.controller('byTechnologyCtrl', ['$scope', '$http',
                 $scope.data = data;
             });
         };
+  }]);
+
+tableControllers.controller('cellDefCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.radius = 100;
+        $http.get('/data/cell_definition/').success(function(data) {
+                $scope.radius = data.radius;
+        });
   }]);
