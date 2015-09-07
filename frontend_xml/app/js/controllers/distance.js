@@ -20,12 +20,15 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
             });
         };
 
+
         $scope.onSelectDay = function($item, $model){
             var day = $scope.day = $item;
             var sector = $scope.sector.selected;
             $http.get('/data/distance/get_chart/' + day + '/' + sector + '/').success(function(data){
                 $scope.table = data.table;
                 $scope.chart = data.chart;
+                var distances = data.distances;
+                console.log(distances);
                 $scope.chartConfig = {
                     options: {
                         chart: {
@@ -33,7 +36,8 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                         },
                         tooltip: {
                             formatter: function () {
-                                return 'Distance: <b>' + this.point.category + '</b><br/>' +
+                                return 'Distance: <b>' + distances[this.point.category] + '</b><br/>' +
+                                'DC Vector: <b>' + this.point.category + '</b><br/>' +
                                 'Propagation Delay: <b>'+this.point.y+'%</b> ';
                             }
 
@@ -42,36 +46,14 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                     series: [
                         {
                             data: data.chart,
-                            name: 'Distance',
-                            dataLabels: {
-                                enabled: true,
-                                rotation: -90,
-                                color: '#FFFFFF',
-                                align: 'right',
-                                x: 4,
-                                y: 10,
-                                style: {
-                                    fontSize: '13px',
-                                    fontFamily: 'Verdana, sans-serif',
-                                    textShadow: '0 0 3px black'
-                                }
-                            }
+                            name: 'DC Vector',
                         }
                     ],
                     title: {
-                        text: 'Propagation Delay'
+                        text: 'Propagation Delay ' + data.title
                     },
                     xAxis: {
                         type: 'category',
-                        labels: {
-                            rotation: -45,
-                            align: 'right',
-                            y: 50,
-                            style: {
-                                fontSize: '13px',
-                                fontFamily: 'Verdana, sans-serif'
-                            }
-                        }
                     },
                     yAxis: {
                         min: 0,
@@ -80,7 +62,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                         }
                     },
                     legend: {
-                        enabled: false
+                        enabled: true
                     },
                 };
             });

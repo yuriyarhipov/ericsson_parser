@@ -58,21 +58,23 @@ class Distance(object):
         cursor = connection.cursor()
         cursor.execute('''
             SELECT
-                SUM(pmpropagationdelay)
+                MIN(date_id),
+                MAX(date_id)
             FROM
                 Access_Distance
             WHERE
                 (Utrancell=%s)''', (
             sector, ))
+        days = cursor.fetchall()
 
-        sum_samples = cursor.fetchall()[0][0]
         if date != 'none':
             cursor.execute('''
                 SELECT
                     Access_Distance.date_id,
                     distance,
                     pmpropagationdelay,
-                    date_sum.date_sum
+                    date_sum.date_sum,
+                    DCVECTOR_INDEX
                 FROM
                     Access_Distance
                 INNER JOIN (
@@ -94,13 +96,17 @@ class Distance(object):
                 sector,
                 sector,
                 datetime.strptime(date, '%d.%m.%Y')))
+            title = 'Sector: %s %s' % (
+                sector,
+                date)
         else:
             cursor.execute('''
                 SELECT
                     Access_Distance.date_id,
                     distance,
                     pmpropagationdelay,
-                    date_sum.date_sum
+                    date_sum.date_sum,
+                    DCVECTOR_INDEX
                 FROM
                     Access_Distance
                 INNER JOIN (
@@ -122,21 +128,28 @@ class Distance(object):
                 ''', (
                 sector, sector, ))
 
+            title = 'Sector: %s from %s to %s' % (
+                sector,
+                days[0][0].strftime('%d.%m.%Y'),
+                days[0][1].strftime('%d.%m.%Y'))
+
+        distances = dict()
         for row in cursor:
             value = Decimal(row[2]) / Decimal(row[3]) * 100
             table.append({
                 'date': row[0].strftime('%d.%m.%Y'),
                 'sector': sector,
                 'distance': float(row[1]),
+                'dcvector': int(row[4]),
                 'samples': int(row[2]),
                 'samples_percent': round(value, 2),
                 'total_samples': int(row[3])})
-
+            distances[int(row[4])] = float(row[1])
             data.append([
-                row[1],
+                int(row[4]),
                 round(value, 2), ]
             )
-        return data, table
+        return data, table, title, distances
 
     def write_file(self, project, description, vendor, filename, current_task):
         wb = load_workbook(filename=filename, use_iterators=True)
