@@ -97,10 +97,10 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
             $http.get('/data/treeview/' + $cookies.active_project + '/').success(function(data){
                 $scope.treedata = data;
             });
-            $timeout(loadData, 5000);
+            //$timeout(loadData, 5000);
         };
-        $timeout(loadData, 0);
-
+        //$timeout(loadData, 0);
+        loadData();
         function LoadTopology(network, root){
             $http.get('/data/topology_treeview/' + network +'/' + root + '/').success(function(data){
                 $scope.topology_treedata = data;

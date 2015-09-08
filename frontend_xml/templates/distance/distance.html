@@ -1,14 +1,14 @@
 <form class="form">
     <div class="form-group">
-        <label for="sector" class="col-sm-1 control-label">Sector:</label>
+        <label for="sector" class="col-sm-1 control-label">RBS:</label>
         <div class="col-sm-11" id="param">
-            <ui-select ng-model="sector.selected" theme="bootstrap"
+            <ui-select ng-model="rbs.selected" theme="bootstrap"
                 ng-disabled="disabled"
                 reset-search-input="false"
                 on-select="onSelect($item, $model)">
-                <ui-select-match placeholder="Enter a sector...">{{$select.selected}}</ui-select-match>
-                    <ui-select-choices repeat="sec in sectors | filter:$select.search">
-                        {{sec}}
+                <ui-select-match placeholder="Enter a RBS...">{{$select.selected}}</ui-select-match>
+                    <ui-select-choices repeat="rbs_item in rbs_data | filter:$select.search">
+                        {{ rbs_item }}
                     </ui-select-choices>
                 </ui-select>
             </div>
@@ -32,32 +32,11 @@
         <div class="form-group">
             <a href="/data/distance/get_excel/{{ day }}/{{ sector.selected }}/">Download Excel</a>
         </div>
-        <div class="col-md-12">
-            <highchart id="chart1" config="chartConfig"></highchart>
+        <div class="col-md-12" ng-repeat="sector in utrancells">
+            <highchart id="chart1" config="get_config(sector)"></highchart>
         </div>
     </div>
-    <div class="form-group">
-        <table class="table col-sm-12">
-            <thead>
-                <tr>
-                    <td>Date</td>
-                    <td>Sector</td>
-                    <td>Distance</td>
-                    <td>Samples</td>
-                    <td>Total Sample</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="row in table">
-                    <td>{{ row.date }}</td>
-                    <td>{{ row.sector }}</td>
-                    <td>{{ row.distance }}</td>
-                    <td>{{ row.samples }} ({{ row.samples_percent }}% )</td>
-                    <td>{{ row.total_samples }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+
 </form>
 
 

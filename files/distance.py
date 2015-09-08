@@ -39,18 +39,46 @@ class Distance(object):
             pass
         connection.commit()
 
-
     def get_sectors(self):
         cursor = connection.cursor()
         cursor.execute('SELECT DISTINCT Utrancell FROM Access_Distance')
         sectors = [row[0] for row in cursor]
         return sectors
 
-    def get_dates(self, sector):
+    def get_rbs(self, project_id):
         cursor = connection.cursor()
-        cursor.execute("SELECT DISTINCT date_id FROM Access_Distance WHERE (Utrancell='%s') ORDER BY date_id" % sector)
+        cursor.execute('SELECT DISTINCT RBS FROM Access_Distance WHERE project_id=%s', (project_id, ))
+        rbs = [row[0] for row in cursor]
+        return rbs
+
+    def get_dates(self, rbs):
+        cursor = connection.cursor()
+        cursor.execute("SELECT DISTINCT date_id FROM Access_Distance WHERE (RBS='%s') ORDER BY date_id" % rbs)
         dates = [row[0].strftime('%d.%m.%Y') for row in cursor]
         return dates
+
+    def get_charts(self, day, rbs, project_id):
+        cursor = connection.cursor()
+        cursor.execute('''
+            SELECT DISTINCT
+                Utrancell
+            FROM
+                Access_Distance
+            WHERE
+                (RBS=%s) AND (project_id=%s)''', (
+            rbs,
+            project_id))
+
+        data = dict()
+        for row in cursor:
+            utrancell = row[0]
+            chart, table, title, distances = self.get_chart(day, utrancell)
+            data[utrancell] = dict(
+                distances=distances,
+                chart=chart,
+                title=title)
+        return data
+
 
     def get_chart(self, date, sector):
         data = []

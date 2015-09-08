@@ -292,9 +292,23 @@ def get_sectors(request):
         content_type='application/json')
 
 
-def get_dates(request, sector):
-    dates = Distance().get_dates(sector)
+def get_rbs(request):
+    project = request.project
+    rbs = Distance().get_rbs(project.id)
+    return HttpResponse(
+        json.dumps({'rbs': rbs}),
+        content_type='application/json')
+
+
+def get_dates(request, rbs):
+    dates = Distance().get_dates(rbs)
     return HttpResponse(json.dumps(dates), content_type='application/json')
+
+
+def get_charts(request, day, rbs):
+    project = request.project
+    charts = Distance().get_charts(day, rbs, project.id)
+    return HttpResponse(json.dumps(charts), content_type='application/json')
 
 
 def get_chart(request, date, sector):
