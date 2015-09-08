@@ -219,7 +219,7 @@ class Distance(object):
                         sql_rows.append(cursor.mogrify(
                             '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                             (
-                                project.id,
+                                project,
                                 basename(filename),
                                 row[0],
                                 row[1],
