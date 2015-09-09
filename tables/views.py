@@ -322,6 +322,12 @@ def get_chart(request, date, sector):
         content_type='application/json')
 
 
+def get_load_distr(request, day, rbs):
+    project = request.project
+    data, title = Distance().get_distr(day, rbs, project.id)
+    return HttpResponse(json.dumps(dict(data=data, title=title)), content_type='application/json')
+
+
 def get_distance_excel(request, date, sector):
     project = request.project
     filename = '%s_%s' % (date, sector)

@@ -218,7 +218,6 @@ class Distance(object):
                        (basename(filename), ))
         i = 0
         rows = []
-        print project.id
         for excel_row in ws.iter_rows():
             row = []
             if i > 0:
@@ -267,4 +266,58 @@ class Distance(object):
             vendor=vendor,
             network='WCDMA')
 
+    def get_distr(self, day, rbs, project_id):
+        data = []
+        cursor = connection.cursor()
+        cursor.execute('''
+            SELECT
+                MIN(date_id),
+                MAX(date_id)
+            FROM
+                Access_Distance
+            WHERE
+                (RBS=%s)''', (
+            rbs, ))
+        days = cursor.fetchall()[0]
+        print days
+
+        if day != 'none':
+            cursor.execute('''
+                SELECT
+                    utrancell,
+                    SUM(pmpropagationdelay)
+                FROM
+                    access_distance
+                WHERE
+                    (rbs=%s) AND
+                    (project_id = %s) AND
+                    (date_id=%s)
+                GROUP BY
+                    utrancell
+                ORDER BY utrancell;''', (
+                rbs,
+                project_id,
+                datetime.strptime(day, '%d.%m.%Y')))
+            title = 'Load Distribution RBS:<b>%s</b> Day:<b>%s</b>' % (rbs, day)
+        else:
+            cursor.execute('''
+                SELECT
+                    utrancell,
+                    SUM(pmpropagationdelay)
+                FROM
+                    access_distance
+                WHERE
+                    (rbs=%s) AND
+                    (project_id = %s)
+                GROUP BY
+                    utrancell
+                ORDER BY utrancell;''', (rbs, project_id))
+            title = 'Load Distribution RBS:<b>%s</b> from:<b>%s</b> to:<b>%s</b>' % (
+                rbs,
+                days[0].strftime('%d.%m.%Y'),
+                days[1].strftime('%d.%m.%Y'))
+        for row in cursor:
+            data.append(dict(name=row[0], y=int(row[1])))
+
+        return data, title
 

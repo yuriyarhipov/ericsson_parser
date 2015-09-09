@@ -22,8 +22,12 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
         $scope.onSelect = function($item, $model){
             $http.get('/data/distance/get_dates/' + $item + '/').success(function(data){
                 $scope.dates = data;
-
-                $scope.onSelectDay($scope.days.selected, NaN);
+                if (!$scope.days.selected) {
+                    $scope.onSelectDay('none', NaN);
+                }
+                else {
+                    $scope.onSelectDay($scope.days.selected, NaN);
+                }
             });
         };
 
@@ -31,6 +35,47 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
         $scope.onSelectDay = function($item, $model){
             var day = $scope.day = $item;
             var rbs = $scope.rbs.selected;
+            $http.get('/data/distance/get_load_distr/' + day + '/' + rbs + '/').success(function(data){
+                $scope.loadDistribution = {
+                    options: {
+                        chart: {
+                            type: 'pie'
+                        },
+                        tooltip: {
+                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b></br> Samples: <b>{point.y}</b>'
+                        },
+                        legend: {
+                            enabled: true
+                        },
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                    style: {
+                                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                    }
+                                }
+                            }
+                        },
+                    },
+                    title: {
+                            text: data.title
+                    },
+
+
+                    series: [
+                            {
+                                data: data.data,
+                                colorByPoint: true,
+                                name: 'Load Distribution',
+                            }
+                        ],
+
+                };
+            });
 
             $http.get('/data/distance/get_charts/' + day + '/' + rbs + '/').success(function(data){
                 $scope.utrancells = Object.keys(data);

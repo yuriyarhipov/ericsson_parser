@@ -80,6 +80,7 @@ urlpatterns = patterns('',
     url(r'^data/distance/get_rbs/$', table_views.get_rbs),
     url(r'^data/distance/get_dates/(\S+)/$', table_views.get_dates),
     url(r'^data/distance/get_charts/(\S+)/(\S+)/$', table_views.get_charts),
+    url(r'^data/distance/get_load_distr/(\S+)/(\S+)/$', table_views.get_load_distr),
     url(r'^data/distance/get_excel/(\S+)/(\S+)/$', table_views.get_distance_excel),
 
 
