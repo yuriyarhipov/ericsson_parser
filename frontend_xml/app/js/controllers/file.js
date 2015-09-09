@@ -203,8 +203,8 @@ filesControllers.controller('setCnaTemplateCtrl', ['$scope', '$http',
         };
   }]);
 
-filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams', '$timeout', '$location',
-    function ($scope, $http, $routeParams, $timeout, $location) {
+filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams', '$timeout', '$location', 'Flash',
+    function ($scope, $http, $routeParams, $timeout, $location, Flash) {
         var id = $routeParams.id;
         var current = 1;
         $scope.dynamic = 1;
@@ -217,13 +217,15 @@ filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams'
                 if (('"SUCCESS"' == data) && (current > 1)){
                     current = 0;
                     refer = true;
-                    $location.path('/files_hub');
+                    Flash.create('success', 'Import Completed');
+                    $location.path('/maps');
                 }
                 current = data.current;
                 if (current > 99){
                     current = 0;
                     refer = true;
-                    $location.path('/files_hub');
+                    Flash.create('success', 'Import Completed');
+                    $location.path('/maps');
                 }
                 if (current){
                     $scope.dynamic = current;
