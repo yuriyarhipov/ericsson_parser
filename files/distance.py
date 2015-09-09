@@ -72,15 +72,14 @@ class Distance(object):
         data = dict()
         for row in cursor:
             utrancell = row[0]
-            chart, table, title, distances = self.get_chart(day, utrancell)
+            chart, title, distances = self.get_chart(day, utrancell)
             data[utrancell] = dict(
                 distances=distances,
                 chart=chart,
                 title=title)
         return data
 
-
-    def get_chart(self, date, sector):
+    def get_chart(self, date, utrancell):
         data = []
         table = []
         cursor = connection.cursor()
@@ -92,7 +91,7 @@ class Distance(object):
                 Access_Distance
             WHERE
                 (Utrancell=%s)''', (
-            sector, ))
+            utrancell, ))
         days = cursor.fetchall()
 
         if date != 'none':
@@ -102,7 +101,9 @@ class Distance(object):
                     distance,
                     pmpropagationdelay,
                     date_sum.date_sum,
-                    DCVECTOR_INDEX
+                    DCVECTOR_INDEX,
+                    Sector,
+                    Carrier
                 FROM
                     Access_Distance
                 INNER JOIN (
@@ -121,15 +122,15 @@ class Distance(object):
                     (Utrancell=%s) AND (Access_Distance.date_id=%s)
                 ORDER BY
                     distance, Access_Distance.date_id;''', (
-                sector,
-                sector,
+                utrancell,
+                utrancell,
                 datetime.strptime(date, '%d.%m.%Y')))
-            title = 'Sector: %s %s' % (
-                sector,
-                date)
+
             distances = dict()
             for row in cursor:
                 value = Decimal(row[2]) / Decimal(row[3]) * 100
+                sector = row[5]
+                carrier = row[6]
                 table.append({
                     'date': row[0].strftime('%d.%m.%Y'),
                     'sector': sector,
@@ -143,25 +144,36 @@ class Distance(object):
                     int(row[4]),
                     round(value, 2), ]
                 )
+            title = '<b>Utrancell:</b>%s <b>Carrier:</b>%s <b>Sector:</b>%s <b>%s</b>' % (
+                utrancell,
+                carrier,
+                sector,
+                date)
         else:
             cursor.execute('''
                 SELECT
                     DIST_SUM.distance,
                     DIST_SUM.dist_sum,
                     DIST_SUM.DCVECTOR_INDEX,
-                    DATE_SUM.date_sum
+                    DATE_SUM.date_sum,
+                    Sector,
+                    Carrier
                 FROM (
                 SELECT
                     distance,
                     SUM(pmpropagationdelay) AS dist_sum,
-                    DCVECTOR_INDEX
+                    DCVECTOR_INDEX,
+                    Sector,
+                    Carrier
                 FROM
                     Access_Distance
                 WHERE
                     (Utrancell=%s)
                 GROUP BY
                     distance,
-                    DCVECTOR_INDEX
+                    DCVECTOR_INDEX,
+                    Sector,
+                    Carrier
                 ) AS DIST_SUM,
                 (
                 SELECT
@@ -172,29 +184,31 @@ class Distance(object):
                     Utrancell=%s
                 ) AS date_sum ORDER BY DIST_SUM.distance
                 ''', (
-                sector, sector, ))
-
-            title = 'Sector: %s from %s to %s' % (
-                sector,
-                days[0][0].strftime('%d.%m.%Y'),
-                days[0][1].strftime('%d.%m.%Y'))
+                utrancell, utrancell, ))
 
             distances = dict()
             for row in cursor:
                 value = Decimal(row[1]) / Decimal(row[3]) * 100
-                table.append({
-                    'sector': sector,
-                    'distance': float(row[0]),
-                    'dcvector': int(row[2]),
-                    'samples': int(row[1]),
-                    'samples_percent': round(value, 2),
-                    'total_samples': int(row[3])})
                 distances[int(row[2])] = float(row[0])
                 data.append([
                     int(row[2]),
                     round(value, 2), ]
                 )
-        return data, table, title, distances
+                carrier = row[4]
+                sector = row[5]
+
+            title = '''
+                <b>Utrancell:</b>%s
+                <b>Carrier:</b>%s
+                <b>Sector:</b>%s
+                from <b>%s</b>
+                to <b>%s</b>''' % (
+                utrancell,
+                carrier,
+                sector,
+                days[0][0].strftime('%d.%m.%Y'),
+                days[0][1].strftime('%d.%m.%Y'))
+        return data, title, distances
 
     def write_file(self, project, description, vendor, filename, current_task):
         wb = load_workbook(filename=filename, use_iterators=True)
