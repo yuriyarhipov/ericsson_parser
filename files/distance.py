@@ -47,7 +47,7 @@ class Distance(object):
 
     def get_rbs(self, project_id):
         cursor = connection.cursor()
-        cursor.execute('SELECT DISTINCT RBS FROM Access_Distance WHERE project_id=%s', (project_id, ))
+        cursor.execute('SELECT DISTINCT RBS FROM Access_Distance WHERE project_id=%s ORDER BY RBS', (project_id, ))
         rbs = [row[0] for row in cursor]
         return rbs
 
@@ -204,6 +204,7 @@ class Distance(object):
                        (basename(filename), ))
         i = 0
         rows = []
+        print project.id
         for excel_row in ws.iter_rows():
             row = []
             if i > 0:
@@ -219,7 +220,7 @@ class Distance(object):
                         sql_rows.append(cursor.mogrify(
                             '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                             (
-                                project,
+                                project.id,
                                 basename(filename),
                                 row[0],
                                 row[1],
