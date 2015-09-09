@@ -257,6 +257,7 @@ class Distance(object):
                     "current": int(i / 10000)})
 
         connection.commit()
+        Files.objects.filter(filename=basename(filename), project=project).delete()
         Files.objects.create(
             filename=basename(filename),
             file_type='HISTOGRAM FILE COUNTER - Access Distance',

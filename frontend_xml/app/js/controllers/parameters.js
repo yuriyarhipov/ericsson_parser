@@ -21,7 +21,7 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http', '$loca
         $scope.excel_complete = function(data){
             $scope.param_table = data;
         };
-                        
+
         $scope.complete = function(data){
             $location.path('/predefined_templates');
         };
@@ -100,8 +100,8 @@ parameterControllers.controller('predefinedTemplatesCtrl', ['$scope', '$http', '
         };
   }]);
 
-parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+parameterControllers.controller('runTemplateCtrl', ['$scope', '$http', 'Flash',
+    function ($scope, $http, Flash) {
         $scope.selected_group_cells = [];
         $scope.selected_cells = [];
         $scope.form_data = {'cells': []};
@@ -165,6 +165,7 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http',
         };
 
         $scope.onClickRun = function(){
+            Flash.create('success', 'Please wait');
             $scope.url='/data/run_template/?network='+ $scope.network + '&template=' + $scope.template + '&file=' + $scope.file;
             var length_cells = $scope.group_cells.length;
             for (var i = 0; i<length_cells; i++){
