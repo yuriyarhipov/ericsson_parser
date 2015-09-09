@@ -23,7 +23,8 @@ var XmlApp = angular.module(
         'smart-table',
         'openlayers-directive',
         'auditControllers',
-        'distanceControllers'
+        'distanceControllers',
+        'flash'
     ]);
 
 XmlApp.config(['$routeProvider',

@@ -73,11 +73,7 @@ tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'olDa
                     'lat':data[i].lat,
                     'lon':data[i].lon,
                     'style': custom_sector(data[i].rotation),
-                    'label': {
-                        message: data[i].message,
-                        show: false,
-                        showOnMouseOver: true
-                    },
+
                 })
             };
             angular.extend($scope, {

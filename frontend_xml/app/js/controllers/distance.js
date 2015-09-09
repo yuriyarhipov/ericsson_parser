@@ -31,7 +31,6 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
             });
         };
 
-
         $scope.onSelectDay = function($item, $model){
             var day = $scope.day = $item;
             var rbs = $scope.rbs.selected;

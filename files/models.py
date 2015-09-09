@@ -41,10 +41,6 @@ class Files(models.Model):
                 result.append({
                     'lat': lat,
                     'lon': lon,
-                    'message': 'UtranCell: %s, latitude: %s, longitude: %s' % (
-                        row[3],
-                        lat,
-                        lon),
                     'rotation': radians(float(row[2]))})
             except:
                 pass
