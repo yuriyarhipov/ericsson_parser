@@ -174,6 +174,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/tables/cell_definition.html',
                 controller: 'cellDefCtrl'
             }).
+            when('/set_logical_sector',{
+                templateUrl: 'templates/distance/set_logical_sector.html',
+                controller: 'logicalSectorCtrl'
+            }).
             when('/about/',{
                 templateUrl: 'templates/about.html',
             }).

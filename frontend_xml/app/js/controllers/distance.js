@@ -125,3 +125,19 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
             });
             };
   }]);
+
+filesControllers.controller('logicalSectorCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.table = [];
+        $scope.network = '';
+        $scope.network = '';
+        $scope.onSave = function(){
+            $scope.table.push({
+                'network': $scope.network,
+                'freq': $scope.freq,
+                'slabel': $scope.slabel,
+                'sector': $scope.sector,
+                'members': $scope.members,
+            });
+        };
+}]);
