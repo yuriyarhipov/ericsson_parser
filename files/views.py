@@ -66,7 +66,7 @@ def save_files(request):
 
 def files(request):
     project = request.project
-    print request.project.project_name
+    print project.project_name
     files = []
 
     active_files = []
