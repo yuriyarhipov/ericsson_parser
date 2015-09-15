@@ -31,60 +31,35 @@ tableControllers.controller('mapsCtrl', ['$scope', '$http', '$routeParams',
         });
   }]);
 
-tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'olData',
-    function ($scope, $http, $routeParams, olData) {
-        function custom_sector(rotation){
-            return {
-                image: {
-                    icon: {
-                        anchor: [0.5, 1],
-                        anchorXUnits: 'fraction',
-                        anchorYUnits: 'fraction',
-                        opacity: 0.90,
-                        rotation: rotation,
-                        src: '/static/sector3.png'
-                    }
-                }
-            };
+tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams',
+    function ($scope, $http, $routeParams) {
+
+        var markerIcon = {
+            iconUrl: 'static/sector3.png',
         }
 
-        var custom_point = new ol.style.Circle({
-            radius: 5,
-            fill: new ol.style.Fill({
-                color: '#0000ff',
-                opacity: 0.6
-            }),
-            stroke: new ol.style.Stroke({
-                color: '#000000',
-                opacity: 0.4
-            })
-        });
-        var custom_style = {
-                image: custom_point,
-            };
-
-
+        $scope.default_center = {
+            lat: 8.74085783958435,
+            lng: -82.43604183197021,
+            zoom: 9
+        };
 
         $http.get('/data/map/' + $routeParams.filename + '/').success(function(data) {
             var markers = [];
             for(i=0;i<data.length;i+=1){
-                console.log(data[i]);
                 markers.push({
-                    'lat':data[i].lat,
-                    'lon':data[i].lon,
-                    'style': custom_sector(data[i].rotation),
-
+                    'lat': data[i].lat,
+                    'lng': data[i].lon,
+                    'icon': markerIcon,
+                    'iconAngle': data[i].rotation,
+                    message: "Utrancell:" + data[i].utrancell,
                 })
             };
-            angular.extend($scope, {
-                center: {
-                    lat: markers[0].lat,
-                    lon: markers[0].lon,
-                    zoom: 7
-                },
-                markers: markers,
-                custom_style: custom_style
-            });
+            $scope.markers = markers;
+            $scope.default_center = {
+                lat: data[0].lat,
+                lng: data[0].lon,
+            };
         });
   }]);
 

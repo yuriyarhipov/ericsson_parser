@@ -41,7 +41,8 @@ class Files(models.Model):
                 result.append({
                     'lat': lat,
                     'lon': lon,
-                    'rotation': radians(float(row[2]))})
+                    'utrancell': row[3],
+                    'rotation': int(row[2])})
             except:
                 pass
         return result

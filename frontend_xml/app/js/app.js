@@ -21,10 +21,10 @@ var XmlApp = angular.module(
         'ui.select',
         'ng-context-menu',
         'smart-table',
-        'openlayers-directive',
         'auditControllers',
         'distanceControllers',
-        'flash'
+        'flash',
+        'leaflet-directive'
     ]);
 
 XmlApp.config(['$routeProvider',
