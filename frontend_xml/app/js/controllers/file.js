@@ -2,18 +2,10 @@ var filesControllers = angular.module('filesControllers', []);
 
 filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'uploadFileService',
     function ($scope, $http, $timeout, uploadFileService) {
-        $scope.uploaded_files = [];
-        var loadData = function(){
-            $http.get('/data/files/').success(function(data) {
-                $scope.files = data.files;
-                if($scope.uploaded_files.toString() != data.uploaded_files.toString()){
-                    uploadFileService.onUpload();
-                }
-                $scope.uploaded_files = data.uploaded_files;
-            });
-            $timeout(loadData, 5000);
-        };
-        $timeout(loadData, 0);
+
+        $http.get('/data/files/').success(function(data) {
+            $scope.files = data.files;
+        });
 
         $scope.onDeleteFile = function(filename){
             console.log(filename);
@@ -203,8 +195,8 @@ filesControllers.controller('setCnaTemplateCtrl', ['$scope', '$http',
         };
   }]);
 
-filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams', '$timeout', '$location', 'Flash',
-    function ($scope, $http, $routeParams, $timeout, $location, Flash) {
+filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams', '$timeout', '$location', 'Flash', 'activeProjectService', '$cookies',
+    function ($scope, $http, $routeParams, $timeout, $location, Flash, activeProjectService, $cookies) {
         var id = $routeParams.id;
         var current = 1;
         $scope.dynamic = 1;
@@ -218,6 +210,7 @@ filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams'
                     current = 0;
                     refer = true;
                     Flash.create('success', 'Import Completed');
+                    activeProjectService.setProject(project);
                     $location.path('/maps');
                 }
                 current = data.current;
@@ -225,6 +218,8 @@ filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams'
                     current = 0;
                     refer = true;
                     Flash.create('success', 'Import Completed');
+                    console.log($cookies.active_project);
+                    activeProjectService.broadcastItem($cookies.active_project)
                     $location.path('/maps');
                 }
                 if (current){

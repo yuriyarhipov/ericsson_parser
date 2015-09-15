@@ -1,8 +1,20 @@
 var xmlControllers = angular.module('xmlControllers', []);
 
-xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectService',
-    function ($scope, $http, activeProjectService) {
+xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectService', '$cookies',
+    function ($scope, $http, activeProjectService, $cookies) {
         $scope.setActiveProject = function(project){
+            $scope.activeWCDMA = 'red';
+            $scope.activeLTE = 'red';
+            $scope.activeGSM = 'red';
+            if ('gsm' in $cookies){
+                delete $cookies['gsm'];
+            }
+            if ('wcdma' in $cookies){
+                delete $cookies['wcdma'];
+            }
+            if ('lte' in $cookies){
+                delete $cookies['lte'];
+            }
             activeProjectService.setProject(project);
         };
 
@@ -40,10 +52,23 @@ xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activePro
 
         $scope.$on('handleBroadcast', function() {
             $scope.activeProject = activeProjectService.project;
+            $scope.activeWCDMA = 'red';
+        $scope.activeLTE = 'red';
+        $scope.activeGSM = 'red';
+
+        if ('gsm' in $cookies){
+            $scope.activeGSM = 'green';
+        }
+        if ('lte' in $cookies){
+            $scope.activeLTE = 'green';
+        }
+        if ('wcdma' in $cookies){
+            $scope.activeWCDMA = 'green';
+        }
         });
 
         $scope.$on('activeFileBroadcast', function() {
-            $scope.activeWCDMA = 'red';
+        $scope.activeWCDMA = 'red';
         $scope.activeLTE = 'red';
         $scope.activeGSM = 'red';
 

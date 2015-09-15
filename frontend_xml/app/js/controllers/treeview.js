@@ -2,11 +2,13 @@ var treeViewControllers = angular.module('treeViewControllers', []);
 
 treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', 'activeProjectService', '$location',
     function ($scope, $http, $cookies, activeProjectService, $location) {
+        console.log('t1');
         $http.get('/data/treeview/' + $cookies.active_project).success(function(data){
             $scope.treedata = data;
         });
 
         $scope.$on('handleBroadcast', function() {
+            console.log('reload');
             var project = activeProjectService.project;
             $http.get('/data/treeview/' + project).success(function(data){
                 $scope.treedata = data;
@@ -72,8 +74,8 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
     }
 ]);
 
-treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$http', 'activeProjectService', 'activeFileService', '$location',
-    function ($scope, $timeout, $cookies, $http, activeProjectService, activeFileService, $location) {
+treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$http', 'activeProjectService', 'activeFileService', '$location', '$rootScope',
+    function ($scope, $timeout, $cookies, $http, activeProjectService, activeFileService, $location, $rootScope) {
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = {};
         $scope.network.selected = 'GSM';
@@ -93,6 +95,9 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
                 labelSelected: "a8"
             }
         };
+        $rootScope.$on('uploadFile', function(){
+            console.log('TEST');
+        });
         var loadData = function (){
             $http.get('/data/treeview/' + $cookies.active_project + '/').success(function(data){
                 $scope.treedata = data;
