@@ -202,9 +202,9 @@ def create_table(table, rows, network, filename, parent_task_id, project):
         if (not AsyncResult(task_id).ready()) and (task_id != create_table.request.id):
             status = False
             break
-    if status:
-        Tables().create_additional_tables(network)
-        ExcelFile(project, basename(filename))
+    #if status:
+        #Tables().create_additional_tables(network)
+        #ExcelFile(project, basename(filename))
 
     revoke(create_table.request.id, terminate=True)
 

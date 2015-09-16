@@ -25,6 +25,7 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
         $scope.$watch( 'tree_view.currentNode', function( newObj, oldObj ) {
             if( $scope.tree_view && angular.isObject($scope.tree_view.currentNode) ) {
                 var node_type = $scope.tree_view.currentNode.type;
+                console.log($scope.tree_view.currentNode.link);
                 var network = $scope.tree_view.currentNode.network;
                 if ((node_type == 'xml') && (network == '3g')){
                     var wcdma = $scope.tree_view.currentNode.id;
@@ -113,7 +114,7 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
 
         }
 
-        LoadTopology('GSM', '');
+        //LoadTopology('GSM', '');
 
         $scope.isCollapsed = false;
         $scope.width = 8;
@@ -148,7 +149,12 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
         $scope.showSelected = function(node){
             var file_type = node.type;
             var file_name = node.label;
+            var link = node.link;
             activeFileService.setActiveFile(file_name, file_type);
+
+            if (link) {
+                $location.path(link);
+            }
 
             if ((file_type == 'WCDMA RADIO OSS BULK CM XML FILE') || (file_type == 'WCDMA TRANSPORT OSS BULK CM XML FILE')){
                 $location.path('/explore/' + file_name + '/');

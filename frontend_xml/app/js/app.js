@@ -18,6 +18,7 @@ var XmlApp = angular.module(
         'dashControllers',
         'parameterControllers',
         'measurementsControllers',
+        'rndControllers',
         'ui.select',
         'ng-context-menu',
         'smart-table',
@@ -177,6 +178,10 @@ XmlApp.config(['$routeProvider',
             when('/set_logical_sector',{
                 templateUrl: 'templates/distance/set_logical_sector.html',
                 controller: 'logicalSectorCtrl'
+            }).
+            when('/rnd/:network',{
+                templateUrl: 'templates/rnd/rnd.html',
+                controller: 'rndCtrl'
             }).
             when('/about/',{
                 templateUrl: 'templates/about.html',
