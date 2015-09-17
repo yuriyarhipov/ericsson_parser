@@ -46,7 +46,7 @@
     </thead>
     <tbody>
     <tr ng-repeat="row in data">
-        <td ng-repeat="col in columns">{{row[col]}}</td>
+        <td ng-repeat="col in columns"><a href="#/map/{{ rnd_network }}/?{{ col }}={{row[col]}}">{{row[col]}}</td>
     </tr>
     </tbody>
 </table>
