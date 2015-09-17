@@ -1,0 +1,12 @@
+<div class="row">
+    <form ng-upload="complete(content)" class="form-horizontal col-sm-6" role="form" action="/data/cell_definition/" upload-options-enable-rails-csrf>
+    <div class="form-group">
+        <label for="file" class="col-sm-4 control-label">Cell Radius(m)</label>
+        <div class="col-sm-8">
+            <input type="text" ng-model="radius" name="radius">
+        </div>
+    </div>
+    <button class="btn btn-default" type="submit">Save</button>
+
+    </form>
+</div>

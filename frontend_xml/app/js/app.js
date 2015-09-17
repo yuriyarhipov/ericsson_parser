@@ -147,14 +147,6 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/files/upload.html',
                 controller: 'uploadFileCtrl'
             }).
-            when('/maps/',{
-                templateUrl: 'templates/tables/maps.html',
-                controller: 'mapsCtrl'
-            }).
-            when('/map/:filename/',{
-                templateUrl: 'templates/tables/map.html',
-                controller: 'mapCtrl'
-            }).
             when('/run_audit/',{
                 templateUrl: 'templates/audit/run_network_audit.html',
                 controller: 'runAuditCtrl'
@@ -182,6 +174,10 @@ XmlApp.config(['$routeProvider',
             when('/rnd/:network',{
                 templateUrl: 'templates/rnd/rnd.html',
                 controller: 'rndCtrl'
+            }).
+            when('/map/:network',{
+                templateUrl: 'templates/rnd/map.html',
+                controller: 'mapCtrl'
             }).
             when('/about/',{
                 templateUrl: 'templates/about.html',

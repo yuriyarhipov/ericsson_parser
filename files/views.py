@@ -6,12 +6,16 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.shortcuts import HttpResponseRedirect
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 from celery.result import AsyncResult
 
 from .models import Files, UploadedFiles, SuperFile, CNATemplate, FileTasks
 from tables.table import Table
 from files.compare import CompareFiles, CompareTable
 from files.excel import ExcelFile
+from rnd import Rnd
 import tasks
 
 
@@ -236,6 +240,20 @@ def get_excel(request, network):
 
     return HttpResponseRedirect(ExcelFile(request.project, filename).excel_filename)
 
+
+@api_view(['GET', 'POST'])
+def rnd(request, network=None):
+    project = request.project
+    data = []
+    if request.method == 'POST':
+        filename = handle_uploaded_file(
+            request.data.getlist('uploaded_file'))[0]
+        network = request.POST.get('network')
+        data = Rnd(project.id, network).write_file(filename)
+    elif request.method == 'GET':
+        data = Rnd(project.id, network).get_data()
+
+    return Response(data)
 
 
 

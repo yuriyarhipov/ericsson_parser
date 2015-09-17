@@ -24,45 +24,6 @@ tableControllers.controller('exploreCtrl', ['$scope', '$http', '$routeParams',
         });
   }]);
 
-tableControllers.controller('mapsCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
-        $http.get('/data/maps/').success(function(data) {
-            $scope.data = data;
-        });
-  }]);
-
-tableControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
-
-        var markerIcon = {
-            iconUrl: 'static/sector3.png',
-        }
-
-        $scope.default_center = {
-            lat: 8.74085783958435,
-            lng: -82.43604183197021,
-            zoom: 9
-        };
-
-        $http.get('/data/map/' + $routeParams.filename + '/').success(function(data) {
-            var markers = [];
-            for(i=0;i<data.length;i+=1){
-                markers.push({
-                    'lat': data[i].lat,
-                    'lng': data[i].lon,
-                    'icon': markerIcon,
-                    'iconAngle': data[i].rotation,
-                    message: "Utrancell:" + data[i].utrancell,
-                })
-            };
-            $scope.markers = markers;
-            $scope.default_center = {
-                lat: data[0].lat,
-                lng: data[0].lon,
-            };
-        });
-  }]);
-
 tableControllers.controller('byTechnologyCtrl', ['$scope', '$http',
     function ($scope, $http) {
         $scope.network = 'GSM';

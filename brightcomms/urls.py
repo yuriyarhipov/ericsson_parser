@@ -83,6 +83,10 @@ urlpatterns = patterns('',
     url(r'^data/distance/get_load_distr/(\S+)/(\S+)/$', table_views.get_load_distr),
     url(r'^data/distance/get_excel/(\S+)/(\S+)/$', table_views.get_distance_excel),
 
+    url(r'^data/rnd/(\S+)/$', files_views.rnd),
+    url(r'^data/rnd/$', files_views.rnd),
+
+
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))

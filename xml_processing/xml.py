@@ -321,15 +321,15 @@ class Tables:
 
     def create_additional_tables(self, network):
         self.network = network
-        print 'topology'
+
         self.topology()
         self.topology_lte()
-        print 'rnd'
+
         self.rnd_wcdma()
         self.rnd_lte()
-        print 'fourgneighbors'
+
         self.fourgneighbors()
-        print 'threegneighborss'
+
         self.threegneighborss()
         self.create_topology_tree_view()
         self.conn.commit()

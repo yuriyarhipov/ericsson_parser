@@ -1,51 +1,57 @@
 <div class="col-md-12">
-    <h3>Radio Network Design ({{ rnd_network }})</h3>
+    <h3></h3>
 </div>
 
 <div class="col-md-12">
-    <table
-        st-safe-src="rowCollection"
-        st-table="displayCollection"
-        st-set-filter="myStrictFilter"
-        class="table table-striped">
-        <thead>
-            <tr>
-                <th st-sort="rnc">RNC</th>
-                <th st-sort="site">Site</th>
-                <th st-sort="site">Sector</th>
-                <th st-sort="site">Sector</th>
-                <th st-sort="site">LAC</th>
-                <th st-sort="site">RAC</th>
-                <th st-sort="site">SC</th>
-                <th st-sort="site">Carrier Name</th>
-                <th st-sort="site">Datum</th>
-                <th st-sort="site">Latitud</th>
-                <th st-sort="site">Longitud</th>
-                <th st-sort="site">High</th>
-                <th st-sort="site">Azimuth</th>
-                <th st-sort="site">Antenna</th>
-                <th st-sort="site">Mechanical_Tilt</th>
-                <th st-sort="site">Electrical_Tilt</th>
+    <div class="col-md-3">
+        <a href="" ng-click="show_download_panel=!show_download_panel">Upload RND Excel file</a>
+    </div>
+    <div class="col-md-3">
+        <a href="">Download RND Excel file</a>
+    </div>
+</div>
 
-            </tr>
-            <tr>
-                <th>
-                    <input st-search="firstName" placeholder="search for RNC" class="input-sm form-control" type="search"/>
-                </th>
-                <th>
-                    <input st-search="lastName" placeholder="search for Site" class="input-sm form-control" type="search"/>
-                </th>
-        </tr>
+<div class="col-md-12" ng-show="show_download_panel">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form
+                ng-upload="complete()"
+                class="form-horizontal col-sm-12"
+                role="form"
+                action="/data/rnd/"
+                upload-options-enable-rails-csrf>
+
+                <div class="form-group">
+                    <label for="file" class="col-md-3 control-label">Upload RND files</label>
+                    <div class="col-md-6">
+                        <input type="file" id="file" name="uploaded_file">
+                        <input type="hidden" name="network" value="{{rnd_network}}">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" ng-disabled="$isLoading" class="btn btn-success">Upload</button>
+                        <button class="btn btn-default" type="reset">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<table st-table="data" class="table table-striped col-md-12">
+    <thead>
+    <tr>
+        <th ng-repeat="col in columns">{{ col }}</th>
+    </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="row in displayCollection">
-            <td>{{row.firstName | uppercase}}</td>
-            <td>{{row.lastName}}</td>
-            <td>{{row.strictSearchValue}}</td>
-            <td>{{row.strictSelectValue}}</td>
-        </tr>
+    <tr ng-repeat="row in data">
+        <td ng-repeat="col in columns">{{row[col]}}</td>
+    </tr>
     </tbody>
 </table>
 
 
-</div>
+
+
+
