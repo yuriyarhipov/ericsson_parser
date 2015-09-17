@@ -41,8 +41,8 @@ def treeview(request, project):
         {'id': 'network', 'label': '  Radio Network Design Info (RND)',
             'children': [
                 {'id': 'GSM', 'label': 'GSM', 'link': '/rnd/gsm/'},
-                {'id': 'LTE', 'label': 'LTE', 'link': '/rnd/lte/'},
                 {'id': 'WCDMA', 'label': 'WCDMA', 'link': '/rnd/wcdma/'},
+                {'id': 'LTE', 'label': 'LTE', 'link': '/rnd/lte/'},
             ]},
         {'id': 'Architecture', 'label': 'Network Architecture', 'children': [
             {'id': 'GSM', 'label': 'GSM', 'children': project.get_network_tree('GSM')},

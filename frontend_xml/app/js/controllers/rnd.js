@@ -32,19 +32,17 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
             iconUrl: 'static/sector_blue.png',
         }
 
-        var get_icon = function(columns, point, params){
-            var icon = {
-                iconUrl: 'static/sector_blue.png'
-            }
+        var get_color = function(columns, point, params){
+            var color='#03f';
             for (var i=0;i<columns.length;i+=1){
                 if (params[columns[i]]) {
                     if (point[columns[i]] == params[columns[i]]){
-                        icon.iconUrl ='static/sector_red.png';
+                        color ='#f00';
                         break;
                     }
                 }
             }
-            return icon
+            return color
         };
 
         $http.get('/data/rnd/' + rnd_network + '/').success(function(data) {
@@ -52,29 +50,23 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
             var columns = data.columns;
             var data = data.data;
 
-            for(i=0;i<data.length;i+=1){
-                markers[data[i].Utrancell] = {
-                    'lat': data[i].Latitud,
-                    'lng': data[i].Longitud,
-                    'icon': get_icon(columns, data[i], search_params),
-                    'iconAngle': data[i].Azimuth,
-                    message: "Utrancell:" + data[i].Utrancell,
-                }
-
-            };
 
             $scope.markers = markers;
             $scope.default_center.lat = data[0].Latitud;
             $scope.default_center.lng = data[0].Longitud;
             $scope.default_center.zoom = 10;
-            //leafletData.getMap().then(function(map) {
-            //    marker = new L.circle([51.5, -0.09], 500, {
-            //        startAngle: 45,
-            //        stopAngle: 135,
-            //
-            //         });
-            //    marker.addTo(map);
-            //    map.setView([51.505, -0.09], 13);
-            //});
+            leafletData.getMap().then(function(map) {
+                for(i=0;i<data.length;i+=1){
+                    L.circle([data[i].Latitud, data[i].Longitud], 1000, {
+                color: get_color(columns, data[i], search_params),
+                opacity: 0.7,
+                weight: 2
+            })
+                    .setDirection(data[i].Azimuth, 60)
+                    .addTo(map);
+                };
+
+                map.setView([data[0].Latitud, data[0].Longitud], 11);
+            });
         });
   }]);
