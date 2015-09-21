@@ -37,15 +37,19 @@
     </div>
 </div>
 
-
-<table st-table="data" class="table table-striped col-md-12">
+<table st-table="displayed_data" st-safe-src="table_data" class="table table-striped col-md-12">
     <thead>
     <tr>
-        <th ng-repeat="col in columns">{{ col }}</th>
+        <th st-sort="{{ col }}" ng-repeat="col in columns">{{ col }}</th>
+    </tr>
+    <tr>
+        <th ng-repeat="col in columns">
+            <input st-search="{{ col }}" placeholder="search for {{ col }}" class="input-sm form-control" type="search"/>
+        </th>
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="row in data">
+    <tr ng-repeat="row in displayed_data">
         <td ng-repeat="col in columns"><a href="#/map/{{ rnd_network }}/?{{ col }}={{row[col]}}">{{row[col]}}</td>
     </tr>
     </tbody>

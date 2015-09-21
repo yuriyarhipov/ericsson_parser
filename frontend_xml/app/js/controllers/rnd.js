@@ -2,13 +2,14 @@ var rndControllers = angular.module('rndControllers', []);
 
 rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
     function ($scope, $http, $routeParams) {
+        $scope.rowCollection = [];
         $scope.rnd_network = $routeParams.network;
         $scope.show_download_panel = false;
 
-
         $http.get('/data/rnd/' + $scope.rnd_network + '/').success(function(data){
             $scope.columns = data.columns;
-            $scope.data = data.data;
+            $scope.table_data = $scope.displayed_data = data.data;
+
         });
 
         $scope.complete = function(){
@@ -32,11 +33,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
             iconUrl: 'static/sector_blue.png',
         }
 
-        var get_color = function(columns, point, params){
+        var get_color = function(point, params){
             var color='#03f';
-            for (var i=0;i<columns.length;i+=1){
-                if (params[columns[i]]) {
-                    if (point[columns[i]] == params[columns[i]]){
+            for (var key in params){
+                if (point[key]) {
+                    if (point[key] == params[key]){
+                        console.log(point);
                         color ='#f00';
                         break;
                     }
@@ -58,7 +60,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
             leafletData.getMap().then(function(map) {
                 for(i=0;i<data.length;i+=1){
                     L.circle([data[i].Latitud, data[i].Longitud], 1000, {
-                color: get_color(columns, data[i], search_params),
+                color: get_color(data[i], search_params),
                 opacity: 0.7,
                 weight: 2
             })

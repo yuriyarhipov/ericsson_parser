@@ -74,6 +74,6 @@ class Rnd:
             json.dumps(result, encoding='latin1')
         ))
         connection.commit()
-        print result.keys()
+
         return result
 
