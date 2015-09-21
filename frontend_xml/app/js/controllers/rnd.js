@@ -33,18 +33,15 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
             iconUrl: 'static/sector_blue.png',
         }
 
-        var get_color = function(point, params){
-            var color='#03f';
+        var get_status = function(point, params){
             for (var key in params){
                 if (point[key]) {
                     if (point[key] == params[key]){
-                        console.log(point);
-                        color ='#f00';
-                        break;
+                        return true;
                     }
                 }
             }
-            return color
+            return false;
         };
 
         $http.get('/data/rnd/' + rnd_network + '/').success(function(data) {
@@ -59,16 +56,30 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
             $scope.default_center.zoom = 10;
             leafletData.getMap().then(function(map) {
                 for(i=0;i<data.length;i+=1){
-                    L.circle([data[i].Latitud, data[i].Longitud], 1000, {
-                color: get_color(data[i], search_params),
-                opacity: 0.7,
-                weight: 2
-            })
-                    .setDirection(data[i].Azimuth, 60)
-                    .addTo(map);
+                    if (get_status(data[i], search_params)){
+                        L.circle([data[i].Latitud, data[i].Longitud], 1000, {
+                            color: '#f00',
+                            opacity: 1,
+                            weight: 3
+                        })
+                        .setDirection(data[i].Azimuth, 60)
+                        .addTo(map);
+                        $scope.default_center.lat = data[i].Latitud;
+                        $scope.default_center.lng = data[i].Longitud;
+                        $scope.default_center.zoom = 13;
+                    } else {
+                        L.circle([data[i].Latitud, data[i].Longitud], 1000, {
+                            color: '#03f',
+                            opacity: 0.5,
+                            weight: 2
+                        })
+                        .setDirection(data[i].Azimuth, 60)
+                        .addTo(map);
+                    }
+
                 };
 
-                map.setView([data[0].Latitud, data[0].Longitud], 11);
+                map.setView([$scope.default_center.lat, $scope.default_center.lng], $scope.default_center.zoom);
             });
         });
   }]);
