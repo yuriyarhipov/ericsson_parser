@@ -256,5 +256,11 @@ def rnd(request, network=None):
     return Response(data)
 
 
+@api_view(['GET', ])
+def get_param_values(request, network, param):
+    project = request.project
+    values = Rnd(project.id, network).get_param_values(param)
+    return Response(values)
+
 
 

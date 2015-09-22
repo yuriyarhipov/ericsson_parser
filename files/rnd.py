@@ -21,6 +21,26 @@ class Rnd:
         cursor.close()
         connection.commit()
 
+    def get_param_values(self, param):
+        params = set()
+        cursor = connection.cursor()
+        cursor.execute('''
+            SELECT
+                data
+            FROM
+                rnd
+            WHERE
+                (project_id=%s) AND (network=%s)''', (
+            self.project_id,
+            self.network))
+
+        result = cursor.fetchone()[0]
+        for row in result.get('data'):
+            params.add(row.get(param))
+        params = list(params)
+        params.sort()
+        return params
+
     def get_data(self):
         cursor = connection.cursor()
         cursor.execute('''

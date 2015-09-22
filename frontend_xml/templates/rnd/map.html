@@ -1,5 +1,59 @@
+<div class="col-md-12 panel">
+        <form class="form">
+            <div class="form-group">
+                <div class="col-md-3" id="param">
+                    <ui-select ng-change="onChangeParam($select.selected)" ng-model="new_filter.param.selected" theme="bootstrap"
+                        ng-disabled="disabled"
+                        reset-search-input="false">
+                        <ui-select-match placeholder="">{{$select.selected}}</ui-select-match>
+                        <ui-select-choices repeat="col in columns | filter:$select.search">
+                            {{col}}
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+                <div class="col-md-2">
+                    <ui-select ng-model="new_filter.action.selected" theme="bootstrap"
+                        ng-disabled="disabled"
+                        reset-search-input="false">
+                        <ui-select-match placeholder="">{{$select.selected}}</ui-select-match>
+                        <ui-select-choices repeat="action in actions | filter:$select.search">
+                            {{ action }}
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+                <div class="col-md-3">
+                    <ui-select ng-model="new_filter.value.selected" theme="bootstrap"
+                        ng-disabled="disabled"
+                        reset-search-input="false">
+                        <ui-select-match placeholder="">{{$select.selected}}</ui-select-match>
+                        <ui-select-choices repeat="val in values | filter:$select.search">
+                            {{ val }}
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+                <div class="col-md-2">
+                    <input type="color" class="form-control" ng-model="new_filter.color">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-success" ng-click="onAddFilter()"> Add Filter</button>
+                </div>
+                <div class="col-md-12"></div>
+            </div>
+        </form>
+    </div>
+<div class="col-md-12">
+    <table class="table">
+        <tr ng-repeat="filter in map_filters">
+            <td class="col-md-3">{{ filter.param }}</td>
+            <td class="col-md-3">{{ filter.action }}</td>
+            <td class="col-md-3">{{ filter.value }}</td>
+            <td class="col-md-3"  style="background-color:{{ filter.color }}"></td>
+        </tr>
+    </table>
+</div>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 panel">
         <leaflet center="default_center" markers="markers" width="100%" height="480px"></leaflet>
     </div>
+
 </div>
