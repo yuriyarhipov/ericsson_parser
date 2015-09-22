@@ -99,6 +99,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
                         })
                     .bindPopup(message)
                     .on('click', function(e){
+                            console.log('click');
                             var layer = e.target;
                             layer.options.old_weight=layer.options.weight;
                             layer.options.old_opacity=layer.options.opacity;
@@ -190,12 +191,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
                             var size = 1000;
                             for (var sector_id in filtered_data[site]){
                                 var sector = filtered_data[site][sector_id];
-                                azimuths.push();
+                                azimuths.push(sector.Azimuth);
                                 if (sector.Azimuth in azimuths){
-                                    size = size - 100;
+                                    size = size / 1.5;
                                 }
                                 set_marker(map, sector.Latitud, sector.Longitud, sector.Azimuth, sector.color, 0.5, 2, size, sector.Utrancell, sector);
-                                map.setView([sector.Latitud, sector.Longitud]);
+                                map.setView([sector.Latitud, sector.Longitud], 13);
                             }
                     }});
                 });
