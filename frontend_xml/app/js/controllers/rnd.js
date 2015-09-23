@@ -136,9 +136,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
                     var zoom = e.target._zoom;
                     map.eachLayer(function (layer) {
                         if (layer.options.sector) {
-                            var size = 1200;
+                            var size = 1300;
                             if (layer.options.sector.Carrier == 1) {
-                                size = 1500;
+                                size = 1200;
                             }
 
                             var r = size - (zoom*60);
@@ -152,9 +152,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
 
                 });
                 for(i=0;i<data.length;i+=1){
-                    var size = 1200;
+                    var size = 1300;
                     if (data[i].Carrier == 1){
-                        size = 1500;
+                        size = 1200;
                     }
                     if (get_status(data[i], search_params)){
                         set_marker(map, data[i].Latitud, data[i].Longitud, data[i].Azimuth, '#f00', 0.7, 3, size, data[i].Utrancell, data[i]);
