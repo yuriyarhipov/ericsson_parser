@@ -136,8 +136,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
                     var zoom = e.target._zoom;
                     map.eachLayer(function (layer) {
                         if (layer.options.sector) {
-                            var r = 1200 - (zoom*60);
-                            console.log(r);
+                            var size = 1200;
+                            if (layer.options.sector.Carrier == 1) {
+                                size = 1500;
+                            }
+
+                            var r = size - (zoom*60);
                             layer.setRadius(r);
                             //layer.setStyle({
                             //    weight: 4,
@@ -148,9 +152,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
 
                 });
                 for(i=0;i<data.length;i+=1){
-                    var size = 1000;
+                    var size = 1200;
                     if (data[i].Carrier == 1){
-                        size = 500;
+                        size = 1500;
                     }
                     if (get_status(data[i], search_params)){
                         set_marker(map, data[i].Latitud, data[i].Longitud, data[i].Azimuth, '#f00', 0.7, 3, size, data[i].Utrancell, data[i]);
