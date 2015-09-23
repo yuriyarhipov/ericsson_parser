@@ -132,6 +132,21 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
             $scope.default_center.zoom = 10;
             leafletData.getMap().then(function(map) {
                 info.addTo(map);
+                map.on('zoomend', function(e){
+                    var zoom = e.target._zoom;
+                    map.eachLayer(function (layer) {
+                        if (layer.options.sector) {
+                            var r = 1200 - (zoom*60);
+                            console.log(r);
+                            layer.setRadius(r);
+                            //layer.setStyle({
+                            //    weight: 4,
+                            //    opacity: 1
+                            //});
+                        }
+                    });
+
+                });
                 for(i=0;i<data.length;i+=1){
                     var size = 1000;
                     if (data[i].Carrier == 1){
