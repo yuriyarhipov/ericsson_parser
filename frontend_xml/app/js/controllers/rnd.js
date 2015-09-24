@@ -23,41 +23,26 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
 
   }]);
 
-rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$location', 'leafletData',
-    function ($scope, $http, $routeParams, $location, leafletData) {
-        var search_params = $location.search();
-        var filtered_data = {};
-        var marker_data = [];
-        $scope.default_center = {};
+rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafletData',
+    function ($scope, $http, $routeParams, leafletData) {
         var rnd_network = $routeParams.network;
-        $scope.actions = ['=', '>', '<', '>=', '<='];
+        var carriers_size = {'1': 1500};
+        var min_carrier_size = 1500;
+        var sector_azimuths_size = {};
+        $scope.rnd_value = {};
+        $scope.rnd_param = {};
+        var data_length = 0;
 
-        $scope.map_filters = [];
-        $scope.new_filter = {
-            'action': {'selected': '='},
-            'param': {'selected': 'Azimuth'},
-            'value': {'selected': '90'},
-            'color': '#00FF00'
-        };
+        $http.get('/data/rnd/' + rnd_network + '/').success(function(data) {
+            $scope.columns = data.columns;
+            var data = data.data;
+            data_length = data.length;
+            $scope.rnd_param['selected'] = $scope.columns[0];
+            $scope.onChangeParam($scope.columns[0]);
+            var sectors = {};
+            var selected_sector;
 
-        var basic_markers = [];
-
-        var markerIcon = {
-            iconUrl: 'static/sector_blue.png',
-        }
-
-        var get_status = function(point, params){
-            for (var key in params){
-                if (point[key]) {
-                    if (point[key] == params[key]){
-                        return true;
-                    }
-                }
-            }
-            return false;
-        };
-
-        var info = L.control();
+            var info = L.control();
 
             info.onAdd = function (map) {
                 this._div = L.DomUtil.create('div', 'info');
@@ -90,82 +75,83 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
                 }
             };
 
-        var set_marker = function(map, latitud, longitud, azimuth, color, opacity, weight, size, message, sector){
-                 L.circle([latitud, longitud], size, {
-                            color: color,
-                            opacity: opacity,
-                            weight: weight,
-                            sector: sector
-                        })
-                    .bindPopup(message)
+            data.sort(function(a,b){
+                return parseFloat(a.Carrier) - parseFloat(b.Carrier);
+            });
+
+            for (var id in data){
+                if (data[id].SITE in sectors){
+                    sectors[data[id].SITE].push(data[id])
+                } else {
+                    sectors[data[id].SITE]= [data[id], ];
+                }
+            }
+
+            leafletData.getMap().then(function(map) {
+                info.addTo(map);
+                for (var sector_id in data){
+                    var sector = data[sector_id];
+                    var size = 1000;
+
+                    if (sector.Carrier in carriers_size){
+                        size = carriers_size[sector.Carrier];
+                    } else {
+                        size = min_carrier_size * 0.9;
+                        carriers_size[sector.Carrier] = min_carrier_size = size;
+                    }
+
+                    if (sector.SITE in sector_azimuths_size){
+                        if (sector.Azimuth in sector_azimuths_size[sector.SITE]){
+                            size = sector_azimuths_size[sector.SITE][sector.Azimuth][sector_azimuths_size[sector.SITE][sector.Azimuth].length-1] * 0.9;
+                            sector_azimuths_size[sector.SITE][sector.Azimuth].push(size)
+                        } else {
+                            sector_azimuths_size[sector.SITE][sector.Azimuth] = [size,];
+                        }
+                    } else {
+                        var az = {}
+                        az[sector.Azimuth] = [size,];
+                        sector_azimuths_size[sector.SITE]=az;
+                    }
+
+                    L.circle([sector.Latitud, sector.Longitud], size, {
+                            color: '#03f',
+                            opacity: 0.7,
+                            weight: 2,
+                            sector: sector,
+                            base_radius: size
+                    })
+                    .bindPopup(sector.Utrancell)
+                    .setDirection(sector.Azimuth, 60)
                     .on('click', function(e){
-                            console.log('click');
                             var layer = e.target;
                             layer.options.old_weight=layer.options.weight;
                             layer.options.old_opacity=layer.options.opacity;
                             layer.setStyle({
-                                weight: 4,
+                                weight: 3,
                                 opacity: 1
                             });
                             if (selected_sector){
                                 selected_sector.setStyle({
                                     weight: selected_sector.options.old_weight,
-                                    opacity: selected_sector.options.opacity
+                                    opacity: selected_sector.options.old_opacity
                                 });
                             }
                             selected_sector = layer;
                             info.update(layer.options.sector);
                         })
-                        .setDirection(azimuth, 60)
-                        .addTo(map);
-            };
+                    .addTo(map);
+                }
+                map.setView([data[0].Latitud, data[0].Longitud], 10);
 
-        $http.get('/data/rnd/' + rnd_network + '/').success(function(data) {
-            var markers = {};
-            var columns = $scope.columns = data.columns;
-            var data = marker_data = data.data;
-            selected_sector = NaN;
-
-            $scope.markers = markers;
-            $scope.default_center.lat = data[0].Latitud;
-            $scope.default_center.lng = data[0].Longitud;
-            $scope.default_center.zoom = 10;
-            leafletData.getMap().then(function(map) {
-                info.addTo(map);
                 map.on('zoomend', function(e){
                     var zoom = e.target._zoom;
                     map.eachLayer(function (layer) {
                         if (layer.options.sector) {
-                            var size = 1300;
-                            if (layer.options.sector.Carrier == 1) {
-                                size = 1200;
-                            }
-
-                            var r = size - (zoom*60);
-                            layer.setRadius(r);
-                            //layer.setStyle({
-                            //    weight: 4,
-                            //    opacity: 1
-                            //});
+                            zkf = ((zoom-10)*-12+100)/100
+                            layer.setRadius(zkf*layer.options.base_radius);
                         }
                     });
-
                 });
-                for(i=0;i<data.length;i+=1){
-                    var size = 1300;
-                    if (data[i].Carrier == 1){
-                        size = 1200;
-                    }
-                    if (get_status(data[i], search_params)){
-                        set_marker(map, data[i].Latitud, data[i].Longitud, data[i].Azimuth, '#f00', 0.7, 3, size, data[i].Utrancell, data[i]);
-                        $scope.default_center.lat = data[i].Latitud;
-                        $scope.default_center.lng = data[i].Longitud;
-                        $scope.default_center.zoom = 13;
-                    } else {
-                        set_marker(map, data[i].Latitud, data[i].Longitud, data[i].Azimuth, '#03f', 0.5, 2, size, data[i].Utrancell, data[i]);
-                    }
-                };
-                map.setView([$scope.default_center.lat, $scope.default_center.lng], $scope.default_center.zoom);
 
             });
         });
@@ -173,51 +159,41 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', '$locat
         $scope.onChangeParam = function(param){
             $http.get('/data/rnd/get_param_values/' + rnd_network + '/' + param + '/').success(function(data){
                 $scope.values = data;
+                data.unshift('All');
+                $scope.rnd_value['selected']='All';
             });
         };
 
-        $scope.onAddFilter = function(){
-            $scope.map_filters.push({
-                'param': $scope.new_filter.param.selected,
-                'action': $scope.new_filter.action.selected,
-                'value':$scope.new_filter.value.selected,
-                'color': $scope.new_filter.color});
-
-            leafletData.getMap().then(function(map){
-                    map.eachLayer(function (layer) {
-                        if (layer.options.sector) {
-                            map.removeLayer(layer);
+        $scope.onAddFilter = function(param, value){
+            var colors = randomColor({luminosity: 'dark', count: data_length});
+            var values_color = {};
+            var i =0
+            var last_marker = {};
+            leafletData.getMap().then(function(map) {
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        if(layer.options.sector[param] == value){
+                            layer.setStyle({'color': colors[i]});
+                            last_marker.Latitud = layer.options.sector.Latitud;
+                            last_marker.Longitud = layer.options.sector.Longitud;
                         }
-                    });
-
-                    for (var sector_id in marker_data){
-                        var current_sector = marker_data[sector_id];
-                        for (filter_id in $scope.map_filters){
-                            var current_filter = $scope.map_filters[filter_id]
-                            if (current_filter.action == '='){
-                                if (current_sector[current_filter.param] == current_filter.value){
-                                    current_sector.color = current_filter.color;
-                                    if (!(current_sector.SITE in filtered_data)){
-                                        filtered_data[current_sector.SITE] = [];
-                                    }
-                                    filtered_data[current_sector.SITE].push(current_sector);                                }
+                        if (value=='All'){
+                            if (layer.options.sector[param] in values_color){
+                                layer.setStyle({'color': values_color[layer.options.sector[param]]});
+                                last_marker.Latitud = layer.options.sector.Latitud;
+                                last_marker.Longitud = layer.options.sector.Longitud;
+                            } else {
+                                values_color[layer.options.sector[param]] = colors[i];
+                                layer.setStyle({'color': values_color[layer.options.sector[param]]});
+                                last_marker.Latitud = layer.options.sector.Latitud;
+                                last_marker.Longitud = layer.options.sector.Longitud;
+                                i += 1;
                             }
                         }
                     }
-                    leafletData.getMap().then(function(map){
-                        for (var site in filtered_data){
-                            var azimuths = [];
-                            var size = 1000;
-                            for (var sector_id in filtered_data[site]){
-                                var sector = filtered_data[site][sector_id];
-                                azimuths.push(sector.Azimuth);
-                                if (sector.Azimuth in azimuths){
-                                    size = size / 1.5;
-                                }
-                                set_marker(map, sector.Latitud, sector.Longitud, sector.Azimuth, sector.color, 0.5, 2, size, sector.Utrancell, sector);
-                                map.setView([sector.Latitud, sector.Longitud], 13);
-                            }
-                    }});
                 });
+                map.setView([last_marker.Latitud, last_marker.Longitud], 13);
+            });
         };
+
   }]);

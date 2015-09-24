@@ -42,11 +42,7 @@
     <tr>
         <th st-sort="{{ col }}" ng-repeat="col in columns">{{ col }}</th>
     </tr>
-    <tr>
-        <th ng-repeat="col in columns">
-            <input st-search="{{ col }}" placeholder="search for {{ col }}" class="input-sm form-control" type="search"/>
-        </th>
-    </tr>
+
     </thead>
     <tbody>
     <tr ng-repeat="row in displayed_data">

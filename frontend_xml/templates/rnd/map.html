@@ -2,7 +2,7 @@
         <form class="form">
             <div class="form-group">
                 <div class="col-md-3" id="param">
-                    <ui-select ng-change="onChangeParam($select.selected)" ng-model="new_filter.param.selected" theme="bootstrap"
+                    <ui-select ng-change="onChangeParam($select.selected)" ng-model="rnd_param.selected" theme="bootstrap"
                         ng-disabled="disabled"
                         reset-search-input="false">
                         <ui-select-match placeholder="">{{$select.selected}}</ui-select-match>
@@ -11,18 +11,8 @@
                         </ui-select-choices>
                     </ui-select>
                 </div>
-                <div class="col-md-2">
-                    <ui-select ng-model="new_filter.action.selected" theme="bootstrap"
-                        ng-disabled="disabled"
-                        reset-search-input="false">
-                        <ui-select-match placeholder="">{{$select.selected}}</ui-select-match>
-                        <ui-select-choices repeat="action in actions | filter:$select.search">
-                            {{ action }}
-                        </ui-select-choices>
-                    </ui-select>
-                </div>
                 <div class="col-md-3">
-                    <ui-select ng-model="new_filter.value.selected" theme="bootstrap"
+                    <ui-select ng-model="rnd_value.selected" theme="bootstrap"
                         ng-disabled="disabled"
                         reset-search-input="false">
                         <ui-select-match placeholder="">{{$select.selected}}</ui-select-match>
@@ -31,11 +21,9 @@
                         </ui-select-choices>
                     </ui-select>
                 </div>
+
                 <div class="col-md-2">
-                    <input type="color" class="form-control" ng-model="new_filter.color">
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-success" ng-click="onAddFilter()"> Add Filter</button>
+                    <button class="btn btn-success" ng-click="onAddFilter(rnd_param.selected, rnd_value.selected)"> Add Filter</button>
                 </div>
                 <div class="col-md-12"></div>
             </div>
@@ -53,7 +41,6 @@
 </div>
 <div class="row">
     <div class="col-md-12 panel">
-        <leaflet center="default_center" markers="markers" width="100%" height="480px"></leaflet>
+        <leaflet width="100%" height="480px"></leaflet>
     </div>
-
 </div>
