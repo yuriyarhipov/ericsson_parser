@@ -167,8 +167,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                                     map.eachLayer(function (temp_layer) {
                                         if (temp_layer.options.sector){
                                             if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
-                                                if (temp_layer.options.sector.Utrancell.indexOf(data) !== undefined) {
-                                                temp_layer.setStyle({'color': 'red'});
+                                                if data.indexOf(temp_layer.options.sector.Utrancell) !== undefined) {
+                                                    temp_layer.setStyle({'color': 'red'});
                                                 } else {
                                                     temp_layer.setStyle({'color': 'grey'});
                                                 }
