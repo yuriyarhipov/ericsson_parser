@@ -32,6 +32,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         $scope.rnd_param = {};
         var data_length = 0;
         var legend_info = []
+        $scope.show_neighbors = false;
 
         $scope.controls = {
                     fullscreen: {
@@ -160,6 +161,17 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             }
                             selected_sector = layer;
                             info.update(layer.options.sector);
+                            if ($scope.show_neighbors){
+                                set_color_to_all_sectors('grey');
+                                layer.setStyle({'color': 'green'});
+                                $http.get('/data/rnd/get_rnd_neighbors/' + rnd_network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
+                                    map.eachLayer(function (temp_layer) {
+                                        if ((temp_layer.options.sector) & (temp_layer.options.sector.Utrancell in data )) {
+                                            temp_layer.setStyle({'color': 'red'});
+                                        }
+                                    });
+                                })
+                            }
                         })
                     .addTo(map);
                 }
@@ -234,4 +246,14 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                 }
             });
         };
+
+        var set_color_to_all_sectors = function(color){
+            leafletData.getMap().then(function(map) {
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        layer.setStyle({'color': color});
+                    }
+                });
+            });
+        }
   }]);

@@ -41,7 +41,6 @@ class Tables:
         try:
             cursor.execute(insert)
         except:
-            print insert
             raise
         cursor.close()
         self.conn.commit()

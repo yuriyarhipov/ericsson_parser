@@ -86,3 +86,16 @@ class Rnd:
         connection.commit()
 
         return result
+
+    def get_rnd_neighbors(self, sector):
+        print 'OK'
+        cursor = connection.cursor()
+        cursor.execute('''
+            SELECT DISTINCT
+                neighbor
+            FROM
+                UtranRelation
+            WHERE (Utrancell=%s)''', (sector, ))
+
+        neighbors = [row[0] for row in cursor]
+        return neighbors

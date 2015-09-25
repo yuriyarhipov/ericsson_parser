@@ -263,4 +263,12 @@ def get_param_values(request, network, param):
     return Response(values)
 
 
+@api_view(['GET', ])
+def get_rnd_neighbors(request, network, sector):
+    project = request.project
+    values = Rnd(project.id, network).get_rnd_neighbors(sector)
+    return Response(values)
+
+
+
 

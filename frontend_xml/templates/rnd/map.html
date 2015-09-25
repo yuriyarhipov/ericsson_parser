@@ -30,6 +30,11 @@
         </form>
     </div>
 <div class="col-md-12">
+    <div class="btn-group">
+        <label class="btn btn-default" ng-model="show_neighbors" btn-checkbox>Show 3g-3g Neighbors</label>
+    </div>
+</div>
+<div class="col-md-12">
     <table class="table">
         <tr ng-repeat="filter in map_filters">
             <td class="col-md-3">{{ filter.param }}</td>
