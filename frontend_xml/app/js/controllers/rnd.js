@@ -107,6 +107,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             }
 
             leafletData.getMap().then(function(map) {
+                L.control.scale().addTo(map);
                 info.addTo(map);
                 legend.addTo(map);
 
