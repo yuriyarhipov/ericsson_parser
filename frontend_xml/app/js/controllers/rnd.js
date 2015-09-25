@@ -16,15 +16,14 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
             $scope.show_download_panel = false;
             $http.get('/data/rnd/' + $scope.rnd_network + '/').success(function(data){
                 $scope.columns = data.columns;
-                $scope.data = data.data;
+                $scope.table_data = $scope.displayed_data = data.data;
             });
         };
-
-
   }]);
 
-rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafletData',
-    function ($scope, $http, $routeParams, leafletData) {
+rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafletData', '$location',
+    function ($scope, $http, $routeParams, leafletData, $location) {
+        var search_params = $location.search();
         var rnd_network = $routeParams.network;
         var carriers_size = {'1': 1500};
         var min_carrier_size = 1500;
@@ -176,6 +175,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                 });
 
             });
+            for (var s_param in search_params){
+                $scope.onAddFilter(s_param, search_params[s_param]);
+            }
         });
 
         $scope.onChangeParam = function(param){
@@ -187,9 +189,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         };
 
         $scope.onAddFilter = function(param, value){
-            var colors = randomColor({hue: 'random',luminosity: 'dark', count: data_length});
+            var color = randomColor({hue: 'random',luminosity: 'dark'});
             var values_color = {};
-            var i =0
             var last_marker = {};
             var values_count = {}
 
@@ -197,10 +198,10 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                 map.eachLayer(function (layer) {
                     if (layer.options.sector) {
                         if(layer.options.sector[param] == value){
-                            layer.setStyle({'color': colors[i]});
+                            layer.setStyle({'color': color});
                             last_marker.Latitud = layer.options.sector.Latitud;
                             last_marker.Longitud = layer.options.sector.Longitud;
-                            values_color[value] = colors[i]
+                            values_color[value] = color
                             if (value in values_count){
                                 values_count[value] += 1;
                             } else {
@@ -214,21 +215,22 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                                 last_marker.Longitud = layer.options.sector.Longitud;
                                 values_count[layer.options.sector[param]] += 1;
                             } else {
-                                values_color[layer.options.sector[param]] = colors[i];
+                                values_color[layer.options.sector[param]] = randomColor({hue: 'random',luminosity: 'dark'});
                                 layer.setStyle({'color': values_color[layer.options.sector[param]]});
                                 last_marker.Latitud = layer.options.sector.Latitud;
                                 last_marker.Longitud = layer.options.sector.Longitud;
                                 values_count[layer.options.sector[param]] = 1;
-                                i += 1;
                             }
                         }
                     }
                 });
-                map.setView([last_marker.Latitud, last_marker.Longitud], 12);
+                if (last_marker){
+                    map.setView([last_marker.Latitud, last_marker.Longitud], 12);
+                }
+
                 for (var  val_id in values_count ){
                     legend.update(param, val_id, values_color[val_id], values_count[val_id]);
                 }
             });
         };
-
   }]);

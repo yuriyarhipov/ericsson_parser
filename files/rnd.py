@@ -1,7 +1,7 @@
 import json
 
 from django.db import connection
-from openpyxl import load_workbook
+import pandas as pd
 
 
 class Rnd:
@@ -58,20 +58,10 @@ class Rnd:
 
     def write_file(self, filename):
         cursor = connection.cursor()
-        wb = load_workbook(filename=filename, use_iterators=True)
-        ws = wb.active
-        columns = []
-        data = []
-        column_row = True
-        for excel_row in ws.iter_rows():
-            if column_row:
-                columns = [cell.value for cell in excel_row]
-            else:
-                row = dict()
-                for column in columns:
-                    row[column] = excel_row[columns.index(column)].value
-                data.append(row)
-            column_row = False
+        excel_dataframe = pd.read_excel(filename, keep_default_na=False)
+        columns = excel_dataframe.columns.values.tolist()
+        data = excel_dataframe.to_dict(orient='records')
+
         result = dict(columns=columns, data=data)
 
         cursor.execute('''
@@ -96,4 +86,3 @@ class Rnd:
         connection.commit()
 
         return result
-
