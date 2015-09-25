@@ -162,10 +162,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             selected_sector = layer;
                             info.update(layer.options.sector);
                             if ($scope.show_neighbors){
-                                set_color_to_all_sectors('grey');
-                                layer.setStyle({'color': 'green'});
+                                selected_sector.setStyle({'color': 'green'});
                                 $http.get('/data/rnd/get_rnd_neighbors/' + rnd_network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
                                     map.eachLayer(function (temp_layer) {
+                                        if ((temp_layer.options.sector) & (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell)){
+                                            temp_layer.setStyle({'color': 'grey'});
+                                        }
                                         if ((temp_layer.options.sector) & (temp_layer.options.sector.Utrancell.indexOf(data) !== undefined)) {
                                             temp_layer.setStyle({'color': 'red'});
                                         }
