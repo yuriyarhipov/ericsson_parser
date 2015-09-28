@@ -26,7 +26,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         var search_params = $location.search();
         var rnd_network = $routeParams.network;
         var carriers_size = {'1': 1500};
-        var min_carrier_size = 1500;
         var sector_azimuths_size = {};
         $scope.rnd_value = {};
         $scope.rnd_param = {};
@@ -50,7 +49,10 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         legend.update = function (param, value, color, cnt) {
             this._div.innerHTML +=
                     '<i style="background:' + color + '"></i> '+ param+'='+value+'(' + cnt +')<br>';
+        };
 
+        legend.reset = function(){
+            this._div.innerHTML = '';
         };
 
         $http.get('/data/rnd/' + rnd_network + '/').success(function(data) {
@@ -114,27 +116,27 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
 
                 for (var sector_id in data){
                     var sector = data[sector_id];
-                    var size = 1000;
+                    var size = carriers_size[1];
 
                     if (sector.Carrier in carriers_size){
                         size = carriers_size[sector.Carrier];
                     } else {
-                        size = min_carrier_size * 0.9;
+                        size = carriers_size[1] * (11-parseFloat(sector.Carrier))/10;
                         carriers_size[sector.Carrier] = min_carrier_size = size;
                     }
 
-                    if (sector.SITE in sector_azimuths_size){
-                        if (sector.Azimuth in sector_azimuths_size[sector.SITE]){
-                            size = sector_azimuths_size[sector.SITE][sector.Azimuth][sector_azimuths_size[sector.SITE][sector.Azimuth].length-1] * 0.9;
-                            sector_azimuths_size[sector.SITE][sector.Azimuth].push(size)
-                        } else {
-                            sector_azimuths_size[sector.SITE][sector.Azimuth] = [size,];
-                        }
-                    } else {
-                        var az = {}
-                        az[sector.Azimuth] = [size,];
-                        sector_azimuths_size[sector.SITE]=az;
-                    }
+                  //  if (sector.SITE in sector_azimuths_size){
+                  //      if (sector.Azimuth in sector_azimuths_size[sector.SITE]){
+                  //          size = sector_azimuths_size[sector.SITE][sector.Azimuth][sector_azimuths_size[sector.SITE][sector.Azimuth].length-1] * 0.9;
+                  //          sector_azimuths_size[sector.SITE][sector.Azimuth].push(size)
+                  //      } else {
+                  //          sector_azimuths_size[sector.SITE][sector.Azimuth] = [size,];
+                  //      }
+                  //  } else {
+                  //      var az = {}
+                  //      az[sector.Azimuth] = [size,];
+                  //      sector_azimuths_size[sector.SITE]=az;
+                   // }
 
                     L.circle([sector.Latitud, sector.Longitud], size, {
                             color: '#03f',
@@ -145,6 +147,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                     })
                     .bindPopup(sector.Utrancell)
                     .setDirection(sector.Azimuth, 60)
+                    .on('mouseover', function (e) {
+                        this.openPopup();
+                    })
+                    .on('mouseout', function (e) {
+                        this.closePopup();
+                    })
                     .on('click', function(e){
                             var layer = e.target;
                             layer.options.old_weight=layer.options.weight;
@@ -162,6 +170,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             selected_sector = layer;
                             info.update(layer.options.sector);
                             if ($scope.show_neighbors){
+                                legend.reset();
+                                set_color_to_all_sectors('grey');
+
                                 selected_sector.setStyle({'color': 'green'});
                                 $http.get('/data/rnd/get_rnd_neighbors/' + rnd_network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
                                     map.eachLayer(function (temp_layer) {
@@ -170,8 +181,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                                                 console.log(data.indexOf(temp_layer.options.sector.Utrancell));
                                                 if (data.indexOf(temp_layer.options.sector.Utrancell) > 0) {
                                                     temp_layer.setStyle({'color': 'red'});
-                                                } else {
-                                                    temp_layer.setStyle({'color': 'grey'});
                                                 }
                                             }
                                         }
@@ -188,16 +197,24 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                     map.eachLayer(function (layer) {
                         if (layer.options.sector) {
                             zkf = ((zoom-10)*-12+100)/100
-                            layer.setRadius(zkf*layer.options.base_radius);
+                            base_size = zkf*carriers_size[sector.Carrier];
+                            var size = base_size * (11-parseFloat(layer.options.sector.Carrier))/10
+                            layer.setRadius(size);
                         }
                     });
                 });
 
             });
             for (var s_param in search_params){
-                $scope.onAddFilter(s_param, search_params[s_param]);
+                onAddFilter(s_param, search_params[s_param]);
             }
         });
+
+        $scope.onNeighbors = function(){
+            if ($scope.show_neighbors){
+                set_color_to_all_sectors(randomColor({hue: 'random',luminosity: 'dark'}));
+            }
+        }
 
         $scope.onChangeParam = function(param){
             $http.get('/data/rnd/get_param_values/' + rnd_network + '/' + param + '/').success(function(data){
@@ -206,8 +223,17 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                 $scope.rnd_value['selected']='All';
             });
         };
+        $scope.onSelectValue = function(item, model){
+            onAddFilter($scope.rnd_param.selected, item);
+        }
 
-        $scope.onAddFilter = function(param, value){
+        $scope.onResetFilter = function(){
+            set_color_to_all_sectors(randomColor({hue: 'random',luminosity: 'dark'}));
+            legend.reset();
+
+        };
+
+        var onAddFilter = function(param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
             var values_color = {};
             var last_marker = {};
@@ -251,6 +277,10 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                     legend.update(param, val_id, values_color[val_id], values_count[val_id]);
                 }
             });
+        };
+
+        $scope.onFilterClick = function(){
+            console.log('OK');
         };
 
         var set_color_to_all_sectors = function(color){

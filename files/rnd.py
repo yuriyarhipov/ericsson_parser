@@ -87,7 +87,7 @@ class Rnd:
 
         return result
 
-    def get_rnd_neighbors(self, sector):
+    def get_rnd_neighbors(self, sector, filename):
         print 'OK'
         cursor = connection.cursor()
         cursor.execute('''
@@ -95,7 +95,7 @@ class Rnd:
                 neighbor
             FROM
                 UtranRelation
-            WHERE (Utrancell=%s)''', (sector, ))
+            WHERE (Utrancell=%s) AND (filename=%s)''', (sector, filename, ))
 
         neighbors = [row[0] for row in cursor]
         return neighbors

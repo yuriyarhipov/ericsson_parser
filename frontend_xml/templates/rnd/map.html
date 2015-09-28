@@ -12,7 +12,7 @@
                     </ui-select>
                 </div>
                 <div class="col-md-3">
-                    <ui-select ng-model="rnd_value.selected" theme="bootstrap"
+                    <ui-select ng-model="rnd_value.selected" on-select="onSelectValue($item, $model)" theme="bootstrap"
                         ng-disabled="disabled"
                         reset-search-input="false">
                         <ui-select-match placeholder="">{{$select.selected}}</ui-select-match>
@@ -23,7 +23,7 @@
                 </div>
 
                 <div class="col-md-2">
-                    <button class="btn btn-success" ng-click="onAddFilter(rnd_param.selected, rnd_value.selected)"> Add Filter</button>
+                    <button class="btn btn-warning" ng-click="onResetFilter()"> Reset Filters</button>
                 </div>
                 <div class="col-md-12"></div>
             </div>
@@ -31,7 +31,7 @@
     </div>
 <div class="col-md-12">
     <div class="btn-group">
-        <label class="btn btn-default" ng-model="show_neighbors" btn-checkbox>Show 3g-3g Neighbors</label>
+        <label class="btn btn-default" ng-model="show_neighbors" ng-click="onNeighbors()" btn-checkbox>Show 3g-3g Neighbors</label>
     </div>
 </div>
 <div class="col-md-12">
