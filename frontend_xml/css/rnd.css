@@ -5,6 +5,8 @@
     background: rgba(255,255,255,0.8);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
+    max-height: 250px;
+    overflow-y: auto;
 }
 .info h5 {
     margin: 0 0 5px;
@@ -12,6 +14,7 @@
 }
 
 .legend {
+    width: 250px;
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
@@ -19,6 +22,8 @@
     line-height: 18px;
     border-radius: 5px;
     color: #555;
+    max-height: 250px;
+    overflow-y: auto;
 }
 
 .legend i {
