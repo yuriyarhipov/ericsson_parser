@@ -266,7 +266,8 @@ def get_param_values(request, network, param):
 @api_view(['GET', ])
 def get_rnd_neighbors(request, network, sector):
     project = request.project
-    values = Rnd(project.id, network).get_rnd_neighbors(sector)
+    filename = request.wcdma.filename
+    values = Rnd(project.id, network).get_rnd_neighbors(sector, filename)
     return Response(values)
 
 

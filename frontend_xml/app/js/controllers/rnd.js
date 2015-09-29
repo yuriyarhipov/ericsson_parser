@@ -145,14 +145,14 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             sector: sector,
                             base_radius: size
                     })
-                    .bindPopup(sector.Utrancell)
+                    .bindPopup(sector.Utrancell, {'offset': L.Point(20, 200)})
                     .setDirection(sector.Azimuth, 60)
-                    .on('mouseover', function (e) {
-                        this.openPopup();
-                    })
-                    .on('mouseout', function (e) {
-                        this.closePopup();
-                    })
+                    //.on('mouseover', function (e) {
+                    //    this.openPopup();
+                    //})
+                    //.on('mouseout', function (e) {
+                    //    this.closePopup();
+                    //})
                     .on('click', function(e){
                             var layer = e.target;
                             layer.options.old_weight=layer.options.weight;
@@ -170,22 +170,26 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             selected_sector = layer;
                             info.update(layer.options.sector);
                             if ($scope.show_neighbors){
-                                legend.reset();
-                                set_color_to_all_sectors('grey');
-
-                                selected_sector.setStyle({'color': 'green'});
-                                $http.get('/data/rnd/get_rnd_neighbors/' + rnd_network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
-                                    map.eachLayer(function (temp_layer) {
-                                        if (temp_layer.options.sector){
-                                            if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
-                                                console.log(data.indexOf(temp_layer.options.sector.Utrancell));
-                                                if (data.indexOf(temp_layer.options.sector.Utrancell) > 0) {
-                                                    temp_layer.setStyle({'color': 'red'});
+                                if (e.originalEvent.shiftKey){
+                                    selected_sector.setStyle({'color': 'orange'});
+                                } else {
+                                    legend.reset();
+                                    selected_sector.setStyle({'color': 'green'});
+                                    $http.get('/data/rnd/get_rnd_neighbors/' + rnd_network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
+                                        map.eachLayer(function (temp_layer) {
+                                            if (temp_layer.options.sector){
+                                                if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
+                                                    if (data.indexOf(temp_layer.options.sector.Utrancell) > 0) {
+                                                        temp_layer.setStyle({'color': 'red'});
+                                                    } else {
+                                                        temp_layer.setStyle({'color': 'grey'});
+                                                    }
                                                 }
                                             }
-                                        }
+                                        });
                                     });
-                                })
+                                }
+
                             }
                         })
                     .addTo(map);
@@ -212,7 +216,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
 
         $scope.onNeighbors = function(){
             if ($scope.show_neighbors){
-                set_color_to_all_sectors(randomColor({hue: 'random',luminosity: 'dark'}));
+                set_color_to_all_sectors('#03f');
             }
         }
 
@@ -220,15 +224,16 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             $http.get('/data/rnd/get_param_values/' + rnd_network + '/' + param + '/').success(function(data){
                 $scope.values = data;
                 data.unshift('All');
-                $scope.rnd_value['selected']='All';
             });
         };
         $scope.onSelectValue = function(item, model){
+            set_color_to_all_sectors('#03f');
+            legend.reset();
             onAddFilter($scope.rnd_param.selected, item);
         }
 
         $scope.onResetFilter = function(){
-            set_color_to_all_sectors(randomColor({hue: 'random',luminosity: 'dark'}));
+            set_color_to_all_sectors('#03f');
             legend.reset();
 
         };
@@ -277,10 +282,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                     legend.update(param, val_id, values_color[val_id], values_count[val_id]);
                 }
             });
-        };
-
-        $scope.onFilterClick = function(){
-            console.log('OK');
         };
 
         var set_color_to_all_sectors = function(color){
