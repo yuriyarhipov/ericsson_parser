@@ -39,6 +39,19 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                     }
                 };
 
+        var sectorControl = L.control({position: 'topleft'});
+
+        sectorControl.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'sector');
+            return this._div;
+        };
+
+        sectorControl.update = function (sector) {
+            this._div.innerHTML =
+                    '<h5>Sector:</h5>'+sector+'<br>';
+        };
+
+
         var legend = L.control({position: 'bottomright'});
 
         legend.onAdd = function (map) {
@@ -114,6 +127,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                 L.Control.measureControl().addTo(map);
                 info.addTo(map);
                 legend.addTo(map);
+                sectorControl.addTo(map);
 
                 for (var sector_id in data){
                     var sector = data[sector_id];
@@ -148,12 +162,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                     })
                     .bindPopup(sector.Utrancell, {'offset': L.Point(20, 200)})
                     .setDirection(sector.Azimuth, 60)
-                    //.on('mouseover', function (e) {
-                    //    this.openPopup();
-                    //})
-                    //.on('mouseout', function (e) {
-                    //    this.closePopup();
-                    //})
+                    .on('mouseover', function (e) {
+                        sectorControl.update(e.target.options.sector.Utrancell);
+                    })
+                    .on('mouseout', function (e) {
+
+                    })
                     .on('click', function(e){
                             var layer = e.target;
                             layer.options.old_weight=layer.options.weight;
