@@ -88,7 +88,6 @@ class Rnd:
         return result
 
     def get_rnd_neighbors(self, sector, filename):
-        print 'OK'
         cursor = connection.cursor()
         cursor.execute('''
             SELECT DISTINCT
@@ -96,6 +95,33 @@ class Rnd:
             FROM
                 UtranRelation
             WHERE (Utrancell=%s) AND (filename=%s)''', (sector, filename, ))
-
         neighbors = [row[0] for row in cursor]
         return neighbors
+
+    def save_new_3g(self, filename, rnc_source, utrancell_source,
+                    carrier_source, rnc_target, utrancell_target,
+                    carrier_target):
+        cursor = connection.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS new3g (
+                filename TEXT,
+                rncSource TEXT,
+                utrancellSource TEXT,
+                carrierSource  TEXT,
+                rncTarget TEXT,
+                utrancellTarget TEXT,
+                carrierTarget TEXT
+            )
+        ''')
+        cursor.execute('''
+            INSERT INTO new3g VALUES (%s,%s,%s,%s,%s,%s,%s)
+        ''', (
+            filename,
+            rnc_source,
+            utrancell_source,
+            carrier_source,
+            rnc_target,
+            utrancell_target,
+            carrier_target))
+        connection.commit()
+

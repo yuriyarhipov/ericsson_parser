@@ -32,6 +32,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         var data_length = 0;
         var legend_info = []
         $scope.show_neighbors = false;
+        var rncSource;
+        var utrancellSource;
+        var carrierSource;
 
         $scope.controls = {
                     fullscreen: {
@@ -166,7 +169,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                         sectorControl.update(e.target.options.sector.Utrancell);
                     })
                     .on('mouseout', function (e) {
-
+                        sectorControl.update('');
                     })
                     .on('click', function(e){
                             var layer = e.target;
@@ -186,10 +189,25 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             info.update(layer.options.sector);
                             if ($scope.show_neighbors){
                                 if (e.originalEvent.shiftKey){
-                                    selected_sector.setStyle({'color': 'orange'});
+                                    if (layer.options.color == 'orange'){
+                                        layer.setStyle({'color': 'grey'});
+                                    }
+                                    else if(layer.options.color == 'grey'){
+                                        layer.setStyle({'color': 'orange'});
+                                        $http.post('/data/rnd/new3g3g/',$.param({
+                                            'rncSource': rncSource,
+                                            'utrancellSource': utrancellSource,
+                                            'carrierSource': carrierSource,
+                                            'rncTarget': layer.options.sector.RNC,
+                                            'utrancellTarget': layer.options.sector.Utrancell,
+                                            'carrierTarget': layer.options.sector.Carrier,}));
+                                        }
                                 } else {
                                     legend.reset();
-                                    selected_sector.setStyle({'color': 'green'});
+                                    rncSource = layer.options.sector.RNC;
+                                    utrancellSource = layer.options.sector.Utrancell;
+                                    carrierSource = layer.options.sector.Carrier;
+                                    layer.setStyle({'color': 'green'});
                                     $http.get('/data/rnd/get_rnd_neighbors/' + rnd_network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
                                         map.eachLayer(function (temp_layer) {
                                             if (temp_layer.options.sector){

@@ -119,6 +119,7 @@ def by_technology(request, network):
         tables = request.wcdma.tables.split(',')
         tables.sort()
         data = [
+            {'label': '3G3GNeighbors', 'table': 'new3g', 'type': 'Additional table', 'filename': filename},
             {'label': 'Topology', 'table': 'topology', 'type': 'Additional table', 'filename': filename},
             {'label': 'RND', 'table': 'rnd_wcdma', 'type': 'Additional table', 'filename': filename},
             {'label': 'BrightcommsRNDDate', 'table': 'BrightcommsRNDDate', 'type': 'Additional table', 'filename': filename},
