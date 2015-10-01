@@ -303,8 +303,16 @@ def del3g3g(request):
             request.wcdma.filename,
             request.POST.get('utrancellSource'),
             request.POST.get('utrancellTarget'))
-
     return Response([])
+
+
+@api_view(['POST', ])
+def flush3g3g(request):
+    project = request.project
+    if request.method == 'POST':
+        Rnd(project.id, 'wcdma').flush_3g(request.wcdma.filename)
+    return Response([])
+
 
 
 

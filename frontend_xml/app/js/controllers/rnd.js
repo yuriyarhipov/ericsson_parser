@@ -279,6 +279,19 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
 
         };
 
+        $scope.onFlush =function(){
+            $http.post('/data/rnd/flush3g3g/');
+            leafletData.getMap().then(function(map) {
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        if (layer.options.color == 'orange'){
+                            layer.setStyle({'color': 'grey'});
+                        }
+                    }
+                });
+            });
+        };
+
         var onAddFilter = function(param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
             var values_color = {};

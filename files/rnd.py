@@ -144,8 +144,19 @@ class Rnd:
             DELETE FROM
                 new3g
             WHERE
-                (filename=%s) AND (utrancellSource=%s) AND (utrancellTarget=%s)''', (
+                (filename=%s) AND
+                (utrancellSource=%s) AND
+                (utrancellTarget=%s)''', (
             filename,
             utrancell_source,
             utrancell_target))
+        connection.commit()
+
+    def flush_3g(self, filename):
+        cursor = connection.cursor()
+        cursor.execute('''
+            DELETE FROM
+                new3g
+            WHERE
+                (filename=%s)''', (filename,))
         connection.commit()
