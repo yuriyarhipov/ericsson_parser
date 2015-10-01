@@ -85,6 +85,7 @@ urlpatterns = patterns('',
 
     url(r'^data/rnd/get_param_values/(\S+)/(\S+)/$', files_views.get_param_values),
     url(r'^data/rnd/get_rnd_neighbors(\S+)/(\S+)/$', files_views.get_rnd_neighbors),
+    url(r'^data/rnd/get_new3g(\S+)/(\S+)/$', files_views.get_new3g),
     url(r'^data/rnd/new3g3g/$', files_views.new3g3g),
     url(r'^data/rnd/del3g3g/$', files_views.del3g3g),
     url(r'^data/rnd/(\S+)/$', files_views.rnd),

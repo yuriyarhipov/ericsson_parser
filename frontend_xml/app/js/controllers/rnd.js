@@ -213,16 +213,20 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                                     carrierSource = layer.options.sector.Carrier;
                                     layer.setStyle({'color': 'green'});
                                     $http.get('/data/rnd/get_rnd_neighbors/' + rnd_network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
-                                        map.eachLayer(function (temp_layer) {
-                                            if (temp_layer.options.sector){
-                                                if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
-                                                    if (data.indexOf(temp_layer.options.sector.Utrancell) >= 0) {
-                                                        temp_layer.setStyle({'color': 'red'});
-                                                    } else {
-                                                        temp_layer.setStyle({'color': 'grey'});
+                                        $http.get('/data/rnd/get_new3g/' + rnd_network + '/' + layer.options.sector.Utrancell + '/').success(function(new3g_neighbors){
+                                            map.eachLayer(function (temp_layer) {
+                                                if (temp_layer.options.sector){
+                                                    if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
+                                                        if (data.indexOf(temp_layer.options.sector.Utrancell) >= 0) {
+                                                            temp_layer.setStyle({'color': 'red'});
+                                                        } else if(new3g_neighbors.indexOf(temp_layer.options.sector.Utrancell) >= 0){
+                                                            temp_layer.setStyle({'color': 'orange'});
+                                                        } else {
+                                                            temp_layer.setStyle({'color': 'grey'});
+                                                        }
                                                     }
                                                 }
-                                            }
+                                            });
                                         });
                                     });
                                 }

@@ -271,6 +271,14 @@ def get_rnd_neighbors(request, network, sector):
     return Response(values)
 
 
+@api_view(['GET', ])
+def get_new3g(request, network, sector):
+    project = request.project
+    filename = request.wcdma.filename
+    values = Rnd(project.id, network).get_new3g(sector, filename)
+    return Response(values)
+
+
 @api_view(['POST', ])
 def new3g3g(request):
     project = request.project
