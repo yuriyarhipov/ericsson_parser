@@ -191,6 +191,10 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                                 if (e.originalEvent.shiftKey){
                                     if (layer.options.color == 'orange'){
                                         layer.setStyle({'color': 'grey'});
+                                        $http.post('/data/rnd/del3g3g/',$.param({
+                                            'utrancellSource': utrancellSource,
+                                            'utrancellTarget': layer.options.sector.Utrancell
+                                        }));
                                     }
                                     else if(layer.options.color == 'grey'){
                                         layer.setStyle({'color': 'orange'});
@@ -212,7 +216,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                                         map.eachLayer(function (temp_layer) {
                                             if (temp_layer.options.sector){
                                                 if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
-                                                    if (data.indexOf(temp_layer.options.sector.Utrancell) > 0) {
+                                                    if (data.indexOf(temp_layer.options.sector.Utrancell) >= 0) {
                                                         temp_layer.setStyle({'color': 'red'});
                                                     } else {
                                                         temp_layer.setStyle({'color': 'grey'});
