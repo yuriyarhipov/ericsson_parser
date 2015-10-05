@@ -25,7 +25,8 @@ var XmlApp = angular.module(
         'auditControllers',
         'distanceControllers',
         'flash',
-        'leaflet-directive'
+        'leaflet-directive',
+        'pageslide-directive'
     ]);
 
 XmlApp.config(['$routeProvider',

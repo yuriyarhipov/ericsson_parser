@@ -1,4 +1,23 @@
-<div class="col-md-12 panel">
+<div class="btn-group col-md-12" role="group">
+    <button type="button" class="btn btn-default" ng-model="show_menu" btn-checkbox>
+    <span class="glyphicon glyphicon-filter" aria-hidden="true" ></span>
+        Filter
+    </button>
+    <button
+        type="button"
+        class="btn btn-default"
+        ng-model="show_neighbors"
+        ng-click="onNeighbors()"
+        btn-checkbox
+    >Show 3g-3g Neighbors</button>
+    <button type="button" class="btn btn-danger" ng-click="onFlush()">Flush new Neighbors</button>
+    <div class="col-md-4">
+        <label>Sector size:</label>
+        <input class="btn" type="range" name="points" min="-500" max="500" ng-model="sector_size" ng-change="onSizeSector(sector_size)">
+    </div>
+</div>
+
+<div class="col-md-12 panel" ng-show="show_menu">
         <form class="form">
             <div class="form-group">
                 <div class="col-md-3" id="param">
@@ -30,12 +49,6 @@
         </form>
     </div>
 <div class="col-md-12">
-    <div class="btn-group">
-        <label class="btn btn-default" ng-model="show_neighbors" ng-click="onNeighbors()" btn-checkbox>Show 3g-3g Neighbors</label>
-        <button class="btn btn-danger" ng-click="onFlush()">Flush new Neighbors</button>
-    </div>
-</div>
-<div class="col-md-12">
     <table class="table">
         <tr ng-repeat="filter in map_filters">
             <td class="col-md-3">{{ filter.param }}</td>
@@ -47,6 +60,6 @@
 </div>
 <div class="row">
     <div class="col-md-12 panel">
-        <leaflet controls="controls" width="100%" height="800px"></leaflet>
+        <leaflet controls="controls" width="100%" height="600px"></leaflet>
     </div>
 </div>

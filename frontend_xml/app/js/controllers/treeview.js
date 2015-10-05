@@ -77,6 +77,13 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
 
 treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$http', 'activeProjectService', 'activeFileService', '$location', '$rootScope',
     function ($scope, $timeout, $cookies, $http, activeProjectService, activeFileService, $location, $rootScope) {
+        $scope.checked = false;
+
+        $scope.toggle = function(){
+            $scope.checked = !$scope.checked
+        }
+
+
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = {};
         $scope.network.selected = 'GSM';

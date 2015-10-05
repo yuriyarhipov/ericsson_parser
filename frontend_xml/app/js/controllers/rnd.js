@@ -35,6 +35,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         var rncSource;
         var utrancellSource;
         var carrierSource;
+        $scope.show_menu = false;
+        $scope.sector_size = 0;
 
         $scope.controls = {
                     fullscreen: {
@@ -161,6 +163,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             opacity: 0.7,
                             weight: 2,
                             sector: sector,
+                            current_radius: size,
                             base_radius: size
                     })
                     .bindPopup(sector.Utrancell, {'offset': L.Point(20, 200)})
@@ -245,8 +248,10 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             base_size = zkf*carriers_size[sector.Carrier];
                             var size = base_size * (11-parseFloat(layer.options.sector.Carrier))/10
                             layer.setRadius(size);
+                            layer.options.current_radius = size;
                         }
                     });
+                    $scope.sector_size = 0;
                 });
 
             });
@@ -292,6 +297,21 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             });
         };
 
+        $scope.onSizeSector = function(new_size){
+            leafletData.getMap().then(function(map) {
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        var new_s = layer.options.current_radius + (new_size*10);
+                        if (new_s < 100){
+                            new_s = 100;
+                        }
+                        layer.setRadius(new_s);
+                    }
+                });
+            });
+        };
+
+
         var onAddFilter = function(param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
             var values_color = {};
@@ -329,7 +349,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                     }
                 });
                 if (last_marker){
-                    map.setView([last_marker.Latitud, last_marker.Longitud], 12);
+                    //map.setView([last_marker.Latitud, last_marker.Longitud], 12);
                 }
 
                 for (var  val_id in values_count ){
@@ -337,7 +357,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                 }
             });
         };
-
         var set_color_to_all_sectors = function(color){
             leafletData.getMap().then(function(map) {
                 map.eachLayer(function (layer) {
