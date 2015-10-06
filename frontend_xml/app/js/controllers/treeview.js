@@ -2,7 +2,6 @@ var treeViewControllers = angular.module('treeViewControllers', []);
 
 treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', 'activeProjectService', '$location',
     function ($scope, $http, $cookies, activeProjectService, $location) {
-        console.log('t1');
         $http.get('/data/treeview/' + $cookies.active_project).success(function(data){
             $scope.treedata = data;
         });
@@ -79,10 +78,9 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
     function ($scope, $timeout, $cookies, $http, activeProjectService, activeFileService, $location, $rootScope) {
         $scope.checked = false;
 
-        $scope.toggle = function(){
+        $scope.onShowMenu = function(){
             $scope.checked = !$scope.checked
         }
-
 
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = {};

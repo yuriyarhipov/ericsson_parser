@@ -13,6 +13,27 @@
     content: '\25BC';
 }
 
+body {
+  padding-top: 60px;
+}
+
+#pageslide {
+    top:60px;
+}
+
+.navbar-inverse {
+    background-color: #31859C;
+}
+
+.navbar-inverse {
+  border: 0;
+}
+
+.sidebar {
+    width: 20px;
+    height: 500px;
+}
+
 html {
     overflow-x: hidden;
 }
