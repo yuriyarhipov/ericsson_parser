@@ -66,7 +66,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         };
 
         legend.update = function (legend_info) {
-            console.log(legend_info);
             var table = '<table>'
             for (l_i in legend_info){
 
@@ -255,7 +254,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
 
                 map.on('zoomend', function(e){
                     if ($scope.range_sector_size != 0){
-                        console.log($scope.range_sector_size);
                         return
                     }
                     var zoom = e.target._zoom;
@@ -323,7 +321,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                 map.eachLayer(function (layer) {
                     if (layer.options.sector) {
                         var new_s = parseFloat(layer.options.current_radius) + parseFloat(new_size);
-                        console.log(new_s);
                         layer.setRadius(new_s);
                     }
                 });
