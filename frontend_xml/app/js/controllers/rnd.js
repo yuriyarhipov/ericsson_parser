@@ -64,9 +64,15 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             return this._div;
         };
 
-        legend.update = function (param, value, color, cnt) {
-            this._div.innerHTML +=
-                    '<i style="background:' + color + '"></i> '+ param+'='+value+'(' + cnt +')<br>';
+        legend.update = function (legend_info) {
+            console.log(legend_info);
+            var table = '<table>'
+            for (l_i in legend_info){
+
+                table += '<tr><td><i style="background:' + legend_info[l_i].color + '"></i> '+ legend_info[l_i].param+'='+legend_info[l_i].value+'(' + legend_info[l_i].count +')</td></tr>'
+            }
+            table += '</table>'
+            this._div.innerHTML = table;
         };
 
         legend.reset = function(){
@@ -311,6 +317,10 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             });
         };
 
+        $scope.onTest = function(){
+            console.log('test');
+        };
+
 
         var onAddFilter = function(param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
@@ -351,10 +361,16 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                 if (last_marker){
                     //map.setView([last_marker.Latitud, last_marker.Longitud], 12);
                 }
-
+                var legend_dict = []
                 for (var  val_id in values_count ){
-                    legend.update(param, val_id, values_color[val_id], values_count[val_id]);
+                    legend_dict.push({
+                        'param': param,
+                        'value': val_id,
+                        'color': values_color[val_id],
+                        'count': values_count[val_id]
+                    })
                 }
+                legend.update(legend_dict);
             });
         };
         var set_color_to_all_sectors = function(color){
