@@ -36,7 +36,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         var utrancellSource;
         var carrierSource;
         $scope.show_menu = false;
-        $scope.sector_size = 0;
+        var sector_size = 0;
+        $scope.range_sector_size = 0;
 
         $scope.controls = {
                     fullscreen: {
@@ -243,10 +244,20 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             }
                         })
                     .addTo(map);
+                    if (sector_size == 0 || sector_size > size){
+                        sector_size = size;
+                        $scope.range_max = sector_size;
+                        $scope.range_min = sector_size * -1;
+                    }
+
                 }
                 map.setView([data[0].Latitud, data[0].Longitud], 10);
 
                 map.on('zoomend', function(e){
+                    if ($scope.range_sector_size != 0){
+                        console.log($scope.range_sector_size);
+                        return
+                    }
                     var zoom = e.target._zoom;
                     map.eachLayer(function (layer) {
                         if (layer.options.sector) {
@@ -255,9 +266,13 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             var size = base_size * (11-parseFloat(layer.options.sector.Carrier))/10
                             layer.setRadius(size);
                             layer.options.current_radius = size;
+                            if (sector_size == 0 || sector_size > size){
+                                sector_size = size;
+                                $scope.range_max = sector_size;
+                                $scope.range_min = sector_size * -1;
+                            }
                         }
                     });
-                    $scope.sector_size = 0;
                 });
 
             });
@@ -307,10 +322,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             leafletData.getMap().then(function(map) {
                 map.eachLayer(function (layer) {
                     if (layer.options.sector) {
-                        var new_s = layer.options.current_radius + (new_size*10);
-                        if (new_s < 100){
-                            new_s = 100;
-                        }
+                        var new_s = parseFloat(layer.options.current_radius) + parseFloat(new_size);
+                        console.log(new_s);
                         layer.setRadius(new_s);
                     }
                 });
