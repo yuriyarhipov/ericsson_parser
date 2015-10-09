@@ -38,6 +38,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         $scope.show_menu = false;
         var sector_size = 0;
         $scope.range_sector_size = 0;
+        var changed_sector = false;
 
         $scope.controls = {
                     fullscreen: {
@@ -253,24 +254,24 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                 map.setView([data[0].Latitud, data[0].Longitud], 10);
 
                 map.on('zoomend', function(e){
-                    if ($scope.range_sector_size != 0){
-                        return
-                    }
                     var zoom = e.target._zoom;
                     map.eachLayer(function (layer) {
                         if (layer.options.sector) {
                             zkf = ((zoom-10)*-12+100)/100
                             base_size = zkf*carriers_size[sector.Carrier];
                             var size = base_size * (11-parseFloat(layer.options.sector.Carrier))/10
-                            layer.setRadius(size);
+                            if (! changed_sector){
+                                layer.setRadius(size);
+                            }
                             layer.options.current_radius = size;
                             if (sector_size == 0 || sector_size > size){
                                 sector_size = size;
-                                $scope.range_max = sector_size;
-                                $scope.range_min = sector_size * -1;
                             }
                         }
                     });
+                    $scope.range_sector_size = 0;
+                    $scope.range_max = sector_size;
+                    $scope.range_min = sector_size * -1;
                 });
 
             });
@@ -325,6 +326,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                     }
                 });
             });
+            changed_sector = true;
         };
 
         $scope.onTest = function(){
@@ -368,9 +370,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                         }
                     }
                 });
-                if (last_marker){
-                    //map.setView([last_marker.Latitud, last_marker.Longitud], 12);
+
+                if (value != 'All'){
+                    map.setView([last_marker.Latitud, last_marker.Longitud], 12);
                 }
+
                 var legend_dict = []
                 for (var  val_id in values_count ){
                     legend_dict.push({
