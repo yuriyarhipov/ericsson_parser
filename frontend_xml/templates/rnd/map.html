@@ -7,14 +7,15 @@
             ng-click="onNeighbors()"
             btn-checkbox>Show 3g-3g Neighbors</button>
         <button type="button" class="btn btn-danger col-md-2" ng-click="onFlush()">Flush new Neighbors</button>
-        <div class="col-md-5"></div>
+        <div class="col-md-4"></div>
         <div class="col-md-2">
             <label>Sector size:</label>
-            <input class="btn" type="range" name="points" min="{{ range_min }}" max="{{ range_max }}" value="{{ range_sector_size }}" ng-model="range_sector_size" ng-change="onSizeSector(range_sector_size)" ng-model-options="{ updateOn: 'default blur', debounce: { default: 1000, blur: 0 } }">
+            <input class="btn" type="range" name="points" step="0.1" min="-1" max="1" value="{{ range_sector_size }}" ng-model="range_sector_size" ng-change="onSizeSector(range_sector_size)" ng-model-options="{ updateOn: 'default blur', debounce: { default: 1000, blur: 0 } }">
         </div>
         <button type="button" class="btn btn-default col-md-1" ng-model="show_menu" btn-checkbox>
             <span class="glyphicon glyphicon-filter" aria-hidden="true" ></span>
         </button>
+
     </div>
     <div class="col-md-12 panel" ng-show="show_menu">
         <form class="form">

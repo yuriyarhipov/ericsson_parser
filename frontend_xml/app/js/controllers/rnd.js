@@ -21,11 +21,15 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
         };
   }]);
 
-rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafletData', '$location',
-    function ($scope, $http, $routeParams, leafletData, $location) {
+rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafletData', '$location', '$cookies',
+    function ($scope, $http, $routeParams, leafletData, $location, $cookies) {
+        var radius = parseFloat($cookies.get('radius_wcdma'));
+        if (! radius){
+            radius = 1500;
+        }
         var search_params = $location.search();
         var rnd_network = $routeParams.network;
-        var carriers_size = {'1': 1500};
+
         var sector_azimuths_size = {};
         $scope.rnd_value = {};
         $scope.rnd_param = {};
@@ -36,9 +40,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         var utrancellSource;
         var carrierSource;
         $scope.show_menu = false;
-        var sector_size = 0;
         $scope.range_sector_size = 0;
-        var changed_sector = false;
+
 
         $scope.controls = {
                     fullscreen: {
@@ -143,35 +146,15 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
 
                 for (var sector_id in data){
                     var sector = data[sector_id];
-                    var size = carriers_size[1];
-
-                    if (sector.Carrier in carriers_size){
-                        size = carriers_size[sector.Carrier];
-                    } else {
-                        size = carriers_size[1] * (11-parseFloat(sector.Carrier))/10;
-                        carriers_size[sector.Carrier] = min_carrier_size = size;
-                    }
-
-                  //  if (sector.SITE in sector_azimuths_size){
-                  //      if (sector.Azimuth in sector_azimuths_size[sector.SITE]){
-                  //          size = sector_azimuths_size[sector.SITE][sector.Azimuth][sector_azimuths_size[sector.SITE][sector.Azimuth].length-1] * 0.9;
-                  //          sector_azimuths_size[sector.SITE][sector.Azimuth].push(size)
-                  //      } else {
-                  //          sector_azimuths_size[sector.SITE][sector.Azimuth] = [size,];
-                  //      }
-                  //  } else {
-                  //      var az = {}
-                  //      az[sector.Azimuth] = [size,];
-                  //      sector_azimuths_size[sector.SITE]=az;
-                   // }
+                    var size = radius * (11-parseFloat(sector.Carrier))/10;
 
                     L.circle([sector.Latitud, sector.Longitud], size, {
                             color: '#03f',
                             opacity: 0.7,
                             weight: 2,
                             sector: sector,
-                            current_radius: size,
-                            base_radius: size
+                            current_base_radius: radius,
+                            zoom: 10,
                     })
                     .bindPopup(sector.Utrancell, {'offset': L.Point(20, 200)})
                     .setDirection(sector.Azimuth, 60)
@@ -244,34 +227,26 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             }
                         })
                     .addTo(map);
-                    if (sector_size == 0 || sector_size > size){
-                        sector_size = size;
-                        $scope.range_max = sector_size;
-                        $scope.range_min = sector_size * -1;
-                    }
-
                 }
                 map.setView([data[0].Latitud, data[0].Longitud], 10);
 
                 map.on('zoomend', function(e){
                     var zoom = e.target._zoom;
+                    if ($scope.range_sector_size != 0) {
+                        radius += radius * parseFloat($scope.range_sector_size);                                            }
+
                     map.eachLayer(function (layer) {
                         if (layer.options.sector) {
                             zkf = ((zoom-10)*-12+100)/100
-                            base_size = zkf*carriers_size[sector.Carrier];
-                            var size = base_size * (11-parseFloat(layer.options.sector.Carrier))/10
-                            if (! changed_sector){
-                                layer.setRadius(size);
-                            }
-                            layer.options.current_radius = size;
-                            if (sector_size == 0 || sector_size > size){
-                                sector_size = size;
-                            }
+                            var current_size = radius * (11-parseFloat(layer.options.sector.Carrier))/10;
+                            var size = zkf*current_size;
+                            layer.setRadius(size);
+                            layer.options.current_base_radius = zkf*radius;
+                            layer.options.zoom = zoom;
                         }
                     });
                     $scope.range_sector_size = 0;
-                    $scope.range_max = sector_size;
-                    $scope.range_min = sector_size * -1;
+
                 });
 
             });
@@ -318,21 +293,18 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         };
 
         $scope.onSizeSector = function(new_size){
+            var new_radius = radius + radius * parseFloat(new_size)
             leafletData.getMap().then(function(map) {
                 map.eachLayer(function (layer) {
                     if (layer.options.sector) {
-                        var new_s = parseFloat(layer.options.current_radius) + parseFloat(new_size);
+                        zkf = ((layer.options.zoom-10)*-12+100)/100
+                        var current_size = new_radius * (11-parseFloat(layer.options.sector.Carrier))/10;
+                        var new_s = zkf*current_size;
                         layer.setRadius(new_s);
                     }
                 });
             });
-            changed_sector = true;
         };
-
-        $scope.onTest = function(){
-            console.log('test');
-        };
-
 
         var onAddFilter = function(param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
@@ -397,3 +369,17 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             });
         }
   }]);
+
+
+rndControllers.controller('mapSettingsCtrl', ['$scope', '$http', '$cookies',
+    function ($scope, $http, $cookies) {
+        $scope.radius_wcdma = 1500;
+        $scope.radius_gsm = 1200;
+        $scope.radius_lte = 1800;
+
+        $scope.onSaveMapSettings = function(){
+            $cookies.put('radius_wcdma', $scope.radius_wcdma);
+            $cookies.put('radius_gsm', $scope.radius_gsm);
+            $cookies.put('radius_lte', $scope.radius_lte);
+        };
+}]);

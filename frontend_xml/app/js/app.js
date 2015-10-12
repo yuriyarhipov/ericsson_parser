@@ -183,6 +183,10 @@ XmlApp.config(['$routeProvider',
             when('/about/',{
                 templateUrl: 'templates/about.html',
             }).
+            when('/map_settings/',{
+                templateUrl: 'templates/rnd/settings.html',
+                controller: 'mapSettingsCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });
