@@ -33,21 +33,19 @@
             <a href="/data/distance/get_excel/{{ day }}/{{ sector.selected }}/">Download Excel</a>
         </div>
 
-        <div class="col-md-12" collapse="isCollapsed">
-            <tabset>
-                <tab heading="Load Balance">
+        <div class="col-md-12">
+            <uib-tabset>
+                <uib-tab heading="Load Balance">
                     <div class="col-md-12" ng-repeat="sector in utrancells">
                         <highchart config="get_config(sector)"></highchart>
                     </div>
-                </tab>
-                <tab heading="Load Distribution">
+                </uib-tab>
+                <uib-tab heading="Load Distribution">
                     <highchart config="loadDistribution"></highchart>
-                </tab>
-            </tabset>
+                </uib-tab>
+            </uib-tabset>
         </div>
-
     </div>
-
 </form>
 
 
