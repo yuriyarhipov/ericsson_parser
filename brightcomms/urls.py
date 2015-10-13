@@ -77,6 +77,8 @@ urlpatterns = patterns('',
     url(r'^data/audit/excel_power_audit/(\S+)/$', table_views.excel_power_audit),
 
     url(r'^data/distance/get_sectors/$', table_views.get_sectors),
+    url(r'^data/distance/get_logical_sectors/$', table_views.get_logical_sectors),
+
     url(r'^data/distance/get_rbs/$', table_views.get_rbs),
     url(r'^data/distance/get_dates/(\S+)/$', table_views.get_dates),
     url(r'^data/distance/get_charts/(\S+)/(\S+)/$', table_views.get_charts),

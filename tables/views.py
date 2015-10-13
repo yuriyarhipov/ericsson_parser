@@ -292,6 +292,18 @@ def get_sectors(request):
         json.dumps({'sectors': sectors}),
         content_type='application/json')
 
+def get_logical_sectors(request):
+    sectors = Distance().get_sectors()
+    result = set()
+    for s in sectors:
+        result.add(s[-1])
+    result = list(result)
+    result.sort()
+    return HttpResponse(
+        json.dumps({'sectors': result}),
+        content_type='application/json')
+
+
 
 def get_rbs(request):
     project = request.project

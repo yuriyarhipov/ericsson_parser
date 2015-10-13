@@ -129,15 +129,15 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
 filesControllers.controller('logicalSectorCtrl', ['$scope', '$http',
     function ($scope, $http) {
         $scope.table = [];
-        $scope.network = '';
-        $scope.network = '';
+
+        $http.get('data/distance/get_logical_sectors/').success(function(data){
+            $scope.sectors = data.sectors;
+        });
+
         $scope.onSave = function(){
             $scope.table.push({
-                'network': $scope.network,
-                'freq': $scope.freq,
-                'slabel': $scope.slabel,
-                'sector': $scope.sector,
-                'members': $scope.members,
+                'first_s': $scope.first_sector,
+                'second_s': $scope.second_sector,
             });
         };
 }]);
