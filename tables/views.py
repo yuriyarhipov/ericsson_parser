@@ -11,6 +11,9 @@ from django.conf import settings
 from openpyxl import load_workbook
 from files.distance import Distance
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 
 def handle_uploaded_file(files):
     path = settings.STATICFILES_DIRS[0]
@@ -337,8 +340,12 @@ def get_chart(request, date, sector):
 
 def get_load_distr(request, day, rbs):
     project = request.project
-    data, title = Distance().get_distr(day, rbs, project.id)
-    return HttpResponse(json.dumps(dict(data=data, title=title)), content_type='application/json')
+    data, title, logical_sectors = Distance().get_distr(day, rbs, project.id)
+    return HttpResponse(json.dumps(dict(
+            data=data,
+            title=title,
+            logical_sectors=logical_sectors)),
+        content_type='application/json')
 
 
 def get_distance_excel(request, date, sector):
@@ -347,3 +354,25 @@ def get_distance_excel(request, date, sector):
     chart, table = Distance().get_chart(date, sector)
     f = DistanceExcel().create_file(project.project_name, filename, chart, table)
     return HttpResponseRedirect(f)
+
+
+@api_view(['GET', 'POST', 'DELETE', ])
+def logical_sectors(request, id=None):
+    project = request.project
+    if request.method == 'POST':
+        bands = request.POST.getlist('bands[]')
+        networks = request.POST.getlist('networks[]')
+        sectors = request.POST.getlist('sectors[]')
+        logical_sector = []
+        for i in range(0, len(bands)):
+            logical_sector.append({
+                'network': networks[i],
+                'band': bands[i],
+                'sector': sectors[i]
+            })
+        Distance().add_logical_sector(project.id, logical_sector)
+
+    elif request.method == 'DELETE':
+        Distance().delete_logical_sectors(project.id, id)
+
+    return Response(Distance().logical_sectors(project.id))

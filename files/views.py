@@ -15,6 +15,7 @@ from .models import Files, UploadedFiles, SuperFile, CNATemplate, FileTasks
 from tables.table import Table
 from files.compare import CompareFiles, CompareTable
 from files.excel import ExcelFile
+from files.distance import Distance
 from rnd import Rnd
 import tasks
 
@@ -84,6 +85,7 @@ def files(request):
     for f in Files.objects.filter(project=project):
         status = 'uploaded'
         files.append({
+            'id': f.id,
             'filename': f.filename,
             'date': f.date.strftime('%m.%d.%Y'),
             'file_type': f.file_type,
@@ -165,9 +167,12 @@ def compare_files(request):
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 
-def delete_file(request, filename):
-    Files.objects.filter(filename=filename).delete()
-    SuperFile.objects.filter(filename=filename).delete()
+def delete_file(request, id):
+    project = request.project
+    f = Files.objects.get(id=id)
+    Distance().delete_file(f.filename, project.id)
+    f.delete()
+    # SuperFile.objects.filter(filename=f.filename).delete()
     return HttpResponse(json.dumps([]), content_type='application/json')
 
 

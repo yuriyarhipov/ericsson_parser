@@ -1,3 +1,4 @@
+import json
 from openpyxl import load_workbook
 from django.db import connection
 from os.path import basename
@@ -38,6 +39,13 @@ class Distance(object):
         except:
             pass
         connection.commit()
+
+    def delete_file(self, filename, project_id):
+        cursor = connection.cursor()
+        cursor.execute('DELETE FROM Access_Distance WHERE (filename=%s) AND (project_id=%s)',(
+            filename,
+            project_id
+        ))
 
     def get_sectors(self):
         cursor = connection.cursor()
@@ -267,6 +275,59 @@ class Distance(object):
             vendor=vendor,
             network='WCDMA')
 
+    def get_logical_distr(self, day, utrancells, project_id):
+        cursor = connection.cursor()
+        data = []
+        cursor.execute('''
+            SELECT
+                MIN(date_id),
+                MAX(date_id)
+            FROM
+                Access_Distance
+            WHERE
+                (utrancell IN (%s))''', (
+            utrancells, ))
+        days = cursor.fetchall()[0]
+        if day != 'none':
+            cursor.execute('''
+                SELECT
+                    utrancell,
+                    SUM(pmpropagationdelay)
+                FROM
+                    access_distance
+                WHERE
+                    (utrancell IN (%s)) AND
+                    (project_id = %s) AND
+                    (date_id=%s)
+                GROUP BY
+                    utrancell
+                ORDER BY utrancell;''' % (
+                utrancells,
+                project_id,
+                datetime.strptime(day, '%d.%m.%Y')))
+            title = 'Load Distribution Logical:<b>%s</b> ' % (utrancells)
+        else:
+            cursor.execute('''
+                SELECT
+                    utrancell,
+                    SUM(pmpropagationdelay)
+                FROM
+                    access_distance
+                WHERE
+                    (utrancell IN (%s)) AND
+                    (project_id = %s)
+                GROUP BY
+                    utrancell
+                ORDER BY utrancell;''' % (utrancells, project_id))
+            title = 'Load Distribution Logical:<b>%s</b> ' % (utrancells)
+            #    days[0].strftime('%d.%m.%Y'),
+            #    days[1].strftime('%d.%m.%Y'))
+
+        for row in cursor:
+            data.append(dict(name=row[0], y=int(row[1])))
+
+        return {'title': title, 'data': data}
+
     def get_distr(self, day, rbs, project_id):
         data = []
         cursor = connection.cursor()
@@ -280,7 +341,19 @@ class Distance(object):
                 (RBS=%s)''', (
             rbs, ))
         days = cursor.fetchall()[0]
-        print days
+
+        logical_sectors = []
+        cursor.execute('SELECT sectors FROM LogicalSector WHERE project_id=%s', (project_id, ))
+
+        for row in cursor:
+            utrancells = []
+            for sector in row[0]:
+                if sector.get('network') == 'WCDMA':
+                    utrancells.append(rbs + sector.get('sector'))
+            utrancells = ["'%s'" % utcell for utcell in utrancells ]
+            ls = self.get_logical_distr(day, ','.join(utrancells), project_id)
+            if ls.get('data'):
+                logical_sectors.append(ls)
 
         if day != 'none':
             cursor.execute('''
@@ -319,6 +392,33 @@ class Distance(object):
                 days[1].strftime('%d.%m.%Y'))
         for row in cursor:
             data.append(dict(name=row[0], y=int(row[1])))
+        return data, title, logical_sectors
 
-        return data, title
+    def logical_sectors(self, project_id):
+        cursor = connection.cursor()
+        result = []
+        cursor.execute('SELECT id, sectors FROM LogicalSector WHERE project_id=%s', (project_id, ))
+        for row in cursor:
+            result.append({'id': row[0], 'sectors': row[1]})
+        return result
 
+    def add_logical_sector(self, project_id, logical_sector):
+        cursor = connection.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS LogicalSector (
+                id SERIAL,
+                project_id INT,
+                sectors JSON)''')
+
+        cursor.execute('''
+                INSERT INTO LogicalSector (project_id, sectors)
+                VALUES (%s, %s)''', (
+            project_id,
+            json.dumps(logical_sector, encoding='latin1')
+        ))
+        connection.commit()
+
+    def delete_logical_sectors(self, project_id, id):
+        cursor = connection.cursor()
+        cursor.execute('DELETE FROM LogicalSector WHERE id=%s', (id, ))
+        connection.commit()

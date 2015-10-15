@@ -84,6 +84,8 @@ urlpatterns = patterns('',
     url(r'^data/distance/get_charts/(\S+)/(\S+)/$', table_views.get_charts),
     url(r'^data/distance/get_load_distr/(\S+)/(\S+)/$', table_views.get_load_distr),
     url(r'^data/distance/get_excel/(\S+)/(\S+)/$', table_views.get_distance_excel),
+    url(r'^data/distance/logical_sectors/(\S+)/$', table_views.logical_sectors),
+    url(r'^data/distance/logical_sectors/$', table_views.logical_sectors),
 
     url(r'^data/rnd/get_param_values/(\S+)/(\S+)/$', files_views.get_param_values),
     url(r'^data/rnd/get_rnd_neighbors(\S+)/(\S+)/$', files_views.get_rnd_neighbors),

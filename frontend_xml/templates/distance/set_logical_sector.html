@@ -1,38 +1,75 @@
 <div class="form-horizontal col-sm-6">
     <div class="form-group">
-        <label for="file" class="col-sm-4 control-label">Select the First Sector:</label>
+        <label for="tech" class="col-sm-4 control-label">Technology:</label>
         <div class="col-sm-8">
             <select
-                class="col-md-5"
-                ng-options="s for s in sectors"
-                ng-model="first_sector">
+                class="col-md-12"
+                ng-options="network for network in networks"
+                ng-model="network"
+                id="tech">
             </select>
         </div>
     </div>
     <div class="form-group">
-        <label for="file" class="col-sm-4 control-label">Select the Second Sector:</label>
+        <label for="band" class="col-sm-4 control-label">Band:</label>
         <div class="col-sm-8">
             <select
-                class="col-md-5"
+                class="col-md-12"
+                ng-options="band for band in bands"
+                ng-model="band"
+                id="band">
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="file" class="col-sm-4 control-label">Sectors:</label>
+        <div class="col-sm-8">
+            <select multiple
+                class="col-md-12"
                 ng-options="s for s in sectors"
                 ng-model="second_sector">
             </select>
         </div>
     </div>
+    <div class="form-group">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-8">
+            <button ng-click="onAdd(network, band, second_sector)" class="btn btn-success">Add</button>
+            <button ng-click="onRemove(selected_logical_sector)" class="btn btn-danger">Delete</button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="file" class="col-sm-4 control-label">Logical Sectors:</label>
+        <div class="col-sm-8">
+            <select multiple
+                class="col-md-12"
+                ng-options="s as s.network + ' ' + s.sector + '('+ s.band + ')' for s in new_sector"
+                ng-model="selected_logical_sector"
+                >
+            </select>
+        </div>
+    </div>
 
     <div class="form-group">
-        <button class="btn btn-success" ng-click="onSave()">Add to table</button>
+        <button class="btn btn-success" ng-click="onSave(new_sector)">Add to table</button>
     </div>
 </div>
 
-<div class="col-md-12"><h3>Logical Sectors</h3> {{atble }}</div>
+<div class="col-md-12"><h4>Logical Sectors({{ logical_sectors.length }}):</h4></div>
 
-<table class="table col-sm-6">
-
-    <tbody>
-        <tr ng-repeat="row in table">
-            <td>{{ row.first_s }}</td>
-            <td>{{ row.second_s }}</td>
-        </tr>
-    </tbody>
-</table>
+<div class="col-md-12" ng-repeat="logical_sector in logical_sectors">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <button ng-click="onDelete(logical_sector.id)" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+        </div>
+        <div class="panel-body">
+            <table class="table">
+                <tr ng-repeat="sector in logical_sector.sectors">
+                    <td>{{ sector.network }}</td>
+                    <td>{{ sector.sector }}</td>
+                    <td>{{ sector.band }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
