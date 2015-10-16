@@ -340,11 +340,8 @@ def get_chart(request, date, sector):
 
 def get_load_distr(request, day, rbs):
     project = request.project
-    data, title, logical_sectors = Distance().get_distr(day, rbs, project.id)
-    return HttpResponse(json.dumps(dict(
-            data=data,
-            title=title,
-            logical_sectors=logical_sectors)),
+    return HttpResponse(
+        json.dumps(Distance().get_distr(day, rbs, project.id)),
         content_type='application/json')
 
 
@@ -357,22 +354,16 @@ def get_distance_excel(request, date, sector):
 
 
 @api_view(['GET', 'POST', 'DELETE', ])
-def logical_sectors(request, id=None):
+def logical_sectors(request, logical_sector=None, sector=None):
     project = request.project
     if request.method == 'POST':
-        bands = request.POST.getlist('bands[]')
-        networks = request.POST.getlist('networks[]')
-        sectors = request.POST.getlist('sectors[]')
-        logical_sector = []
-        for i in range(0, len(bands)):
-            logical_sector.append({
-                'network': networks[i],
-                'band': bands[i],
-                'sector': sectors[i]
-            })
-        Distance().add_logical_sector(project.id, logical_sector)
+        logical_sector = request.POST.get('logical_sector')
+        band = request.POST.get('band')
+        technology = request.POST.get('technology')
+        sector = request.POST.get('sector')
+        Distance().add_logical_sector(project.id, logical_sector, technology, band, sector)
 
     elif request.method == 'DELETE':
-        Distance().delete_logical_sectors(project.id, id)
+        Distance().delete_logical_sectors(project.id, logical_sector, sector)
 
     return Response(Distance().logical_sectors(project.id))

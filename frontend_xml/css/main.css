@@ -31,6 +31,10 @@
     height: 500px;
 }
 
+.button_group {
+    top:20px;
+}
+
 html {
     overflow-x: hidden;
 }

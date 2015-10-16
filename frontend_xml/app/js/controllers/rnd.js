@@ -138,11 +138,13 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             }
 
             leafletData.getMap().then(function(map) {
+                L.Control.boxzoom({ position:'topleft' }).addTo(map);
                 L.control.scale().addTo(map);
                 L.Control.measureControl().addTo(map);
                 info.addTo(map);
                 legend.addTo(map);
                 sectorControl.addTo(map);
+
 
                 for (var sector_id in data){
                     var sector = data[sector_id];

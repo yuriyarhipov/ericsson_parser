@@ -25,6 +25,15 @@ class Distance(object):
             Utrancell TEXT,
             Distance REAL)
             ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS LogicalSector (
+                id SERIAL,
+                project_id INT,
+                logical_sector TEXT,
+                Technology TEXT,
+                Band INT,
+                SECTOR TEXT,
+                Label TEXT)''')
         try:
             cursor.execute('''
                 CREATE INDEX
@@ -275,19 +284,13 @@ class Distance(object):
             vendor=vendor,
             network='WCDMA')
 
-    def get_logical_distr(self, day, utrancells, project_id):
+    def get_logical_distr(self, project_id, day, rbs, sectors):
+        if not sectors:
+            return []
         cursor = connection.cursor()
         data = []
-        cursor.execute('''
-            SELECT
-                MIN(date_id),
-                MAX(date_id)
-            FROM
-                Access_Distance
-            WHERE
-                (utrancell IN (%s))''', (
-            utrancells, ))
-        days = cursor.fetchall()[0]
+        utrancells = ["'%s%s'" % (rbs, s) for s in sectors]
+
         if day != 'none':
             cursor.execute('''
                 SELECT
@@ -298,14 +301,13 @@ class Distance(object):
                 WHERE
                     (utrancell IN (%s)) AND
                     (project_id = %s) AND
-                    (date_id=%s)
+                    (date_id='%s')
                 GROUP BY
                     utrancell
                 ORDER BY utrancell;''' % (
-                utrancells,
+                ','.join(utrancells),
                 project_id,
                 datetime.strptime(day, '%d.%m.%Y')))
-            title = 'Load Distribution Logical:<b>%s</b> ' % (utrancells)
         else:
             cursor.execute('''
                 SELECT
@@ -318,15 +320,12 @@ class Distance(object):
                     (project_id = %s)
                 GROUP BY
                     utrancell
-                ORDER BY utrancell;''' % (utrancells, project_id))
-            title = 'Load Distribution Logical:<b>%s</b> ' % (utrancells)
-            #    days[0].strftime('%d.%m.%Y'),
-            #    days[1].strftime('%d.%m.%Y'))
+                ORDER BY utrancell;''' % (','.join(utrancells), project_id))
 
         for row in cursor:
             data.append(dict(name=row[0], y=int(row[1])))
 
-        return {'title': title, 'data': data}
+        return data
 
     def get_distr(self, day, rbs, project_id):
         data = []
@@ -342,83 +341,55 @@ class Distance(object):
             rbs, ))
         days = cursor.fetchall()[0]
 
-        logical_sectors = []
-        cursor.execute('SELECT sectors FROM LogicalSector WHERE project_id=%s', (project_id, ))
+        logical_sectors = dict()
+        cursor.execute('SELECT logical_sector, technology, sector  FROM LogicalSector WHERE project_id=%s', (project_id, ))
 
         for row in cursor:
-            utrancells = []
-            for sector in row[0]:
-                if sector.get('network') == 'WCDMA':
-                    utrancells.append(rbs + sector.get('sector'))
-            utrancells = ["'%s'" % utcell for utcell in utrancells ]
-            ls = self.get_logical_distr(day, ','.join(utrancells), project_id)
-            if ls.get('data'):
-                logical_sectors.append(ls)
+            logical_sector = row[0]
+            if logical_sector not in logical_sectors:
+                logical_sectors[logical_sector] = []
+            if row[1] == 'WCDMA':
+                logical_sectors[logical_sector].append(row[2])
 
-        if day != 'none':
-            cursor.execute('''
-                SELECT
-                    utrancell,
-                    SUM(pmpropagationdelay)
-                FROM
-                    access_distance
-                WHERE
-                    (rbs=%s) AND
-                    (project_id = %s) AND
-                    (date_id=%s)
-                GROUP BY
-                    utrancell
-                ORDER BY utrancell;''', (
-                rbs,
-                project_id,
-                datetime.strptime(day, '%d.%m.%Y')))
-            title = 'Load Distribution RBS:<b>%s</b> Day:<b>%s</b>' % (rbs, day)
-        else:
-            cursor.execute('''
-                SELECT
-                    utrancell,
-                    SUM(pmpropagationdelay)
-                FROM
-                    access_distance
-                WHERE
-                    (rbs=%s) AND
-                    (project_id = %s)
-                GROUP BY
-                    utrancell
-                ORDER BY utrancell;''', (rbs, project_id))
-            title = 'Load Distribution RBS:<b>%s</b> from:<b>%s</b> to:<b>%s</b>' % (
-                rbs,
-                days[0].strftime('%d.%m.%Y'),
-                days[1].strftime('%d.%m.%Y'))
-        for row in cursor:
-            data.append(dict(name=row[0], y=int(row[1])))
-        return data, title, logical_sectors
+        for ls_name, ls_sectors in logical_sectors.iteritems():
+            data.append({
+                'logical_sector': ls_name,
+                'data': self.get_logical_distr(project_id, day, rbs, ls_sectors)
+            })
+
+        return data
 
     def logical_sectors(self, project_id):
         cursor = connection.cursor()
         result = []
-        cursor.execute('SELECT id, sectors FROM LogicalSector WHERE project_id=%s', (project_id, ))
+        cursor.execute('SELECT logical_sector, technology, band, sector, Label FROM LogicalSector WHERE project_id=%s', (project_id, ))
         for row in cursor:
-            result.append({'id': row[0], 'sectors': row[1]})
+            result.append({
+                'logical_sector': row[0],
+                'technology': row[1],
+                'band': row[2],
+                'sector': row[3],
+                'label': row[4]})
         return result
 
-    def add_logical_sector(self, project_id, logical_sector):
+    def add_logical_sector(self, project_id, logical_sector, technology, band, sector):
         cursor = connection.cursor()
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS LogicalSector (
-                id SERIAL,
-                project_id INT,
-                sectors JSON)''')
-
-        cursor.execute('''
-                INSERT INTO LogicalSector (project_id, sectors)
-                VALUES (%s, %s)''', (
+                INSERT INTO LogicalSector (project_id, logical_sector, technology, band, sector, label)
+                VALUES (%s, %s, %s, %s, %s, %s)''', (
             project_id,
-            json.dumps(logical_sector, encoding='latin1')
+            logical_sector,
+            technology,
+            band,
+            sector,
+            '%s %s-%s' % (sector, technology, band)
         ))
         connection.commit()
 
-    def delete_logical_sectors(self, project_id, id):
+    def delete_logical_sectors(self, project_id, logical_sector, sector):
         cursor = connection.cursor()
-        cursor.execute('DELETE FROM LogicalSector WHERE id=%s', (id, ))
+        cursor.execute('DELETE FROM LogicalSector WHERE (project_id=%s) AND (logical_sector=%s) AND (sector=%s)', (
+            project_id,
+            logical_sector,
+            sector))
         connection.commit()

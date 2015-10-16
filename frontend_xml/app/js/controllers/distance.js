@@ -35,9 +35,9 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
         $scope.onSelectDay = function($item, $model){
             var day = $scope.day = $item;
             var rbs = $scope.rbs.selected;
+            $scope.lsConfigs = [];
             $http.get('/data/distance/get_load_distr/' + day + '/' + rbs + '/').success(function(data){
-                for (ls_id in  data.logical_sectors){
-                    console.log(data.logical_sectors[ls_id]);
+                for (ls_id in  data){
                     $scope.lsConfigs.push({
                     options: {
                         chart: {
@@ -64,13 +64,11 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                         },
                     },
                     title: {
-                            text: data.logical_sectors[ls_id].title
+                            text: data[ls_id].logical_sector,
                     },
-
-
                     series: [
                             {
-                                data: data.logical_sectors[ls_id].data,
+                                data: data[ls_id].data,
                                 colorByPoint: true,
                                 name: 'Load Distribution',
                             }
@@ -78,45 +76,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
 
                 });
                 }
-                $scope.loadDistribution = {
-                    options: {
-                        chart: {
-                            type: 'pie'
-                        },
-                        tooltip: {
-                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b></br> Samples: <b>{point.y}</b>'
-                        },
-                        legend: {
-                            enabled: true
-                        },
-                        plotOptions: {
-                            pie: {
-                                allowPointSelect: true,
-                                cursor: 'pointer',
-                                dataLabels: {
-                                    enabled: true,
-                                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                                    style: {
-                                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-                                    }
-                                }
-                            }
-                        },
-                    },
-                    title: {
-                            text: data.title
-                    },
 
-
-                    series: [
-                            {
-                                data: data.data,
-                                colorByPoint: true,
-                                name: 'Load Distribution',
-                            }
-                        ],
-
-                };
             });
 
             $http.get('/data/distance/get_charts/' + day + '/' + rbs + '/').success(function(data){
@@ -171,120 +131,77 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
 
 filesControllers.controller('logicalSectorCtrl', ['$scope', '$http',
     function ($scope, $http) {
+        $scope.associated_sectors = [];
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
-        $scope.bands = [
-            '500',
-            '550',
-            '600',
-            '650',
-            '700',
-            '750',
-            '800',
-            '850',
-            '900',
-            '950',
-            '1000',
-            '1050',
-            '1100',
-            '1150',
-            '1200',
-            '1250',
-            '1300',
-            '1350',
-            '1400',
-            '1450',
-            '1500',
-            '1550',
-            '1600',
-            '1650',
-            '1700',
-            '1750',
-            '1800',
-            '1850',
-            '1900',
-            '1950',
-            '2000',
-            '2050',
-            '2100',
-            '2150',
-            '2200',
-            '2250',
-            '2300',
-            '2350',
-            '2400',
-            '2450',
-            '2500',
-            '2550',
-            '2600',
-            '2650',
-            '2700',
-            '2750',
-            '2800',
-            '2850',
-            '2900',
-            '2950',
-            '3000',];
-
-        $scope.second_sector = [];
-        $scope.new_sector = [];
-        $scope.selected_logical_sector = [];
-        $scope.logical_sectors = [];
-
-
-        $http.get('data/distance/get_logical_sectors/').success(function(data){
-            $scope.sectors = data.sectors;
-            $scope.sectors.sort();
-
-        });
+        $scope.network = 'GSM';
+        $scope.logical_sectors = [
+            'LogicalSector1', 'LogicalSector2', 'LogicalSector3',
+            'LogicalSector4', 'LogicalSector5', 'LogicalSector6',
+            'LogicalSector7', 'LogicalSector8', 'LogicalSector9',
+            'LogicalSector10', 'LogicalSector11', 'LogicalSector12',
+            'LogicalSector13', 'LogicalSector14', 'LogicalSector15',
+            'LogicalSector16', 'LogicalSector17', 'LogicalSector18',
+            'LogicalSector19', 'LogicalSector20'
+        ];
+        $scope.logical_sector = 'LogicalSector1';
+        $scope.bands = ['850', '900', '1800', '1900', '2100']
+        $scope.band = '850';
+        var default_sectors = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+        'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        $scope.sectors = [];
         $http.get('data/distance/logical_sectors/').success(function(data){
-            $scope.logical_sectors = data;
+            show_logical_sector('LogicalSector1', data);
         });
 
-        $scope.onAdd = function(network, band, sectors){
-            for (s in sectors){
-                $scope.new_sector.push({'network':network, 'band': band, 'sector': sectors[s]})
+        $scope.onAdd = function(logical_sector, network, band, sectors){
+            for (s_id in sectors){
+                $http.post('/data/distance/logical_sectors/', $.param({
+                    'logical_sector': logical_sector,
+                    'technology': network,
+                    'band': band,
+                    'sector': sectors[s_id],
+                })).success(function(data){
+                    show_logical_sector(logical_sector, data);
+                });
             }
-            for (sector in sectors){
-                var idx = $scope.sectors.indexOf(sectors[sector]);
-                $scope.sectors.splice(idx, 1);
-            }
+
         };
 
-        $scope.onRemove = function(sectors){
-            for (i in sectors){
-                $scope.sectors.push(sectors[i].sector)
-                $scope.sectors.sort();
-                var idx = $scope.new_sector.indexOf(sectors[sector]);
-                $scope.new_sector.splice(idx, 1);
+        $scope.onRemove = function(logical_sector, sectors){
+            for (s_id in sectors){
+                $http.delete('/data/distance/logical_sectors/' + logical_sector + '/' + sectors[s_id] + '/')
+                .success(function(data){
+                    show_logical_sector(logical_sector, data);
+                });
             }
         }
 
-        $scope.onSave = function(new_sector){
-            var post_data = {
-                'networks': [],
-                'bands': [],
-                'sectors': []
-            };
-            for (i in new_sector){
-                post_data.networks.push(new_sector[i].network);
-                post_data.bands.push(new_sector[i].band);
-                post_data.sectors.push(new_sector[i].sector);
-            }
-
-            $http.post('/data/distance/logical_sectors/', $.param(post_data)).success(function(data){
-                $scope.logical_sectors = data;
-            });
-
-            for (i in $scope.new_sector){
-                $scope.sectors.push($scope.new_sector[i].sector)
-            }
-            $scope.sectors.sort();
-            $scope.new_sector = [];
-        };
-
-        $scope.onDelete = function(id){
-            $http.delete('/data/distance/logical_sectors/'+ id + '/').success(function(data){
-                $scope.logical_sectors = data;
+        $scope.onChangeLogicalSector = function(logical_sector){
+            $http.get('data/distance/logical_sectors/').success(function(data){
+                show_logical_sector(logical_sector, data);
             });
         };
+
+        var show_logical_sector = function(logical_sector, data){
+            $scope.sectors = default_sectors.slice(0);
+            $scope.associated_sectors = [];
+            for (row_id in data){
+                var row = data[row_id];
+                if (row.logical_sector == logical_sector){
+                    $scope.associated_sectors.push(row);
+                }
+                idx = $scope.sectors.indexOf(row.sector);
+                if (idx >= 0){
+                    $scope.sectors.splice(idx, 1);
+                }
+            }
+            $scope.associated_sectors.sort(function (a, b) {
+                if (a.label > b.label) {
+                    return 1;
+                }});
+
+        };
+
+
 }]);

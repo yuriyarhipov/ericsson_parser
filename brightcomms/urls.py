@@ -84,7 +84,7 @@ urlpatterns = patterns('',
     url(r'^data/distance/get_charts/(\S+)/(\S+)/$', table_views.get_charts),
     url(r'^data/distance/get_load_distr/(\S+)/(\S+)/$', table_views.get_load_distr),
     url(r'^data/distance/get_excel/(\S+)/(\S+)/$', table_views.get_distance_excel),
-    url(r'^data/distance/logical_sectors/(\S+)/$', table_views.logical_sectors),
+    url(r'^data/distance/logical_sectors/(\S+)/(\S+)/$', table_views.logical_sectors),
     url(r'^data/distance/logical_sectors/$', table_views.logical_sectors),
 
     url(r'^data/rnd/get_param_values/(\S+)/(\S+)/$', files_views.get_param_values),
@@ -95,10 +95,6 @@ urlpatterns = patterns('',
     url(r'^data/rnd/flush3g3g/$', files_views.flush3g3g),
     url(r'^data/rnd/(\S+)/$', files_views.rnd),
     url(r'^data/rnd/$', files_views.rnd),
-
-
-
-
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))

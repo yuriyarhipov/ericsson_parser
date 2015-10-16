@@ -35,15 +35,12 @@
 
         <div class="col-md-12">
             <uib-tabset>
-                <uib-tab heading="Load Balance">
+                <uib-tab heading="Access Distance">
                     <div class="col-md-12" ng-repeat="sector in utrancells">
                         <highchart config="get_config(sector)"></highchart>
                     </div>
                 </uib-tab>
                 <uib-tab heading="Load Distribution">
-                    <div class="col-md-12">
-                        <highchart config="loadDistribution"></highchart>
-                    </div>
                     <div class="col-md-12" ng-repeat="ls in lsConfigs">
                         <highchart config="ls"></highchart>
                     </div>
