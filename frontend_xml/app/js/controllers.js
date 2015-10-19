@@ -31,9 +31,9 @@ xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectServ
 
 xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService', '$location',
     function($scope, $cookies, activeProjectService, $location) {
-        $scope.activeProject = $cookies.active_project;
-        $scope.activeWCDMA = $cookies.wcdma;
-        if (!$cookies.active_project){
+        $scope.activeProject = $cookies.get('active_project');
+        $scope.activeWCDMA = $cookies.get('wcdma');
+        if (!$cookies.get('active_project')){
             $location.path('/projects/');
         }
         $scope.activeWCDMA = 'red';

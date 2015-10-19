@@ -105,7 +105,7 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
             console.log('TEST');
         });
         var loadData = function (){
-            $http.get('/data/treeview/' + $cookies.active_project + '/').success(function(data){
+            $http.get('/data/treeview/' + $cookies.get('active_project') + '/').success(function(data){
                 $scope.treedata = data;
             });
             //$timeout(loadData, 5000);

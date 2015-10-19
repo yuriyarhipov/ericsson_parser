@@ -218,8 +218,7 @@ filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams'
                     current = 0;
                     refer = true;
                     Flash.create('success', 'Import Completed');
-                    console.log($cookies.active_project);
-                    activeProjectService.broadcastItem($cookies.active_project)
+                    activeProjectService.broadcastItem($cookies.get('active_project'))
                     $location.path('/maps');
                 }
                 if (current){
