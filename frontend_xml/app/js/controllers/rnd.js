@@ -143,7 +143,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                         '<b>Antenna:</b> '+props.Antenna+'<br />' +
                         '<b>Mechanical_Tilt:</b> '+props.Mechanical_Tilt+'<br />' +
                         '<b>Electrical_Tilt:</b> '+props.Electrical_Tilt;
-
                     }
                 }
             };

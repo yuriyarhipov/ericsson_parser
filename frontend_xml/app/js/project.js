@@ -6,8 +6,9 @@ activeProjectModule.factory('activeProjectService', function($rootScope, $cookie
     activeProject.project = $cookies.active_project;
 
     activeProject.setProject = function(msg) {
+        console.log(msg);
         this.project = msg;
-        $cookies.active_project = msg;
+        $cookies.put('active_project', msg);
         this.broadcastItem();
     };
 
