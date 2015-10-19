@@ -174,14 +174,16 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                         sector.Longitud = sector.Longitude;
                         sector.Carrier = 1;
                         sector.key = sector.Cell_Name;
+                        var default_color = 'orange'l
                     } else if(rnd_network == 'wcdma'){
                         sector.key = sector.Utrancell;
+                        var default_color = '#03f';
                     }
 
                     var size = radius * (11-parseFloat(sector.Carrier))/10;
 
                     L.circle([sector.Latitud, sector.Longitud], size, {
-                            color: '#03f',
+                            color: default_color,
                             opacity: 0.7,
                             weight: 2,
                             sector: sector,
