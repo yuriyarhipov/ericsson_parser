@@ -103,7 +103,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             info.update = function (props) {
                 this._div.innerHTML = '<h5>Sector information:</h5>';
                 if (props) {
-                    this._div.innerHTML = '<h5>Sector information:</h5>' +
+                    if (rnd_network == 'wcdma'){
+                        this._div.innerHTML = '<h5>Sector information:</h5>' +
                         '<b>RNC:</b> '+props.RNC+'<br />' +
                         '<b>SITE:</b> '+props.SITE+'<br />' +
                         '<b>Utrancell:</b> '+props.Utrancell+'<br />' +
@@ -121,7 +122,29 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                         '<b>Antenna:</b> '+props.Antenna+'<br />' +
                         '<b>Mechanical_Tilt:</b> '+props.Mechanical_Tilt+'<br />' +
                         '<b>Electrical_Tilt:</b> '+props.Electrical_Tilt;
+                    } else if(rnd_network == 'gsm'){
+                        this._div.innerHTML = '<h5>Sector information:</h5>' +
+                        '<b>BSC:</b> '+props.BSC+'<br />' +
+                        '<b>SITE:</b> '+props.SITE+'<br />' +
+                        '<b>Cell_Name:</b> '+props.Cell_Name+'<br />' +
+                        '<b>Sector:</b> '+props.Sector+'<br />' +
+                        '<b>CI:</b> '+props.CI+'<br />' +
+                        '<b>LAC:</b> '+props.LAC+'<br />' +
+                        '<b>RAC:</b> '+props.RAC+'<br />' +
+                        '<b>BSIC:</b> '+props.BSIC+'<br />' +
+                        '<b>Band:</b> '+props.Band+'<br />' +
+                        '<b>BCCH:</b> '+props.BCCH+'<br />' +
+                        '<b>Name:</b> '+props.Name+'<br />' +
+                        '<b>Datum:</b> '+props.Datum+'<br />' +
+                        '<b>Latitud:</b> '+props.Latitud+'<br />' +
+                        '<b>Longitud:</b> '+props.Longitud+'<br />' +
+                        '<b>High:</b> '+props.High+'<br />' +
+                        '<b>Azimuth:</b> '+props.Azimuth+'<br />' +
+                        '<b>Antenna:</b> '+props.Antenna+'<br />' +
+                        '<b>Mechanical_Tilt:</b> '+props.Mechanical_Tilt+'<br />' +
+                        '<b>Electrical_Tilt:</b> '+props.Electrical_Tilt;
 
+                    }
                 }
             };
 
@@ -138,16 +161,24 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             }
 
             leafletData.getMap().then(function(map) {
+                sectorControl.addTo(map);
                 L.Control.boxzoom({ position:'topleft' }).addTo(map);
                 L.control.scale().addTo(map);
                 L.Control.measureControl().addTo(map);
                 info.addTo(map);
                 legend.addTo(map);
-                sectorControl.addTo(map);
-
 
                 for (var sector_id in data){
                     var sector = data[sector_id];
+                    if (rnd_network == 'gsm'){
+                        sector.Latitud = sector.Latitude;
+                        sector.Longitud = sector.Longitude;
+                        sector.Carrier = 1;
+                        sector.key = sector.Cell_Name;
+                    } else if(rnd_network == 'wcdma'){
+                        sector.key = sector.Utrancell;
+                    }
+
                     var size = radius * (11-parseFloat(sector.Carrier))/10;
 
                     L.circle([sector.Latitud, sector.Longitud], size, {
@@ -158,10 +189,10 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             current_base_radius: radius,
                             zoom: 10,
                     })
-                    .bindPopup(sector.Utrancell, {'offset': L.Point(20, 200)})
+                    .bindPopup(sector.key, {'offset': L.Point(20, 200)})
                     .setDirection(sector.Azimuth, 60)
                     .on('mouseover', function (e) {
-                        sectorControl.update(e.target.options.sector.Utrancell);
+                        sectorControl.update(e.target.options.sector.key);
                     })
                     .on('mouseout', function (e) {
                         sectorControl.update('');

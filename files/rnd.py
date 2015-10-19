@@ -109,7 +109,6 @@ class Rnd:
         neighbors = [row[0] for row in cursor]
         return neighbors
 
-
     def save_new_3g(self, filename, rnc_source, utrancell_source,
                     carrier_source, rnc_target, utrancell_target,
                     carrier_target):
