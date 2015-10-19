@@ -174,7 +174,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                         sector.Longitud = sector.Longitude;
                         sector.Carrier = 1;
                         sector.key = sector.Cell_Name;
-                        var default_color = 'orange'l
+                        var default_color = 'orange';
                     } else if(rnd_network == 'wcdma'){
                         sector.key = sector.Utrancell;
                         var default_color = '#03f';
