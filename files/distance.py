@@ -74,7 +74,7 @@ class Distance(object):
         dates = [row[0].strftime('%d.%m.%Y') for row in cursor]
         return dates
 
-    def get_charts(self, day, rbs, project_id):
+    def get_charts(self, day_from, day_to, rbs, project_id):
         cursor = connection.cursor()
         cursor.execute('''
             SELECT DISTINCT
@@ -89,85 +89,19 @@ class Distance(object):
         data = dict()
         for row in cursor:
             utrancell = row[0]
-            chart, title, distances = self.get_chart(day, utrancell)
+            chart, title, distances = self.get_chart(day_from, day_to, utrancell)
             data[utrancell] = dict(
                 distances=distances,
                 chart=chart,
                 title=title)
         return data
 
-    def get_chart(self, date, utrancell):
+    def get_chart(self, date_from, date_to, utrancell):
         data = []
         table = []
         cursor = connection.cursor()
+
         cursor.execute('''
-            SELECT
-                MIN(date_id),
-                MAX(date_id)
-            FROM
-                Access_Distance
-            WHERE
-                (Utrancell=%s)''', (
-            utrancell, ))
-        days = cursor.fetchall()
-
-        if date != 'none':
-            cursor.execute('''
-                SELECT
-                    Access_Distance.date_id,
-                    distance,
-                    pmpropagationdelay,
-                    date_sum.date_sum,
-                    DCVECTOR_INDEX,
-                    Sector,
-                    Carrier
-                FROM
-                    Access_Distance
-                INNER JOIN (
-                    SELECT
-                        date_id,
-                        sum(pmpropagationdelay) date_sum
-                    FROM
-                        Access_Distance
-                    WHERE
-                        Utrancell=%s
-                    GROUP BY date_id)
-                    AS date_sum
-                ON
-                    (Access_Distance.date_id = date_sum.date_id)
-                WHERE
-                    (Utrancell=%s) AND (Access_Distance.date_id=%s)
-                ORDER BY
-                    distance, Access_Distance.date_id;''', (
-                utrancell,
-                utrancell,
-                datetime.strptime(date, '%d.%m.%Y')))
-
-            distances = dict()
-            for row in cursor:
-                value = Decimal(row[2]) / Decimal(row[3]) * 100
-                sector = row[5]
-                carrier = row[6]
-                table.append({
-                    'date': row[0].strftime('%d.%m.%Y'),
-                    'sector': sector,
-                    'distance': float(row[1]),
-                    'dcvector': int(row[4]),
-                    'samples': int(row[2]),
-                    'samples_percent': round(value, 2),
-                    'total_samples': int(row[3])})
-                distances[int(row[4])] = float(row[1])
-                data.append([
-                    int(row[4]),
-                    round(value, 2), ]
-                )
-            title = '<b>Utrancell:</b>%s <b>Carrier:</b>%s <b>Sector:</b>%s <b>%s</b>' % (
-                utrancell,
-                carrier,
-                sector,
-                date)
-        else:
-            cursor.execute('''
                 SELECT
                     DIST_SUM.distance,
                     DIST_SUM.dist_sum,
@@ -185,7 +119,7 @@ class Distance(object):
                 FROM
                     Access_Distance
                 WHERE
-                    (Utrancell=%s)
+                    (Utrancell=%s) AND (date_id >=%s) AND (date_id <=%s)
                 GROUP BY
                     distance,
                     DCVECTOR_INDEX,
@@ -198,33 +132,43 @@ class Distance(object):
                 FROM
                     Access_Distance
                 WHERE
-                    Utrancell=%s
+                    (Utrancell=%s) AND (date_id >=%s) AND (date_id <=%s)
                 ) AS date_sum ORDER BY DIST_SUM.distance
                 ''', (
-                utrancell, utrancell, ))
+                    utrancell,
+                    datetime.strptime(date_from, '%d.%m.%Y'),
+                    datetime.strptime(date_to, '%d.%m.%Y'),
+                    utrancell,
+                    datetime.strptime(date_from, '%d.%m.%Y'),
+                    datetime.strptime(date_to, '%d.%m.%Y')))
 
-            distances = dict()
-            for row in cursor:
-                value = Decimal(row[1]) / Decimal(row[3]) * 100
-                distances[int(row[2])] = float(row[0])
-                data.append([
-                    int(row[2]),
-                    round(value, 2), ]
-                )
-                carrier = row[4]
-                sector = row[5]
 
-            title = '''
-                <b>Utrancell:</b>%s
-                <b>Carrier:</b>%s
-                <b>Sector:</b>%s
-                from <b>%s</b>
-                to <b>%s</b>''' % (
-                utrancell,
-                carrier,
-                sector,
-                days[0][0].strftime('%d.%m.%Y'),
-                days[0][1].strftime('%d.%m.%Y'))
+
+        distances = dict()
+        for row in cursor:
+            value = Decimal(row[1]) / Decimal(row[3]) * 100
+            distances[int(row[2])] = float(row[0])
+            data.append([
+                int(row[2]),
+                round(value, 2), ]
+            )
+            carrier = row[4]
+            sector = row[5]
+
+        title = '''
+            <b>Utrancell:</b>%s
+            <b>Carrier:</b>%s
+            <b>Sector:</b>%s
+            from <b>%s</b>
+            to <b>%s</b>''' % (
+            utrancell,
+            carrier,
+            sector,
+            date_from,
+            date_to)
+        if utrancell == 'AN0001I':
+            print data
+            print '!!!!!!!!!!!'
         return data, title, distances
 
     def write_file(self, project, description, vendor, filename, current_task):
@@ -284,50 +228,36 @@ class Distance(object):
             vendor=vendor,
             network='WCDMA')
 
-    def get_logical_distr(self, project_id, day, rbs, sectors):
+    def get_logical_distr(self, project_id, day_from, day_to, rbs, sectors):
         if not sectors:
             return []
         cursor = connection.cursor()
         data = []
         utrancells = ["'%s%s'" % (rbs, s) for s in sectors]
+        cursor.execute('''
+            SELECT
+                utrancell,
+                SUM(pmpropagationdelay)
+            FROM
+                access_distance
+            WHERE
+                (utrancell IN (%s)) AND
+                (project_id = %s) AND
+                (date_id >='%s') AND (date_id <='%s')
+            GROUP BY
+                utrancell
+            ORDER BY utrancell;''' % (
+            ','.join(utrancells),
+            project_id,
+            datetime.strptime(day_from, '%d.%m.%Y'), datetime.strptime(day_to, '%d.%m.%Y')))
 
-        if day != 'none':
-            cursor.execute('''
-                SELECT
-                    utrancell,
-                    SUM(pmpropagationdelay)
-                FROM
-                    access_distance
-                WHERE
-                    (utrancell IN (%s)) AND
-                    (project_id = %s) AND
-                    (date_id='%s')
-                GROUP BY
-                    utrancell
-                ORDER BY utrancell;''' % (
-                ','.join(utrancells),
-                project_id,
-                datetime.strptime(day, '%d.%m.%Y')))
-        else:
-            cursor.execute('''
-                SELECT
-                    utrancell,
-                    SUM(pmpropagationdelay)
-                FROM
-                    access_distance
-                WHERE
-                    (utrancell IN (%s)) AND
-                    (project_id = %s)
-                GROUP BY
-                    utrancell
-                ORDER BY utrancell;''' % (','.join(utrancells), project_id))
 
         for row in cursor:
             data.append(dict(name=row[0], y=int(row[1])))
 
         return data
 
-    def get_distr(self, day, rbs, project_id):
+    def get_distr(self, day_from, day_to, rbs, project_id):
         data = []
         cursor = connection.cursor()
         cursor.execute('''
@@ -354,7 +284,7 @@ class Distance(object):
         for ls_name, ls_sectors in logical_sectors.iteritems():
             data.append({
                 'logical_sector': ls_name,
-                'data': self.get_logical_distr(project_id, day, rbs, ls_sectors)
+                'data': self.get_logical_distr(project_id, day_from, day_to, rbs, ls_sectors)
             })
 
         return data

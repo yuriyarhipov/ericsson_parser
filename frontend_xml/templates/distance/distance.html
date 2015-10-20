@@ -14,20 +14,29 @@
             </div>
     </div>
     <div class="form-group">
-        <label for="sector" class="col-sm-1 control-label">Day:</label>
-        <div class="col-sm-11" id="param">
-            <ui-select ng-model="days.selected" theme="bootstrap"
+        <label for="sector" class="col-sm-1 control-label">Day From:</label>
+        <div class="col-sm-5" id="param">
+            <ui-select ng-model="days.selected_from" theme="bootstrap"
                 ng-disabled="disabled"
                 reset-search-dinput="false"
-                on-select="onSelectDay($item, $model)">
+                on-select="onDayFrom($item, $model)">
                 <ui-select-match placeholder="Enter a day...">{{$select.selected}}</ui-select-match>
                 <ui-select-choices repeat="date in dates | filter:$select.search">
                     {{ date }}
                 </ui-select-choices>
             </ui-select>
-            <button class="btn btn-success" ng-click="onSelectDay('none')" class="btn btn-default">
-                Whole Period
-            </button>
+        </div>
+        <label for="sector" class="col-sm-1 control-label">To:</label>
+        <div class="col-sm-5" id="param">
+            <ui-select ng-model="days.selected_to" theme="bootstrap"
+                ng-disabled="disabled"
+                reset-search-dinput="false"
+                on-select="onDayTo($item, $model)">
+                <ui-select-match placeholder="Enter a day...">{{$select.selected}}</ui-select-match>
+                <ui-select-choices repeat="date in dates | filter:$select.search">
+                    {{ date }}
+                </ui-select-choices>
+            </ui-select>
         </div>
         <div class="form-group">
             <a href="/data/distance/get_excel/{{ day }}/{{ sector.selected }}/">Download Excel</a>

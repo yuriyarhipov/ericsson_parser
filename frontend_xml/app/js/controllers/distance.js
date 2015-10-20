@@ -10,9 +10,11 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
         $http.get('/data/distance/get_rbs').success(function(data){
             $scope.rbs_data = data.rbs;
             $scope.rbs.selected = $scope.rbs_data[0];
-            $scope.onSelectDay('none', NaN);
             $http.get('/data/distance/get_dates/' + $scope.rbs.selected + '/').success(function(data){
                 $scope.dates = data;
+                $scope.days.selected_from = data[0];
+                $scope.days.selected_to = data[data.length-1];
+                $scope.onSelectDay();
             });
         });
 
@@ -23,20 +25,30 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
         $scope.onSelect = function($item, $model){
             $http.get('/data/distance/get_dates/' + $item + '/').success(function(data){
                 $scope.dates = data;
-                if (!$scope.days.selected) {
-                    $scope.onSelectDay('none', NaN);
-                }
-                else {
-                    $scope.onSelectDay($scope.days.selected, NaN);
-                }
+                $scope.days.selected_from = data[0];
+                $scope.days.selected_to = data[-1];
+                $scope.onSelectDay();
+
             });
         };
 
-        $scope.onSelectDay = function($item, $model){
-            var day = $scope.day = $item;
+        $scope.onDayFrom = function($item, $model){
+            $scope.days.selected_from = $item;
+            $scope.onSelectDay();
+        }
+
+        $scope.onDayTo = function($item, $model){
+            $scope.days.selected_to = $item;
+            $scope.onSelectDay();
+        }
+
+        $scope.onSelectDay = function(){
+            var day_from = $scope.days.selected_from;
+            var day_to = $scope.days.selected_to;
+            console.log([day_from, day_to]);
             var rbs = $scope.rbs.selected;
             $scope.lsConfigs = [];
-            $http.get('/data/distance/get_load_distr/' + day + '/' + rbs + '/').success(function(data){
+            $http.get('/data/distance/get_load_distr/' + day_from + '/'+ day_to + '/' + rbs + '/').success(function(data){
                 for (ls_id in  data){
                     $scope.lsConfigs.push({
                     options: {
@@ -79,7 +91,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
 
             });
 
-            $http.get('/data/distance/get_charts/' + day + '/' + rbs + '/').success(function(data){
+            $http.get('/data/distance/get_charts/' + day_from + '/' + day_to + '/' + rbs + '/').success(function(data){
                 $scope.utrancells = Object.keys(data);
                 $scope.utrancells.sort();
 
@@ -129,8 +141,8 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
             };
   }]);
 
-filesControllers.controller('logicalSectorCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+filesControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies',
+    function ($scope, $http, $cookies) {
         $scope.associated_sectors = [];
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = 'GSM';
@@ -153,6 +165,21 @@ filesControllers.controller('logicalSectorCtrl', ['$scope', '$http',
         $http.get('data/distance/logical_sectors/').success(function(data){
             show_logical_sector('LogicalSector1', data);
         });
+
+        if ($cookies.get('radius_wcdma')){
+            $scope.radius_wcdma = $cookies.get('radius_wcdma');
+        } else{
+            $scope.radius_wcdma = 1500;
+        }
+
+        $scope.radius_gsm = 1200;
+        $scope.radius_lte = 1800;
+
+        $scope.onSaveMapSettings = function(radius_wcdma, radius_lte, radius_gsm){
+            $cookies.put('radius_wcdma', radius_wcdma);
+            $cookies.put('radius_gsm', radius_gsm);
+            $cookies.put('radius_lte', radius_lte);
+        };
 
         $scope.onAdd = function(logical_sector, network, band, sectors){
             for (s_id in sectors){

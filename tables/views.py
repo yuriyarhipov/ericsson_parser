@@ -321,14 +321,14 @@ def get_dates(request, rbs):
     return HttpResponse(json.dumps(dates), content_type='application/json')
 
 
-def get_charts(request, day, rbs):
+def get_charts(request, date_from, date_to, rbs):
     project = request.project
-    charts = Distance().get_charts(day, rbs, project.id)
+    charts = Distance().get_charts(date_from, date_to, rbs, project.id)
     return HttpResponse(json.dumps(charts), content_type='application/json')
 
 
-def get_chart(request, date, sector):
-    chart, table, title, distances = Distance().get_chart(date, sector)
+def get_chart(request, date_from, date_to, sector):
+    chart, table, title, distances = Distance().get_chart(date_from, date_to, sector)
     return HttpResponse(
         json.dumps({
             'chart': chart,
@@ -338,10 +338,10 @@ def get_chart(request, date, sector):
         content_type='application/json')
 
 
-def get_load_distr(request, day, rbs):
+def get_load_distr(request, day_from, day_to, rbs):
     project = request.project
     return HttpResponse(
-        json.dumps(Distance().get_distr(day, rbs, project.id)),
+        json.dumps(Distance().get_distr(day_from, day_to, rbs, project.id)),
         content_type='application/json')
 
 

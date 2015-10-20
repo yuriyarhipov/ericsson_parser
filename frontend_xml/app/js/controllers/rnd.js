@@ -179,7 +179,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                     $scope.onFlush();
                 }
 
-
                 L.Control.toolBar().addTo(map);
                 slider = L.control.slider(function(value) {
                     $scope.onSizeSector(value);
