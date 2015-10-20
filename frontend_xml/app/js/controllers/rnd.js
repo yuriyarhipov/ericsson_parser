@@ -21,8 +21,8 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
         };
   }]);
 
-rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafletData', '$location', '$cookies',
-    function ($scope, $http, $routeParams, leafletData, $location, $cookies) {
+rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafletData', '$location', '$cookies', '$uibModal',
+    function ($scope, $http, $routeParams, leafletData, $location, $cookies, $uibModal) {
         var radius = parseFloat($cookies.get('radius_wcdma'));
         if (! radius){
             radius = 1500;
@@ -97,6 +97,16 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             info.onAdd = function (map) {
                 this._div = L.DomUtil.create('div', 'info');
                 this.update();
+
+                var stop = L.DomEvent.stopPropagation;
+                L.DomEvent
+                    .on(this._div, 'contextmenu', stop)
+                    .on(this._div, 'click', stop)
+                    .on(this._div, 'mousedown', stop)
+                    .on(this._div, 'touchstart', stop)
+                    .on(this._div, 'dblclick', stop)
+                    .on(this._div, 'mousewheel', stop)
+                    .on(this._div, 'MozMousePixelScroll', stop)
                 return this._div;
             };
 
@@ -160,12 +170,39 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             }
 
             leafletData.getMap().then(function(map) {
-                sectorControl.addTo(map);
+                map.show_neighbors_3g = function(){
+                    $scope.show_neighbors = !$scope.show_neighbors
+                    $scope.onNeighbors();
+                };
+
+                map.flush_neighbors = function(){
+                    $scope.onFlush();
+                }
+
+
+                L.Control.toolBar().addTo(map);
+                slider = L.control.slider(function(value) {
+                    $scope.onSizeSector(value);
+                }, {
+                    max: 1,
+                    min: -1,
+                    value: 0,
+                    step:0.1,
+                    size: '250px',
+                    orientation:'horizontal',
+                    id: 'slider',
+                    logo: 'S'
+                }).addTo(map);
+
                 L.Control.boxzoom({ position:'topleft' }).addTo(map);
                 L.control.scale().addTo(map);
                 L.Control.measureControl().addTo(map);
+
                 info.addTo(map);
                 legend.addTo(map);
+                sectorControl.addTo(map);
+
+
 
                 for (var sector_id in data){
                     var sector = data[sector_id];
@@ -417,3 +454,9 @@ rndControllers.controller('mapSettingsCtrl', ['$scope', '$http', '$cookies',
             $cookies.put('radius_lte', $scope.radius_lte);
         };
 }]);
+
+
+rndControllers.controller('ModalFilterCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        console.log('Test');
+  }]);
