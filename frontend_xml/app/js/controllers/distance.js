@@ -2,11 +2,13 @@ var distanceControllers = angular.module('distanceControllers', []);
 
 auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
     function ($scope, $http) {
+        $scope.distance = {};
         $scope.rbs = {};
         $scope.days = {};
         $scope.chartConfigs = {};
         $scope.lsConfigs = [];
         $scope.day = 'none';
+        var chart_data = {};
         $http.get('/data/distance/get_rbs').success(function(data){
             $scope.rbs_data = data.rbs;
             $scope.rbs.selected = $scope.rbs_data[0];
@@ -42,10 +44,54 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
             $scope.onSelectDay();
         }
 
+        $scope.onDistance = function($item, $model){
+            var low_propagation = [];
+            var cats = []
+            for (u_id in $scope.utrancells){
+                var sector = $scope.utrancells[u_id];
+                var sector_data = [];
+                cats = [];
+                for (id in chart_data[sector].chart){
+                    var dc_vector = parseFloat(chart_data[sector].chart[id][0]);
+                    var value = chart_data[sector].chart[id][1];
+                    if (dc_vector < parseFloat($item)){
+                        sector_data.push(value);
+                        cats.push(dc_vector);
+                    }
+                }
+                low_propagation.push({
+                    'name': sector,
+                    'data': sector_data
+                });
+            }
+            console.log(cats);
+            $scope.low_config = {
+                options: {
+                    chart: {
+                        type: 'column'
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b></br> Samples: <b>{point.y}</b>'
+                    },
+                    xAxis: {
+                        categories: cats,
+                        crosshair: true
+                    },
+                    legend: {
+                        enabled: true
+                    }},
+                    title: {
+                            text: 'test',
+                    },
+                    series: low_propagation,
+
+            }
+            console.log($scope.low_config);
+        };
+
         $scope.onSelectDay = function(){
             var day_from = $scope.days.selected_from;
             var day_to = $scope.days.selected_to;
-            console.log([day_from, day_to]);
             var rbs = $scope.rbs.selected;
             $scope.lsConfigs = [];
             $http.get('/data/distance/get_load_distr/' + day_from + '/'+ day_to + '/' + rbs + '/').success(function(data){
@@ -94,9 +140,10 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
             $http.get('/data/distance/get_charts/' + day_from + '/' + day_to + '/' + rbs + '/').success(function(data){
                 $scope.utrancells = Object.keys(data);
                 $scope.utrancells.sort();
+                chart_data = data;
 
                 var distances = data[$scope.utrancells[0]].distances;
-
+                $scope.distances = Object.keys(distances);
 
                 for (var id in $scope.utrancells){
                     var sector = $scope.utrancells[id];

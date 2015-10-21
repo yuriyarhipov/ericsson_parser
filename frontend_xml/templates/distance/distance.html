@@ -54,6 +54,26 @@
                         <highchart config="ls"></highchart>
                     </div>
                 </uib-tab>
+                <uib-tab heading="Low propagation">
+
+                    <ui-select ng-model="distance.selected" theme="bootstrap"
+                        ng-disabled="disabled"
+                        reset-search-dinput="false"
+                        on-select="onDistance($item, $model)">
+                        <ui-select-match placeholder="Enter a distance...">{{$select.selected}}</ui-select-match>
+                        <ui-select-choices repeat="dis in distances | filter:$select.search">
+                            DC_VECTOR={{ dis }}
+                        </ui-select-choices>
+                    </ui-select>
+                    <div class="col-md-12" ng-repeat="ls in lsConfigs">
+                        <highchart config="low_config"></highchart>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="Over propagation">
+                    <div class="col-md-12" ng-repeat="ls in lsConfigs">
+                        <highchart config="ls"></highchart>
+                    </div>
+                </uib-tab>
             </uib-tabset>
         </div>
     </div>
