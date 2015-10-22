@@ -4,14 +4,39 @@ L.Control.ToolBar = L.Control.extend({
         handler: {}
     },
 
-    onAdd: function(map) {
-        this.controlDiv = L.DomUtil.create('div', 'toolbar');
 
-        this.neigh3gButton = L.DomUtil.create('button', 'btn btn-default', this.controlDiv);
+    onAdd: function(map) {
+        this.controlDiv = L.DomUtil.create('div', 'toolbar col-md-12');
+        this.buttonsDiv = L.DomUtil.create('div', 'col-md-12', this.controlDiv);
+
+        var fDiv = this.filterDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
+        this.selectDiv = L.DomUtil.create('div', 'col-md-6', this.filterDiv);
+        var sFilter = this.select_filter = L.DomUtil.create('select', 'form-control', this.selectDiv);
+        for (id in map.columns){
+            var option = document.createElement("option");
+            option.value = map.columns[id];
+            option.text = map.columns[id];
+            this.select_filter.appendChild(option);
+        }
+        this.select_filter.selectedIndex = '-1';
+
+        this.valuesDiv = L.DomUtil.create('div', 'col-md-6', this.filterDiv);
+        var sValues = this.select_values = L.DomUtil.create('select', 'form-control', this.valuesDiv);
+
+        this.rangeDiv = L.DomUtil.create('div', 'col-md-6', this.buttonsDiv);
+        this.secondDiv = L.DomUtil.create('div', 'col-md-6', this.buttonsDiv);
+        this.sectorSize = L.DomUtil.create('input', 'form-control range_sector', this.rangeDiv);
+        this.sectorSize.setAttribute('type', 'range');
+
+
+        this.neigh3gButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
         this.neigh3gButton.innerHTML = '3G-3G'
 
-        this.flushNeighButton = L.DomUtil.create('button', 'btn btn-default', this.controlDiv);
+        this.flushNeighButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
         this.flushNeighButton.innerHTML = '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'
+
+        this.filterNeighButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
+        this.filterNeighButton.innerHTML = '<span class="glyphicon glyphicon-filter" aria-hidden="true"></span>'
 
         var stop = L.DomEvent.stopPropagation;
         L.DomEvent
@@ -24,13 +49,53 @@ L.Control.ToolBar = L.Control.extend({
             .addListener(this.flushNeighButton, 'click', function () {
                 map.flush_neighbors();
             })
+            .addListener(this.select_filter, 'change', function (e) {
+                values = [];
+                for (id in map.data){
+                    var filter_val = map.data[id][e.target.value];
+                    if (values.indexOf(filter_val) < 0){
+                        values.push(filter_val);
+                    }
+                }
+
+                while (sValues.firstChild) {
+                    sValues.removeChild(sValues.firstChild);
+                }
+
+                var option = document.createElement("option");
+                option.value = 'All';
+                option.text = 'All';
+                sValues.appendChild(option);
+
+                for (id in values){
+                    var option = document.createElement("option");
+                    option.value = values[id];
+                    option.text = values[id];
+                    sValues.appendChild(option);
+                }
+                sValues.selectedIndex = '-1';
+
+            })
+            .addListener(this.select_values, 'change', function (event) {
+                map.set_color_to_all_sectors('#03f');
+                map.legend.reset();
+                map.add_filter(sFilter.value, event.target.value);
+            })
+            .addListener(this.filterNeighButton, 'click', function () {
+                if (L.DomUtil.hasClass(fDiv, 'hide')){
+                    L.DomUtil.removeClass(fDiv, 'hide');
+                } else {
+                    L.DomUtil.addClass(fDiv, 'hide');
+                }
+            })
+
         return this.controlDiv;
     }
 });
 
 L.Map.addInitHook(function () {
-    if (this.options.measureControl) {
-        this.measureControl = L.Control.measureControl().addTo(this);
+    if (this.options.toolBar) {
+        this.toolBar = L.Control.toolBar().addTo(this);
     }
 });
 

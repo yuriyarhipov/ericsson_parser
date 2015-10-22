@@ -84,9 +84,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                             text: 'test',
                     },
                     series: low_propagation,
-
             }
-            console.log($scope.low_config);
         };
 
         $scope.onSelectDay = function(){

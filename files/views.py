@@ -249,7 +249,6 @@ def get_excel(request, network):
 @api_view(['GET', 'POST'])
 def rnd(request, network=None):
     project = request.project
-    print project.project_name
     data = []
     if request.method == 'POST':
         filename = handle_uploaded_file(
@@ -318,9 +317,3 @@ def flush3g3g(request):
     if request.method == 'POST':
         Rnd(project.id, 'wcdma').flush_3g(request.wcdma.filename)
     return Response([])
-
-
-
-
-
-

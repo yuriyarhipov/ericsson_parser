@@ -84,7 +84,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         };
 
         $http.get('/data/rnd/' + rnd_network + '/').success(function(data) {
-            $scope.columns = data.columns;
+            var columns = $scope.columns = data.columns;
             var data = data.data;
             data_length = data.length;
             $scope.rnd_param['selected'] = $scope.columns[0];
@@ -170,6 +170,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
             }
 
             leafletData.getMap().then(function(map) {
+                map.columns = columns;
+                map.data = data;
+
+                map.add_filter = onAddFilter;
+                map.set_color_to_all_sectors = set_color_to_all_sectors;
+
                 map.show_neighbors_3g = function(){
                     $scope.show_neighbors = !$scope.show_neighbors
                     $scope.onNeighbors();
@@ -199,6 +205,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
 
                 info.addTo(map);
                 legend.addTo(map);
+                map.legend = legend;
                 sectorControl.addTo(map);
 
 

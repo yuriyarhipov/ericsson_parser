@@ -51,9 +51,7 @@
 }
 
 .toolbar {
-
-    width: 130px;
-    height: 45px;
+    width: 500px;
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
     background: white;
@@ -64,13 +62,5 @@
     overflow-y: auto;
 }
 
-.sector_size {
-    position: absolute;
-    top:10px;
-    left: 200px;
-    width:100px;
-}
 
-.toolbar_filter {
 
-}
