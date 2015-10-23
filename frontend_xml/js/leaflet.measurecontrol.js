@@ -107,14 +107,11 @@ L.Control.MeasureControl = L.Control.extend({
             L.DomUtil.removeClass(this._container, 'enabled');
         }, this);
 
-        var link = L.DomUtil.create('a', className+'-measure', this._container);
-        link.href = '#';
-        link.title = L.Control.MeasureControl.TITLE;
 
         L.DomEvent
-            .addListener(link, 'click', L.DomEvent.stopPropagation)
-            .addListener(link, 'click', L.DomEvent.preventDefault)
-            .addListener(link, 'click', this.toggle, this);
+            .addListener(map.measure, 'click', L.DomEvent.stopPropagation)
+            .addListener(map.measure, 'click', L.DomEvent.preventDefault)
+            .addListener(map.measure, 'click', this.toggle, this);
 
         return this._container;
     }

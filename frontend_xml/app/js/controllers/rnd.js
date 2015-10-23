@@ -40,8 +40,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         var utrancellSource;
         var carrierSource;
         $scope.show_menu = false;
-        $scope.range_sector_size = 0;
-
 
         $scope.controls = {
                     fullscreen: {
@@ -175,6 +173,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
 
                 map.add_filter = onAddFilter;
                 map.set_color_to_all_sectors = set_color_to_all_sectors;
+                map.onResetFilter = $scope.onResetFilter;
+                map.onSizeSector = $scope.onSizeSector;
 
                 map.show_neighbors_3g = function(){
                     $scope.show_neighbors = !$scope.show_neighbors
@@ -186,29 +186,20 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                 }
 
                 L.Control.toolBar().addTo(map);
-                slider = L.control.slider(function(value) {
-                    $scope.onSizeSector(value);
-                }, {
-                    max: 1,
-                    min: -1,
-                    value: 0,
-                    step:0.1,
-                    size: '250px',
-                    orientation:'horizontal',
-                    id: 'slider',
-                    logo: 'S'
-                }).addTo(map);
-
-                L.Control.boxzoom({ position:'topleft' }).addTo(map);
                 L.control.scale().addTo(map);
-                L.Control.measureControl().addTo(map);
-
+                L.Control.measureControl({ position:'topright' }).addTo(map);
                 info.addTo(map);
                 legend.addTo(map);
                 map.legend = legend;
                 sectorControl.addTo(map);
 
-
+                var control = L.control.zoomBox({
+                    modal: true,  // If false (default), it deactivates after each use.
+                                  // If true, zoomBox control stays active until you click on the control to deactivate.
+                                  // position: "topleft",
+                                 // className: "customClass"  // Class to use to provide icon instead of Font Awesome
+                    });
+                control.init(map);
 
                 for (var sector_id in data){
                     var sector = data[sector_id];
@@ -309,8 +300,10 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
 
                 map.on('zoomend', function(e){
                     var zoom = e.target._zoom;
-                    if ($scope.range_sector_size != 0) {
-                        radius += radius * parseFloat($scope.range_sector_size);                                            }
+                    console.log(e.target.sectro_size.value)
+                    if (e.target.sectro_size.value != 0) {
+                        radius += radius * parseFloat(e.target.sectro_size.value);
+                    }
 
                     map.eachLayer(function (layer) {
                         if (layer.options.sector) {
@@ -322,7 +315,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
                             layer.options.zoom = zoom;
                         }
                     });
-                    $scope.range_sector_size = 0;
+                    e.target.sectro_size.value = 0;
 
                 });
 

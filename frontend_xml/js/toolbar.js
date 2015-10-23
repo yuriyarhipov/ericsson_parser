@@ -20,14 +20,22 @@ L.Control.ToolBar = L.Control.extend({
         }
         this.select_filter.selectedIndex = '-1';
 
-        this.valuesDiv = L.DomUtil.create('div', 'col-md-6', this.filterDiv);
+        this.valuesDiv = L.DomUtil.create('div', 'col-md-5', this.filterDiv);
         var sValues = this.select_values = L.DomUtil.create('select', 'form-control', this.valuesDiv);
+        this.delFiltersDiv = L.DomUtil.create('div', 'col-md-1', this.filterDiv);
+        this.resetFiltersButton = L.DomUtil.create('button', 'btn btn-danger', this.delFiltersDiv);
+        this.resetFiltersButton.innerHTML = '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'
+
 
         this.rangeDiv = L.DomUtil.create('div', 'col-md-6', this.buttonsDiv);
         this.secondDiv = L.DomUtil.create('div', 'col-md-6', this.buttonsDiv);
-        this.sectorSize = L.DomUtil.create('input', 'form-control range_sector', this.rangeDiv);
+        var sSize = this.sectorSize = L.DomUtil.create('input', 'form-control range_sector', this.rangeDiv);
         this.sectorSize.setAttribute('type', 'range');
-
+        this.sectorSize.setAttribute('min', -1);
+        this.sectorSize.setAttribute('max', 1);
+        this.sectorSize.setAttribute('value',0);
+        this.sectorSize.setAttribute('step', '0.1');
+        map.sectro_size = this.sectorSize;
 
         this.neigh3gButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
         this.neigh3gButton.innerHTML = '3G-3G'
@@ -37,6 +45,12 @@ L.Control.ToolBar = L.Control.extend({
 
         this.filterNeighButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
         this.filterNeighButton.innerHTML = '<span class="glyphicon glyphicon-filter" aria-hidden="true"></span>'
+
+        map.measure = this.measureButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
+        this.measureButton.innerHTML = '<img src="/static/measure-control.png">'
+
+        map.zoomButton = this.zoomButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
+        this.zoomButton.innerHTML = '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
 
         var stop = L.DomEvent.stopPropagation;
         L.DomEvent
@@ -80,6 +94,14 @@ L.Control.ToolBar = L.Control.extend({
                 map.set_color_to_all_sectors('#03f');
                 map.legend.reset();
                 map.add_filter(sFilter.value, event.target.value);
+            })
+            .addListener(this.resetFiltersButton, 'click', function () {
+                map.onResetFilter();
+                sValues.selectedIndex = '-1';
+                sFilter.selectedIndex = '-1';
+            })
+            .addListener(this.sectorSize, 'change', function (event) {
+                map.onSizeSector(event.target.value);
             })
             .addListener(this.filterNeighButton, 'click', function () {
                 if (L.DomUtil.hasClass(fDiv, 'hide')){
