@@ -83,7 +83,7 @@
         <tbody>
             <tr ng-repeat="row in data track by $index">
                 <td ng-repeat="col in row track by $index">
-                    {{ col.0 }}
+                    {{col[0]}}
                 </td>
             </tr>
         </tbody>
