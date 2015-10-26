@@ -2,10 +2,12 @@ var distanceControllers = angular.module('distanceControllers', []);
 
 auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
     function ($scope, $http) {
+        $scope.showComapreFilters = false;
         $scope.distance = {};
         $scope.rbs = {};
         $scope.days = {};
         $scope.chartConfigs = {};
+        $scope.chartConfigs2 = {};
         $scope.lsConfigs = [];
         $scope.day = 'none';
         var chart_data = {};
@@ -22,6 +24,10 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
 
         $scope.get_config = function(sector){
                 return $scope.chartConfigs[sector];
+        };
+
+        $scope.get_config2 = function(sector){
+                return $scope.chartConfigs2[sector];
         };
 
         $scope.onSelect = function($item, $model){
@@ -41,6 +47,16 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
 
         $scope.onDayTo = function($item, $model){
             $scope.days.selected_to = $item;
+            $scope.onSelectDay();
+        }
+
+        $scope.onDayFrom2 = function($item, $model){
+            $scope.days.selected_from2 = $item;
+            $scope.onSelectDay();
+        }
+
+        $scope.onDayTo2 = function($item, $model){
+            $scope.days.selected_to2 = $item;
             $scope.onSelectDay();
         }
 
@@ -64,7 +80,6 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                     'data': sector_data
                 });
             }
-            console.log(cats);
             $scope.low_config = {
                 options: {
                     chart: {
@@ -90,6 +105,8 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
         $scope.onSelectDay = function(){
             var day_from = $scope.days.selected_from;
             var day_to = $scope.days.selected_to;
+            var day_from2 = $scope.days.selected_from2;
+            var day_to2 = $scope.days.selected_to2;
             var rbs = $scope.rbs.selected;
             $scope.lsConfigs = [];
             $http.get('/data/distance/get_load_distr/' + day_from + '/'+ day_to + '/' + rbs + '/').success(function(data){
@@ -183,6 +200,59 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                     };
                 }
             });
+            if ($scope.showComapreFilters){
+                $http.get('/data/distance/get_charts/' + day_from2 + '/' + day_to2 + '/' + rbs + '/').success(function(data){
+                    $scope.utrancells = Object.keys(data);
+                    $scope.utrancells.sort();
+                    chart_data = data;
+
+                    var distances = data[$scope.utrancells[0]].distances;
+                    $scope.distances = Object.keys(distances);
+
+                    for (var id in $scope.utrancells){
+                        var sector = $scope.utrancells[id];
+                        $scope.chartConfigs2[sector] = {
+                            options: {
+                                chart: {
+                                    type: 'column'
+                                },
+                                tooltip: {
+                                    formatter: function () {
+                                        return 'Distance: <b>' + distances[this.point.category] + '</b><br/>' +
+                                        'DC Vector: <b>' + this.point.category + '</b><br/>' +
+                                        'Propagation Delay: <b>'+this.point.y+'%</b> ';
+                                    }
+
+                                },
+                            },
+                            series: [
+                                {
+                                    data: data[sector].chart,
+                                    name: 'DC Vector',
+                                }
+                            ],
+                            title: {
+                                text: 'Propagation Delay ' + data[sector].title
+                            },
+                            xAxis: {
+                                type: 'category',
+                            },
+                            yAxis: {
+                                min: 0,
+                                title: {
+                                    text: '% Samples'
+                                }
+                            },
+                            legend: {
+                                enabled: true
+                            },
+                        };
+                    }
+                });
+            }
+
+
+
             };
   }]);
 

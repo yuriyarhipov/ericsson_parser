@@ -1,21 +1,21 @@
 <form class="form">
-    <div class="form-group">
+    <div class="form-group col-md-12">
         <label for="sector" class="col-sm-1 control-label">RBS:</label>
-        <div class="col-sm-11" id="param">
+        <div class="col-md-5" id="param">
             <ui-select ng-model="rbs.selected" theme="bootstrap"
                 ng-disabled="disabled"
                 reset-search-input="false"
                 on-select="onSelect($item, $model)">
                 <ui-select-match placeholder="Enter a RBS...">{{$select.selected}}</ui-select-match>
-                    <ui-select-choices repeat="rbs_item in rbs_data | filter:$select.search">
-                        {{ rbs_item }}
-                    </ui-select-choices>
-                </ui-select>
-            </div>
+                <ui-select-choices repeat="rbs_item in rbs_data | filter:$select.search">
+                    {{ rbs_item }}
+                </ui-select-choices>
+            </ui-select>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="sector" class="col-sm-1 control-label">Day From:</label>
-        <div class="col-sm-5" id="param">
+    <div class="form-group col-md-12">
+        <label for="sector" class="col-sm-1 control-label">Period <span ng-show="showComapreFilters">1</span> From:</label>
+        <div class="col-md-5" id="param">
             <ui-select ng-model="days.selected_from" theme="bootstrap"
                 ng-disabled="disabled"
                 reset-search-dinput="false"
@@ -38,15 +38,51 @@
                 </ui-select-choices>
             </ui-select>
         </div>
+    </div>
+    <div class="form-group col-md-12" ng-show="showComapreFilters">
+        <label for="sector" class="col-sm-1 control-label">Period <span ng-show="showComapreFilters">2</span> From:</label>
+        <div class="col-sm-5" id="param">
+            <ui-select ng-model="days.selected_from2" theme="bootstrap"
+                ng-disabled="disabled"
+                reset-search-dinput="false"
+                on-select="onDayFrom2($item, $model)">
+                <ui-select-match placeholder="Enter a day...">{{$select.selected}}</ui-select-match>
+                <ui-select-choices repeat="date in dates | filter:$select.search">
+                    {{ date }}
+                </ui-select-choices>
+            </ui-select>
+        </div>
+        <label for="sector" class="col-sm-1 control-label">To:</label>
+        <div class="col-sm-5" id="param">
+            <ui-select ng-model="days.selected_to2" theme="bootstrap"
+                ng-disabled="disabled"
+                reset-search-dinput="false"
+                on-select="onDayTo2($item, $model)">
+                <ui-select-match placeholder="Enter a day...">{{$select.selected}}</ui-select-match>
+                <ui-select-choices repeat="date in dates | filter:$select.search">
+                    {{ date }}
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+    <div class="col-md-12 form-group">
+        <input type="checkbox" ng-model="showComapreFilters"> Compare Propagation Delay
+    </div>
+    <div>
         <div class="form-group">
             <a href="/data/distance/get_excel/{{ day }}/{{ sector.selected }}/">Download Excel</a>
         </div>
-
         <div class="col-md-12">
             <uib-tabset>
                 <uib-tab heading="Access Distance">
                     <div class="col-md-12" ng-repeat="sector in utrancells">
-                        <highchart config="get_config(sector)"></highchart>
+                        <div class="col-md-12">
+                            <highchart config="get_config(sector)"></highchart>
+                        </div>
+                        <div class="col-md-12" ng-show="showComapreFilters">
+                            <highchart config="get_config2(sector)"></highchart>
+                        </div>
+
                     </div>
                 </uib-tab>
                 <uib-tab heading="Load Distribution">
