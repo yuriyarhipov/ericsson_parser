@@ -27,6 +27,10 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
         if (! radius){
             radius = 1500;
         }
+        var gsm_sectors = [];
+        var wcdma_sectors = [];
+        var lte_sectors = [];
+
         var search_params = $location.search();
         var rnd_network = $routeParams.network;
 
@@ -216,7 +220,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
 
                     var size = radius * (11-parseFloat(sector.Carrier))/10;
 
-                    L.circle([sector.Latitud, sector.Longitud], size, {
+                    var current_sector = L.circle([sector.Latitud, sector.Longitud], size, {
                             color: default_color,
                             opacity: 0.7,
                             weight: 2,
@@ -294,8 +298,36 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafle
 
                             }
                         })
-                    .addTo(map);
+                    if (rnd_network == 'gsm'){
+                        gsm_sectors.push(current_sector)
+                    } else if (rnd_network == 'wcdma') {
+                        wcdma_sectors.push(current_sector)
+                    } else if (rnd_network == 'lte') {
+                        lte_sectors.push(current_sector)
+                    }
                 }
+
+                var gsm_layer = L.layerGroup(gsm_sectors);
+                var wcdma_layer = L.layerGroup(wcdma_sectors);
+                var lte_layer = L.layerGroup(lte_sectors);
+
+                var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                    'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ';
+
+                var streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
+                var baseLayers = {
+                };
+
+                var overlays = {
+                    "gsm": gsm_layer,
+                    "wcdma": wcdma_layer,
+                    "lte": lte_layer,
+                };
+
+                L.control.layers(baseLayers, overlays).addTo(map);
+
                 map.setView([data[0].Latitud, data[0].Longitud], 10);
 
                 map.on('zoomend', function(e){
