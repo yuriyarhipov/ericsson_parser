@@ -29,7 +29,7 @@ L.Control.ToolBar = L.Control.extend({
 
         this.rangeDiv = L.DomUtil.create('div', 'col-md-6', this.buttonsDiv);
         this.secondDiv = L.DomUtil.create('div', 'col-md-6', this.buttonsDiv);
-        var sSize = this.sectorSize = L.DomUtil.create('input', 'form-control range_sector', this.rangeDiv);
+        var sSize = this.sectorSize = L.DomUtil.create('input', 'range_sector', this.rangeDiv);
         this.sectorSize.setAttribute('type', 'range');
         this.sectorSize.setAttribute('min', -1);
         this.sectorSize.setAttribute('max', 1);
