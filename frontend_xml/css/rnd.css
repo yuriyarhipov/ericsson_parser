@@ -62,5 +62,14 @@
     overflow-y: auto;
 }
 
+.leaflet-map {
+    position: fixed;
+
+    top:55px;
+    left:10px;
+    height: 90%;
+    width:99%;
+
+}
 
 

@@ -176,7 +176,7 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/rnd/rnd.html',
                 controller: 'rndCtrl'
             }).
-            when('/map/:network',{
+            when('/map/',{
                 templateUrl: 'templates/rnd/map.html',
                 controller: 'mapCtrl'
             }).

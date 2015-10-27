@@ -21,456 +21,65 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
         };
   }]);
 
-rndControllers.controller('mapCtrl', ['$scope', '$http', '$routeParams', 'leafletData', '$location', '$cookies', '$uibModal',
-    function ($scope, $http, $routeParams, leafletData, $location, $cookies, $uibModal) {
-        var radius = parseFloat($cookies.get('radius_wcdma'));
-        if (! radius){
-            radius = 1500;
-        }
-        var gsm_sectors = [];
-        var wcdma_sectors = [];
-        var lte_sectors = [];
+rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal',
+    function ($scope, $http, leafletData, $location, $cookies, $uibModal) {
 
-        var search_params = $location.search();
-        var rnd_network = $routeParams.network;
-
-        var sector_azimuths_size = {};
-        $scope.rnd_value = {};
-        $scope.rnd_param = {};
-        var data_length = 0;
-        var legend_info = []
-        $scope.show_neighbors = false;
-        var rncSource;
-        var utrancellSource;
-        var carrierSource;
-        $scope.show_menu = false;
-
-        $scope.controls = {
-                    fullscreen: {
-                        position: 'topleft'
-                    }
-                };
-
-        var sectorControl = L.control({position: 'topleft'});
-
-        sectorControl.onAdd = function (map) {
-            this._div = L.DomUtil.create('div', 'sector');
-            return this._div;
-        };
-
-        sectorControl.update = function (sector) {
-            this._div.innerHTML =
-                    '<h5>Sector:</h5>'+sector+'<br>';
-        };
-
-
-        var legend = L.control({position: 'bottomright'});
-
-        legend.onAdd = function (map) {
-            this._div = L.DomUtil.create('div', 'legend');
-            return this._div;
-        };
-
-        legend.update = function (legend_info) {
-            var table = '<table>'
-            for (l_i in legend_info){
-
-                table += '<tr><td><i style="background:' + legend_info[l_i].color + '"></i> '+ legend_info[l_i].param+'='+legend_info[l_i].value+'(' + legend_info[l_i].count +')</td></tr>'
-            }
-            table += '</table>'
-            this._div.innerHTML = table;
-        };
-
-        legend.reset = function(){
-            this._div.innerHTML = '';
-        };
-
-        $http.get('/data/rnd/' + rnd_network + '/').success(function(data) {
-            var columns = $scope.columns = data.columns;
-            var data = data.data;
-            data_length = data.length;
-            $scope.rnd_param['selected'] = $scope.columns[0];
-            $scope.onChangeParam($scope.columns[0]);
-            var sectors = {};
-            var selected_sector;
-
-            var info = L.control();
-
-            info.onAdd = function (map) {
-                this._div = L.DomUtil.create('div', 'info');
-                this.update();
-
-                var stop = L.DomEvent.stopPropagation;
-                L.DomEvent
-                    .on(this._div, 'contextmenu', stop)
-                    .on(this._div, 'click', stop)
-                    .on(this._div, 'mousedown', stop)
-                    .on(this._div, 'touchstart', stop)
-                    .on(this._div, 'dblclick', stop)
-                    .on(this._div, 'mousewheel', stop)
-                    .on(this._div, 'MozMousePixelScroll', stop)
-                return this._div;
-            };
-
-            info.update = function (props) {
-                this._div.innerHTML = '<h5>Sector information:</h5>';
-                if (props) {
-                    if (rnd_network == 'wcdma'){
-                        this._div.innerHTML = '<h5>Sector information:</h5>' +
-                        '<b>RNC:</b> '+props.RNC+'<br />' +
-                        '<b>SITE:</b> '+props.SITE+'<br />' +
-                        '<b>Utrancell:</b> '+props.Utrancell+'<br />' +
-                        '<b>Sector:</b> '+props.Sector+'<br />' +
-                        '<b>LAC:</b> '+props.LAC+'<br />' +
-                        '<b>RAC:</b> '+props.RAC+'<br />' +
-                        '<b>SC:</b> '+props.SC+'<br />' +
-                        '<b>Carrier:</b> '+props.Carrier+'<br />' +
-                        '<b>Name:</b> '+props.Name+'<br />' +
-                        '<b>Datum:</b> '+props.Datum+'<br />' +
-                        '<b>Latitud:</b> '+props.Latitud+'<br />' +
-                        '<b>Longitud:</b> '+props.Longitud+'<br />' +
-                        '<b>High:</b> '+props.High+'<br />' +
-                        '<b>Azimuth:</b> '+props.Azimuth+'<br />' +
-                        '<b>Antenna:</b> '+props.Antenna+'<br />' +
-                        '<b>Mechanical_Tilt:</b> '+props.Mechanical_Tilt+'<br />' +
-                        '<b>Electrical_Tilt:</b> '+props.Electrical_Tilt;
-                    } else if(rnd_network == 'gsm'){
-                        this._div.innerHTML = '<h5>Sector information:</h5>' +
-                        '<b>BSC:</b> '+props.BSC+'<br />' +
-                        '<b>SITE:</b> '+props.SITE+'<br />' +
-                        '<b>Cell_Name:</b> '+props.Cell_Name+'<br />' +
-                        '<b>Sector:</b> '+props.Sector+'<br />' +
-                        '<b>CI:</b> '+props.CI+'<br />' +
-                        '<b>LAC:</b> '+props.LAC+'<br />' +
-                        '<b>RAC:</b> '+props.RAC+'<br />' +
-                        '<b>BSIC:</b> '+props.BSIC+'<br />' +
-                        '<b>Band:</b> '+props.Band+'<br />' +
-                        '<b>BCCH:</b> '+props.BCCH+'<br />' +
-                        '<b>Name:</b> '+props.Name+'<br />' +
-                        '<b>Datum:</b> '+props.Datum+'<br />' +
-                        '<b>Latitud:</b> '+props.Latitud+'<br />' +
-                        '<b>Longitud:</b> '+props.Longitud+'<br />' +
-                        '<b>High:</b> '+props.High+'<br />' +
-                        '<b>Azimuth:</b> '+props.Azimuth+'<br />' +
-                        '<b>Antenna:</b> '+props.Antenna+'<br />' +
-                        '<b>Mechanical_Tilt:</b> '+props.Mechanical_Tilt+'<br />' +
-                        '<b>Electrical_Tilt:</b> '+props.Electrical_Tilt;
-                    }
-                }
-            };
-
-            data.sort(function(a,b){
-                return parseFloat(a.Carrier) - parseFloat(b.Carrier);
-            });
-
-            for (var id in data){
-                if (data[id].SITE in sectors){
-                    sectors[data[id].SITE].push(data[id])
-                } else {
-                    sectors[data[id].SITE]= [data[id], ];
-                }
-            }
-
-            leafletData.getMap().then(function(map) {
-                map.columns = columns;
-                map.data = data;
-
-                map.add_filter = onAddFilter;
-                map.set_color_to_all_sectors = set_color_to_all_sectors;
-                map.onResetFilter = $scope.onResetFilter;
-                map.onSizeSector = $scope.onSizeSector;
-
-                map.show_neighbors_3g = function(){
-                    $scope.show_neighbors = !$scope.show_neighbors
-                    $scope.onNeighbors();
-                };
-
-                map.flush_neighbors = function(){
-                    $scope.onFlush();
-                }
-
-                L.Control.toolBar().addTo(map);
-                L.control.scale().addTo(map);
-                L.Control.measureControl({ position:'topright' }).addTo(map);
-                info.addTo(map);
-                legend.addTo(map);
-                map.legend = legend;
-                sectorControl.addTo(map);
-
-                var control = L.control.zoomBox({
-                    modal: true,  // If false (default), it deactivates after each use.
-                                  // If true, zoomBox control stays active until you click on the control to deactivate.
-                                  // position: "topleft",
-                                 // className: "customClass"  // Class to use to provide icon instead of Font Awesome
-                    });
-                control.init(map);
-
-                for (var sector_id in data){
-                    var sector = data[sector_id];
-                    if (rnd_network == 'gsm'){
-                        sector.Latitud = sector.Latitude;
-                        sector.Longitud = sector.Longitude;
-                        sector.Carrier = 1;
-                        sector.key = sector.Cell_Name;
-                        var default_color = 'orange';
-                    } else if(rnd_network == 'wcdma'){
-                        sector.key = sector.Utrancell;
-                        var default_color = '#03f';
-                    }
-
-                    var size = radius * (11-parseFloat(sector.Carrier))/10;
-
-                    var current_sector = L.circle([sector.Latitud, sector.Longitud], size, {
-                            color: default_color,
+        var create_sector = function(lat, lon, sector, color, size, key){
+            var new_sector = L.circle([lat, lon], size, {
+                            color: color,
                             opacity: 0.7,
                             weight: 2,
                             sector: sector,
-                            current_base_radius: radius,
-                            zoom: 10,
+                            current_base_radius: size
                     })
-                    .bindPopup(sector.key, {'offset': L.Point(20, 200)})
-                    .setDirection(sector.Azimuth, 60)
-                    .on('mouseover', function (e) {
-                        sectorControl.update(e.target.options.sector.key);
-                    })
-                    .on('mouseout', function (e) {
-                        sectorControl.update('');
-                    })
-                    .on('click', function(e){
-                            var layer = e.target;
-                            layer.options.old_weight=layer.options.weight;
-                            layer.options.old_opacity=layer.options.opacity;
-                            layer.setStyle({
-                                weight: 3,
-                                opacity: 1
-                            });
-                            if (selected_sector){
-                                selected_sector.setStyle({
-                                    weight: selected_sector.options.old_weight,
-                                    opacity: selected_sector.options.old_opacity
-                                });
-                            }
-                            selected_sector = layer;
-                            info.update(layer.options.sector);
-                            if ($scope.show_neighbors){
-                                if (e.originalEvent.shiftKey){
-                                    if (layer.options.color == 'orange'){
-                                        layer.setStyle({'color': 'grey'});
-                                        $http.post('/data/rnd/del3g3g/',$.param({
-                                            'utrancellSource': utrancellSource,
-                                            'utrancellTarget': layer.options.sector.Utrancell
-                                        }));
-                                    }
-                                    else if(layer.options.color == 'grey'){
-                                        layer.setStyle({'color': 'orange'});
-                                        $http.post('/data/rnd/new3g3g/',$.param({
-                                            'rncSource': rncSource,
-                                            'utrancellSource': utrancellSource,
-                                            'carrierSource': carrierSource,
-                                            'rncTarget': layer.options.sector.RNC,
-                                            'utrancellTarget': layer.options.sector.Utrancell,
-                                            'carrierTarget': layer.options.sector.Carrier,}));
-                                        }
-                                } else {
-                                    legend.reset();
-                                    rncSource = layer.options.sector.RNC;
-                                    utrancellSource = layer.options.sector.Utrancell;
-                                    carrierSource = layer.options.sector.Carrier;
-                                    layer.setStyle({'color': 'green'});
-                                    $http.get('/data/rnd/get_rnd_neighbors/' + rnd_network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
-                                        $http.get('/data/rnd/get_new3g/' + rnd_network + '/' + layer.options.sector.Utrancell + '/').success(function(new3g_neighbors){
-                                            map.eachLayer(function (temp_layer) {
-                                                if (temp_layer.options.sector){
-                                                    if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
-                                                        if (data.indexOf(temp_layer.options.sector.Utrancell) >= 0) {
-                                                            temp_layer.setStyle({'color': 'red'});
-                                                        } else if(new3g_neighbors.indexOf(temp_layer.options.sector.Utrancell) >= 0){
-                                                            temp_layer.setStyle({'color': 'orange'});
-                                                        } else {
-                                                            temp_layer.setStyle({'color': 'grey'});
-                                                        }
-                                                    }
-                                                }
-                                            });
-                                        });
-                                    });
-                                }
-
-                            }
-                        })
-                    if (rnd_network == 'gsm'){
-                        gsm_sectors.push(current_sector)
-                    } else if (rnd_network == 'wcdma') {
-                        wcdma_sectors.push(current_sector)
-                    } else if (rnd_network == 'lte') {
-                        lte_sectors.push(current_sector)
-                    }
-                }
-
-                var gsm_layer = L.layerGroup(gsm_sectors);
-                var wcdma_layer = L.layerGroup(wcdma_sectors);
-                var lte_layer = L.layerGroup(lte_sectors);
-
-                var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                    'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-                mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ';
-
-                var streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
-                var baseLayers = {
-                };
-
-                var overlays = {
-                    "gsm": gsm_layer,
-                    "wcdma": wcdma_layer,
-                    "lte": lte_layer,
-                };
-
-                L.control.layers(baseLayers, overlays).addTo(map);
-
-                map.setView([data[0].Latitud, data[0].Longitud], 10);
-
-                map.on('zoomend', function(e){
-                    var zoom = e.target._zoom;
-                    console.log(e.target.sectro_size.value)
-                    if (e.target.sectro_size.value != 0) {
-                        radius += radius * parseFloat(e.target.sectro_size.value);
-                    }
-
-                    map.eachLayer(function (layer) {
-                        if (layer.options.sector) {
-                            zkf = ((zoom-10)*-12+100)/100
-                            var current_size = radius * (11-parseFloat(layer.options.sector.Carrier))/10;
-                            var size = zkf*current_size;
-                            layer.setRadius(size);
-                            layer.options.current_base_radius = zkf*radius;
-                            layer.options.zoom = zoom;
-                        }
-                    });
-                    e.target.sectro_size.value = 0;
-
+            .bindPopup(key, {'offset': L.Point(20, 200)})
+            .setDirection(sector.Azimuth, 60)
+            .on('click', function(e){
+                var layer = e.target;
+                layer.setStyle({
+                    weight: 3,
+                    opacity: 1
                 });
+            })
+            return new_sector;
+        };
 
-            });
-            for (var s_param in search_params){
-                onAddFilter(s_param, search_params[s_param]);
+        var create_rnd_layer = function(data, radius, color, lat, lon, key){
+            var data = data.data;
+            var sectors = [];
+            for (sid in data){
+                var sector = create_sector(
+                    data[sid][lat],
+                    data[sid][lon],
+                    data[sid],
+                    color,
+                    radius,
+                    data[sid][key]);
+                sectors.push(sector);
             }
+            return L.layerGroup(sectors);
+        }
+
+        leafletData.getMap().then(function(map) {
+            map._layerControl = L.control.layers().addTo(map);
+            $http.get('/data/rnd/gsm/').success(function(gsm_data){
+                $http.get('/data/rnd/wcdma/').success(function(wcdma_data){
+                    $http.get('/data/rnd/lte/').success(function(lte_data){
+                        gsm_layer = create_rnd_layer(gsm_data, 1500, 'orange', 'Latitude', 'Longitude', 'Cell_Name');
+                        wcdma_layer = create_rnd_layer(wcdma_data, 1200, 'blue', 'Latitud', 'Longitud', 'Utrancell');
+                        lte_layer = create_rnd_layer(lte_data, 1000, 'green', 'Latitude', 'Longitude', 'Utrancell');
+                        map._layerControl.addOverlay(gsm_layer, 'GSM');
+                        map._layerControl.addOverlay(wcdma_layer, 'WCDMA');
+                        map._layerControl.addOverlay(lte_layer, 'LTE');
+                        map.addLayer(gsm_layer);
+                        map.addLayer(wcdma_layer);
+                        map.addLayer(lte_layer);
+                    });
+                });
+            });
         });
 
-        $scope.onNeighbors = function(){
-            if ($scope.show_neighbors){
-                set_color_to_all_sectors('#03f');
-            }
-        }
-
-        $scope.onChangeParam = function(param){
-            $http.get('/data/rnd/get_param_values/' + rnd_network + '/' + param + '/').success(function(data){
-                $scope.values = data;
-                data.unshift('All');
-            });
-        };
-        $scope.onSelectValue = function(item, model){
-            set_color_to_all_sectors('#03f');
-            legend.reset();
-            onAddFilter($scope.rnd_param.selected, item);
-        }
-
-        $scope.onResetFilter = function(){
-            set_color_to_all_sectors('#03f');
-            legend.reset();
-
-        };
-
-        $scope.onFlush =function(){
-            $http.post('/data/rnd/flush3g3g/');
-            leafletData.getMap().then(function(map) {
-                map.eachLayer(function (layer) {
-                    if (layer.options.sector) {
-                        if (layer.options.color == 'orange'){
-                            layer.setStyle({'color': 'grey'});
-                        }
-                    }
-                });
-            });
-        };
-
-        $scope.onSizeSector = function(new_size){
-            var new_radius = radius + radius * parseFloat(new_size)
-            leafletData.getMap().then(function(map) {
-                map.eachLayer(function (layer) {
-                    if (layer.options.sector) {
-                        zkf = ((layer.options.zoom-10)*-12+100)/100
-                        var current_size = new_radius * (11-parseFloat(layer.options.sector.Carrier))/10;
-                        var new_s = zkf*current_size;
-                        layer.setRadius(new_s);
-                    }
-                });
-            });
-        };
-
-        var onAddFilter = function(param, value){
-            var color = randomColor({hue: 'random',luminosity: 'dark'});
-            var values_color = {};
-            var last_marker = {};
-            var values_count = {}
-
-            leafletData.getMap().then(function(map) {
-                map.eachLayer(function (layer) {
-                    if (layer.options.sector) {
-                        if(layer.options.sector[param] == value){
-                            layer.setStyle({'color': color});
-                            last_marker.Latitud = layer.options.sector.Latitud;
-                            last_marker.Longitud = layer.options.sector.Longitud;
-                            values_color[value] = color
-                            if (value in values_count){
-                                values_count[value] += 1;
-                            } else {
-                                values_count[value] = 1;
-                            }
-                        }
-                        if (value=='All'){
-                            if (layer.options.sector[param] in values_color){
-                                layer.setStyle({'color': values_color[layer.options.sector[param]]});
-                                last_marker.Latitud = layer.options.sector.Latitud;
-                                last_marker.Longitud = layer.options.sector.Longitud;
-                                values_count[layer.options.sector[param]] += 1;
-                            } else {
-                                values_color[layer.options.sector[param]] = randomColor({hue: 'random',luminosity: 'dark'});
-                                layer.setStyle({'color': values_color[layer.options.sector[param]]});
-                                last_marker.Latitud = layer.options.sector.Latitud;
-                                last_marker.Longitud = layer.options.sector.Longitud;
-                                values_count[layer.options.sector[param]] = 1;
-                            }
-                        }
-                    }
-                });
-
-                if (value != 'All'){
-                    map.setView([last_marker.Latitud, last_marker.Longitud], 12);
-                }
-
-                var legend_dict = []
-                for (var  val_id in values_count ){
-                    legend_dict.push({
-                        'param': param,
-                        'value': val_id,
-                        'color': values_color[val_id],
-                        'count': values_count[val_id]
-                    })
-                }
-                legend.update(legend_dict);
-            });
-        };
-        var set_color_to_all_sectors = function(color){
-            leafletData.getMap().then(function(map) {
-                map.eachLayer(function (layer) {
-                    if (layer.options.sector) {
-                        layer.setStyle({'color': color});
-                    }
-                });
-            });
-        }
-  }]);
+}]);
 
 
 rndControllers.controller('mapSettingsCtrl', ['$scope', '$http', '$cookies',
