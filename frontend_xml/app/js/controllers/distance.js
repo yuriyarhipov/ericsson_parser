@@ -159,59 +159,10 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
 
                 var distances = data[$scope.utrancells[0]].distances;
                 $scope.distances = Object.keys(distances);
-
-                for (var id in $scope.utrancells){
-                    var sector = $scope.utrancells[id];
-                    $scope.chartConfigs[sector] = {
-                        options: {
-                            chart: {
-                                type: 'column'
-                            },
-                            tooltip: {
-                                formatter: function () {
-                                    return 'Distance: <b>' + distances[this.point.category] + '</b><br/>' +
-                                    'DC Vector: <b>' + this.point.category + '</b><br/>' +
-                                    'Propagation Delay: <b>'+this.point.y+'%</b> ';
-                                }
-
-                            },
-                        },
-                        series: [
-                            {
-                                data: data[sector].chart,
-                                name: 'DC Vector',
-                            }
-                        ],
-                        title: {
-                            text: 'Propagation Delay ' + data[sector].title
-                        },
-                        xAxis: {
-                            type: 'category',
-                        },
-                        yAxis: {
-                            min: 0,
-                            title: {
-                                text: '% Samples'
-                            }
-                        },
-                        legend: {
-                            enabled: true
-                        },
-                    };
-                }
-            });
-            if ($scope.showComapreFilters){
-                $http.get('/data/distance/get_charts/' + day_from2 + '/' + day_to2 + '/' + rbs + '/').success(function(data){
-                    $scope.utrancells = Object.keys(data);
-                    $scope.utrancells.sort();
-                    chart_data = data;
-
-                    var distances = data[$scope.utrancells[0]].distances;
-                    $scope.distances = Object.keys(distances);
-
+                if (!$scope.showComapreFilters){
                     for (var id in $scope.utrancells){
                         var sector = $scope.utrancells[id];
-                        $scope.chartConfigs2[sector] = {
+                        $scope.chartConfigs[sector] = {
                             options: {
                                 chart: {
                                     type: 'column'
@@ -228,7 +179,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                             series: [
                                 {
                                     data: data[sector].chart,
-                                    name: 'DC Vector',
+                                    name: day_from + ' - ' + day_to,
                                 }
                             ],
                             title: {
@@ -248,12 +199,55 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                             },
                         };
                     }
-                });
-            }
+                } else {
+                    $http.get('/data/distance/get_charts/' + day_from2 + '/' + day_to2 + '/' + rbs + '/').success(function(data2){
+                        for (var id in $scope.utrancells){
+                        var sector = $scope.utrancells[id];
+                        $scope.chartConfigs[sector] = {
+                            options: {
+                                chart: {
+                                    type: 'column'
+                                },
+                                tooltip: {
+                                    formatter: function () {
+                                        return 'Distance: <b>' + distances[this.point.category] + '</b><br/>' +
+                                        'DC Vector: <b>' + this.point.category + '</b><br/>' +
+                                        'Propagation Delay: <b>'+this.point.y+'%</b> ';
+                                    }
 
-
-
-            };
+                                },
+                            },
+                            series: [
+                                {
+                                    data: data[sector].chart,
+                                    name: day_from + ' - ' + day_to,
+                                },
+                                {
+                                    data: data2[sector].chart,
+                                    name: day_from2 + ' - ' + day_to2,
+                                }
+                            ],
+                            title: {
+                                text: 'Propagation Delay ' + data[sector].title
+                            },
+                            xAxis: {
+                                type: 'category',
+                            },
+                            yAxis: {
+                                min: 0,
+                                title: {
+                                    text: '% Samples'
+                                }
+                            },
+                            legend: {
+                                enabled: true
+                            },
+                        };
+                    }
+                    });
+                }
+            });
+        };
   }]);
 
 filesControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies',
