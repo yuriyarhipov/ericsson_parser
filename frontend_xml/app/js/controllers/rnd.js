@@ -24,13 +24,41 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
 rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal',
     function ($scope, $http, leafletData, $location, $cookies, $uibModal) {
 
+        var create_info_control = function(color, sector){
+            var info = L.control();
+            info.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this._div.setAttribute('style', 'border-color: '+color+';')
+                columns = Object.keys(sector);
+                columns.sort();
+
+                for (id in columns){
+                    this._div.innerHTML += '<b>' + columns[id] + ':</b> ' + sector[columns[id]] + '<br />';
+                }
+
+                var stop = L.DomEvent.stopPropagation;
+                L.DomEvent
+                    .on(this._div, 'contextmenu', stop)
+                    .on(this._div, 'click', stop)
+                    .on(this._div, 'mousedown', stop)
+                    .on(this._div, 'touchstart', stop)
+                    .on(this._div, 'dblclick', stop)
+                    .on(this._div, 'mousewheel', stop)
+                    .on(this._div, 'MozMousePixelScroll', stop)
+                return this._div;
+            };
+
+            return info
+        };
+
         var create_sector = function(lat, lon, sector, color, size, key){
             var new_sector = L.circle([lat, lon], size, {
                             color: color,
                             opacity: 0.7,
                             weight: 2,
                             sector: sector,
-                            current_base_radius: size
+                            current_base_radius: size,
+                            zoom: 10
                     })
             .bindPopup(key, {'offset': L.Point(20, 200)})
             .setDirection(sector.Azimuth, 60)
@@ -40,6 +68,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     weight: 3,
                     opacity: 1
                 });
+                if (this._map._info_control){
+                    this._map.removeControl(this._map._info_control);
+                }
+
+                this._map._info_control = create_info_control(color, sector);
+                this._map._info_control.addTo(this._map);
             })
             return new_sector;
         };
@@ -61,24 +95,47 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
         }
 
         leafletData.getMap().then(function(map) {
+            L.Control.toolBar().addTo(map);
+            L.control.scale().addTo(map);
             map._layerControl = L.control.layers().addTo(map);
+
             $http.get('/data/rnd/gsm/').success(function(gsm_data){
                 $http.get('/data/rnd/wcdma/').success(function(wcdma_data){
                     $http.get('/data/rnd/lte/').success(function(lte_data){
                         gsm_layer = create_rnd_layer(gsm_data, 1500, 'orange', 'Latitude', 'Longitude', 'Cell_Name');
                         wcdma_layer = create_rnd_layer(wcdma_data, 1200, 'blue', 'Latitud', 'Longitud', 'Utrancell');
                         lte_layer = create_rnd_layer(lte_data, 1000, 'green', 'Latitude', 'Longitude', 'Utrancell');
-                        map._layerControl.addOverlay(gsm_layer, 'GSM');
-                        map._layerControl.addOverlay(wcdma_layer, 'WCDMA');
-                        map._layerControl.addOverlay(lte_layer, 'LTE');
+                        map._layerControl.addOverlay(gsm_layer, '<span class="label label-warning">GSM</span>');
+                        map._layerControl.addOverlay(wcdma_layer, '<span class="label label-primary">WCDMA</span>');
+                        map._layerControl.addOverlay(lte_layer, '<span class="label label-success">LTE</span>');
                         map.addLayer(gsm_layer);
                         map.addLayer(wcdma_layer);
                         map.addLayer(lte_layer);
+                        map.setView([wcdma_data.data[0].Latitud, wcdma_data.data[0].Longitud], 10);
                     });
                 });
             });
-        });
 
+            map.on('zoomend', function(e){
+                    var zoom = e.target._zoom;
+
+                    map.eachLayer(function (layer) {
+                        var radius = layer.options.current_base_radius;
+                        if (e.target.sectro_size.value != 0) {
+                            radius += radius * parseFloat(e.target.sectro_size.value);
+                        }
+                        if (layer.options.sector) {
+                            zkf = ((zoom-10)*-12+100)/100
+                            var current_size = radius * (11-parseFloat(1))/10;
+                            var size = zkf*current_size;
+                            layer.setRadius(size);
+                            layer.options.current_base_radius = zkf*radius;
+                            layer.options.zoom = zoom;
+                        }
+                    });
+                    e.target.sectro_size.value = 0;
+                });
+        });
 }]);
 
 

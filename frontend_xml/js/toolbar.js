@@ -101,7 +101,17 @@ L.Control.ToolBar = L.Control.extend({
                 sFilter.selectedIndex = '-1';
             })
             .addListener(this.sectorSize, 'change', function (event) {
-                map.onSizeSector(event.target.value);
+
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        var radius = layer.options.current_base_radius;
+                        var new_radius = radius + radius * parseFloat(event.target.value);
+                        zkf = ((layer.options.zoom-10)*-12+100)/100
+                        var current_size = new_radius * (11-parseFloat(1))/10;
+                        var new_s = zkf*current_size;
+                        layer.setRadius(new_s);
+                    }
+                });
             })
             .addListener(this.filterNeighButton, 'click', function () {
                 if (L.DomUtil.hasClass(fDiv, 'hide')){
