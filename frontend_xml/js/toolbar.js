@@ -8,6 +8,7 @@ L.Control.ToolBar = L.Control.extend({
     onAdd: function(map) {
         this.controlDiv = L.DomUtil.create('div', 'toolbar col-md-12');
         this.buttonsDiv = L.DomUtil.create('div', 'col-md-12', this.controlDiv);
+        map._appsDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
 
         var fDiv = this.filterDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
         this.selectDiv = L.DomUtil.create('div', 'col-md-6', this.filterDiv);
@@ -37,10 +38,13 @@ L.Control.ToolBar = L.Control.extend({
         this.sectorSize.setAttribute('step', '0.1');
         map.sectro_size = this.sectorSize;
 
-        this.neigh3gButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
+        this.neigh3gButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
         this.neigh3gButton.innerHTML = '3G-3G'
 
-        this.flushNeighButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
+        map._appButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
+        map._appButton.innerHTML = '<span class="glyphicon glyphicon-th" aria-hidden="true"></span>'
+
+        this.flushNeighButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
         this.flushNeighButton.innerHTML = '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'
 
         this.filterNeighButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
@@ -57,8 +61,23 @@ L.Control.ToolBar = L.Control.extend({
             .addListener(this.controlDiv, 'mousedown', L.DomEvent.stopPropagation)
             .addListener(this.controlDiv, 'click', L.DomEvent.stopPropagation)
             .addListener(this.controlDiv, 'click', L.DomEvent.preventDefault)
+
             .addListener(this.neigh3gButton, 'click', function () {
-                map.show_neighbors_3g();
+                map._show_neighbors = !map._show_neighbors;
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        if (map._show_neighbors){
+                            if (layer.options.network == 'wcdma'){
+                                layer.setStyle({'color': 'grey'});
+                            } else {
+                                layer.setStyle({'color': 'black'});
+                            }
+
+                        } else {
+                            layer.setStyle({'color': layer.options.default_color});
+                        }
+                    }
+                });
             })
             .addListener(this.flushNeighButton, 'click', function () {
                 map.flush_neighbors();
@@ -120,6 +139,14 @@ L.Control.ToolBar = L.Control.extend({
                     L.DomUtil.addClass(fDiv, 'hide');
                 }
             })
+            .addListener(map._appButton, 'click', function () {
+                if (L.DomUtil.hasClass(map._appsDiv, 'hide')){
+                    L.DomUtil.removeClass(map._appsDiv, 'hide');
+                } else {
+                    L.DomUtil.addClass(map._appsDiv, 'hide');
+                }
+            })
+
 
         return this.controlDiv;
     }

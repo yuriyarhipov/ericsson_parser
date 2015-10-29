@@ -51,38 +51,109 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             return info
         };
 
-        var create_sector = function(lat, lon, sector, color, size, key){
+        var create_sector = function(network, lat, lon, sector, color, size, key){
             var new_sector = L.circle([lat, lon], size, {
                             color: color,
+                            default_color: color,
                             opacity: 0.7,
                             weight: 2,
                             sector: sector,
                             current_base_radius: size,
-                            zoom: 10
+                            zoom: 10,
+                            network: network
                     })
             .bindPopup(key, {'offset': L.Point(20, 200)})
             .setDirection(sector.Azimuth, 60)
             .on('click', function(e){
+                var self = this;
+                if (this._map._current_sector){
+                    this._map._current_sector.setStyle({
+                        weight: 2,
+                        opacity: 0.7
+                    });
+                }
                 var layer = e.target;
                 layer.setStyle({
                     weight: 3,
                     opacity: 1
                 });
+                this._map._current_sector = layer;
                 if (this._map._info_control){
                     this._map.removeControl(this._map._info_control);
                 }
 
                 this._map._info_control = create_info_control(color, sector);
                 this._map._info_control.addTo(this._map);
+
+                if (this._map._show_neighbors && (layer.options.network == 'wcdma')){
+                    if (e.originalEvent.shiftKey){
+                        if (layer.options.color == 'orange'){
+                            $http.post('/data/rnd/del3g3g/',$.param({
+                                'utrancellSource': utrancellSource,
+                                'utrancellTarget': layer.options.sector.Utrancell
+                            })).success(function(){
+                                layer.setStyle({'color': 'grey'});
+                            });
+                        } else if (layer.options.color == 'red'){
+                            $http.post('/data/rnd/new3g3g/',$.param({
+                                'rncSource': rncSource,
+                                'utrancellSource': utrancellSource,
+                                'carrierSource': carrierSource,
+                                'rncTarget': layer.options.sector.RNC,
+                                'utrancellTarget': layer.options.sector.Utrancell,
+                                'carrierTarget': layer.options.sector.Carrier,
+                                'status': 'delete'}))
+                            .success(function(){
+                                layer.setStyle({'color': 'purple'});
+                            });
+                        } else if(layer.options.color == 'grey'){
+                            $http.post('/data/rnd/new3g3g/',$.param({
+                                'rncSource': rncSource,
+                                'utrancellSource': utrancellSource,
+                                'carrierSource': carrierSource,
+                                'rncTarget': layer.options.sector.RNC,
+                                'utrancellTarget': layer.options.sector.Utrancell,
+                                'carrierTarget': layer.options.sector.Carrier,
+                                'status': 'new'}))
+                            .success(function(){
+                                layer.setStyle({'color': 'orange'});
+                            });
+                        }
+                    } else {
+                        rncSource = layer.options.sector.RNC;
+                        utrancellSource = layer.options.sector.Utrancell;
+                        carrierSource = layer.options.sector.Carrier;
+                        layer.setStyle({'color': 'green'});
+                        $http.get('/data/rnd/get_rnd_neighbors/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
+                            $http.get('/data/rnd/get_new3g/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/').success(function(new3g_neighbors){
+                                self._map.eachLayer(function (temp_layer) {
+                                    if ((temp_layer.options.sector) && (temp_layer.options.network == 'wcdma')){
+                                        if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
+                                            if (data.indexOf(temp_layer.options.sector.Utrancell) >= 0) {
+                                                temp_layer.setStyle({'color': 'red'});
+                                            } else if(new3g_neighbors.indexOf(temp_layer.options.sector.Utrancell) >= 0){
+                                                temp_layer.setStyle({'color': 'orange'});
+                                            } else {
+                                                temp_layer.setStyle({'color': 'grey'});
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                        });
+                    }
+
+                }
             })
             return new_sector;
         };
 
-        var create_rnd_layer = function(data, radius, color, lat, lon, key){
+        var create_rnd_layer = function(data, network, radius, color, lat, lon, key){
             var data = data.data;
             var sectors = [];
             for (sid in data){
                 var sector = create_sector(
+                    network,
                     data[sid][lat],
                     data[sid][lon],
                     data[sid],
@@ -98,13 +169,14 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             L.Control.toolBar().addTo(map);
             L.control.scale().addTo(map);
             map._layerControl = L.control.layers().addTo(map);
+            map._show_neighbors = false;
 
             $http.get('/data/rnd/gsm/').success(function(gsm_data){
                 $http.get('/data/rnd/wcdma/').success(function(wcdma_data){
                     $http.get('/data/rnd/lte/').success(function(lte_data){
-                        gsm_layer = create_rnd_layer(gsm_data, 1500, 'orange', 'Latitude', 'Longitude', 'Cell_Name');
-                        wcdma_layer = create_rnd_layer(wcdma_data, 1200, 'blue', 'Latitud', 'Longitud', 'Utrancell');
-                        lte_layer = create_rnd_layer(lte_data, 1000, 'green', 'Latitude', 'Longitude', 'Utrancell');
+                        gsm_layer = create_rnd_layer(gsm_data, 'gsm', 1500, 'orange', 'Latitude', 'Longitude', 'Cell_Name');
+                        wcdma_layer = create_rnd_layer(wcdma_data, 'wcdma', 1200, 'blue', 'Latitud', 'Longitud', 'Utrancell');
+                        lte_layer = create_rnd_layer(lte_data, 'lte', 1000, 'green', 'Latitude', 'Longitude', 'Utrancell');
                         map._layerControl.addOverlay(gsm_layer, '<span class="label label-warning">GSM</span>');
                         map._layerControl.addOverlay(wcdma_layer, '<span class="label label-primary">WCDMA</span>');
                         map._layerControl.addOverlay(lte_layer, '<span class="label label-success">LTE</span>');

@@ -295,7 +295,8 @@ def new3g3g(request):
             request.POST.get('carrierSource'),
             request.POST.get('rncTarget'),
             request.POST.get('utrancellTarget'),
-            request.POST.get('carrierTarget'))
+            request.POST.get('carrierTarget'),
+            request.POST.get('status'))
 
     return Response([])
 

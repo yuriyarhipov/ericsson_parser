@@ -111,7 +111,7 @@ class Rnd:
 
     def save_new_3g(self, filename, rnc_source, utrancell_source,
                     carrier_source, rnc_target, utrancell_target,
-                    carrier_target):
+                    carrier_target, status):
         cursor = connection.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS new3g (
@@ -121,11 +121,13 @@ class Rnd:
                 carrierSource  TEXT,
                 rncTarget TEXT,
                 utrancellTarget TEXT,
-                carrierTarget TEXT
+                carrierTarget TEXT,
+                status TEXT
             )
         ''')
+        connection.commit()
         cursor.execute('''
-            INSERT INTO new3g VALUES (%s,%s,%s,%s,%s,%s,%s)
+            INSERT INTO new3g VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
         ''', (
             filename,
             rnc_source,
@@ -133,7 +135,8 @@ class Rnd:
             carrier_source,
             rnc_target,
             utrancell_target,
-            carrier_target))
+            carrier_target,
+            status))
         connection.commit()
 
     def del_3g(self, filename, utrancell_source, utrancell_target):
