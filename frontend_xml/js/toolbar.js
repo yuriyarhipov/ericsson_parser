@@ -12,14 +12,7 @@ L.Control.ToolBar = L.Control.extend({
 
         var fDiv = this.filterDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
         this.selectDiv = L.DomUtil.create('div', 'col-md-6', this.filterDiv);
-        var sFilter = this.select_filter = L.DomUtil.create('select', 'form-control', this.selectDiv);
-        for (id in map.columns){
-            var option = document.createElement("option");
-            option.value = map.columns[id];
-            option.text = map.columns[id];
-            this.select_filter.appendChild(option);
-        }
-        this.select_filter.selectedIndex = '-1';
+        map._select_filter = L.DomUtil.create('select', 'form-control', this.selectDiv);
 
         this.valuesDiv = L.DomUtil.create('div', 'col-md-5', this.filterDiv);
         var sValues = this.select_values = L.DomUtil.create('select', 'form-control', this.valuesDiv);
@@ -82,14 +75,36 @@ L.Control.ToolBar = L.Control.extend({
             .addListener(this.flushNeighButton, 'click', function () {
                 map.flush_neighbors();
             })
-            .addListener(this.select_filter, 'change', function (e) {
+            .addListener(map._select_filter, 'change', function (e) {
                 values = [];
-                for (id in map.data){
-                    var filter_val = map.data[id][e.target.value];
-                    if (values.indexOf(filter_val) < 0){
-                        values.push(filter_val);
+                var load_values = function(data, column){
+                    for (id in data){
+                        var val = data[id][e.target.value];
+                        if (values.indexOf(val) < 0){
+                            values.push(val);
+                        }
                     }
+                };
+                if (map._gsm_data.columns.indexOf(e.target.value) >= 0){
+                    load_values(map._gsm_data.data, e.target.value);
                 }
+
+                if (map._wcdma_data.columns.indexOf(e.target.value) >= 0){
+                    load_values(map._wcdma_data.data, e.target.value);
+                }
+                if (map._lte_data.columns.indexOf(e.target.value) >= 0){
+                    load_values(map._lte_data.data, e.target.value);
+                }
+
+                if (!isNaN(values[0])){
+                    values.sort(function(a, b){return a - b});
+                } else {
+                    values.sort();
+                }
+
+
+
+                console.log(values);
 
                 while (sValues.firstChild) {
                     sValues.removeChild(sValues.firstChild);
@@ -110,14 +125,12 @@ L.Control.ToolBar = L.Control.extend({
 
             })
             .addListener(this.select_values, 'change', function (event) {
-                map.set_color_to_all_sectors('#03f');
-                map.legend.reset();
-                map.add_filter(sFilter.value, event.target.value);
+                map._add_filter(map._select_filter.value, event.target.value);
             })
             .addListener(this.resetFiltersButton, 'click', function () {
                 map.onResetFilter();
                 sValues.selectedIndex = '-1';
-                sFilter.selectedIndex = '-1';
+                map._select_filter.selectedIndex = '-1';
             })
             .addListener(this.sectorSize, 'change', function (event) {
 

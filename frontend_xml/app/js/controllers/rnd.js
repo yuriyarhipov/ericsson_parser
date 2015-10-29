@@ -24,6 +24,62 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
 rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal',
     function ($scope, $http, leafletData, $location, $cookies, $uibModal) {
 
+        var onAddFilter = function(param, value){
+            var color = randomColor({hue: 'random',luminosity: 'dark'});
+            var values_color = {};
+            var last_marker = {};
+            var values_count = {}
+
+            leafletData.getMap().then(function(map) {
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        if(layer.options.sector[param] == value){
+                            layer.setStyle({'color': color});
+                            last_marker.Latitud = layer.options.sector.Latitud;
+                            last_marker.Longitud = layer.options.sector.Longitud;
+                            values_color[value] = color
+                            if (value in values_count){
+                                values_count[value] += 1;
+                            } else {
+                                values_count[value] = 1;
+                            }
+                        }
+                        if (value=='All'){
+                            if (layer.options.sector[param] in values_color){
+                                layer.setStyle({'color': values_color[layer.options.sector[param]]});
+                                last_marker.Latitud = layer.options.sector.Latitud;
+                                last_marker.Longitud = layer.options.sector.Longitud;
+                                values_count[layer.options.sector[param]] += 1;
+                            } else {
+                                values_color[layer.options.sector[param]] = randomColor({hue: 'random',luminosity: 'dark'});
+                                layer.setStyle({'color': values_color[layer.options.sector[param]]});
+                                last_marker.Latitud = layer.options.sector.Latitud;
+                                last_marker.Longitud = layer.options.sector.Longitud;
+                                values_count[layer.options.sector[param]] = 1;
+                            }
+                        }
+                    }
+                });
+
+                if (value != 'All'){
+                    map.setView([last_marker.Latitud, last_marker.Longitud], 12);
+                }
+
+                var legend_dict = []
+                for (var  val_id in values_count ){
+                    legend_dict.push({
+                        'param': param,
+                        'value': val_id,
+                        'color': values_color[val_id],
+                        'count': values_count[val_id]
+                    })
+                }
+                //legend.update(legend_dict);
+            });
+        };
+
+
+
         var create_info_control = function(color, sector){
             var info = L.control();
             info.onAdd = function (map) {
@@ -170,6 +226,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             L.control.scale().addTo(map);
             map._layerControl = L.control.layers().addTo(map);
             map._show_neighbors = false;
+            map._add_filter = onAddFilter;
 
             $http.get('/data/rnd/gsm/').success(function(gsm_data){
                 $http.get('/data/rnd/wcdma/').success(function(wcdma_data){
@@ -183,7 +240,36 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         map.addLayer(gsm_layer);
                         map.addLayer(wcdma_layer);
                         map.addLayer(lte_layer);
+
+                        map._gsm_data = gsm_data;
+                        map._wcdma_data = wcdma_data;
+                        map._lte_data = lte_data;
+
                         map.setView([wcdma_data.data[0].Latitud, wcdma_data.data[0].Longitud], 10);
+                        var columns = [];
+                        for (id in gsm_data.columns){
+                            if (columns.indexOf((gsm_data.columns[id])) < 0){
+                                columns.push(gsm_data.columns[id]);
+                            }
+                        }
+                        for (id in wcdma_data.columns){
+                            if (columns.indexOf((wcdma_data.columns[id])) < 0){
+                                columns.push(wcdma_data.columns[id]);
+                            }
+                        }
+                        for (id in lte_data.columns){
+                            if (columns.indexOf((lte_data.columns[id])) < 0){
+                                columns.push(lte_data.columns[id]);
+                            }
+                        }
+                        columns.sort();
+                        for (id in columns){
+                            var option = document.createElement("option");
+                            option.value = columns[id];
+                            option.text = columns[id];
+                            map._select_filter.appendChild(option);
+                        }
+                        map._select_filter.selectedIndex = '-1';
                     });
                 });
             });

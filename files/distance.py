@@ -166,9 +166,6 @@ class Distance(object):
             sector,
             date_from,
             date_to)
-        if utrancell == 'AN0001I':
-            print data
-            print '!!!!!!!!!!!'
         return data, title, distances
 
     def write_file(self, project, description, vendor, filename, current_task):

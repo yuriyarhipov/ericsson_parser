@@ -199,7 +199,6 @@ def create_table(table, rows, network, filename, parent_task_id, project):
     tasks = ft.tasks.split(',')
     status = True
     for task_id in tasks:
-        print tasks
         if (not AsyncResult(task_id).ready()) and (task_id != create_table.request.id):
             status = False
             break
@@ -212,7 +211,6 @@ def create_table(table, rows, network, filename, parent_task_id, project):
 @celery.task
 def additional_tables(network):
     from xml_processing.xml import Tables
-    print 'ADD!!!!!!!!!!!!!!!!!!!!'
     Tables().create_additional_tables(network)
 
 
