@@ -453,7 +453,18 @@ rndControllers.controller('mapSettingsCtrl', ['$scope', '$http', '$cookies',
         $scope.radius_gsm = 1200;
         $scope.radius_lte = 1800;
 
+        if ($cookies.get('radius_gsm')){
+                $scope.radius_gsm = $cookies.get('radius_gsm');
+            }
+            if ($cookies.get('radius_wcdma')){
+                $scope.radius_wcdma = $cookies.get('radius_wcdma');
+            }
+            if ($cookies.get('radius_lte')){
+                $scope.radius_lte = $cookies.get('radius_lte');
+            }
+
         $scope.onSaveMapSettings = function(){
+            console.log('ok');
             $cookies.put('radius_wcdma', $scope.radius_wcdma);
             $cookies.put('radius_gsm', $scope.radius_gsm);
             $cookies.put('radius_lte', $scope.radius_lte);

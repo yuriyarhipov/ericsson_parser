@@ -275,14 +275,22 @@ filesControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies',
             show_logical_sector('LogicalSector1', data);
         });
 
-        if ($cookies.get('radius_wcdma')){
-            $scope.radius_wcdma = $cookies.get('radius_wcdma');
-        } else{
-            $scope.radius_wcdma = 1500;
-        }
 
         $scope.radius_gsm = 1200;
         $scope.radius_lte = 1800;
+        $scope.radius_wcdma = 1500;
+
+        if ($cookies.get('radius_gsm')){
+            $scope.radius_gsm = $cookies.get('radius_gsm');
+        }
+        if ($cookies.get('radius_wcdma')){
+            $scope.radius_wcdma = $cookies.get('radius_wcdma');
+        }
+        if ($cookies.get('radius_lte')){
+            $scope.radius_lte = $cookies.get('radius_lte');
+        }
+
+
 
         $scope.onSaveMapSettings = function(radius_wcdma, radius_lte, radius_gsm){
             $cookies.put('radius_wcdma', radius_wcdma);
