@@ -29,7 +29,7 @@ L.Control.ToolBar = L.Control.extend({
         this.sectorSize.setAttribute('max', 1);
         this.sectorSize.setAttribute('value',0);
         this.sectorSize.setAttribute('step', '0.1');
-        map.sectro_size = this.sectorSize;
+        map.sector_size = this.sectorSize;
 
         this.neigh3gButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
         this.neigh3gButton.innerHTML = '3G-3G'
@@ -126,7 +126,7 @@ L.Control.ToolBar = L.Control.extend({
                 map._add_filter(map._select_filter.value, event.target.value);
             })
             .addListener(this.resetFiltersButton, 'click', function () {
-                map.onResetFilter();
+                map._legend.reset_legend();
                 sValues.selectedIndex = '-1';
                 map._select_filter.selectedIndex = '-1';
             })

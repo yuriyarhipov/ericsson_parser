@@ -103,11 +103,12 @@ class Rnd:
         cursor = connection.cursor()
         cursor.execute('''
             SELECT DISTINCT
-                utrancellTarget
+                utrancellTarget,
+                status
             FROM
                 new3g
             WHERE (utrancellSource=%s) AND (filename=%s)''', (sector, filename, ))
-        neighbors = [row[0] for row in cursor]
+        neighbors = {row[0]: row[1] for row in cursor}
         return neighbors
 
     def save_new_3g(self, filename, rnc_source, utrancell_source,
