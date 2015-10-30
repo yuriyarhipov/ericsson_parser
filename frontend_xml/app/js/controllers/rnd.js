@@ -24,10 +24,10 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
 rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal',
     function ($scope, $http, leafletData, $location, $cookies, $uibModal) {
         $scope.controls = {
-                    fullscreen: {
-                        position: 'topleft'
-                    }
-                };
+            fullscreen: {
+                position: 'topleft'
+            }
+        };
 
         var onAddFilter = function(param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
@@ -299,7 +299,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
         var create_rnd_layer = function(data, network, base_radius, color, lat, lon, key){
             var data = data.data;
-            var gsm_bands = ['GSM850', 'GSM1900'];
+            var gsm_bands = ['GSM1900', 'GSM850', ];
             var sectors = [];
             for (sid in data){
                 var zoom_k = 1;
