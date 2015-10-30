@@ -26,58 +26,146 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
         var onAddFilter = function(param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
-            var values_color = {};
+            var values = {};
             var last_marker = {};
-            var values_count = {}
 
             leafletData.getMap().then(function(map) {
                 map.eachLayer(function (layer) {
                     if (layer.options.sector) {
                         if(layer.options.sector[param] == value){
                             layer.setStyle({'color': color});
-                            last_marker.Latitud = layer.options.sector.Latitud;
-                            last_marker.Longitud = layer.options.sector.Longitud;
-                            values_color[value] = color
-                            if (value in values_count){
-                                values_count[value] += 1;
+                            last_marker = layer.options.sector;
+                            if (value in values){
+                                values[value].sectors.push(layer);
                             } else {
-                                values_count[value] = 1;
+                                values[value] = {
+                                    'param_name': param,
+                                    'color': color,
+                                    'sectors': [layer, ]}
                             }
                         }
                         if (value=='All'){
-                            if (layer.options.sector[param] in values_color){
-                                layer.setStyle({'color': values_color[layer.options.sector[param]]});
-                                last_marker.Latitud = layer.options.sector.Latitud;
-                                last_marker.Longitud = layer.options.sector.Longitud;
-                                values_count[layer.options.sector[param]] += 1;
+                            last_marker = layer.options.sector;
+                            if (layer.options.sector[param] in values){
+                                layer.setStyle({'color': values[layer.options.sector[param]].color});
+                                values[layer.options.sector[param]].sectors.push(layer);
                             } else {
-                                values_color[layer.options.sector[param]] = randomColor({hue: 'random',luminosity: 'dark'});
-                                layer.setStyle({'color': values_color[layer.options.sector[param]]});
-                                last_marker.Latitud = layer.options.sector.Latitud;
-                                last_marker.Longitud = layer.options.sector.Longitud;
-                                values_count[layer.options.sector[param]] = 1;
+                                if (layer.options.sector[param]){
+                                    values[layer.options.sector[param]] = {
+                                        'param_name': param,
+                                        'color':color = randomColor({hue: 'random',luminosity: 'dark'}),
+                                        'sectors':[layer, ]};
+                                    layer.setStyle({'color': values[layer.options.sector[param]].color});
+                                }
                             }
                         }
                     }
                 });
 
                 if (value != 'All'){
-                    map.setView([last_marker.Latitud, last_marker.Longitud], 12);
+                    if ('Latitud' in last_marker){
+                        map.setView([last_marker.Latitud, last_marker.Longitud], 12);
+                    } else if ('Latitude' in last_marker){
+                        map.setView([last_marker.Latitude, last_marker.Longitude], 12);
+                    }
                 }
-
-                var legend_dict = []
-                for (var  val_id in values_count ){
-                    legend_dict.push({
-                        'param': param,
-                        'value': val_id,
-                        'color': values_color[val_id],
-                        'count': values_count[val_id]
-                    })
-                }
-                //legend.update(legend_dict);
+                map._legend.reset_legend();
+                map._legend.set_legend(values);
             });
         };
 
+        var create_legend_control = function(){
+            var legend = L.control({position: 'bottomright'});
+
+            legend.onAdd = function (map) {
+                legend._map = map;
+                this._div = L.DomUtil.create('div', 'legend hide');
+                this.sectors = [];
+                return this._div;
+            };
+
+            legend.reset_legend = function(){
+                L.DomUtil.addClass(this._div, 'hide');
+                while (this._div.firstChild) {
+                    this._div.removeChild(this._div.firstChild);
+                }
+                for (id in this.sectors){
+                    var layer = this.sectors[id];
+                    layer.setStyle({'color': layer.options.default_color});
+                }
+                this.sectors = [];
+            };
+
+            legend.set_legend = function(values){
+                L.DomUtil.removeClass(this._div, 'hide');
+                for (val in values){
+                    this.sectors = legend.sectors.concat(values[val].sectors);
+                    var table = L.DomUtil.create('table', 'col-md-12', this._div);
+                    var row_value = L.DomUtil.create('tr', 'col-md-12', table);
+                    var cell_btn = L.DomUtil.create('td', 'col-md-1', row_value);
+                    var button_value = L.DomUtil.create('button', 'btn btn-legend', cell_btn);
+                    button_value.setAttribute('style', 'background-color: '+values[val].color);
+                    button_value.sectors = values[val].sectors;
+                    var cell_value = L.DomUtil.create('td', 'col-md-11', row_value);
+                    var cell_link = L.DomUtil.create('span', 'span-legend', cell_value);
+                    cell_link.innerHTML =  values[val].param_name + '=' + val + '('+values[val].sectors.length+')';
+                    cell_link.sectors = values[val].sectors;
+                    cell_link.next_sector_index = 0;
+
+                    var stop = L.DomEvent.stopPropagation;
+                    L.DomEvent
+                        .addListener(this._div, 'contextmenu', stop)
+                        .addListener(this._div, 'click', stop)
+                        .addListener(this._div, 'mousedown', stop)
+                        .addListener(this._div, 'touchstart', stop)
+                        .addListener(this._div, 'dblclick', stop)
+                        .addListener(this._div, 'mousewheel', stop)
+                        .addListener(this._div, 'MozMousePixelScroll', stop)
+                        .addListener(button_value, 'click', function(e){
+                            var color = randomColor({hue: 'random',luminosity: 'dark'});
+                            e.target.setAttribute('style', 'background-color: '+color);
+                            for (id in e.target.sectors){
+                                e.target.sectors[id].setStyle({'color': color});
+                            }
+                        })
+                        .addListener(cell_link, 'click', function(e){
+                            select_sector(e.target.sectors[e.target.next_sector_index]);
+                            var sector = e.target.sectors[e.target.next_sector_index].options.sector;
+                            if (e.target.next_sector_index + 1 < e.target.sectors.length){
+                                e.target.next_sector_index += 1;
+                            } else {
+                                e.target.next_sector_index = 0;
+                            }
+                            if ('Latitud' in sector){
+                                legend._map.setView([sector.Latitud, sector.Longitud], 14);
+                            } else if ('Latitude' in sector){
+                                legend._map.setView([sector.Latitude, sector.Longitude], 14);
+                            }
+                        })
+                    };
+            };
+            return legend;
+        };
+
+        var select_sector = function(layer){
+            if (layer._map._current_sector){
+                layer._map._current_sector.setStyle({
+                    weight: 2,
+                    opacity: 0.7
+                });
+            }
+            layer.setStyle({
+                weight: 4,
+                opacity: 1
+            });
+            layer._map._current_sector = layer;
+            if (layer._map._info_control){
+                layer._map.removeControl(layer._map._info_control);
+            }
+            layer._map._info_control = create_info_control(layer.options.default_color, layer.options.sector);
+            layer._map._info_control.addTo(layer._map);
+
+        };
 
 
         var create_info_control = function(color, sector){
@@ -122,24 +210,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             .setDirection(sector.Azimuth, 60)
             .on('click', function(e){
                 var self = this;
-                if (this._map._current_sector){
-                    this._map._current_sector.setStyle({
-                        weight: 2,
-                        opacity: 0.7
-                    });
-                }
-                var layer = e.target;
-                layer.setStyle({
-                    weight: 3,
-                    opacity: 1
-                });
-                this._map._current_sector = layer;
-                if (this._map._info_control){
-                    this._map.removeControl(this._map._info_control);
-                }
-
-                this._map._info_control = create_info_control(color, sector);
-                this._map._info_control.addTo(this._map);
+                select_sector(e.target);
 
                 if (this._map._show_neighbors && (layer.options.network == 'wcdma')){
                     if (e.originalEvent.shiftKey){
@@ -158,7 +229,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                                 'rncTarget': layer.options.sector.RNC,
                                 'utrancellTarget': layer.options.sector.Utrancell,
                                 'carrierTarget': layer.options.sector.Carrier,
-                                'status': 'delete'}))
+                                'status': 'Delete'}))
                             .success(function(){
                                 layer.setStyle({'color': 'purple'});
                             });
@@ -170,7 +241,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                                 'rncTarget': layer.options.sector.RNC,
                                 'utrancellTarget': layer.options.sector.Utrancell,
                                 'carrierTarget': layer.options.sector.Carrier,
-                                'status': 'new'}))
+                                'status': 'New'}))
                             .success(function(){
                                 layer.setStyle({'color': 'orange'});
                             });
@@ -227,6 +298,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             map._layerControl = L.control.layers().addTo(map);
             map._show_neighbors = false;
             map._add_filter = onAddFilter;
+            map._legend = create_legend_control();
+            map._legend.addTo(map);
 
             $http.get('/data/rnd/gsm/').success(function(gsm_data){
                 $http.get('/data/rnd/wcdma/').success(function(wcdma_data){

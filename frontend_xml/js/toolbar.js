@@ -102,10 +102,6 @@ L.Control.ToolBar = L.Control.extend({
                     values.sort();
                 }
 
-
-
-                console.log(values);
-
                 while (sValues.firstChild) {
                     sValues.removeChild(sValues.firstChild);
                 }
@@ -116,10 +112,12 @@ L.Control.ToolBar = L.Control.extend({
                 sValues.appendChild(option);
 
                 for (id in values){
-                    var option = document.createElement("option");
-                    option.value = values[id];
-                    option.text = values[id];
-                    sValues.appendChild(option);
+                    if (values[id]){
+                        var option = document.createElement("option");
+                        option.value = values[id];
+                        option.text = values[id];
+                        sValues.appendChild(option);
+                    }
                 }
                 sValues.selectedIndex = '-1';
 

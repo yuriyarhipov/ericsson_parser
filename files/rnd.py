@@ -52,8 +52,9 @@ class Rnd:
                 (project_id=%s) AND (network=%s)''', (
             self.project_id,
             self.network))
-
-        result = cursor.fetchone()[0]
+        result = []
+        if cursor.rowcount > 0:
+            result = cursor.fetchone()[0]
         return result
 
     def write_file(self, filename):

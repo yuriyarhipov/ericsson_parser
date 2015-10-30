@@ -30,7 +30,7 @@
 }
 
 .legend {
-    width: 250px;
+    width: auto;
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
@@ -39,16 +39,19 @@
     border-radius: 5px;
     color: #555;
     max-height: 250px;
+    max-width: 300px;
     overflow-y: auto;
 }
 
-.legend i {
-    color: #777;
+.span-legend:hover {
+    cursor: pointer;
+}
+
+
+.btn-legend {
     width: 18px;
     height: 18px;
-    float: left;
-    margin-right: 8px;
-    opacity: 0.7;
+    margin:5px;
 }
 
 .toolbar {
@@ -65,7 +68,6 @@
 
 .leaflet-map {
     position: fixed;
-
     top:55px;
     left:10px;
     height: 90%;
