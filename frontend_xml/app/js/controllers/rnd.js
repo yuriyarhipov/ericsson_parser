@@ -427,7 +427,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         zkf = ((zoom_value-10)*-12+100)/100
                         var current_size = radius * (11-parseFloat(layer.options.zoom_k))/10;
                         var size = zkf*current_size;
-                        console.log([size, radius]);
 
                         //if (size > 1){
 
