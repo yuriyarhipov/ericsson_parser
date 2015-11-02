@@ -32,21 +32,7 @@
         </div>
     </div>
 </div>
-
-<table st-table="displayed_data" st-safe-src="table_data" class="table table-striped col-md-12">
-    <thead>
-    <tr>
-        <th st-sort="{{ col }}" ng-repeat="col in columns">{{ col }}</th>
-    </tr>
-
-    </thead>
-    <tbody>
-    <tr ng-repeat="row in displayed_data">
-        <td ng-repeat="col in columns"><a href="#/map/{{ rnd_network }}/?{{ col }}={{row[col]}}">{{row[col]}}</td>
-    </tr>
-    </tbody>
-</table>
-
+<div ui-grid="{ data: table_data }" class="RndGrid col-md-12"></div>
 
 
 
