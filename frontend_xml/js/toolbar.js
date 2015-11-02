@@ -11,7 +11,20 @@ L.Control.ToolBar = L.Control.extend({
         map._appsDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
 
         var fDiv = this.filterDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
-        this.selectDiv = L.DomUtil.create('div', 'col-md-6', this.filterDiv);
+
+        this.networkDiv = L.DomUtil.create('div', 'col-md-3', this.filterDiv);
+        map._network_filter = L.DomUtil.create('select', 'form-control', this.networkDiv);
+        this.gsm_option = L.DomUtil.create('option', '', map._network_filter);
+        this.gsm_option.setAttribute('value', 'gsm');
+        this.gsm_option.innerHTML='GSM';
+        this.wcdma_option = L.DomUtil.create('option', '', map._network_filter);
+        this.wcdma_option.setAttribute('value', 'wcdma');
+        this.wcdma_option.innerHTML='WCDMA';
+        this.lte_option = L.DomUtil.create('option', '', map._network_filter);
+        this.lte_option.setAttribute('value', 'lte');
+        this.lte_option.innerHTML='LTE';
+
+        this.selectDiv = L.DomUtil.create('div', 'col-md-3', this.filterDiv);
         map._select_filter = L.DomUtil.create('select', 'form-control', this.selectDiv);
 
         this.valuesDiv = L.DomUtil.create('div', 'col-md-5', this.filterDiv);
@@ -74,6 +87,38 @@ L.Control.ToolBar = L.Control.extend({
             })
             .addListener(this.flushNeighButton, 'click', function () {
                 map.flush_neighbors();
+            })
+            .addListener(map._network_filter, 'change', function (e) {
+                var network = e.target.value;
+                while (map._select_filter.firstChild) {
+                    map._select_filter.removeChild(map._select_filter.firstChild);
+                }
+                if ((network) == 'gsm') {
+                    map._gsm_data.columns.sort();
+                    for (id in map._gsm_data.columns){
+                        var option = document.createElement("option");
+                        option.value = map._gsm_data.columns[id];
+                        option.text = map._gsm_data.columns[id];
+                        map._select_filter.appendChild(option);
+                    }
+                } else if ((network) == 'wcdma') {
+                    map._wcdma_data.columns.sort();
+                    for (id in map._wcdma_data.columns){
+                        var option = document.createElement("option");
+                        option.value = map._wcdma_data.columns[id];
+                        option.text = map._wcdma_data.columns[id];
+                        map._select_filter.appendChild(option);
+                    }
+                } else if ((network) == 'lte') {
+                    map._lte_data.columns.sort();
+                    for (id in map._lte_data.columns){
+                        var option = document.createElement("option");
+                        option.value = map._lte_data.columns[id];
+                        option.text = map._lte_data.columns[id];
+                        map._select_filter.appendChild(option);
+                    }
+                }
+                map._select_filter.selectedIndex = '-1';
             })
             .addListener(map._select_filter, 'change', function (e) {
                 values = [];

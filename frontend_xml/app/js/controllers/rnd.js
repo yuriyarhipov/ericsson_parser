@@ -48,6 +48,16 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                                     'color': color,
                                     'sectors': [layer, ]}
                             }
+                        } else {
+                            layer.setStyle({'color': '#808080'});
+                            if ('other' in values){
+                                values['other'].sectors.push(layer);
+                            } else {
+                                values['other'] = {
+                                    'param_name': param,
+                                    'color': '#808080',
+                                    'sectors': [layer, ]}
+                            }
                         }
                         if (value=='All'){
                             last_marker = layer.options.sector;
@@ -110,9 +120,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     var table = L.DomUtil.create('table', 'col-md-12', this._div);
                     var row_value = L.DomUtil.create('tr', 'col-md-12', table);
                     var cell_btn = L.DomUtil.create('td', 'col-md-1', row_value);
-                    var button_value = L.DomUtil.create('button', 'btn btn-legend', cell_btn);
-                    button_value.setAttribute('style', 'background-color: '+values[val].color);
-                    button_value.sectors = values[val].sectors;
+                    var color_value = L.DomUtil.create('input', '', cell_btn);
+                    color_value.setAttribute('type', 'color');
+                    color_value.setAttribute('value', values[val].color);
+
+                    color_value.sectors = values[val].sectors;
                     var cell_value = L.DomUtil.create('td', 'col-md-11', row_value);
                     var cell_link = L.DomUtil.create('span', 'span-legend', cell_value);
                     cell_link.innerHTML =  values[val].param_name + '=' + val + '('+values[val].sectors.length+')';
@@ -128,9 +140,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         .addListener(this._div, 'dblclick', stop)
                         .addListener(this._div, 'mousewheel', stop)
                         .addListener(this._div, 'MozMousePixelScroll', stop)
-                        .addListener(button_value, 'click', function(e){
-                            var color = randomColor({hue: 'random',luminosity: 'dark'});
-                            e.target.setAttribute('style', 'background-color: '+color);
+                        .addListener(color_value, 'change', function(e){
+                            var color = e.target.value;
                             for (id in e.target.sectors){
                                 e.target.sectors[id].setStyle({'color': color});
                             }
@@ -304,12 +315,18 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             for (sid in data){
                 var zoom_k = 1;
                 if (network == 'gsm'){
+                    data.sort(function(a,b){
+                        return parseFloat(a.Band) - parseFloat(b.Band);
+                    });
                     if (!data[sid].Band in gsm_bands) {
                         gsm_bands.push(data[sid].Band);
                     }
                     zoom_k = gsm_bands.indexOf(data[sid].Band) +1;
                     radius = base_radius * (11-zoom_k)/10;
                 } else {
+                    data.sort(function(a,b){
+                        return parseFloat(a.Carrier) - parseFloat(b.Carrier);
+                    });
                     if (parseFloat(data[sid].Carrier)){
                         zoom_k = parseFloat(data[sid].Carrier)
                         radius = base_radius * (11-parseFloat(data[sid].Carrier))/10;
@@ -372,6 +389,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             $http.get('/data/rnd/gsm/').success(function(gsm_data){
                 $http.get('/data/rnd/wcdma/').success(function(wcdma_data){
                     $http.get('/data/rnd/lte/').success(function(lte_data){
+
                         gsm_layer = create_rnd_layer(gsm_data, 'gsm', radius_gsm, 'orange', 'Latitude', 'Longitude', 'Cell_Name');
                         wcdma_layer = create_rnd_layer(wcdma_data, 'wcdma', radius_wcdma, 'blue', 'Latitud', 'Longitud', 'Utrancell');
                         lte_layer = create_rnd_layer(lte_data, 'lte', radius_lte, 'green', 'Latitude', 'Longitude', 'Utrancell');
@@ -388,30 +406,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
                         map.setView([wcdma_data.data[0].Latitud, wcdma_data.data[0].Longitud], 10);
                         map.set_zoom(10);
-                        var columns = [];
-                        for (id in gsm_data.columns){
-                            if (columns.indexOf((gsm_data.columns[id])) < 0){
-                                columns.push(gsm_data.columns[id]);
-                            }
-                        }
-                        for (id in wcdma_data.columns){
-                            if (columns.indexOf((wcdma_data.columns[id])) < 0){
-                                columns.push(wcdma_data.columns[id]);
-                            }
-                        }
-                        for (id in lte_data.columns){
-                            if (columns.indexOf((lte_data.columns[id])) < 0){
-                                columns.push(lte_data.columns[id]);
-                            }
-                        }
-                        columns.sort();
-                        for (id in columns){
-                            var option = document.createElement("option");
-                            option.value = columns[id];
-                            option.text = columns[id];
-                            map._select_filter.appendChild(option);
-                        }
                         map._select_filter.selectedIndex = '-1';
+                        map._network_filter.selectedIndex = '-1';
                     });
                 });
             });
@@ -464,7 +460,6 @@ rndControllers.controller('mapSettingsCtrl', ['$scope', '$http', '$cookies',
             }
 
         $scope.onSaveMapSettings = function(){
-            console.log('ok');
             $cookies.put('radius_wcdma', $scope.radius_wcdma);
             $cookies.put('radius_gsm', $scope.radius_gsm);
             $cookies.put('radius_lte', $scope.radius_lte);

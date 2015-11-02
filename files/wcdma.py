@@ -101,6 +101,7 @@ class WCDMA:
         cells = self.convert_form_cells(cells, filenames)
         if template and cells:
             params = self.get_params_with_min_max(template)
+            print params
             sql = Template().get_select(template, filenames, cells)
             self.cursor.execute(sql)
             colnames = [desc[0] for desc in self.cursor.description]
