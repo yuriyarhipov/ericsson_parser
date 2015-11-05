@@ -1,7 +1,7 @@
 var distanceControllers = angular.module('distanceControllers', []);
 
-auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinnerService',
+    function ($scope, $http, usSpinnerService) {
         $scope.showComapreFilters = false;
         $scope.distance = {};
         $scope.rbs = {};
@@ -30,23 +30,22 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
             });
         });
 
-        $scope.low_percent  = function(distance, percent){
+        $scope.low_percent  = function(distance, percent, day_from, day_to){
             $scope.low_sectors = [];
-            for (sector in chart_data){
-                sum = 0;
-                for (id in chart_data[sector].chart){
-                    if (parseFloat(chart_data[sector].chart[id][0]) <= parseFloat(distance)){
-                        sum += parseFloat(chart_data[sector].chart[id][1]);
+            usSpinnerService.spin('spinner_low_coverage');
+            $http.get('/data/distance/get_low_coverage/' + day_from + '/' + day_to + '/' + distance + '/').success(function(data){
+                for (id in data){
+                    var sector = data[id];
+                    var sector_percent = parseFloat(sector.dist_sum)/parseFloat(sector.date_sum) * 100;
+                    if (sector_percent <= percent){
+                        $scope.low_sectors.push({
+                            'rnc': sector.rnc,
+                            'sector': sector.utrancell,
+                            'sum': sector_percent});
                     }
+                    usSpinnerService.stop('spinner_low_coverage');
                 }
-                if (sum <= percent){
-                    $scope.low_sectors.push(sector);
-                }
-            }
-            if ($scope.low_sectors.length > 0) {
-                $scope.showLowDistance($scope.low_sectors[0], distance);
-                $scope.selectedLowSector = $scope.low_sectors[0];
-            }
+            });
         };
 
         $scope.over_percent  = function(distance, percent){
@@ -70,7 +69,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
 
 
         $scope.onDistance = function($item, $model, percent){
-            $scope.low_percent(parseFloat($item), percent);
+            $scope.low_percent(parseFloat($item), percent, $scope.days.selected_from, $scope.days.selected_to);
         };
 
         $scope.onOverDistance = function($item, $model, percent){

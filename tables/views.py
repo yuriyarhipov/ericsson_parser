@@ -295,6 +295,7 @@ def get_sectors(request):
         json.dumps({'sectors': sectors}),
         content_type='application/json')
 
+
 def get_logical_sectors(request):
     sectors = Distance().get_sectors()
     result = set()
@@ -305,7 +306,6 @@ def get_logical_sectors(request):
     return HttpResponse(
         json.dumps({'sectors': result}),
         content_type='application/json')
-
 
 
 def get_rbs(request):
@@ -325,6 +325,12 @@ def get_charts(request, date_from, date_to, rbs):
     project = request.project
     charts = Distance().get_charts(date_from, date_to, rbs, project.id)
     return HttpResponse(json.dumps(charts), content_type='application/json')
+
+
+def get_low_coverage(request, date_from, date_to, distance):
+    project = request.project
+    coverage = Distance().get_low_coverage(date_from, date_to, int(distance), project.id)
+    return HttpResponse(json.dumps(coverage), content_type='application/json')
 
 
 def get_chart(request, date_from, date_to, sector):

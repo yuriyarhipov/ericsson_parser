@@ -27,7 +27,8 @@ var XmlApp = angular.module(
         'flash',
         'leaflet-directive',
         'pageslide-directive',
-        'ui.grid'
+        'ui.grid',
+        'angularSpinner'
     ]);
 
 XmlApp.config(['$routeProvider',

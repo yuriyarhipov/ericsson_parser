@@ -88,8 +88,12 @@
                 </uib-tab>
                 <uib-tab heading="Low propagation">
                     <div class="col-md-6">
-                        <input type="number" class="form-control" ng-model="low_prop_percent"
-                        ng-change="low_percent(distance.selected, low_prop_percent)">
+                        <input
+                            type="number"
+                            class="form-control"
+                            ng-model="low_prop_percent"
+                            ng-model-options="{ debounce: 1000 }"
+                            ng-change="low_percent(distance.selected, low_prop_percent, days.selected_from, days.selected_to)">
                         <ui-select ng-model="distance.selected" theme="bootstrap"
                             ng-disabled="disabled"
                             reset-search-dinput="false"
@@ -100,15 +104,31 @@
                             </ui-select-choices>
                         </ui-select>
                     </div>
+
                     <div class="col-md-12">
-                    </div>
-                    <div class="col-md-6">
-                        <select class="form-control" ng-model="selectedLowSector" ng-change="showLowDistance(selectedLowSector, distance.selected)">
-                            <option ng-repeat="sector in low_sectors" value="{{sector}}">{{sector}}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12" ng-repeat="ls in lsConfigs">
-                        <highchart config="low_config"></highchart>
+                    <span us-spinner spinner-key="spinner_low_coverage" spinner-start-active="false"></span>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td>RNC</td>
+                                    <td>Utrancell</td>
+                                    <td>Day From</td>
+                                    <td>Day To</td>
+                                    <td>DC Vector</td>
+                                    <td>Percentage</td>
+                                    <td>Percentage below</td>
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="sector in low_sectors">
+                                <td>{{ sector.rnc }}</td>
+                                <td>{{ sector.sector }}</td>
+                                <td>{{ days.selected_from }}</td>
+                                <td>{{ days.selected_to }}</td>
+                                <td>{{ distance.selected }}</td>
+                                <td>{{ low_prop_percent }}</td>
+                                <td>{{ sector.sum }}</td>
+                            </tr>
+                        </table>
                     </div>
                 </uib-tab>
                 <uib-tab heading="Over propagation">
