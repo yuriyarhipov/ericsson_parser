@@ -10,7 +10,15 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
         $scope.chartConfigs2 = {};
         $scope.lsConfigs = [];
         $scope.day = 'none';
+        $scope.low_prop_percent = 20;
+        $scope.low_sectors = [];
+        $scope.over_prop_percent = 20;
+        $scope.low_sectors = [];
+        $scope.t1 = [];
+
+
         var chart_data = {};
+        var chart_data2 = {};
         $http.get('/data/distance/get_rbs').success(function(data){
             $scope.rbs_data = data.rbs;
             $scope.rbs.selected = $scope.rbs_data[0];
@@ -21,6 +29,53 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                 $scope.onSelectDay();
             });
         });
+
+        $scope.low_percent  = function(distance, percent){
+            $scope.low_sectors = [];
+            for (sector in chart_data){
+                sum = 0;
+                for (id in chart_data[sector].chart){
+                    if (parseFloat(chart_data[sector].chart[id][0]) <= parseFloat(distance)){
+                        sum += parseFloat(chart_data[sector].chart[id][1]);
+                    }
+                }
+                if (sum <= percent){
+                    $scope.low_sectors.push(sector);
+                }
+            }
+            if ($scope.low_sectors.length > 0) {
+                $scope.showLowDistance($scope.low_sectors[0], distance);
+                $scope.selectedLowSector = $scope.low_sectors[0];
+            }
+        };
+
+        $scope.over_percent  = function(distance, percent){
+            $scope.over_sectors = [];
+            for (sector in chart_data){
+                sum = 0;
+                for (id in chart_data[sector].chart){
+                    if (parseFloat(chart_data[sector].chart[id][0]) >= parseFloat(distance)){
+                        sum += parseFloat(chart_data[sector].chart[id][1]);
+                    }
+                }
+                if (sum >= percent){
+                    $scope.over_sectors.push(sector);
+                }
+            }
+            if ($scope.over_sectors.length > 0) {
+                $scope.showOverDistance($scope.over_sectors[0], distance);
+                $scope.selectedOverSector = $scope.over_sectors[0];
+            }
+        };
+
+
+        $scope.onDistance = function($item, $model, percent){
+            $scope.low_percent(parseFloat($item), percent);
+        };
+
+        $scope.onOverDistance = function($item, $model, percent){
+            $scope.over_percent(parseFloat($item), percent);
+        };
 
         $scope.get_config = function(sector){
                 return $scope.chartConfigs[sector];
@@ -60,24 +115,37 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
             $scope.onSelectDay();
         }
 
-        $scope.onDistance = function($item, $model){
+        $scope.showLowDistance = function(sector, distance){
             var low_propagation = [];
             var cats = []
-            for (u_id in $scope.utrancells){
-                var sector = $scope.utrancells[u_id];
-                var sector_data = [];
-                cats = [];
-                for (id in chart_data[sector].chart){
-                    var dc_vector = parseFloat(chart_data[sector].chart[id][0]);
-                    var value = chart_data[sector].chart[id][1];
-                    if (dc_vector < parseFloat($item)){
-                        sector_data.push(value);
-                        cats.push(dc_vector);
+            var sector_data = [];
+            var sector_data2 = [];
+            cats = [];
+            var distances = chart_data[sector].distances;
+            for (id in chart_data[sector].chart){
+                var dc_vector = parseFloat(chart_data[sector].chart[id][0]);
+                var value = chart_data[sector].chart[id][1];
+                if (dc_vector <= parseFloat(distance)){
+                    sector_data.push(value);
+                    cats.push(dc_vector);
+                }
+            }
+            low_propagation.push({
+                'name': $scope.days.selected_from + ' - ' + $scope.days.selected_to,
+                'data': sector_data
+            });
+
+            if ($scope.showComapreFilters){
+                for (id in chart_data2[sector].chart){
+                    var dc_vector = parseFloat(chart_data2[sector].chart[id][0]);
+                    var value = chart_data2[sector].chart[id][1];
+                    if (dc_vector <= parseFloat(distance)){
+                        sector_data2.push(value);
                     }
                 }
                 low_propagation.push({
-                    'name': sector,
-                    'data': sector_data
+                    'name': $scope.days.selected_from2 + ' - ' + $scope.days.selected_to2,
+                    'data': sector_data2
                 });
             }
             $scope.low_config = {
@@ -86,8 +154,13 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                         type: 'column'
                     },
                     tooltip: {
-                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b></br> Samples: <b>{point.y}</b>'
-                    },
+                        formatter: function () {
+                            return 'Distance: <b>' + distances[this.point.category] + '</b><br/>' +
+                                'DC Vector: <b>' + this.point.category + '</b><br/>' +
+                                'Propagation Delay: <b>'+this.point.y+'%</b> ';
+                            }
+
+                        },
                     xAxis: {
                         categories: cats,
                         crosshair: true
@@ -96,13 +169,79 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                         enabled: true
                     }},
                     title: {
-                            text: 'test',
+                            text: 'Low propagation',
                     },
                     series: low_propagation,
             }
         };
 
+        $scope.showOverDistance = function(sector, distance){
+            var over_propagation = [];
+            var cats = []
+            var sector_data = [];
+            var sector_data2 = [];
+            cats = [];
+            var distances = chart_data[sector].distances;
+            for (id in chart_data[sector].chart){
+                var dc_vector = parseFloat(chart_data[sector].chart[id][0]);
+                var value = chart_data[sector].chart[id][1];
+                if (dc_vector >= parseFloat(distance)){
+                    sector_data.push(value);
+                    cats.push(dc_vector);
+                }
+            }
+            over_propagation.push({
+                'name': $scope.days.selected_from + ' - ' + $scope.days.selected_to,
+                'data': sector_data
+            });
+
+            if ($scope.showComapreFilters){
+                for (id in chart_data2[sector].chart){
+                    var dc_vector = parseFloat(chart_data2[sector].chart[id][0]);
+                    var value = chart_data2[sector].chart[id][1];
+                    if (dc_vector >= parseFloat(distance)){
+                        sector_data2.push(value);
+                    }
+                }
+                over_propagation.push({
+                    'name': $scope.days.selected_from2 + ' - ' + $scope.days.selected_to2,
+                    'data': sector_data2
+                });
+            }
+            $scope.over_config = {
+                options: {
+                    chart: {
+                        type: 'column'
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return 'Distance: <b>' + distances[this.point.category] + '</b><br/>' +
+                                'DC Vector: <b>' + this.point.category + '</b><br/>' +
+                                'Propagation Delay: <b>'+this.point.y+'%</b> ';
+                            }
+
+                        },
+                    xAxis: {
+                        categories: cats,
+                        crosshair: true
+                    },
+                    legend: {
+                        enabled: true
+                    }},
+                    title: {
+                            text: 'Over propagation',
+                    },
+                    series: over_propagation,
+            }
+        };
+
         $scope.onSelectDay = function(){
+            $scope.distance.selected = '';
+            $scope.over_sectors = [];
+            $scope.low_sectors = [];
+            $scope.over_config = {};
+            $scope.low_config = {};
+
             var day_from = $scope.days.selected_from;
             var day_to = $scope.days.selected_to;
             var day_from2 = $scope.days.selected_from2;
@@ -201,6 +340,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http',
                     }
                 } else {
                     $http.get('/data/distance/get_charts/' + day_from2 + '/' + day_to2 + '/' + rbs + '/').success(function(data2){
+                        chart_data2 = data2;
                         for (var id in $scope.utrancells){
                         var sector = $scope.utrancells[id];
                         $scope.chartConfigs[sector] = {
