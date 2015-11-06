@@ -26,10 +26,9 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
             ],
             enableGridMenu: true,
             enableSelectAll: true,
+            exporterMenuPdf: false,
             exporterCsvFilename: 'export.csv',
-            exporterPdfOrientation: 'portrait',
-            exporterPdfPageSize: 'LETTER',
-            exporterPdfMaxGridWidth: 500,
+
             exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
             onRegisterApi: function(gridApi){
                 $scope.gridApi = gridApi;

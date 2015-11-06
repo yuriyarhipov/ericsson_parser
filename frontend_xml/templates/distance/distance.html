@@ -88,21 +88,27 @@
                 </uib-tab>
                 <uib-tab heading="Low propagation">
                     <div class="col-md-6">
-                        <input
-                            type="number"
-                            class="form-control"
-                            ng-model="low_prop_percent"
-                            ng-model-options="{ debounce: 1000 }"
-                            ng-change="low_percent(distance.selected, low_prop_percent, days.selected_from, days.selected_to)">
-                        <ui-select ng-model="distance.selected" theme="bootstrap"
-                            ng-disabled="disabled"
-                            reset-search-dinput="false"
-                            on-select="onDistance($item, $model, low_prop_percent)">
-                            <ui-select-match placeholder="Enter a distance...">{{$select.selected}}</ui-select-match>
-                            <ui-select-choices repeat="dis in distances | filter:$select.search">
-                                DC_VECTOR={{ dis }}
-                            </ui-select-choices>
-                        </ui-select>
+                        <div class="form-group col-md-5">
+                            <label>Distance Thrshold</label>
+                            <input
+                                type="number"
+                                class="form-control"
+                                ng-model="low_prop_percent"
+                                ng-model-options="{ debounce: 1000 }"
+                                ng-change="low_percent(distance.selected, low_prop_percent, days.selected_from, days.selected_to)">
+                        </div>
+                        <div class="form-group col-md-5">
+                            <label>Percentae Thrshold</label>
+                            <ui-select ng-model="distance.selected" theme="bootstrap"
+                                ng-disabled="disabled"
+                                reset-search-dinput="false"
+                                on-select="onDistance($item, $model, low_prop_percent)">
+                                <ui-select-match placeholder="Enter a distance...">{{$select.selected}}</ui-select-match>
+                                <ui-select-choices repeat="dis in distances | filter:$select.search">
+                                    DC_VECTOR={{ dis }}
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
                     </div>
 
                     <div class="col-md-12">
