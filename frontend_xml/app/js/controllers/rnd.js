@@ -238,6 +238,10 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     if (e.originalEvent.shiftKey){
                         if (layer.options.color == 'orange'){
                             $http.post('/data/rnd/del3g3g/',$.param({
+                                'utrancellSource': layer.options.sector.Utrancell,
+                                'utrancellTarget': utrancellSource
+                            }))
+                            $http.post('/data/rnd/del3g3g/',$.param({
                                 'utrancellSource': utrancellSource,
                                 'utrancellTarget': layer.options.sector.Utrancell
                             })).success(function(){
