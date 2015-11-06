@@ -106,29 +106,8 @@
                     </div>
 
                     <div class="col-md-12">
-                    <span us-spinner spinner-key="spinner_low_coverage" spinner-start-active="false"></span>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <td>RNC</td>
-                                    <td>Utrancell</td>
-                                    <td>Day From</td>
-                                    <td>Day To</td>
-                                    <td>DC Vector</td>
-                                    <td>Percentage</td>
-                                    <td>Percentage below</td>
-                                </tr>
-                            </thead>
-                            <tr ng-repeat="sector in low_sectors">
-                                <td>{{ sector.rnc }}</td>
-                                <td>{{ sector.sector }}</td>
-                                <td>{{ days.selected_from }}</td>
-                                <td>{{ days.selected_to }}</td>
-                                <td>{{ distance.selected }}</td>
-                                <td>{{ low_prop_percent }}</td>
-                                <td>{{ sector.sum }}</td>
-                            </tr>
-                        </table>
+                        <span us-spinner spinner-key="spinner_low_coverage" spinner-start-active="false"></span>
+                        <div id="grid1" ui-grid="low_data_config" ui-grid-exporter ui-grid-selection class="CoverageGrid col-md-10"></div>
                     </div>
                 </uib-tab>
                 <uib-tab heading="Over propagation">

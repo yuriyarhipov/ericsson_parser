@@ -14,8 +14,27 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
         $scope.low_sectors = [];
         $scope.over_prop_percent = 20;
         $scope.low_sectors = [];
-        $scope.t1 = [];
-
+        $scope.low_data_config = {
+            columnDefs: [
+                { field: 'RNC' },
+                { field: 'Utrancell'},
+                { field: 'Day From' },
+                { field: 'Day To' },
+                { field: 'DC Vector' },
+                { field: 'Percentage'},
+                { field: 'Percentage below'}
+            ],
+            enableGridMenu: true,
+            enableSelectAll: true,
+            exporterCsvFilename: 'export.csv',
+            exporterPdfOrientation: 'portrait',
+            exporterPdfPageSize: 'LETTER',
+            exporterPdfMaxGridWidth: 500,
+            exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+            onRegisterApi: function(gridApi){
+                $scope.gridApi = gridApi;
+            }
+        };
 
         var chart_data = {};
         var chart_data2 = {};
@@ -31,20 +50,26 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
         });
 
         $scope.low_percent  = function(distance, percent, day_from, day_to){
-            $scope.low_sectors = [];
             usSpinnerService.spin('spinner_low_coverage');
+
             $http.get('/data/distance/get_low_coverage/' + day_from + '/' + day_to + '/' + distance + '/').success(function(data){
+                var temp_sectors = [];
                 for (id in data){
                     var sector = data[id];
                     var sector_percent = parseFloat(sector.dist_sum)/parseFloat(sector.date_sum) * 100;
                     if (sector_percent <= percent){
-                        $scope.low_sectors.push({
-                            'rnc': sector.rnc,
-                            'sector': sector.utrancell,
-                            'sum': sector_percent});
+                        temp_sectors.push({
+                            'RNC': sector.rnc,
+                            'Utrancell': sector.utrancell,
+                            'Day From': $scope.days.selected_from,
+                            'Day To': $scope.days.selected_to,
+                            'DC Vector': distance,
+                            'Percentage': percent,
+                            'Percentage below': sector_percent.toFixed(2)});
                     }
                     usSpinnerService.stop('spinner_low_coverage');
                 }
+                $scope.low_data_config.data = temp_sectors;
             });
         };
 
