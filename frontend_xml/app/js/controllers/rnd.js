@@ -256,6 +256,14 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             });
                         } else if (layer.options.color == 'red'){
                             $http.post('/data/rnd/new3g3g/',$.param({
+                                'rncSource': layer.options.sector.RNC,
+                                'utrancellSource': layer.options.sector.Utrancell,
+                                'carrierSource': layer.options.sector.Carrier,
+                                'rncTarget': rncSource,
+                                'utrancellTarget': utrancellSource,
+                                'carrierTarget': carrierSource,
+                                'status': 'Delete'}));
+                            $http.post('/data/rnd/new3g3g/',$.param({
                                 'rncSource': rncSource,
                                 'utrancellSource': utrancellSource,
                                 'carrierSource': carrierSource,
