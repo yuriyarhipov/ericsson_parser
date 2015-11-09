@@ -19,13 +19,15 @@ from files.distance import Distance
 from rnd import Rnd
 import tasks
 from os import makedirs
+from os.path import exists
 
 
 def handle_uploaded_file(files):
     path = settings.STATICFILES_DIRS[0]
     result = []
     for f in files:
-        makedirs(path + '/xml/')
+        if not exists(path + '/xml/'):
+            makedirs(path + '/xml/')
         filename = '/xml/'.join([path, f.name])
         destination = open(filename, 'wb+')
         for chunk in f.chunks():
