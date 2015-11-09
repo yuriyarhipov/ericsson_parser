@@ -86,7 +86,7 @@ class WCDMA:
                 return r_col
         return column
 
-    def run_query(self, template, cells, filename):
+    def run_query(self, project, template, cells, filename):
         from files.models import SuperFile
         from parameters.template import Template
         if SuperFile.objects.filter(filename=filename).exists():
@@ -101,8 +101,7 @@ class WCDMA:
         cells = self.convert_form_cells(cells, filenames)
         if template and cells:
             params = self.get_params_with_min_max(template)
-            print params
-            sql = Template().get_select(template, filenames, cells)
+            sql = Template().get_select(project, template, filenames, cells)
             self.cursor.execute(sql)
             colnames = [desc[0] for desc in self.cursor.description]
             data = []

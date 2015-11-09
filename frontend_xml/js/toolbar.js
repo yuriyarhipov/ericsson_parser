@@ -90,6 +90,8 @@ L.Control.ToolBar = L.Control.extend({
             })
             .addListener(map._network_filter, 'change', function (e) {
                 var network = e.target.value;
+                map._network_filter.network = network;
+
                 while (map._select_filter.firstChild) {
                     map._select_filter.removeChild(map._select_filter.firstChild);
                 }
@@ -168,7 +170,7 @@ L.Control.ToolBar = L.Control.extend({
 
             })
             .addListener(this.select_values, 'change', function (event) {
-                map._add_filter(map._select_filter.value, event.target.value);
+                map._add_filter(map._network_filter.network, map._select_filter.value, event.target.value);
             })
             .addListener(this.resetFiltersButton, 'click', function () {
                 map._legend.reset_legend();

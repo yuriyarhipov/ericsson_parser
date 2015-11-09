@@ -103,6 +103,7 @@ def get_template_cells(request, network, filename):
 
 
 def run_template(request):
+    project = request.project
     template = request.GET.get('template')
     cells = request.GET.getlist('cell')
     network = request.GET.get('network')
@@ -111,7 +112,7 @@ def run_template(request):
     if network == 'GSM':
         columns, data = CNA().run_query(template, cells, file)
     elif network == 'WCDMA':
-        columns, data = WCDMA().run_query(template, cells, file)
+        columns, data = WCDMA().run_query(project, template, cells, file)
     elif network == 'LTE':
         columns, data = LTE().run_query(template, cells, file)
 

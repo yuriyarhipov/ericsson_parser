@@ -29,7 +29,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             }
         };
 
-        var onAddFilter = function(param, value){
+        var onAddFilter = function(network, param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
             var values = {};
             var last_marker = {};
@@ -37,7 +37,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             leafletData.getMap().then(function(map) {
                 map.eachLayer(function (layer) {
                     if (layer.options.sector) {
-                        if(layer.options.sector[param] == value){
+                        if ((layer.options.sector[param] == value) && (network == layer.options.network)){
                             layer.setStyle({'color': color});
                             last_marker = layer.options.sector;
                             if (value in values){
@@ -122,7 +122,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     var cell_btn = L.DomUtil.create('td', 'col-md-1', row_value);
                     var color_value = L.DomUtil.create('input', '', cell_btn);
                     color_value.setAttribute('type', 'color');
-                    color_value.setAttribute('value', values[val].color);
+                    color_value.value = values[val].color;
 
                     color_value.sectors = values[val].sectors;
                     var cell_value = L.DomUtil.create('td', 'col-md-11', row_value);

@@ -43,6 +43,11 @@
     overflow-y: auto;
 }
 
+.legend_color {
+    width: 5px;
+    height: 5px;
+}
+
 .span-legend:hover {
     cursor: pointer;
 }

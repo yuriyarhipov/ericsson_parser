@@ -58,6 +58,8 @@ class Rnd:
         result = []
         if cursor.rowcount > 0:
             result = cursor.fetchone()[0]
+        else:
+            result = {'columns': [], 'data': []}
         return result
 
     def write_file(self, filename):

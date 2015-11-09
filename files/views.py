@@ -18,12 +18,14 @@ from files.excel import ExcelFile
 from files.distance import Distance
 from rnd import Rnd
 import tasks
+from os import makedirs
 
 
 def handle_uploaded_file(files):
     path = settings.STATICFILES_DIRS[0]
     result = []
     for f in files:
+        makedirs(path + '/xml/')
         filename = '/xml/'.join([path, f.name])
         destination = open(filename, 'wb+')
         for chunk in f.chunks():

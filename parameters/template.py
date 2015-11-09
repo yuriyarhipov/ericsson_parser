@@ -198,13 +198,14 @@ class Template(object):
                 if (column_name.lower() in columns) and (('utrancell' in columns) or ('element1' in columns) or ('element2' in columns) or ('cell')):
                     return table
 
-    def get_select(self, template_name, filename, cells):
+    def get_select(self, project, template_name, filename, cells):
         sql_tables = OrderedDict()
         network = 'WCDMA'
         clear_filename = filename.replace("'", '')
         file_columns = set(t.lower() for t in Files.objects.filter(filename=clear_filename).first().tables.split(','))
-
-        for template in QueryTemplate.objects.filter(template_name=template_name).order_by('id'):
+        print 'OK1'
+        for template in QueryTemplate.objects.filter(template_name=template_name, project=project).order_by('id'):
+            print 'OK2'
             table_name = self.get_table_from_column(template.param_name, file_columns)
             if table_name:
                 column = template.param_name
