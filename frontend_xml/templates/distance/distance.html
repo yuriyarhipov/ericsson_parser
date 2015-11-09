@@ -113,7 +113,7 @@
                     <div class="col-md-12">
                         <div class="col-md-8">
                             <span us-spinner spinner-key="spinner_low_coverage" spinner-start-active="false"></span>
-                            <div id="grid1" ui-grid="low_data_config" ui-grid-exporter class="CoverageGrid col-md-12"></div>
+                            <div id="grid1" ui-grid="low_data_config" ui-grid-exporter ui-grid-resize-columns ui-grid-move-columns class="CoverageGrid col-md-12"></div>
                         </div>
                         <div class="col-md-4">
                             <highchart config="low_coverage_chart"></highchart>
@@ -148,7 +148,7 @@
                     <div class="col-md-12">
                         <span us-spinner spinner-key="spinner_over_coverage" spinner-start-active="false"></span>
                         <div class="col-md-8">
-                            <div id="grid2" ui-grid="over_data_config" ui-grid-exporter class="CoverageGrid col-md-12"></div>
+                            <div id="grid2" ui-grid="over_data_config" ui-grid-exporter ui-grid-resize-columns ui-grid-move-columns class="CoverageGrid col-md-12"></div>
                         </div>
                         <div class="col-md-4">
                             <highchart config="over_coverage_chart"></highchart>

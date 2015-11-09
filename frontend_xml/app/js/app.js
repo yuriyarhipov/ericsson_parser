@@ -30,7 +30,9 @@ var XmlApp = angular.module(
         'ui.grid',
         'angularSpinner',
         'ui.grid.exporter',
-        'ui.grid.selection'
+        'ui.grid.selection',
+        'ui.grid.resizeColumns',
+        'ui.grid.moveColumns'
     ]);
 
 XmlApp.config(['$routeProvider',

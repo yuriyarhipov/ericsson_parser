@@ -99,7 +99,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
                 var cats = [];
                 for (var i=0;i<20;i++){
                     cats.push(temp_sectors[i]['Utrancell']);
-                    chart_data.push(temp_sectors[i]['Percentage over']);
+                    chart_data.push(temp_sectors[i]['Percentage below']);
                 }
                 $scope.low_coverage_chart = {
                 options: {
