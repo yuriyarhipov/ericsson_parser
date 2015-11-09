@@ -306,7 +306,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                                     if ((temp_layer.options.sector) && (temp_layer.options.network == 'wcdma')){
                                         if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
                                             if(new3g_neighbors[temp_layer.options.sector.Utrancell]){
-                                                if (new3g_neighbors[temp_layer.options.sector.Utrancell] == 'New'){
+                                                if (new3g_neighbors[temp_layer.options.sector.Utrancell] == 'Add'){
                                                     temp_layer.setStyle({'color': 'orange'});
                                                 } else {
                                                     temp_layer.setStyle({'color': 'purple'});
