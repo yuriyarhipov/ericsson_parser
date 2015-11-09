@@ -186,7 +186,9 @@ class Rnd:
                     f.write('cr RncFunction=1,UtranCell=%s,UtranRelation=%s-%s\n' % (row[2], row[2], row[5]))
                     f.write('UtranCell=%s #utranCellRef\n' % (row[5], ))
                     f.write('0\n')
+                    f.write('\n')
                 if row[7] == 'Delete':
                     f.write('del RncFunction=1,UtranCell=%s,UtranRelation=%s\n' % (row[2], row[5]))
+                    f.write('\n')
 
         return '/static/%s/3g3gscript.txt' % self.project_id
