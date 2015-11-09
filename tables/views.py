@@ -333,6 +333,12 @@ def get_low_coverage(request, date_from, date_to, distance):
     return HttpResponse(json.dumps(coverage), content_type='application/json')
 
 
+def get_over_coverage(request, date_from, date_to, distance):
+    project = request.project
+    coverage = Distance().get_over_coverage(date_from, date_to, int(distance), project.id)
+    return HttpResponse(json.dumps(coverage), content_type='application/json')
+
+
 def get_chart(request, date_from, date_to, sector):
     chart, table, title, distances = Distance().get_chart(date_from, date_to, sector)
     return HttpResponse(

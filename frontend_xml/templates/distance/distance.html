@@ -110,36 +110,51 @@
                             </ui-select>
                         </div>
                     </div>
-
                     <div class="col-md-12">
-                        <span us-spinner spinner-key="spinner_low_coverage" spinner-start-active="false"></span>
-                        <div id="grid1" ui-grid="low_data_config" ui-grid-exporter ui-grid-selection class="CoverageGrid col-md-10"></div>
+                        <div class="col-md-8">
+                            <span us-spinner spinner-key="spinner_low_coverage" spinner-start-active="false"></span>
+                            <div id="grid1" ui-grid="low_data_config" ui-grid-exporter class="CoverageGrid col-md-12"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <highchart config="low_coverage_chart"></highchart>
+                        </div>
                     </div>
                 </uib-tab>
                 <uib-tab heading="Over propagation">
                     <div class="col-md-6">
-                        <input type="number" class="form-control" ng-model="over_prop_percent"
-                        ng-change="over_percent(distance.selected, over_prop_percent)">
-                        <ui-select ng-model="distance.selected" theme="bootstrap"
-                            ng-disabled="disabled"
-                            reset-search-dinput="false"
-                            on-select="onOverDistance($item, $model, over_prop_percent)">
-                            <ui-select-match placeholder="Enter a distance...">{{$select.selected}}</ui-select-match>
-                            <ui-select-choices repeat="dis in distances | filter:$select.search">
-                                DC_VECTOR={{ dis }}
-                            </ui-select-choices>
-                        </ui-select>
+                        <div class="form-group col-md-5">
+                            <label>Percentae Thrshold:</label>
+                            <input
+                                type="number"
+                                class="form-control"
+                                ng-model="over_prop_percent"
+                                ng-model-options="{ debounce: 1000 }"
+                                ng-change="over_percent(distance.selected, over_prop_percent, days.selected_from, days.selected_to)">
+                        </div>
+                        <div class="form-group col-md-5">
+                            <label>Distance Thrshold:</label>
+                            <ui-select ng-model="distance.selected" theme="bootstrap"
+                                ng-disabled="disabled"
+                                reset-search-dinput="false"
+                                on-select="onOverDistance($item, $model, low_prop_percent)">
+                                <ui-select-match placeholder="Enter a distance...">{{$select.selected}}</ui-select-match>
+                                <ui-select-choices repeat="dis in distances | filter:$select.search">
+                                    DC_VECTOR={{ dis }}
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
                     </div>
+
                     <div class="col-md-12">
+                        <span us-spinner spinner-key="spinner_over_coverage" spinner-start-active="false"></span>
+                        <div class="col-md-8">
+                            <div id="grid2" ui-grid="over_data_config" ui-grid-exporter class="CoverageGrid col-md-12"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <highchart config="over_coverage_chart"></highchart>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <select class="form-control" ng-model="selectedOverSector" ng-change="showOverDistance(selectedOverSector, distance.selected)">
-                            <option ng-repeat="sector in over_sectors" value="{{sector}}">{{sector}}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12" ng-repeat="ls in lsConfigs">
-                        <highchart config="over_config"></highchart>
-                    </div>
+
                 </uib-tab>
             </uib-tabset>
         </div>

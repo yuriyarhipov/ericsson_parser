@@ -282,7 +282,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                                 'rncTarget': rncSource,
                                 'utrancellTarget': utrancellSource,
                                 'carrierTarget': carrierSource,
-                                'status': 'New'}));
+                                'status': 'Add'}));
                             $http.post('/data/rnd/new3g3g/',$.param({
                                 'rncSource': rncSource,
                                 'utrancellSource': utrancellSource,
@@ -290,7 +290,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                                 'rncTarget': layer.options.sector.RNC,
                                 'utrancellTarget': layer.options.sector.Utrancell,
                                 'carrierTarget': layer.options.sector.Carrier,
-                                'status': 'New'}))
+                                'status': 'Add'}))
                             .success(function(){
                                 layer.setStyle({'color': 'orange'});
                             });

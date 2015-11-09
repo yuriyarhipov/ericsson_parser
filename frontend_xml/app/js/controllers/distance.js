@@ -11,7 +11,6 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
         $scope.lsConfigs = [];
         $scope.day = 'none';
         $scope.low_prop_percent = 20;
-        $scope.low_sectors = [];
         $scope.over_prop_percent = 20;
         $scope.low_sectors = [];
         $scope.low_data_config = {
@@ -20,9 +19,29 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
                 { field: 'Utrancell'},
                 { field: 'Day From' },
                 { field: 'Day To' },
-                { field: 'DC Vector' },
-                { field: 'Percentage'},
-                { field: 'Percentage below'}
+                { field: 'DC Vector', type: 'number'},
+                { field: 'Percentage', type: 'number'},
+                { field: 'Percentage below', type: 'number'}
+            ],
+            enableGridMenu: true,
+            enableSelectAll: true,
+            exporterMenuPdf: false,
+            exporterCsvFilename: 'export.csv',
+
+            exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+            onRegisterApi: function(gridApi){
+                $scope.gridApi = gridApi;
+            }
+        };
+        $scope.over_data_config = {
+            columnDefs: [
+                { field: 'RNC' },
+                { field: 'Utrancell'},
+                { field: 'Day From' },
+                { field: 'Day To' },
+                { field: 'DC Vector', type: 'number'},
+                { field: 'Percentage', type: 'number'},
+                { field: 'Percentage over', type: 'number'}
             ],
             enableGridMenu: true,
             enableSelectAll: true,
@@ -63,32 +82,94 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
                             'Day From': $scope.days.selected_from,
                             'Day To': $scope.days.selected_to,
                             'DC Vector': distance,
-                            'Percentage': percent,
-                            'Percentage below': sector_percent.toFixed(2)});
+                            'Percentage': parseFloat(percent),
+                            'Percentage below': parseFloat(sector_percent.toFixed(2))});
                     }
-                    usSpinnerService.stop('spinner_low_coverage');
                 }
+                temp_sectors.sort(function(a, b){
+                    if (a['Percentage below'] < b['Percentage below']){
+                        return 1;
+                    }
+                });
+
+
+                usSpinnerService.stop('spinner_low_coverage');
                 $scope.low_data_config.data = temp_sectors;
+                var chart_data =[];
+                var cats = [];
+                for (var i=0;i<20;i++){
+                    cats.push(temp_sectors[i]['Utrancell']);
+                    chart_data.push(temp_sectors[i]['Percentage over']);
+                }
+                $scope.low_coverage_chart = {
+                options: {
+                    chart: {
+                        type: 'column'
+                    },
+                    xAxis: {
+                        categories: cats,
+                        crosshair: true
+                    },
+                    legend: {
+                        enabled: true
+                    }},
+                    title: {
+                            text: 'Low propagation',
+                    },
+                    series: [{'data': chart_data, 'name': 'Percentage below'}, ],
+                }
             });
         };
 
-        $scope.over_percent  = function(distance, percent){
-            $scope.over_sectors = [];
-            for (sector in chart_data){
-                sum = 0;
-                for (id in chart_data[sector].chart){
-                    if (parseFloat(chart_data[sector].chart[id][0]) >= parseFloat(distance)){
-                        sum += parseFloat(chart_data[sector].chart[id][1]);
+        $scope.over_percent  = function(distance, percent, day_from, day_to){
+            usSpinnerService.spin('spinner_over_coverage');
+            $http.get('/data/distance/get_over_coverage/' + day_from + '/' + day_to + '/' + distance + '/').success(function(data){
+                var temp_sectors = [];
+                for (id in data){
+                    var sector = data[id];
+                    var sector_percent = parseFloat(sector.dist_sum)/parseFloat(sector.date_sum) * 100;
+                    if (sector_percent >= percent){
+                        temp_sectors.push({
+                            'RNC': sector.rnc,
+                            'Utrancell': sector.utrancell,
+                            'Day From': $scope.days.selected_from,
+                            'Day To': $scope.days.selected_to,
+                            'DC Vector': distance,
+                            'Percentage': parseFloat(percent),
+                            'Percentage over': parseFloat(sector_percent.toFixed(2))});
                     }
                 }
-                if (sum >= percent){
-                    $scope.over_sectors.push(sector);
+                usSpinnerService.stop('spinner_over_coverage');
+                temp_sectors.sort(function(a, b){
+                    if (a['Percentage over'] < b['Percentage over']){
+                        return 1;
+                    }
+                });
+                $scope.over_data_config.data = temp_sectors;
+                var chart_data =[];
+                var cats = [];
+                for (var i=0;i<20;i++){
+                    cats.push(temp_sectors[i]['Utrancell']);
+                    chart_data.push(temp_sectors[i]['Percentage over']);
                 }
-            }
-            if ($scope.over_sectors.length > 0) {
-                $scope.showOverDistance($scope.over_sectors[0], distance);
-                $scope.selectedOverSector = $scope.over_sectors[0];
-            }
+                $scope.over_coverage_chart = {
+                options: {
+                    chart: {
+                        type: 'column'
+                    },
+                    xAxis: {
+                        categories: cats,
+                        crosshair: true
+                    },
+                    legend: {
+                        enabled: true
+                    }},
+                    title: {
+                            text: 'Over propagation',
+                    },
+                    series: [{'data': chart_data, 'name': 'Percentage over'}, ],
+                }
+            });
         };
 
 
@@ -97,7 +178,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
         };
 
         $scope.onOverDistance = function($item, $model, percent){
-            $scope.over_percent(parseFloat($item), percent);
+            $scope.over_percent(parseFloat($item), percent, $scope.days.selected_from, $scope.days.selected_to);
         };
 
         $scope.get_config = function(sector){

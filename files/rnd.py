@@ -2,6 +2,9 @@ import json
 
 from django.db import connection
 import pandas as pd
+from django.conf import settings
+from os.path import join, exists
+from os import makedirs
 
 
 class Rnd:
@@ -164,3 +167,25 @@ class Rnd:
             WHERE
                 (filename=%s)''', (filename,))
         connection.commit()
+
+    def create_script(self, filename):
+        static_path = settings.STATICFILES_DIRS[0]
+        file_path = '%s/%s' % (static_path, self.project_id)
+        if not exists(file_path):
+            makedirs(file_path)
+        script_filename = join(file_path, '3g3gscript.txt')
+
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM new3g WHERE filename=%s', (filename, ))
+
+        with open(script_filename, 'w') as f:
+            for row in cursor:
+                print row
+                if row[7] == 'Add':
+                    f.write('cr RncFunction=1,UtranCell=%s,UtranRelation=%s-%s\n' % (row[2], row[2], row[5]))
+                    f.write('UtranCell=%s #utranCellRef\n' % (row[3], ))
+                    f.write('0\n')
+                if row[7] == 'Delete':
+                    f.write('del RncFunction=1,UtranCell=%s,UtranRelation=%s\n' % (row[2], row[3]))
+
+        return '/static/%s/3g3gscript.txt' % self.project_id

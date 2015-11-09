@@ -318,3 +318,10 @@ def flush3g3g(request):
     if request.method == 'POST':
         Rnd(project.id, 'wcdma').flush_3g(request.wcdma.filename)
     return Response([])
+
+
+
+def get3g3gscript(request):
+    project = request.project
+    filename = Rnd(project.id, 'wcdma').create_script(request.wcdma.filename)
+    return HttpResponseRedirect(filename)

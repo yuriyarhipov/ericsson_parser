@@ -127,6 +127,59 @@ class Distance(object):
                 'date_sum': int(row[3])})
         return data
 
+    def get_over_coverage(self, day_from, day_to, distance, project_id):
+        cursor = connection.cursor()
+        cursor.execute('''
+            SELECT
+                DIST_SUM.RNC,
+                DIST_SUM.Utrancell,
+                DIST_SUM.dist_sum,
+                DATE_SUM.date_sum
+            FROM (
+            SELECT
+                RNC,
+                SUM(pmpropagationdelay) AS dist_sum,
+                Utrancell
+            FROM
+                Access_Distance
+            WHERE
+                (date_id >=%s) AND (date_id <=%s) AND (DCVECTOR_INDEX > %s)
+            GROUP BY
+                RNC,
+                Utrancell
+            ) AS DIST_SUM,
+            (
+            SELECT
+                sum(pmpropagationdelay) date_sum,
+                Utrancell,
+                RNC
+            FROM
+                Access_Distance
+            WHERE
+                (date_id >=%s) AND (date_id <=%s)
+            GROUP BY
+                Utrancell,
+                RNC
+            ) AS date_sum
+
+            WHERE (DATE_SUM.Utrancell=DIST_SUM.Utrancell) AND (DATE_SUM.RNC=DIST_SUM.RNC)
+            ORDER BY DIST_SUM.RNC, DIST_SUM.Utrancell
+            ''', (
+            datetime.strptime(day_from, '%d.%m.%Y'),
+            datetime.strptime(day_to, '%d.%m.%Y'),
+            distance,
+            datetime.strptime(day_from, '%d.%m.%Y'),
+            datetime.strptime(day_to, '%d.%m.%Y')))
+
+        data = []
+        for row in cursor:
+            data.append({
+                'rnc': row[0],
+                'utrancell': row[1],
+                'dist_sum': int(row[2]),
+                'date_sum': int(row[3])})
+        return data
+
     def get_charts(self, day_from, day_to, rbs, project_id):
         cursor = connection.cursor()
         cursor.execute('''
