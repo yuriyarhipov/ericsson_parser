@@ -180,12 +180,11 @@ class Rnd:
 
         with open(script_filename, 'w') as f:
             for row in cursor:
-                print row
                 if row[7] == 'Add':
                     f.write('cr RncFunction=1,UtranCell=%s,UtranRelation=%s-%s\n' % (row[2], row[2], row[5]))
-                    f.write('UtranCell=%s #utranCellRef\n' % (row[3], ))
+                    f.write('UtranCell=%s #utranCellRef\n' % (row[5], ))
                     f.write('0\n')
                 if row[7] == 'Delete':
-                    f.write('del RncFunction=1,UtranCell=%s,UtranRelation=%s\n' % (row[2], row[3]))
+                    f.write('del RncFunction=1,UtranCell=%s,UtranRelation=%s\n' % (row[2], row[5]))
 
         return '/static/%s/3g3gscript.txt' % self.project_id
