@@ -56,9 +56,9 @@ class Distance(object):
             project_id
         ))
 
-    def get_sectors(self):
+    def get_sectors(self, project_id):
         cursor = connection.cursor()
-        cursor.execute('SELECT DISTINCT Utrancell FROM Access_Distance')
+        cursor.execute('SELECT DISTINCT Utrancell FROM Access_Distance WHERE project_id=%s ORDER BY Utrancell', (project_id, ))
         sectors = [row[0] for row in cursor]
         return sectors
 
@@ -68,9 +68,9 @@ class Distance(object):
         rbs = [row[0] for row in cursor]
         return rbs
 
-    def get_dates(self, rbs):
+    def get_dates(self, project_id, rbs):
         cursor = connection.cursor()
-        cursor.execute("SELECT DISTINCT date_id FROM Access_Distance WHERE (RBS='%s') ORDER BY date_id" % rbs)
+        cursor.execute("SELECT DISTINCT date_id FROM Access_Distance WHERE (RBS=%s) AND (project_id=%s)  ORDER BY date_id", (rbs, project_id, ))
         dates = [row[0].strftime('%d.%m.%Y') for row in cursor]
         return dates
 

@@ -290,7 +290,8 @@ def excel_power_audit(request, filename):
 
 
 def get_sectors(request):
-    sectors = Distance().get_sectors()
+    project = request.project
+    sectors = Distance().get_sectors(project.id)
     return HttpResponse(
         json.dumps({'sectors': sectors}),
         content_type='application/json')
@@ -317,7 +318,8 @@ def get_rbs(request):
 
 
 def get_dates(request, rbs):
-    dates = Distance().get_dates(rbs)
+    project = request.project
+    dates = Distance().get_dates(project.id, rbs)
     return HttpResponse(json.dumps(dates), content_type='application/json')
 
 
