@@ -203,9 +203,7 @@ class Template(object):
         network = 'WCDMA'
         clear_filename = filename.replace("'", '')
         file_columns = set(t.lower() for t in Files.objects.filter(filename=clear_filename).first().tables.split(','))
-        print 'OK1'
         for template in QueryTemplate.objects.filter(template_name=template_name, project=project).order_by('id'):
-            print 'OK2'
             table_name = self.get_table_from_column(template.param_name, file_columns)
             if table_name:
                 column = template.param_name

@@ -277,6 +277,7 @@ class Distance(object):
                        (basename(filename), ))
         i = 0
         rows = []
+
         for excel_row in ws.iter_rows():
             row = []
             if i > 0:
@@ -286,6 +287,7 @@ class Distance(object):
                     else:
                         row.append(0)
                 rows.append(row)
+
                 if len(rows) == 10000:
                     sql_rows = []
                     for row in rows:
@@ -314,6 +316,27 @@ class Distance(object):
             if i % 10000 == 0:
                 current_task.update_state(state="PROGRESS", meta={
                     "current": int(i / 10000)})
+        sql_rows = []
+        for row in rows:
+            sql_rows.append(cursor.mogrify(
+                '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                (
+                    project.id,
+                    basename(filename),
+                    row[0],
+                    row[1],
+                    row[2],
+                    row[3],
+                    row[4],
+                    row[5],
+                    row[6],
+                    row[7],
+                    row[8])))
+        cursor.execute('''
+            INSERT INTO
+                Access_Distance
+            VALUES
+                %s''' % ','.join(sql_rows))
 
         connection.commit()
         Files.objects.filter(filename=basename(filename), project=project).delete()

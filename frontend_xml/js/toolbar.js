@@ -151,14 +151,14 @@ L.Control.ToolBar = L.Control.extend({
                         }
                     }
                 };
-                if (map._gsm_data.columns.indexOf(e.target.value) >= 0){
+                if ((map._network_filter.network == 'gsm') && (map._gsm_data.columns.indexOf(e.target.value) >= 0)){
                     load_values(map._gsm_data.data, e.target.value);
                 }
 
-                if (map._wcdma_data.columns.indexOf(e.target.value) >= 0){
+                if ((map._network_filter.network == 'wcdma') && (map._wcdma_data.columns.indexOf(e.target.value) >= 0)){
                     load_values(map._wcdma_data.data, e.target.value);
                 }
-                if (map._lte_data.columns.indexOf(e.target.value) >= 0){
+                if ((map._network_filter.network == 'lte') && (map._lte_data.columns.indexOf(e.target.value) >= 0)){
                     load_values(map._lte_data.data, e.target.value);
                 }
 

@@ -34,7 +34,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             var values = {};
             var last_marker = {};
 
+
             leafletData.getMap().then(function(map) {
+                map._legend.reset_legend();
                 map.eachLayer(function (layer) {
                     if (layer.options.sector) {
                         if ((layer.options.sector[param] == value) && (network == layer.options.network)){
@@ -50,6 +52,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             }
                         } else {
                             layer.setStyle({'color': '#808080'});
+                            if (!(value in values)){
+                                values[value] = {
+                                    'param_name': param,
+                                    'color': color,
+                                    'sectors': []}
+                            }
                             if ('other' in values){
                                 values['other'].sectors.push(layer);
                             } else {
@@ -86,7 +94,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         map.set_zoom(12);
                     }
                 }
-                map._legend.reset_legend();
                 map._legend.set_legend(values);
             });
         };
