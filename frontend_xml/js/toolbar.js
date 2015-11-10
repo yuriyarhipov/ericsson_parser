@@ -4,11 +4,11 @@ L.Control.ToolBar = L.Control.extend({
         handler: {}
     },
 
-
     onAdd: function(map) {
         this.controlDiv = L.DomUtil.create('div', 'toolbar col-md-12');
         this.buttonsDiv = L.DomUtil.create('div', 'col-md-12', this.controlDiv);
         map._appsDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
+        map._3gDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
 
         var fDiv = this.filterDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
 
@@ -31,7 +31,7 @@ L.Control.ToolBar = L.Control.extend({
         var sValues = this.select_values = L.DomUtil.create('select', 'form-control', this.valuesDiv);
         this.delFiltersDiv = L.DomUtil.create('div', 'col-md-1', this.filterDiv);
         this.resetFiltersButton = L.DomUtil.create('button', 'btn btn-danger', this.delFiltersDiv);
-        this.resetFiltersButton.innerHTML = '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'
+        this.resetFiltersButton.innerHTML = '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>';
 
 
         this.rangeDiv = L.DomUtil.create('div', 'col-md-6', this.buttonsDiv);
@@ -44,31 +44,41 @@ L.Control.ToolBar = L.Control.extend({
         this.sectorSize.setAttribute('step', '0.1');
         map.sector_size = this.sectorSize;
 
+        this.neigh2gButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
+        this.neigh2gButton.innerHTML = '2G-2G';
+
         this.neigh3gButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
-        this.neigh3gButton.innerHTML = '3G-3G'
+        this.neigh3gButton.innerHTML = '3G-3G';
+
+        this.neigh4gButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
+        this.neigh4gButton.innerHTML = '4G-4G';
 
         map._appButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
-        map._appButton.innerHTML = '<span class="glyphicon glyphicon-th" aria-hidden="true"></span>'
+        map._appButton.innerHTML = '<span class="glyphicon glyphicon-th" aria-hidden="true"></span>';
 
-        this.flushNeighButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
-        this.flushNeighButton.innerHTML = '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>'
+        this.close3gButton = L.DomUtil.create('button', 'btn btn-default', map._3gDiv);
+        this.close3gButton.innerHTML = '3G <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>';
+
+        this.flushNeighButton = L.DomUtil.create('button', 'btn btn-default', map._3gDiv);
+        this.flushNeighButton.innerHTML = '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>';
 
         this.filterNeighButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
-        this.filterNeighButton.innerHTML = '<span class="glyphicon glyphicon-filter" aria-hidden="true"></span>'
+        this.filterNeighButton.innerHTML = '<span class="glyphicon glyphicon-filter" aria-hidden="true"></span>';
 
         map.measure = this.measureButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
-        this.measureButton.innerHTML = '<img src="/static/measure-control.png">'
+        this.measureButton.innerHTML = '<img src="/static/measure-control.png">';
 
         map.zoomButton = this.zoomButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
-        this.zoomButton.innerHTML = '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
+        this.zoomButton.innerHTML = '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
 
         var stop = L.DomEvent.stopPropagation;
         L.DomEvent
             .addListener(this.controlDiv, 'mousedown', L.DomEvent.stopPropagation)
             .addListener(this.controlDiv, 'click', L.DomEvent.stopPropagation)
             .addListener(this.controlDiv, 'click', L.DomEvent.preventDefault)
-
             .addListener(this.neigh3gButton, 'click', function () {
+                L.DomUtil.addClass(map._appsDiv, 'hide');
+                L.DomUtil.removeClass(map._3gDiv, 'hide');
                 map._show_neighbors = !map._show_neighbors;
                 map.eachLayer(function (layer) {
                     if (layer.options.sector) {
@@ -82,6 +92,15 @@ L.Control.ToolBar = L.Control.extend({
                         } else {
                             layer.setStyle({'color': layer.options.default_color});
                         }
+                    }
+                });
+            })
+            .addListener(this.close3gButton, 'click', function () {
+                L.DomUtil.addClass(map._3gDiv, 'hide');
+                map._show_neighbors = false;
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        layer.setStyle({'color': layer.options.default_color});
                     }
                 });
             })
