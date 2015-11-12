@@ -90,6 +90,7 @@ urlpatterns = patterns('',
     url(r'^data/distance/logical_sectors/$', table_views.logical_sectors),
 
     url(r'^data/rnd/get_param_values/(\S+)/(\S+)/$', files_views.get_param_values),
+    url(r'^data/rnd/get_rnd_pd/(\S+)/(\S+)/$', files_views.get_rnd_pd),
     url(r'^data/rnd/get_rnd_neighbors(\S+)/(\S+)/$', files_views.get_rnd_neighbors),
     url(r'^data/rnd/get_new3g(\S+)/(\S+)/$', files_views.get_new3g),
     url(r'^data/rnd/new3g3g/$', files_views.new3g3g),

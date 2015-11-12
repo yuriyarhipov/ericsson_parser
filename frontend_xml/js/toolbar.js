@@ -53,11 +53,20 @@ L.Control.ToolBar = L.Control.extend({
         this.neigh4gButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
         this.neigh4gButton.innerHTML = '4G-4G';
 
+        this.pdButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
+        this.pdButton.innerHTML = 'PD';
+
         map._appButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
         map._appButton.innerHTML = '<span class="glyphicon glyphicon-th" aria-hidden="true"></span>';
 
         this.close3gButton = L.DomUtil.create('button', 'btn btn-default', map._3gDiv);
         this.close3gButton.innerHTML = '3G <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>';
+
+        map._arrowLeftButton = L.DomUtil.create('button', 'btn btn-default', map._3gDiv);
+        map._arrowLeftButton.innerHTML = '<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>';
+
+        map._arrowRightButton = L.DomUtil.create('button', 'btn btn-default', map._3gDiv);
+        map._arrowRightButton.innerHTML = '<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>';
 
         this.flushNeighButton = L.DomUtil.create('button', 'btn btn-default', map._3gDiv);
         this.flushNeighButton.innerHTML = '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>';
@@ -216,12 +225,61 @@ L.Control.ToolBar = L.Control.extend({
                     L.DomUtil.addClass(fDiv, 'hide');
                 }
             })
+            .addListener(this.pdButton, 'click', function () {
+                map._show_pd = !map._show_pd;
+                if (!map._show_pd){
+                    for (i in map._pd){
+                        map._pd[i].removeFrom(map);
+                    }
+                }
+            })
             .addListener(map._appButton, 'click', function () {
                 if (L.DomUtil.hasClass(map._appsDiv, 'hide')){
                     L.DomUtil.removeClass(map._appsDiv, 'hide');
                 } else {
                     L.DomUtil.addClass(map._appsDiv, 'hide');
                 }
+            })
+            .addListener(map._arrowLeftButton, 'click', function(){
+                var utrancells = [];
+                for (i in map._wcdma_data.data){
+                    utrancells.push(map._wcdma_data.data[i].Utrancell);
+                }
+                utrancells.sort();
+                var idx = utrancells.indexOf(map._current_sector.options.sector.Utrancell);
+                if (idx == 0){
+                    idx = utrancells.length - 1;
+                } else {
+                    idx = idx - 1;
+                }
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        if (layer.options.sector.Utrancell == utrancells[idx]){
+                            layer.show_neighbours();
+                            map.select_sector(layer);
+                        }
+                    }
+                });
+            })
+            .addListener(map._arrowRightButton, 'click', function(){
+                var utrancells = [];
+                for (i in map._wcdma_data.data){
+                    utrancells.push(map._wcdma_data.data[i].Utrancell);
+                }
+                utrancells.sort();
+                var idx = utrancells.indexOf(map._current_sector.options.sector.Utrancell);
+                idx = idx + 1;
+                if (idx == utrancells.length){
+                    idx = 0;
+                }
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        if (layer.options.sector.Utrancell == utrancells[idx]){
+                            layer.show_neighbours();
+                            map.select_sector(layer);
+                        }
+                    }
+                });
             })
 
 

@@ -139,8 +139,6 @@ class Template(object):
             filename)
         return sql
 
-
-
     def get_tables_lte(self, sql_tables, filename, cells):
         tables = []
         result_columns = []
@@ -172,7 +170,6 @@ class Template(object):
         sql = 'SELECT TOPOLOGY.RNC, TOPOLOGY.UTRANCELL, TOPOLOGY.SITE, Topology.SectorCarrier, Topology.SectorAntena, Topology.Carrier, TOPOLOGY.filename,  %s  FROM Topology %s' % (sql_columns, sql_join)
         return sql
 
-
     def get_tables(self, sql_tables, network, filename, cells):
         if network == 'WCDMA':
             return self.get_tables_wcdma(sql_tables, filename, cells)
@@ -180,7 +177,6 @@ class Template(object):
             return self.get_tables_lte(sql_tables, filename, cells)
         elif network == 'GSM':
             return self.get_tables_cna(sql_tables, filename, cells)
-
 
     def get_table_from_column(self, column_name, file_tables):
         cursor = self.conn.cursor()
@@ -212,7 +208,8 @@ class Template(object):
                     sql_tables[table_name] = []
                 if column not in sql_tables[table_name]:
                     sql_tables[table_name].append(column)
-        return self.get_tables(sql_tables, network, filename, cells)
+        sql = self.get_tables(sql_tables, network, filename, cells)
+        return sql
 
     def create_indexes(self, template_name):
         qt = QueryTemplate.objects.filter(template_name=template_name).first()

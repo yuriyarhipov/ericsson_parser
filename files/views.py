@@ -324,8 +324,15 @@ def flush3g3g(request):
     return Response([])
 
 
-
 def get3g3gscript(request):
     project = request.project
     filename = Rnd(project.id, 'wcdma').create_script(request.wcdma.filename)
     return HttpResponseRedirect(filename)
+
+
+@api_view(['GET', ])
+def get_rnd_pd(request, network, sector):
+    project = request.project
+    pd = Distance().get_pd(project.id, sector)
+    print pd
+    return Response(pd)

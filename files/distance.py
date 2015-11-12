@@ -74,6 +74,24 @@ class Distance(object):
         dates = [row[0].strftime('%d.%m.%Y') for row in cursor]
         return dates
 
+    def get_pd(self, project_id, sector):
+        cursor = connection.cursor()
+        data = []
+        cursor.execute("""SELECT
+                SUM(pmPropagationDelay) AS delay,
+                DCVECTOR_INDEX,
+                Distance
+            FROM Access_Distance
+            WHERE
+                (project_id=%s) AND (Utrancell = %s)
+            GROUP BY
+                DCVECTOR_INDEX, Distance
+            ORDER BY
+                DCVECTOR_INDEX DESC""", (project_id, sector, ))
+        for row in cursor:
+            data.append({'delay': row[0], 'dc_vector': row[1], 'distance': row[2]})
+        return data
+
     def get_low_coverage(self, day_from, day_to, distance, project_id):
         cursor = connection.cursor()
         cursor.execute('''

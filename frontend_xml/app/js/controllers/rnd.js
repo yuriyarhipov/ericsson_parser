@@ -50,7 +50,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                                     'color': color,
                                     'sectors': [layer, ]}
                             }
-                        } else {
+                        } else if (!(value=='All')){
                             layer.setStyle({'color': '#808080'});
                             if (!(value in values)){
                                 values[value] = {
@@ -68,18 +68,22 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             }
                         }
                         if (value=='All'){
-                            last_marker = layer.options.sector;
-                            if (layer.options.sector[param] in values){
-                                layer.setStyle({'color': values[layer.options.sector[param]].color});
-                                values[layer.options.sector[param]].sectors.push(layer);
-                            } else {
-                                if (layer.options.sector[param]){
-                                    values[layer.options.sector[param]] = {
-                                        'param_name': param,
-                                        'color':color = randomColor({hue: 'random',luminosity: 'dark'}),
-                                        'sectors':[layer, ]};
+                            if (network == layer.options.network){
+                                last_marker = layer.options.sector;
+                                if (layer.options.sector[param] in values){
                                     layer.setStyle({'color': values[layer.options.sector[param]].color});
+                                    values[layer.options.sector[param]].sectors.push(layer);
+                                } else {
+                                    if (layer.options.sector[param]){
+                                        values[layer.options.sector[param]] = {
+                                            'param_name': param,
+                                            'color':color = randomColor({hue: 'random',luminosity: 'dark'}),
+                                            'sectors':[layer, ]};
+                                        layer.setStyle({'color': values[layer.options.sector[param]].color});
+                                    }
                                 }
+                            } else {
+                                layer.setStyle({'color': '#808080'});
                             }
                         }
                     }
@@ -154,7 +158,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             }
                         })
                         .addListener(cell_link, 'click', function(e){
-                            select_sector(e.target.sectors[e.target.next_sector_index]);
+                            legend._map.select_sector(e.target.sectors[e.target.next_sector_index]);
                             var sector = e.target.sectors[e.target.next_sector_index].options.sector;
                             if (e.target.next_sector_index + 1 < e.target.sectors.length){
                                 e.target.next_sector_index += 1;
@@ -173,27 +177,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             };
             return legend;
         };
-
-        var select_sector = function(layer){
-            if (layer._map._current_sector){
-                layer._map._current_sector.setStyle({
-                    weight: 2,
-                    opacity: 0.7
-                });
-            }
-            layer.setStyle({
-                weight: 4,
-                opacity: 1
-            });
-            layer._map._current_sector = layer;
-            if (layer._map._info_control){
-                layer._map.removeControl(layer._map._info_control);
-            }
-            layer._map._info_control = create_info_control(layer.options.default_color, layer.options.sector);
-            layer._map._info_control.addTo(layer._map);
-
-        };
-
 
         var create_info_control = function(color, sector){
             var info = L.control();
@@ -239,7 +222,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             .on('click', function(e){
                 var self = this;
                 layer = e.target
-                select_sector(layer);
+                layer._map.select_sector(layer);
+                if (layer._map._show_pd){
+                    layer.show_pd();
+                }
+
 
                 if (this._map._show_neighbors && (layer.options.network == 'wcdma')){
                     if (e.originalEvent.shiftKey){
@@ -303,35 +290,61 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             });
                         }
                     } else {
-                        rncSource = layer.options.sector.RNC;
-                        utrancellSource = layer.options.sector.Utrancell;
-                        carrierSource = layer.options.sector.Carrier;
-                        layer.setStyle({'color': 'green'});
-                        $http.get('/data/rnd/get_rnd_neighbors/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
-                            $http.get('/data/rnd/get_new3g/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/').success(function(new3g_neighbors){
-                                self._map.eachLayer(function (temp_layer) {
-                                    if ((temp_layer.options.sector) && (temp_layer.options.network == 'wcdma')){
-                                        if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
-                                            if(new3g_neighbors[temp_layer.options.sector.Utrancell]){
-                                                if (new3g_neighbors[temp_layer.options.sector.Utrancell] == 'Add'){
-                                                    temp_layer.setStyle({'color': 'orange'});
-                                                } else {
-                                                    temp_layer.setStyle({'color': 'purple'});
-                                                }
-                                            } else if (data.indexOf(temp_layer.options.sector.Utrancell) >= 0) {
-                                                temp_layer.setStyle({'color': 'red'});
-                                            } else {
-                                                temp_layer.setStyle({'color': 'grey'});
-                                            }
-                                        }
-                                    }
-                                });
-                            });
-                        });
+                        layer.show_neighbours();
                     }
 
                 }
             })
+            new_sector.show_neighbours = function(){
+                var layer = this;
+                rncSource = layer.options.sector.RNC;
+                utrancellSource = layer.options.sector.Utrancell;
+                carrierSource = layer.options.sector.Carrier;
+                layer.setStyle({'color': 'green'});
+                $http.get('/data/rnd/get_rnd_neighbors/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
+                    $http.get('/data/rnd/get_new3g/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/').success(function(new3g_neighbors){
+                        layer._map.eachLayer(function (temp_layer) {
+                            if ((temp_layer.options.sector) && (temp_layer.options.network == 'wcdma')){
+                                if (layer.options.sector.Utrancell !== temp_layer.options.sector.Utrancell){
+                                    if(new3g_neighbors[temp_layer.options.sector.Utrancell]){
+                                        if (new3g_neighbors[temp_layer.options.sector.Utrancell] == 'Add'){
+                                            temp_layer.setStyle({'color': 'orange'});
+                                        } else {
+                                            temp_layer.setStyle({'color': 'purple'});
+                                        }
+                                    } else if (data.indexOf(temp_layer.options.sector.Utrancell) >= 0) {
+                                        temp_layer.setStyle({'color': 'red'});
+                                    } else {
+                                        temp_layer.setStyle({'color': 'grey'});
+                                    }
+                                }
+                            }
+                        });
+                    });
+                });
+            };
+            new_sector.show_pd = function(){
+                var layer = this;
+                for (i in layer._map._pd){
+                    layer._map._pd[i].removeFrom(layer._map);
+                }
+
+                layer._map._pd = [];
+                $http.get('/data/rnd/get_rnd_pd/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
+                    for (id in data){
+                        size = data[id].distance * 1000;
+                        var color = randomColor({hue: 'random',luminosity: 'dark'});
+                        var new_pd = L.circle([layer._latlng.lat, layer._latlng.lng], size, {
+                            color: color,
+                            fillOpacity: 1,
+                        })
+                        .setDirection(layer.options.sector.Azimuth, 60);
+                        new_pd.addTo(layer._map);
+                        layer._map._pd.push(new_pd);
+                    }
+                });
+
+            };
             return new_sector;
         };
 
@@ -380,6 +393,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             L.Control.measureControl({ position:'topright' }).addTo(map);
             map._layerControl = L.control.layers().addTo(map);
             map._show_neighbors = false;
+            map._show_pd = false;
             map._add_filter = onAddFilter;
             map._legend = create_legend_control();
             map._legend.addTo(map);
@@ -466,6 +480,26 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 var zoom = e.target._zoom;
                 map.set_zoom(zoom);
             });
+
+            map.select_sector = function(layer){
+                if (layer._map._current_sector){
+                    layer._map._current_sector.setStyle({
+                        weight: 2,
+                        opacity: 0.7
+                    });
+                }
+                layer.setStyle({
+                    weight: 4,
+                    opacity: 1
+                });
+                layer._map._current_sector = layer;
+                if (layer._map._info_control){
+                    layer._map.removeControl(layer._map._info_control);
+                }
+                layer._map._info_control = create_info_control(layer.options.default_color, layer.options.sector);
+                layer._map._info_control.addTo(layer._map);
+
+            };
         });
 }]);
 
