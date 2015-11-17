@@ -87,7 +87,7 @@ class Distance(object):
             GROUP BY
                 DCVECTOR_INDEX, Distance
             ORDER BY
-                DCVECTOR_INDEX DESC""", (project_id, sector, ))
+                DCVECTOR_INDEX """, (project_id, sector, ))
         for row in cursor:
             data.append({'delay': row[0], 'dc_vector': row[1], 'distance': row[2]})
         return data

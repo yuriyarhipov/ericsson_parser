@@ -96,3 +96,11 @@ xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location', 'ac
 
 		};
   }]);
+
+
+xmlControllers.controller('authCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.onLogin = function(login, pass){
+
+        };
+  }]);

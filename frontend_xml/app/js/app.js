@@ -32,7 +32,10 @@ var XmlApp = angular.module(
         'ui.grid.exporter',
         'ui.grid.selection',
         'ui.grid.resizeColumns',
-        'ui.grid.moveColumns'
+        'ui.grid.moveColumns',
+        'ui.grid.edit',
+        'ui.grid.rowEdit',
+        'ui.grid.cellNav'
     ]);
 
 XmlApp.config(['$routeProvider',
@@ -192,6 +195,10 @@ XmlApp.config(['$routeProvider',
             when('/map_settings/',{
                 templateUrl: 'templates/rnd/settings.html',
                 controller: 'mapSettingsCtrl'
+            }).
+            when('/login/',{
+                templateUrl: 'templates/login.html',
+                controller: 'authCtrl'
             }).
             otherwise({
                 redirectTo: '/'

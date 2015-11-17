@@ -5,10 +5,24 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
         $scope.rowCollection = [];
         $scope.rnd_network = $routeParams.network;
         $scope.show_download_panel = false;
-
+        $scope.rnd_table_config = {
+            enableGridMenu: true,
+            enableSelectAll: true,
+            exporterMenuPdf: false,
+            exporterCsvFilename: 'export.csv',
+            exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+            onRegisterApi: function(gridApi){
+                $scope.gridApi = gridApi;
+            }
+        }
         $http.get('/data/rnd/' + $scope.rnd_network + '/').success(function(data){
-            $scope.columns = data.columns;
-            $scope.table_data = $scope.displayed_data = data.data;
+            $scope.rnd_table_config.columnDefs = [];
+            for (id in data.columns){
+                $scope.rnd_table_config.columnDefs.push({field: data.columns[id], });
+            }
+
+            $scope.rnd_table_config.data = data.data;
+
 
         });
 
@@ -331,19 +345,40 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
                 layer._map._pd = [];
                 $http.get('/data/rnd/get_rnd_pd/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
+                    var s_radius = 0;
                     for (id in data){
                         size = data[id].distance * 1000;
+
                         var color = randomColor({hue: 'random',luminosity: 'dark'});
-                        var new_pd = L.circle([layer._latlng.lat, layer._latlng.lng], size, {
+                        var new_pd = L.circle(layer._latlng, size, {
                             color: color,
-                            fillOpacity: 1,
+                            fillOpacity: 0.5,
+                            weight: 2,
+                            opacity: 0.7,
+                            azimuth: layer.options.sector.Azimuth
                         })
-                        .setDirection(layer.options.sector.Azimuth, 60);
+                        .bindPopup('Distance: '+ data[id].distance +', value:' + data[id].delay, {'offset': L.Point(20, 200)})
+                        .setDirection(layer.options.sector.Azimuth, 60, s_radius)
+                        .on('click', function(e){
+                            if (layer._map._current_pd){
+                                layer._map._current_pd.setStyle({
+                                    weight: 2,
+                                    opacity: 0.7,
+                                    fillOpacity: 0.5
+                                });
+                            }
+                            layer._map._current_pd = this;
+                            layer._map._current_pd.setStyle({
+                                weight: 4,
+                                opacity: 1,
+                                fillOpacity: 0.8
+                            });
+                        });
                         new_pd.addTo(layer._map);
                         layer._map._pd.push(new_pd);
+                        s_radius = new_pd._radius;
                     }
                 });
-
             };
             return new_sector;
         };
@@ -473,6 +508,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     }
                 });
                 map.sector_size.value = 0;
+                var pd_size = 0;
+                for (i in map._pd){
+                    pd = map._pd[i];
+                    pd.setDirection(pd.options.azimuth, 60, pd_size);
+                    pd_size = pd._radius;
+                }
 
             };
 
