@@ -29,8 +29,11 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
         $scope.complete = function(){
             $scope.show_download_panel = false;
             $http.get('/data/rnd/' + $scope.rnd_network + '/').success(function(data){
-                $scope.columns = data.columns;
-                $scope.table_data = $scope.displayed_data = data.data;
+                $scope.rnd_table_config.columnDefs = [];
+                for (id in data.columns){
+                    $scope.rnd_table_config.columnDefs.push({field: data.columns[id], });
+                }
+                $scope.rnd_table_config.data = data.data;
             });
         };
   }]);
