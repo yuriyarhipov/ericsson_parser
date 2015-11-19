@@ -345,14 +345,42 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 for (i in layer._map._pd){
                     layer._map._pd[i].removeFrom(layer._map);
                 }
-
                 layer._map._pd = [];
-                $http.get('/data/rnd/get_rnd_pd/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/').success(function(data){
+                $http.get('/data/rnd/get_rnd_pd/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/' + layer._map._pd_date_from.value + '/' + layer._map._pd_date_to.value + '/').success(function(data){
                     var s_radius = 0;
-                    for (id in data){
-                        size = data[id].distance * 1000;
 
-                        var color = randomColor({hue: 'random',luminosity: 'dark'});
+
+                    layer._map._legend.reset_legend()
+                    layer._map._legend.set_legend({});
+
+                    var pd_data = data[0];
+                    var distances = data[2];
+
+                    for (id in pd_data){
+                        var dc_vector = parseFloat(pd_data[id][0]);
+                        if (dc_vector + 1 in distances){
+                            var size = distances[dc_vector + 1] * 1000;
+                        } else {
+                            var size = distances[dc_vector] + distances[dc_vector] - distances[dc_vector-1];
+                            size = size * 1000;
+                        }
+
+
+
+                        var value = parseFloat(pd_data[id][1]);
+                        var color = 'white';
+                        if (value <=1) {
+                            color = 'white';
+                        } else if ((value > 1) && (value <= 10)){
+                            color = 'yellow';
+                        } else if ((value > 10) && (value <= 20)){
+                            color = 'red';
+                        } else if ((value > 20) && (value <= 30)){
+                            color = 'green';
+                        } else if (value > 30) {
+                            color = 'purple';
+                        }
+
                         var new_pd = L.circle(layer._latlng, size, {
                             color: color,
                             fillOpacity: 0.5,
@@ -360,7 +388,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             opacity: 0.7,
                             azimuth: layer.options.sector.Azimuth
                         })
-                        .bindPopup('Distance: '+ data[id].distance +', value:' + data[id].delay, {'offset': L.Point(20, 200)})
+                        .bindPopup('DC Vector: '+ pd_data[id][0] +', value:' + value , {'offset': L.Point(20, 200)})
                         .setDirection(layer.options.sector.Azimuth, 60, s_radius)
                         .on('click', function(e){
                             if (layer._map._current_pd){
@@ -464,6 +492,29 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     });
                 }
             };
+
+            map._init_pd = function(){
+                $http.get('/data/distance/get_dates/').success(function(data){
+                    while (map._pd_date_from.firstChild) {
+                        map._pd_date_from.removeChild(map._pd_date_from.firstChild);
+                    }
+                    while (map._pd_date_to.firstChild) {
+                        map._pd_date_to.removeChild(map._pd_date_to.firstChild);
+                    }
+                    var data2 = data.slice()
+                    for (id in data){
+                        var option = document.createElement("option");
+                        option.value = data[id];
+                        option.text = data[id];
+                        map._pd_date_from.appendChild(option);
+                        var option2 = document.createElement("option");
+                        option2.value = data2[id];
+                        option2.text = data2[id];
+                        map._pd_date_to.appendChild(option2);
+                    }
+                    map._pd_date_to.selectedIndex = data2.length - 1;
+                });
+            }
 
             $http.get('/data/rnd/gsm/').success(function(gsm_data){
                 $http.get('/data/rnd/wcdma/').success(function(wcdma_data){

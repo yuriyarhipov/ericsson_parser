@@ -68,29 +68,11 @@ class Distance(object):
         rbs = [row[0] for row in cursor]
         return rbs
 
-    def get_dates(self, project_id, rbs):
+    def get_dates(self, project_id):
         cursor = connection.cursor()
-        cursor.execute("SELECT DISTINCT date_id FROM Access_Distance WHERE (RBS=%s) AND (project_id=%s)  ORDER BY date_id", (rbs, project_id, ))
+        cursor.execute("SELECT DISTINCT date_id FROM Access_Distance WHERE (project_id=%s)  ORDER BY date_id", (project_id, ))
         dates = [row[0].strftime('%d.%m.%Y') for row in cursor]
         return dates
-
-    def get_pd(self, project_id, sector):
-        cursor = connection.cursor()
-        data = []
-        cursor.execute("""SELECT
-                SUM(pmPropagationDelay) AS delay,
-                DCVECTOR_INDEX,
-                Distance
-            FROM Access_Distance
-            WHERE
-                (project_id=%s) AND (Utrancell = %s)
-            GROUP BY
-                DCVECTOR_INDEX, Distance
-            ORDER BY
-                DCVECTOR_INDEX """, (project_id, sector, ))
-        for row in cursor:
-            data.append({'delay': row[0], 'dc_vector': row[1], 'distance': row[2]})
-        return data
 
     def get_low_coverage(self, day_from, day_to, distance, project_id):
         cursor = connection.cursor()
@@ -213,14 +195,14 @@ class Distance(object):
         data = dict()
         for row in cursor:
             utrancell = row[0]
-            chart, title, distances = self.get_chart(day_from, day_to, utrancell)
+            chart, title, distances = self.get_chart(project_id, day_from, day_to, utrancell)
             data[utrancell] = dict(
                 distances=distances,
                 chart=chart,
                 title=title)
         return data
 
-    def get_chart(self, date_from, date_to, utrancell):
+    def get_chart(self, project_id, date_from, date_to, utrancell):
         data = []
         cursor = connection.cursor()
 
@@ -242,7 +224,7 @@ class Distance(object):
                 FROM
                     Access_Distance
                 WHERE
-                    (Utrancell=%s) AND (date_id >=%s) AND (date_id <=%s)
+                    (Utrancell=%s) AND (date_id >=%s) AND (date_id <=%s) AND (project_id=%s)
                 GROUP BY
                     distance,
                     DCVECTOR_INDEX,
@@ -255,15 +237,17 @@ class Distance(object):
                 FROM
                     Access_Distance
                 WHERE
-                    (Utrancell=%s) AND (date_id >=%s) AND (date_id <=%s)
+                    (Utrancell=%s) AND (date_id >=%s) AND (date_id <=%s) AND (project_id=%s)
                 ) AS date_sum ORDER BY DIST_SUM.distance
                 ''', (
                     utrancell,
                     datetime.strptime(date_from, '%d.%m.%Y'),
                     datetime.strptime(date_to, '%d.%m.%Y'),
+                    project_id,
                     utrancell,
                     datetime.strptime(date_from, '%d.%m.%Y'),
-                    datetime.strptime(date_to, '%d.%m.%Y')))
+                    datetime.strptime(date_to, '%d.%m.%Y'),
+                    project_id))
 
 
 

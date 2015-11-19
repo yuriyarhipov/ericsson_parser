@@ -37,17 +37,19 @@ def delete_projects(request, project_name):
 
 def treeview(request, project):
     project = Project.objects.get(project_name=project)
-    data = [
-        {'id': 'network', 'label': '  Radio Network Design Info (RND)',
-            'children': [
-                {'id': 'GSM', 'label': 'GSM', 'link': '/rnd/gsm/'},
-                {'id': 'WCDMA', 'label': 'WCDMA', 'link': '/rnd/wcdma/'},
-                {'id': 'LTE', 'label': 'LTE', 'link': '/rnd/lte/'},
+    data = [ {'id': 'project', 'label': project.project_name,
+        'children':[
+            {'id': 'network', 'label': '  Radio Network Design Info (RND)',
+                'children': [
+                    {'id': 'GSM', 'label': 'GSM', 'link': '/rnd/gsm/'},
+                    {'id': 'WCDMA', 'label': 'WCDMA', 'link': '/rnd/wcdma/'},
+                    {'id': 'LTE', 'label': 'LTE', 'link': '/rnd/lte/'},
+                ]},
+            {'id': 'Architecture', 'label': 'Network Architecture', 'children': [
+                {'id': 'GSM', 'label': 'GSM', 'children': project.get_network_tree('GSM')},
+                {'id': 'WCDMA', 'label': 'WCDMA', 'children': project.get_network_tree('WCDMA')},
+                {'id': 'LTE', 'label': 'LTE', 'children': project.get_network_tree('LTE')}
             ]},
-        {'id': 'Architecture', 'label': 'Network Architecture', 'children': [
-            {'id': 'GSM', 'label': 'GSM', 'children': project.get_network_tree('GSM')},
-            {'id': 'WCDMA', 'label': 'WCDMA', 'children': project.get_network_tree('WCDMA')},
-            {'id': 'LTE', 'label': 'LTE', 'children': project.get_network_tree('LTE')}
         ]},
     ]
     return HttpResponse(json.dumps(data), content_type='application/json')

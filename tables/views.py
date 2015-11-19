@@ -317,9 +317,9 @@ def get_rbs(request):
         content_type='application/json')
 
 
-def get_dates(request, rbs):
+def get_dates(request):
     project = request.project
-    dates = Distance().get_dates(project.id, rbs)
+    dates = Distance().get_dates(project.id)
     return HttpResponse(json.dumps(dates), content_type='application/json')
 
 

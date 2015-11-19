@@ -59,7 +59,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
         $http.get('/data/distance/get_rbs').success(function(data){
             $scope.rbs_data = data.rbs;
             $scope.rbs.selected = $scope.rbs_data[0];
-            $http.get('/data/distance/get_dates/' + $scope.rbs.selected + '/').success(function(data){
+            $http.get('/data/distance/get_dates/').success(function(data){
                 $scope.dates = data;
                 $scope.days.selected_from = data[0];
                 $scope.days.selected_to = data[data.length-1];
@@ -190,7 +190,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
         };
 
         $scope.onSelect = function($item, $model){
-            $http.get('/data/distance/get_dates/' + $item + '/').success(function(data){
+            $http.get('/data/distance/get_dates/').success(function(data){
                 $scope.dates = data;
                 $scope.days.selected_from = data[0];
                 $scope.days.selected_to = data[-1];

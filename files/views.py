@@ -331,8 +331,7 @@ def get3g3gscript(request):
 
 
 @api_view(['GET', ])
-def get_rnd_pd(request, network, sector):
+def get_rnd_pd(request, network, sector, date_from, date_to):
     project = request.project
-    pd = Distance().get_pd(project.id, sector)
-    print pd
+    pd = Distance().get_chart(project.id, date_from, date_to, sector)
     return Response(pd)
