@@ -169,6 +169,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/distance/distance.html',
                 controller: 'accessDistanceCtrl'
             }).
+            when('/psc_distance/',{
+                templateUrl: 'templates/distance/psc_distance.html',
+                controller: 'pscDistanceCtrl'
+            }).
             when('/audit_param/:network/:filename/:param_name/',{
                 templateUrl: 'templates/audit/audit_param.html',
                 controller: 'auditParamCtrl'

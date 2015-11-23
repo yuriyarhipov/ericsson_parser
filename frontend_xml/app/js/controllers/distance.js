@@ -1,6 +1,6 @@
 var distanceControllers = angular.module('distanceControllers', []);
 
-auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinnerService',
+distanceControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinnerService',
     function ($scope, $http, usSpinnerService) {
         $scope.showComapreFilters = false;
         $scope.distance = {};
@@ -494,7 +494,7 @@ auditControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinner
         };
   }]);
 
-filesControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies',
+distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies',
     function ($scope, $http, $cookies) {
         $scope.associated_sectors = [];
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
@@ -590,6 +590,32 @@ filesControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies',
                 }});
 
         };
+}]);
 
-
+distanceControllers.controller('pscDistanceCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.psc_table_config = {
+            columnDefs: [
+                { field: 'Cell' },
+                { field: 'nCell'},
+                { field: 'Lat From' },
+                { field: 'Lng From' },
+                { field: 'Lat To' },
+                { field: 'Lng To' },
+                { field: 'PSC', type: 'number'},
+                { field: 'uarfcndl', type: 'number'},
+                { field: 'Distance', type: 'number'}
+            ],
+            enableGridMenu: true,
+            enableSelectAll: true,
+            exporterMenuPdf: false,
+            exporterCsvFilename: 'psc.csv',
+            exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+            onRegisterApi: function(gridApi){
+                $scope.gridApi = gridApi;
+            }
+        }
+        $http.get('/data/distance/psc_distance').success(function(data){
+            $scope.psc_table_config.data = data;
+        });
 }]);

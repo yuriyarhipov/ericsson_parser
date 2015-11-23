@@ -381,3 +381,11 @@ def logical_sectors(request, logical_sector=None, sector=None):
         Distance().delete_logical_sectors(project.id, logical_sector, sector)
 
     return Response(Distance().logical_sectors(project.id))
+
+
+@api_view(['GET', ])
+def psc_distance(request):
+    project = request.project
+    filename = request.wcdma.filename
+    print filename
+    return Response(Distance().get_psc_distance(project.id, filename))

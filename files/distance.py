@@ -4,6 +4,7 @@ from django.db import connection
 from os.path import basename
 from datetime import datetime
 from decimal import Decimal
+from geopy.distance import vincenty
 from files.models import Files
 
 
@@ -446,3 +447,47 @@ class Distance(object):
             logical_sector,
             sector))
         connection.commit()
+
+    def get_psc_distance(self, project_id, filename):
+        data = []
+        source_data = []
+        cursor = connection.cursor()
+        cursor.execute('''SELECT DISTINCT
+            RND_WCDMA.latitude,
+            RND_WCDMA.longitude,
+            UtranCell.UtranCell,
+            UtranCell.uarfcndl,
+            UtranCell.primaryscramblingcode FROM
+                UtranCell, RND_WCDMA
+            WHERE
+                (UtranCell.UtranCell = RND_WCDMA.Utrancell) AND
+                (UtranCell.filename =%s) AND
+                (UtranCell.filename =%s)''', (filename, filename,))
+        for row in cursor:
+            source_data.append({
+                'UtranCell': row[2],
+                'uarfcndl': row[3],
+                'primaryscramblingcode': row[4],
+                'latitude': (float(row[0]) / 8388608) * 90,
+                'longitude': (float(row[1]) / 16777216) * 360})
+
+        while source_data:
+            sector = source_data.pop()
+            for temp_sector in source_data:
+                if (temp_sector.get('uarfcndl') == sector.get('uarfcndl')) and (temp_sector.get('primaryscramblingcode') == sector.get('primaryscramblingcode')):
+                    data.append({
+                        'Cell': sector.get('UtranCell'),
+                        'nCell': temp_sector.get('UtranCell'),
+                        'Lat From': sector.get('latitude'),
+                        'Lng From': sector.get('longitude'),
+                        'Lat To': temp_sector.get('latitude'),
+                        'Lng To': temp_sector.get('longitude'),
+                        'PSC': sector.get('primaryscramblingcode'),
+                        'uarfcndl': sector.get('uarfcndl'),
+                        'Distance': int(vincenty(
+                            [sector.get('latitude'), sector.get('longitude')],
+                            [temp_sector.get('latitude'), temp_sector.get('longitude')]
+                        ).meters)
+                    })
+        return data
+
