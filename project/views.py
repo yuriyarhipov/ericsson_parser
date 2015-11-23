@@ -36,9 +36,9 @@ def delete_projects(request, project_name):
 
 
 def treeview(request, project):
+    #project.project_name
     project = Project.objects.get(project_name=project)
-    data = [ {'id': 'project', 'label': project.project_name,
-        'children':[
+    data = [
             {'id': 'network', 'label': '  Radio Network Design Info (RND)',
                 'children': [
                     {'id': 'GSM', 'label': 'GSM', 'link': '/rnd/gsm/'},
@@ -50,7 +50,6 @@ def treeview(request, project):
                 {'id': 'WCDMA', 'label': 'WCDMA', 'children': project.get_network_tree('WCDMA')},
                 {'id': 'LTE', 'label': 'LTE', 'children': project.get_network_tree('LTE')}
             ]},
-        ]},
     ]
     return HttpResponse(json.dumps(data), content_type='application/json')
 

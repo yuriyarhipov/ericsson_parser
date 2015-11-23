@@ -58,10 +58,13 @@ L.Control.ToolBar = L.Control.extend({
         this.pdButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
         this.pdButton.innerHTML = 'PD';
         map._pdDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
-        map._pd_date_from = L.DomUtil.create('select', 'form-control', map._pdDiv);
-        map._pd_date_to = L.DomUtil.create('select', 'form-control', map._pdDiv);
-
-
+        this.pd_button_Div = L.DomUtil.create('div', 'col-md-2', map._pdDiv);
+        this.closePdButton = L.DomUtil.create('button', 'btn btn-default', this.pd_button_Div);
+        this.closePdButton.innerHTML = 'PD <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>';
+        this.date_from_Div = L.DomUtil.create('div', 'col-md-5', map._pdDiv);
+        this.date_to_Div = L.DomUtil.create('div', 'col-md-5', map._pdDiv);
+        map._pd_date_from = L.DomUtil.create('select', 'form-control', this.date_from_Div);
+        map._pd_date_to = L.DomUtil.create('select', 'form-control', this.date_to_Div);
 
         map._appButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
         map._appButton.innerHTML = '<span class="glyphicon glyphicon-th" aria-hidden="true"></span>';
@@ -234,18 +237,18 @@ L.Control.ToolBar = L.Control.extend({
             })
             .addListener(this.pdButton, 'click', function () {
                 map._show_pd = !map._show_pd;
-                if (!map._show_pd){
-                    for (i in map._pd){
-                        map._pd[i].removeFrom(map);
-                    }
-                }
-                if (L.DomUtil.hasClass(map._pdDiv, 'hide')){
-                    L.DomUtil.removeClass(map._pdDiv, 'hide');
-                } else {
-                    L.DomUtil.addClass(map._pdDiv, 'hide');
-                }
+                L.DomUtil.addClass(map._appsDiv, 'hide');
+                L.DomUtil.removeClass(map._pdDiv, 'hide');
                 map._init_pd();
 
+            })
+            .addListener(this.closePdButton, 'click', function () {
+                map._show_pd = false;
+                for (i in map._pd){
+                    map._pd[i].removeFrom(map);
+                }
+                L.DomUtil.addClass(map._pdDiv, 'hide');
+                L.DomUtil.removeClass(map._appsDiv, 'hide');
             })
             .addListener(map._appButton, 'click', function () {
                 if (L.DomUtil.hasClass(map._appsDiv, 'hide')){

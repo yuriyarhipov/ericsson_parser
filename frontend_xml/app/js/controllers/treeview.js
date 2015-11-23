@@ -86,6 +86,7 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
         $scope.network = {};
         $scope.network.selected = 'GSM';
         $scope.root = {};
+        $scope.project_name = $cookies.get('active_project');
 
         $scope.treeOptions = {
             nodeChildren: "children",
@@ -148,6 +149,7 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
 
         $scope.$on('handleBroadcast', function() {
             var project = activeProjectService.project;
+            $scope.project_name = project;
             loadData(project);
         });
 

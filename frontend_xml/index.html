@@ -190,6 +190,7 @@
     <div class="col-md-2 sidebar" ng-controller="menuCtrl" ng-mouseenter="onShowMenu()">
         <div pageslide ps-open="checked" ps-side="left" ng-mouseleave="onShowMenu()" ps-custom-top="60px">
                     <div style="padding:20px">
+                        <h4>{{ project_name }}</h4>
                         <div treecontrol class="tree-classic"
                                 tree-model="treedata"
                                 options="treeOptions"
