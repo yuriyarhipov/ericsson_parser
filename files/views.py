@@ -335,3 +335,9 @@ def get_rnd_pd(request, network, sector, date_from, date_to):
     project = request.project
     pd = Distance().get_chart(project.id, date_from, date_to, sector)
     return Response(pd)
+
+
+@api_view(['GET', ])
+def get_same_neighbor(request):
+    project = request.project
+    return Response(Rnd(project.id, 'wcdma').same_neighbor(request.wcdma.filename))

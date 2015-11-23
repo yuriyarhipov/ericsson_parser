@@ -104,6 +104,17 @@ class Rnd:
         neighbors = [row[0] for row in cursor]
         return neighbors
 
+    def exist_rnd_neighbors(self, source_sector, target_sector, filename):
+        cursor = connection.cursor()
+        cursor.execute('''
+            SELECT DISTINCT
+                neighbor
+            FROM
+                UtranRelation
+            WHERE (neighbor=%s) AND (Utrancell=%s) AND (filename=%s)''', (target_sector, source_sector, filename, ))
+
+        return cursor.rowcount > 0
+
     def get_new3g(self, sector, filename):
         cursor = connection.cursor()
         cursor.execute('''
@@ -192,3 +203,25 @@ class Rnd:
                     f.write('\n')
 
         return '/static/%s/3g3gscript.txt' % self.project_id
+
+    def same_neighbor(self, filename):
+        data = self.get_data()
+        neighbors = {}
+        result = []
+        for row in data.get('data'):
+            site = row.get('SITE')
+            utrancell = row.get('Utrancell')
+            if site and utrancell:
+                if site in neighbors:
+                    for sector in neighbors[site]:
+                        if not self.exist_rnd_neighbors(utrancell, sector, filename):
+                            result.append({'utrancell_source': utrancell, 'utrancell_target': sector})
+
+                        if not self.exist_rnd_neighbors(sector, utrancell, filename):
+                            result.append({'utrancell_source': sector, 'utrancell_target': utrancell})
+
+                    neighbors[site].append(utrancell)
+                else:
+                    neighbors[site] = [utrancell, ]
+
+        return result

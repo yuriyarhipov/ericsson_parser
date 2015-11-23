@@ -200,6 +200,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/rnd/settings.html',
                 controller: 'mapSettingsCtrl'
             }).
+            when('/same_neighbor/',{
+                templateUrl: 'templates/rnd/same_neighbor.html',
+                controller: 'sameNeighborCtrl'
+            }).
             when('/login/',{
                 templateUrl: 'templates/login.html',
                 controller: 'authCtrl'

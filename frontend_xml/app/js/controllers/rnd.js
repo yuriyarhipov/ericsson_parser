@@ -646,7 +646,24 @@ rndControllers.controller('mapSettingsCtrl', ['$scope', '$http', '$cookies',
 }]);
 
 
-rndControllers.controller('ModalFilterCtrl', ['$scope', '$http',
+rndControllers.controller('sameNeighborCtrl', ['$scope', '$http',
     function ($scope, $http) {
-        console.log('Test');
+        $scope.neighbor_table_config = {
+            columnDefs: [
+                { field: 'utrancell_source' },
+                { field: 'utrancell_target'},
+            ],
+            enableGridMenu: true,
+            enableSelectAll: true,
+            exporterMenuPdf: false,
+            exporterCsvFilename: 'neighbors.csv',
+            exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+            onRegisterApi: function(gridApi){
+                $scope.gridApi = gridApi;
+            }
+        }
+
+        $http.get('/data/rnd/same_neighbor/').success(function(data){
+            $scope.neighbor_table_config.data = data;
+        });
   }]);

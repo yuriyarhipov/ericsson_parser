@@ -375,7 +375,6 @@ class Distance(object):
             project_id,
             datetime.strptime(day_from, '%d.%m.%Y'), datetime.strptime(day_to, '%d.%m.%Y')))
 
-
         for row in cursor:
             data.append(dict(name=row[0], y=int(row[1])))
 

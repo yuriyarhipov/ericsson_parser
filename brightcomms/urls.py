@@ -98,6 +98,7 @@ urlpatterns = patterns('',
     url(r'^data/rnd/del3g3g/$', files_views.del3g3g),
     url(r'^data/rnd/flush3g3g/$', files_views.flush3g3g),
     url(r'^data/rnd/get3g3gscript/$', files_views.get3g3gscript),
+    url(r'^data/rnd/same_neighbor/$', files_views.get_same_neighbor),
     url(r'^data/rnd/(\S+)/$', files_views.rnd),
     url(r'^data/rnd/$', files_views.rnd),
 
