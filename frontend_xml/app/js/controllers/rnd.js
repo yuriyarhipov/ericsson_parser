@@ -222,6 +222,21 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             return info
         };
 
+        var latlng_control = function(){
+            var latlng = L.control({position: 'bottomleft'});
+
+            latlng.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'latlng');
+                return this._div;
+            };
+
+            latlng.set_latlng = function (lat, lng) {
+                this._div.innerHTML = lat + '  ' + lng;
+            };
+
+            return latlng
+        };
+
         var create_sector = function(network, lat, lon, sector, color, size, key, zoom_k){
             var new_sector = L.circle([lat, lon], size, {
                             color: color,
@@ -235,7 +250,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             zoom_k: zoom_k
                     })
             .bindPopup(key, {'offset': L.Point(20, 200)})
-            .setDirection(sector.Azimuth, 60)
+            .setDirection(parseFloat(sector.Azimuth)-90, 60)
             .on('click', function(e){
                 var self = this;
                 layer = e.target
@@ -389,7 +404,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             azimuth: layer.options.sector.Azimuth
                         })
                         .bindPopup('DC Vector: '+ pd_data[id][0] +', value:' + value , {'offset': L.Point(20, 200)})
-                        .setDirection(layer.options.sector.Azimuth, 60, s_radius)
+                        .setDirection(parseFloat(layer.options.sector.Azimuth)-90, 60, s_radius)
                         .on('click', function(e){
                             if (layer._map._current_pd){
                                 layer._map._current_pd.setStyle({
@@ -463,6 +478,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             map._add_filter = onAddFilter;
             map._legend = create_legend_control();
             map._legend.addTo(map);
+            map._latlng = latlng_control();
+            map._latlng.addTo(map);
             var control = L.control.zoomBox({ modal: true, });
             control.init(map);
 
@@ -565,7 +582,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 var pd_size = 0;
                 for (i in map._pd){
                     pd = map._pd[i];
-                    pd.setDirection(pd.options.azimuth, 60, pd_size);
+                    pd.setDirection(parseFloat(pd.options.azimuth)-90, 60, pd_size);
                     pd_size = pd._radius;
                 }
 
@@ -575,6 +592,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 var zoom = e.target._zoom;
                 map.set_zoom(zoom);
             });
+
+            map.on('mousemove', function(e){
+                var pos = e.latlng;
+                map._latlng.set_latlng(pos.lat, pos.lng);
+            });
+
 
             map.select_sector = function(layer){
                 if (layer._map._current_sector){
