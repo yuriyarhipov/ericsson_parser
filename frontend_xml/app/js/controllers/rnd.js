@@ -3,6 +3,8 @@ var rndControllers = angular.module('rndControllers', []);
 rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
     function ($scope, $http, $routeParams) {
         $scope.rowCollection = [];
+        $scope.new_val = {};
+        $scope.show_edit_panel = false;
         $scope.rnd_network = $routeParams.network;
         $scope.show_download_panel = false;
         $scope.rnd_table_config = {
@@ -17,6 +19,7 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
         }
         $http.get('/data/rnd/' + $scope.rnd_network + '/').success(function(data){
             $scope.rnd_table_config.columnDefs = [];
+            $scope.columns = data.columns;
             for (id in data.columns){
                 $scope.rnd_table_config.columnDefs.push({field: data.columns[id], });
             }
@@ -36,6 +39,13 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
                 $scope.rnd_table_config.data = data.data;
             });
         };
+
+        $scope.onSaveRnd = function(data){
+            $http.post('/data/rnd/table/' + $scope.rnd_network + '/', $.param(data)).success(function(){
+                $scope.rnd_table_config.data.push(data);
+                $scope.show_edit_panel = false;
+            });
+        }
   }]);
 
 rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal',
@@ -376,7 +386,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 layer._map._pd = [];
                 $http.get('/data/rnd/get_rnd_pd/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/' + layer._map._pd_date_from.value + '/' + layer._map._pd_date_to.value + '/').success(function(data){
                     var s_radius = 0;
-
 
                     layer._map._legend.reset_legend()
                     layer._map._legend.set_pd();

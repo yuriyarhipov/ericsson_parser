@@ -62,6 +62,20 @@ class Rnd:
             result = {'columns': [], 'data': []}
         return result
 
+    def save_row(self, row):
+        cursor = connection.cursor()
+        data = self.get_data()
+        data['data'].append(row)
+        cursor.execute('DELETE FROM rnd WHERE (project_id=%s) AND (network=%s)''', (
+            self.project_id,
+            self.network))
+        cursor.execute('INSERT INTO rnd (project_id, network, data) VALUES (%s, %s, %s)', (
+            self.project_id,
+            self.network,
+            json.dumps(data, encoding='latin1')))
+        connection.commit()
+
+
     def write_file(self, filename):
         cursor = connection.cursor()
         excel_dataframe = pd.read_excel(filename, keep_default_na=False)
