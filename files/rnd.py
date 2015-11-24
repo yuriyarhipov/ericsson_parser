@@ -216,10 +216,8 @@ class Rnd:
                     for sector in neighbors[site]:
                         if not self.exist_rnd_neighbors(utrancell, sector, filename):
                             result.append({'utrancell_source': utrancell, 'utrancell_target': sector})
-
                         if not self.exist_rnd_neighbors(sector, utrancell, filename):
                             result.append({'utrancell_source': sector, 'utrancell_target': utrancell})
-
                     neighbors[site].append(utrancell)
                 else:
                     neighbors[site] = [utrancell, ]

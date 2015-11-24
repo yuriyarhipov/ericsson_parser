@@ -40,12 +40,6 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
 
 rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal',
     function ($scope, $http, leafletData, $location, $cookies, $uibModal) {
-        $scope.controls = {
-            fullscreen: {
-                position: 'topleft'
-            }
-        };
-
         var onAddFilter = function(network, param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
             var values = {};
@@ -141,6 +135,25 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 this.sectors = [];
             };
 
+            legend.set_pd = function(){
+
+                L.DomUtil.removeClass(this._div, 'hide');
+                var colors = [
+                    ['blue', '<=1'],
+                    ['yellow', '>1 and <=10'],
+                    ['red', '>10 and <=20'],
+                    ['green', '>20 and <=30'],
+                    ['purple', '>30'],
+                ]
+                var table = L.DomUtil.create('table', 'col-md-12', this._div);
+                for (i in colors){
+                    var row_value = L.DomUtil.create('tr', 'col-md-12', table);
+                    var cell_btn = L.DomUtil.create('td', 'col-md-12', row_value);
+                    cell_btn.innerHTML ='<i style="background:' + colors[i][0] + '"></i> ' + colors[i][1] + '<br>';
+                }
+
+            };
+
             legend.set_legend = function(values){
                 L.DomUtil.removeClass(this._div, 'hide');
                 for (val in values){
@@ -231,7 +244,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             };
 
             latlng.set_latlng = function (lat, lng) {
-                this._div.innerHTML = lat + '  ' + lng;
+                this._div.innerHTML = 'Lat: ' + lat + '  Lng: ' + lng;
             };
 
             return latlng
@@ -366,7 +379,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
 
                     layer._map._legend.reset_legend()
-                    layer._map._legend.set_legend({});
+                    layer._map._legend.set_pd();
 
                     var pd_data = data[0];
                     var distances = data[2];
@@ -383,9 +396,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
 
                         var value = parseFloat(pd_data[id][1]);
-                        var color = 'white';
+                        var color = 'blue';
+                        var fill_opacity = 0.5;
                         if (value <=1) {
-                            color = 'white';
+                            color = 'blue';
+                            fill_opacity = 0;
                         } else if ((value > 1) && (value <= 10)){
                             color = 'yellow';
                         } else if ((value > 10) && (value <= 20)){
@@ -398,12 +413,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
                         var new_pd = L.circle(layer._latlng, size, {
                             color: color,
-                            fillOpacity: 0.5,
+                            fillOpacity: fill_opacity,
                             weight: 2,
                             opacity: 0.7,
                             azimuth: layer.options.sector.Azimuth
                         })
-                        .bindPopup('DC Vector: '+ pd_data[id][0] +', value:' + value , {'offset': L.Point(20, 200)})
+                        .bindPopup('DC Vector: '+ pd_data[id][0] +'('+distances[dc_vector]+'km), value:' + value , {'offset': L.Point(20, 200)})
                         .setDirection(parseFloat(layer.options.sector.Azimuth)-90, 60, s_radius)
                         .on('click', function(e){
                             if (layer._map._current_pd){
