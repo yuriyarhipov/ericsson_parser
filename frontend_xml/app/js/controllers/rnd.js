@@ -15,6 +15,10 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
             exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
             onRegisterApi: function(gridApi){
                 $scope.gridApi = gridApi;
+                gridApi.edit.on.afterCellEdit($scope,function(rowEntity, colDef, newValue, oldValue){
+                    $scope.msg.lastCellEdited = 'edited row id:' + rowEntity.id + ' Column:' + colDef.name + ' newValue:' + newValue + ' oldValue:' + oldValue ;
+                    $scope.$apply();
+                });
             }
         }
         $http.get('/data/rnd/' + $scope.rnd_network + '/').success(function(data){
@@ -149,11 +153,18 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
                 L.DomUtil.removeClass(this._div, 'hide');
                 var colors = [
-                    ['blue', '<=1'],
-                    ['yellow', '>1 and <=10'],
-                    ['red', '>10 and <=20'],
-                    ['green', '>20 and <=30'],
-                    ['purple', '>30'],
+                    ['#ff0000', '90% to 100%'],
+                    ['#ff6d37', '80% to 90%'],
+                    ['#ffb59a', '70% to 80%'],
+                    ['#ffff00', '60% to 70%'],
+                    ['#ffba00', '50% to 60%'],
+                    ['#7ace00', '40% to 50%'],
+                    ['#00ff00', '30% to 40%'],
+                    ['#00ffff', '20% to 30%'],
+                    ['#0000ff', '10% to 20%'],
+                    ['#c07eff', ' 1% to 10%'],
+                    ['#000000', ' 0% to  1%'],
+
                 ]
                 var table = L.DomUtil.create('table', 'col-md-12', this._div);
                 for (i in colors){
@@ -402,27 +413,38 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             size = size * 1000;
                         }
 
-
-
                         var value = parseFloat(pd_data[id][1]);
                         var color = 'blue';
                         var fill_opacity = 0.5;
-                        if (value <=1) {
-                            color = 'blue';
+                        if (value == 0){
                             fill_opacity = 0;
+                        }else if ((value <=1) && (value > 0)){
+                            color = '#000000';
                         } else if ((value > 1) && (value <= 10)){
-                            color = 'yellow';
+                            color = '#c07eff';
                         } else if ((value > 10) && (value <= 20)){
-                            color = 'red';
+                            color = '#0000ff';
                         } else if ((value > 20) && (value <= 30)){
-                            color = 'green';
-                        } else if (value > 30) {
-                            color = 'purple';
+                            color = '#00ffff';
+                        } else if ((value > 30) && (value <= 40)){
+                            color = '#00ff00';
+                        } else if ((value > 40) && (value <= 50)){
+                            color = '#7ace00';
+                        } else if ((value > 50) && (value <= 60)){
+                            color = '#ffba00';
+                        } else if ((value > 60) && (value <= 70)){
+                            color = '#ffff00';
+                        } else if ((value > 70) && (value <= 80)){
+                            color = '#ffb59a';
+                        } else if ((value > 80) && (value <= 90)){
+                            color = '#ff6d37';
+                        } else if ((value > 90) && (value <= 100)){
+                            color = '#ff0000';
                         }
-
                         var new_pd = L.circle(layer._latlng, size, {
                             color: color,
                             fillOpacity: fill_opacity,
+                            defaultOpacity: fill_opacity,
                             weight: 2,
                             opacity: 0.7,
                             azimuth: layer.options.sector.Azimuth
@@ -434,7 +456,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                                 layer._map._current_pd.setStyle({
                                     weight: 2,
                                     opacity: 0.7,
-                                    fillOpacity: 0.5
+                                    fillOpacity: layer._map._current_pd.options.defaultOpacity
                                 });
                             }
                             layer._map._current_pd = this;
