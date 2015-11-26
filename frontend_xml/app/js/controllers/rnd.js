@@ -101,7 +101,6 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
                 } else if ($scope.rnd_network == 'gsm'){
                     var del_row = {'del_bsc': selected_rows[i].BSC, 'del_cellname': selected_rows[i].Cell_Name};
                 }
-
                 $http.post('/data/rnd/table/' + $scope.rnd_network + '/', $.param(del_row));
                 var id = $scope.rnd_table_config.data.indexOf(selected_rows[i]);
                 $scope.rnd_table_config.data.splice(id, 1);

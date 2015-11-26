@@ -618,4 +618,10 @@ distanceControllers.controller('pscDistanceCtrl', ['$scope', '$http',
         $http.get('/data/distance/psc_distance').success(function(data){
             $scope.psc_table_config.data = data;
         });
+
+        $scope.onPsc = function(){
+            $http.get('/data/distance/psc_distance').success(function(data){
+                $scope.psc_table_config.data = data;
+            });
+        }
 }]);
