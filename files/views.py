@@ -271,7 +271,6 @@ def rnd_table(request, network=None):
     data = []
     if request.method == 'POST':
         Rnd(project.id, network).save_row(request.POST)
-
     return Response(data)
 
 

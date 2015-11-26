@@ -31,7 +31,7 @@
 </div>
 <div class="btn-group" role="group">
     <button type="button" class="btn btn-default" ng-click="show_edit_panel = !show_edit_panel">New</button>
-    <button type="button" class="btn btn-danger">Delete</button>
+    <button type="button" class="btn btn-danger" ng-click="onDelete()">Delete</button>
 </div>
 <div class="col-md-12" ng-show="show_edit_panel">
     <form class="form-inline col-md-12">
@@ -46,7 +46,7 @@
     </form>
     <button class="btn btn-success" ng-click="onSaveRnd(new_val)">Save</button>
 </div>
-<div ui-grid="rnd_table_config" class="RndGrid col-md-12" ui-grid-selection class ui-grid-resize-columns ui-grid-move-columns ui-grid-edit ui-grid-row-edit ui-grid-cellNav></div>
+<div ui-grid="rnd_table_config" class="RndGrid col-md-12" ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-edit ui-grid-row-edit></div>
 
 
 

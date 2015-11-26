@@ -9,15 +9,59 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
         $scope.show_download_panel = false;
         $scope.rnd_table_config = {
             enableGridMenu: true,
-            enableSelectAll: true,
+            enableRowHeaderSelection: false,
+            enableSelectAll: false,
             exporterMenuPdf: false,
+            multiSelect: false,
             exporterCsvFilename: 'export.csv',
             exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
             onRegisterApi: function(gridApi){
                 $scope.gridApi = gridApi;
                 gridApi.edit.on.afterCellEdit($scope,function(rowEntity, colDef, newValue, oldValue){
-                    $scope.msg.lastCellEdited = 'edited row id:' + rowEntity.id + ' Column:' + colDef.name + ' newValue:' + newValue + ' oldValue:' + oldValue ;
-                    $scope.$apply();
+                    if ($scope.rnd_network == 'wcdma'){
+                        var new_data = {
+                            'current_rnc': rowEntity.RNC,
+                            'current_utrancell': rowEntity.Utrancell,
+                            'column': colDef.name,
+                            'value': newValue,
+                        };
+
+                        if (colDef.name == 'Utrancell'){
+                            new_data.current_utrancell = oldValue;
+                        } else if (colDef.name == 'RNC'){
+                            new_data.current_rnc = oldValue;
+                        }
+                        $http.post('/data/rnd/table/' + $scope.rnd_network + '/', $.param(new_data)).success(function(){});
+                    } else if ($scope.rnd_network == 'lte'){
+                        var new_data = {
+                            'current_site': rowEntity.SITE,
+                            'current_utrancell': rowEntity.Utrancell,
+                            'column': colDef.name,
+                            'value': newValue,
+                        };
+
+                        if (colDef.name == 'Utrancell'){
+                            new_data.current_utrancell = oldValue;
+                        } else if (colDef.name == 'SITE'){
+                            new_data.current_site = oldValue;
+                        }
+                        $http.post('/data/rnd/table/' + $scope.rnd_network + '/', $.param(new_data)).success(function(){});
+
+                    } else if ($scope.rnd_network == 'gsm'){
+                        var new_data = {
+                            'current_bsc': rowEntity.BSC,
+                            'current_cellname': rowEntity.Cell_Name,
+                            'column': colDef.name,
+                            'value': newValue,
+                        };
+
+                        if (colDef.name == 'Cell_Name'){
+                            new_data.current_cellname = oldValue;
+                        } else if (colDef.name == 'BSC'){
+                            new_data.current_bsc = oldValue;
+                        }
+                        $http.post('/data/rnd/table/' + $scope.rnd_network + '/', $.param(new_data)).success(function(){});
+                    }
                 });
             }
         }
@@ -27,10 +71,7 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
             for (id in data.columns){
                 $scope.rnd_table_config.columnDefs.push({field: data.columns[id], });
             }
-
             $scope.rnd_table_config.data = data.data;
-
-
         });
 
         $scope.complete = function(){
@@ -49,6 +90,22 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
                 $scope.rnd_table_config.data.push(data);
                 $scope.show_edit_panel = false;
             });
+        }
+        $scope.onDelete = function(){
+            var selected_rows = $scope.gridApi.selection.getSelectedRows();
+            for (var i in selected_rows){
+                if ($scope.rnd_network == 'wcdma'){
+                    var del_row = {'del_rnc': selected_rows[i].RNC, 'del_utrancell': selected_rows[i].Utrancell};
+                } else if ($scope.rnd_network == 'lte'){
+                    var del_row = {'del_site': selected_rows[i].SITE, 'del_utrancell': selected_rows[i].Utrancell};
+                } else if ($scope.rnd_network == 'gsm'){
+                    var del_row = {'del_bsc': selected_rows[i].BSC, 'del_cellname': selected_rows[i].Cell_Name};
+                }
+
+                $http.post('/data/rnd/table/' + $scope.rnd_network + '/', $.param(del_row));
+                var id = $scope.rnd_table_config.data.indexOf(selected_rows[i]);
+                $scope.rnd_table_config.data.splice(id, 1);
+            }
         }
   }]);
 

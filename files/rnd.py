@@ -65,7 +65,47 @@ class Rnd:
     def save_row(self, row):
         cursor = connection.cursor()
         data = self.get_data()
-        data['data'].append(row)
+        if self.network == 'wcdma':
+            if 'current_rnc' in row:
+                i = 0
+                for i in range(0, len(data['data'])):
+                    if ((data['data'][i].get('RNC', '') == row.get('current_rnc')) and (data['data'][i].get('Utrancell', '') == row.get('current_utrancell'))):
+                        data['data'][i][row.get('column')] = row.get('value')
+                        break
+            elif 'del_rnc' in row:
+                i = 0
+                for i in range(0, len(data['data'])):
+                    if ((data['data'][i].get('RNC', '') == row.get('del_rnc')) and (data['data'][i].get('Utrancell', '') == row.get('del_utrancell'))):
+                        data['data'].pop(i)
+                        break
+        elif self.network == 'lte':
+            if 'current_site' in row:
+                i = 0
+                for i in range(0, len(data['data'])):
+                    if ((data['data'][i].get('SITE', '') == row.get('current_site')) and (data['data'][i].get('Utrancell', '') == row.get('current_utrancell'))):
+                        data['data'][i][row.get('column')] = row.get('value')
+                        break
+            elif 'del_site' in row:
+                i = 0
+                for i in range(0, len(data['data'])):
+                    if ((data['data'][i].get('SITE', '') == row.get('del_site')) and (data['data'][i].get('Utrancell', '') == row.get('del_utrancell'))):
+                        data['data'].pop(i)
+                        break
+        elif self.network == 'gsm':
+            if 'current_bsc' in row:
+                i = 0
+                for i in range(0, len(data['data'])):
+                    if ((data['data'][i].get('BSC', '') == row.get('current_bsc')) and (data['data'][i].get('Cell_Name', '') == row.get('current_cellname'))):
+                        data['data'][i][row.get('column')] = row.get('value')
+                        break
+            elif 'del_bsc' in row:
+                i = 0
+                for i in range(0, len(data['data'])):
+                    if ((data['data'][i].get('BSC', '') == row.get('del_bsc')) and (data['data'][i].get('Cell_Name', '') == row.get('del_cellname'))):
+                        data['data'].pop(i)
+                        break
+        else:
+            data['data'].append(row)
         cursor.execute('DELETE FROM rnd WHERE (project_id=%s) AND (network=%s)''', (
             self.project_id,
             self.network))
