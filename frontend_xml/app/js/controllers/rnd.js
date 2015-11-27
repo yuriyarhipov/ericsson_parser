@@ -468,12 +468,15 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             var size = distances[dc_vector] + distances[dc_vector] - distances[dc_vector-1];
                             size = size * 1000;
                         }
-
                         var value = parseFloat(pd_data[id][1]);
                         var color = 'blue';
                         var fill_opacity = 0.5;
+                        var opacity = 0.7;
+                        var weight = 2;
                         if (value == 0){
                             fill_opacity = 0;
+                            weight = 0;
+                            opacity = 0;
                         }else if ((value <=1) && (value > 0)){
                             color = '#000000';
                         } else if ((value > 1) && (value <= 10)){
@@ -501,27 +504,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             color: color,
                             fillOpacity: fill_opacity,
                             defaultOpacity: fill_opacity,
-                            weight: 2,
-                            opacity: 0.7,
+                            weight: weight,
+                            opacity: opacity,
                             azimuth: layer.options.sector.Azimuth
                         })
                         .bindPopup('DC Vector: '+ pd_data[id][0] +'('+distances[dc_vector]+'km), value:' + value , {'offset': L.Point(20, 200)})
-                        .setDirection(parseFloat(layer.options.sector.Azimuth)-90, 60, s_radius)
-                        .on('click', function(e){
-                            if (layer._map._current_pd){
-                                layer._map._current_pd.setStyle({
-                                    weight: 2,
-                                    opacity: 0.7,
-                                    fillOpacity: layer._map._current_pd.options.defaultOpacity
-                                });
-                            }
-                            layer._map._current_pd = this;
-                            layer._map._current_pd.setStyle({
-                                weight: 4,
-                                opacity: 1,
-                                fillOpacity: 0.8
-                            });
-                        });
+                        .setDirection(parseFloat(layer.options.sector.Azimuth)-90, 60, s_radius);
                         new_pd.addTo(layer._map);
                         layer._map._pd.push(new_pd);
                         s_radius = new_pd._radius;
