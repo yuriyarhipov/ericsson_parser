@@ -90,6 +90,9 @@ L.Control.ToolBar = L.Control.extend({
         map.zoomButton = this.zoomButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
         this.zoomButton.innerHTML = '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
 
+        map.fullButton = this.fullButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
+        this.fullButton.innerHTML = '<span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>';
+
         var stop = L.DomEvent.stopPropagation;
         L.DomEvent
             .addListener(this.controlDiv, 'mousedown', L.DomEvent.stopPropagation)
@@ -107,7 +110,6 @@ L.Control.ToolBar = L.Control.extend({
                             } else {
                                 layer.setStyle({'color': 'black'});
                             }
-
                         } else {
                             layer.setStyle({'color': layer.options.default_color});
                         }
@@ -122,6 +124,9 @@ L.Control.ToolBar = L.Control.extend({
                         layer.setStyle({'color': layer.options.default_color});
                     }
                 });
+            })
+            .addListener(this.fullButton, 'click', function () {
+                map.toggleFullscreen();
             })
             .addListener(this.flushNeighButton, 'click', function () {
                 map.flush_neighbors();
