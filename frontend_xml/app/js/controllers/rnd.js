@@ -219,7 +219,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     ['#00ffff', '20% to 30%'],
                     ['#0000ff', '10% to 20%'],
                     ['#c07eff', ' 1% to 10%'],
-                    ['#000000', ' 0% to  1%'],
+                    ['#ffffff', ' 0% to  1%'],
 
                 ]
                 var table = L.DomUtil.create('table', 'col-md-12', this._div);
@@ -478,7 +478,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                             weight = 0;
                             opacity = 0;
                         }else if ((value <=1) && (value > 0)){
-                            color = '#000000';
+                            color = '#ffffff';
                         } else if ((value > 1) && (value <= 10)){
                             color = '#c07eff';
                         } else if ((value > 10) && (value <= 20)){
