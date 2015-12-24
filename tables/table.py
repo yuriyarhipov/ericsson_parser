@@ -12,6 +12,7 @@ from django.conf import settings
 
 from files.hw import HardWare
 from files.models import Files, CNATemplate
+from files.nokia import Nokia
 
 
 def get_mo(mo):
@@ -38,7 +39,6 @@ class Table(object):
         self.filename = filename
         self.sql_filename = ["'%s'" % f.lower() for f in self.filename.split(',')]
         self.columns = self.get_columns()
-        print self.table_name
 
     def sort_columns(self, columns):
         result = []
@@ -83,6 +83,36 @@ class Table(object):
             return ['Source', 'Site_Source', 'Target', 'Site_Target', 'NEIGHBOR_MUTUAL_RELATION', 'SAME_SITE']
         elif self.table_name == 'BrightcommsRNDDate':
             columns = BRI(self.filename).columns
+        elif self.table_name == 'nokia':
+            columns = [
+                'ipAddress',
+                'maxCallCapability',
+                'maxThroughput',
+                'name',
+                'AlarmSetforWCELBLINIT',
+                'CBCSourceIPAddress',
+                'CSAttachDetachAllowed',
+                'ConnectionRetryCounter',
+                'DLBLERConfInterval',
+                'ExtendedULDLactivationTmr',
+                'LCSfunctionality',
+                'MACLogChPriSRB1',
+                'MACLogChPriSRB2',
+                'MACLogChPriSRB3',
+                'N302',
+                'N304',
+                'N308',
+                'OMSBackupIpAddress',
+                'OMSIpAddress',
+                'PageRep1stInterv',
+                'PageRep2ndInterv',
+                'RANAPprocInitWait',
+                'RNCChangeOrigin',
+                'RNCIPAddress',
+                'RNCName',
+                'RTservicesForPS',
+                'RestrictionInterval',
+                'RncClientTLSMode']
             return columns
 
 
@@ -94,6 +124,8 @@ class Table(object):
     def get_data(self):
         if self.table_name == '3girat':
             return ThreeGIRAT(self.filename).data
+        elif self.table_name == 'nokia':
+            return Nokia(self.filename).data
 
         elif self.table_name == 'BrightcommsRNDDate':
             return BRI(self.filename).data
