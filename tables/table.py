@@ -38,6 +38,7 @@ class Table(object):
         self.filename = filename
         self.sql_filename = ["'%s'" % f.lower() for f in self.filename.split(',')]
         self.columns = self.get_columns()
+        print self.table_name
 
     def sort_columns(self, columns):
         result = []

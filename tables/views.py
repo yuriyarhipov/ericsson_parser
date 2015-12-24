@@ -99,11 +99,10 @@ def explore(request, filename):
         if tree_file.network == 'GSM':
             if tree_file.file_type == 'GSM BSS CNA  OSS FILE':
                 tables = [{'table': cna_tables.table_name, 'filename': filename} for cna_tables in CNATemplate.objects.all()]
-
-
         else:
             tables = [{'table': table, 'filename': filename} for table in request.wcdma.tables.split(',')]
-
+    elif filename == 'nokia':
+        tables = []
     tables.sort()
     return HttpResponse(json.dumps(tables), content_type='application/json')
 
@@ -120,6 +119,7 @@ def by_technology(request, network):
     elif network == 'WCDMA':
         filename = request.wcdma.filename
         tables = request.wcdma.tables.split(',')
+
         tables.sort()
         data = [
             {'label': '3G3GNeighbors', 'table': 'new3g', 'type': 'Additional table', 'filename': filename},
@@ -387,5 +387,4 @@ def logical_sectors(request, logical_sector=None, sector=None):
 def psc_distance(request):
     project = request.project
     filename = request.wcdma.filename
-    print filename
     return Response(Distance().get_psc_distance(project.id, filename))

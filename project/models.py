@@ -15,7 +15,7 @@ class Project(models.Model):
 
     def get_vendor_tree(self, network, vendor):
         data = []
-        if network == 'WCDMA':
+        if (network == 'WCDMA') and (vendor == 'Ericsson'):
             wcdma_measurements = self.get_tree(network, 'WNCS OSS FILE', vendor)
             if wcdma_measurements:
                 wcdma_measurements.extend(self.get_tree(network, 'WMRR OSS FILE', vendor))
@@ -45,6 +45,14 @@ class Project(models.Model):
                 'label': 'Performance',
                 'children': self.get_tree(network, 'HISTOGRAM FORMAT COUNTER', vendor)},
             ])
+        elif (network == 'WCDMA') and (vendor == 'Nokia'):
+            data.extend([
+                {'id': 'RNC',
+                'label': 'Radio Network Configuration',
+                'link': '/explore/nokia/'
+                },
+            ])
+
         elif network == 'GSM':
             gsm_measurements = self.get_tree(network, 'GSM NCS OSS FILE', vendor)
             if gsm_measurements:

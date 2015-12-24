@@ -33,6 +33,7 @@ def worker(filename, project, description, vendor, file_type, network):
     from files.hw import HardWare
     from files.distance import Distance
     from files.models import Files
+    from files.nokia import Nokia
 
     xml_types = [
         'WCDMA RADIO OSS BULK CM XML FILE',
@@ -66,6 +67,10 @@ def worker(filename, project, description, vendor, file_type, network):
         'HISTOGRAM FILE COUNTER - Access Distance',
     ]
 
+    nokia_xml = [
+        'Configuration Management XML File',
+    ]
+
     work_file = XmlPack(filename).get_files()[0]
     task = current_task
     task.update_state(state="PROGRESS", meta={"current": 1})
@@ -91,6 +96,18 @@ def worker(filename, project, description, vendor, file_type, network):
                 file_type,
                 network,
                 task)
+
+        if file_type in nokia_xml:
+            Files.objects.filter(
+                filename=basename(work_file),
+                project=project).delete()
+            Nokia(work_file).parse_data(
+                project,
+                description,
+                vendor,
+                file_type,
+                network,
+                current_task)
 
     if network == 'GSM':
         if file_type in cna_types:

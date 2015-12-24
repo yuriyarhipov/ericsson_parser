@@ -17,6 +17,7 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
     function ($scope, $http, $location) {
         $scope.Network = [ 'WCDMA', 'GSM', 'LTE'];
         $scope.TypeFile = [
+                    'Configuration Management XML File',
                     'WCDMA RADIO OSS BULK CM XML FILE',
                     'WCDMA TRANSPORT OSS BULK CM XML FILE',
                     'WNCS OSS FILE',
@@ -33,6 +34,7 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
         $scope.onChangeNetwork = function(){
             if ($scope.CurrentNetwork == 'WCDMA'){
                 $scope.TypeFile = [
+                    'Configuration Management XML File',
                     'WCDMA RADIO OSS BULK CM XML FILE',
                     'WCDMA TRANSPORT OSS BULK CM XML FILE',
                     'WNCS OSS FILE',
