@@ -4,6 +4,7 @@ from celery import current_task
 from django.conf import settings
 from celery.task.control import revoke
 from os.path import basename
+from ericsson.wcdma import EricssonWcdma
 
 
 @celery.task
@@ -75,82 +76,15 @@ def worker(filename, project, description, vendor, file_type, network):
     task = current_task
     task.update_state(state="PROGRESS", meta={"current": 1})
 
-    if network in ['WCDMA', 'LTE']:
-        if file_type in distance_files:
-            Distance().write_file(
-                project,
-                description,
-                vendor,
-                work_file,
-                task)
-
+    if (vendor == 'Ericsson') and (network == 'WCDMA'):
         if file_type in xml_types:
-            Files.objects.filter(
-                filename=basename(work_file),
-                project=project).delete()
-            Xml().save_xml(
-                work_file,
-                project,
-                description,
-                vendor,
-                file_type,
-                network,
-                task)
+            ew = EricssonWcdma()
+            ew.from_xml(work_file, task)
+            ew.save_to_database(project.id, vendor, network, file_type, task)
 
-        if file_type in nokia_xml:
-            Files.objects.filter(
-                filename=basename(work_file),
-                project=project).delete()
-            Nokia(work_file).parse_data(
-                project,
-                description,
-                vendor,
-                file_type,
-                network,
-                current_task)
-
-    if network == 'GSM':
-        if file_type in cna_types:
-            CNA().save_cna(
-                work_file,
-                project,
-                description,
-                vendor,
-                file_type,
-                network,
-                task)
-
-    if file_type in measurements_types:
-        Measurements().save_file(
-            work_file,
-            project,
-            description,
-            vendor,
-            file_type,
-            network,
-            current_task)
-
-    if file_type in license_types:
-        lic = License(work_file)
-        lic.parse_data(
-            project,
-            description,
-            vendor,
-            file_type,
-            network,
-            current_task)
-
-    if file_type in hardware_types:
-        hw = HardWare(work_file)
-        hw.parse_data(
-            project,
-            description,
-            vendor,
-            file_type,
-            network,
-            current_task)
-
-    task.update_state(state='PROGRESS', meta={"current": 100, })
+    task.update_state(state='PROGRESS', meta={
+        'current': 100,
+        'message': 'processing'})
     revoke(worker.request.id, terminate=True)
 
 

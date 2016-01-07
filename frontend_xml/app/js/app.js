@@ -209,7 +209,8 @@ XmlApp.config(['$routeProvider',
                 controller: 'authCtrl'
             }).
             otherwise({
-                redirectTo: '/'
+                templateUrl: 'templates/login.html',
+                controller: 'authCtrl'
             });
 
     }]);

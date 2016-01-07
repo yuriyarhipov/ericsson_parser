@@ -28,6 +28,7 @@ class Nokia(object):
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS Nokia (
               filename TEXT,
+              table_name TEXT,
               row JSON)''')
 
     def get_data(self, elem):
@@ -45,15 +46,21 @@ class Nokia(object):
             self.path,
             events=('end',),
             tag='{raml20.xsd}managedObject')
+        tables = set()
 
         for event, elem in context:
-            cursor.execute('INSERT INTO Nokia VALUES (%s, %s)', (self.filename, json.dumps(self.get_data(elem))))
+            table_name = elem.get('class')
+            tables.add(table_name)
+            cursor.execute('INSERT INTO Nokia VALUES (%s, %s, %s)', (
+                self.filename,
+                table_name,
+                json.dumps(self.get_data(elem))))
         self.conn.commit()
         Files.objects.create(
             filename=basename(self.filename),
             file_type=file_type,
             project=project,
-            tables='nokia',
+            tables=','.join(tables),
             description=description,
             vendor=vendor,
             network=network)

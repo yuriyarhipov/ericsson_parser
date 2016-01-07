@@ -306,6 +306,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     .on(this._div, 'dblclick', stop)
                     .on(this._div, 'mousewheel', stop)
                     .on(this._div, 'MozMousePixelScroll', stop)
+                var win =  L.control.window(map,{position: 'left',});
+                win.content(this._div.outerHTML)
+                win.show();
                 return this._div;
             };
 
@@ -328,6 +331,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
         };
 
         var create_sector = function(network, lat, lon, sector, color, size, key, zoom_k){
+            var stop = L.DomEvent.stopPropagation;
             var new_sector = L.circle([lat, lon], size, {
                             color: color,
                             default_color: color,
@@ -341,6 +345,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     })
             .bindPopup(key, {'offset': L.Point(20, 200)})
             .setDirection(parseFloat(sector.Azimuth)-90, 60)
+
+
             .on('click', function(e){
                 var self = this;
                 layer = e.target
@@ -414,8 +420,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     } else {
                         layer.show_neighbours();
                     }
-
                 }
+                L.DomEvent.stopPropagation(e);
             })
             new_sector.show_neighbours = function(){
                 var layer = this;
@@ -686,6 +692,18 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             map.on('mousemove', function(e){
                 var pos = e.latlng;
                 map._latlng.set_latlng(pos.lat, pos.lng);
+            });
+
+            map.on('click', function(e){
+                if (layer._map._current_sector){
+                    layer._map._current_sector.setStyle({
+                        weight: 2,
+                        opacity: 0.7
+                    });
+                }
+                if (layer._map._info_control){
+                    layer._map.removeControl(layer._map._info_control);
+                }
             });
 
 

@@ -87,7 +87,6 @@ xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activePro
 xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location', 'activeProjectService',
     function ($scope, $http, $location, activeProjectService) {
         $scope.project_data = {};
-
         $scope.processForm = function(){
             $http.post('/data/save_project/', $.param($scope.project_data)).success(function(){
                 activeProjectService.setProject($scope.project_data['project_name']);
