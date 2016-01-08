@@ -204,32 +204,23 @@ filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams'
         $scope.dynamic = 1;
         var refer = false;
         var getStatus = function(){
-            if (refer) {
-                return
-            }
             $http.get('/data/files/status/' + id + '/').success(function(data) {
-                if (('"SUCCESS"' == data) && (current > 1)){
-                    current = 0;
-                    refer = true;
-                    Flash.create('success', 'Import Completed');
-                    activeProjectService.setProject(project);
-                    $location.path('/maps');
-                }
-                current = data.current;
-                if (current > 99){
-                    current = 0;
-                    refer = true;
-                    Flash.create('success', 'Import Completed');
-                    activeProjectService.broadcastItem($cookies.get('active_project'))
-                    $location.path('/maps');
-                }
-                if (current){
-                    $scope.dynamic = current;
-                }
+                $scope.value = data.value;
+                $scope.message = data.message;
+                //if (current > 99){
+                //    current = 0;
+                //    refer = true;
+                //    Flash.create('success', 'Import Completed');
+                //    activeProjectService.broadcastItem($cookies.get('active_project'))
+                //    $location.path('/maps');
+                //}
+                //if (current){
+                //    $scope.dynamic = current;
+                //}
             });
-            if (!refer) {
-                $timeout(getStatus, 5000);
-            }
+
+            $timeout(getStatus, 5000);
+
         };
         $timeout(getStatus, 0);
   }]);

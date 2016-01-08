@@ -5,6 +5,7 @@ from django.conf import settings
 from celery.task.control import revoke
 from os.path import basename
 from ericsson.wcdma import EricssonWcdma
+from archive import XmlPack
 
 
 @celery.task
@@ -18,6 +19,27 @@ def create_parameters_table(f, network, template_name):
         Template().create_template_table(template_name)
     elif network == 'LTE':
         Template().create_template_table(template_name)
+
+
+def upload_file(project_id, description, vendor, file_type, network, filename):
+    xml_types = [
+        'WCDMA RADIO OSS BULK CM XML FILE',
+        'WCDMA TRANSPORT OSS BULK CM XML FILE',
+        'LTE RADIO eNodeB BULK CM XML FILE',
+        'LTE TRANSPORT eNodeB BULK CM XML FILE'
+    ]
+
+    work_file = XmlPack(filename).get_files()[0]
+    if (vendor == 'Ericsson') and (network == 'WCDMA'):
+        if file_type in xml_types:
+            ew = EricssonWcdma()
+            ew.from_xml(work_file, basename(filename))
+            ew.save_to_database(
+                project_id,
+                vendor,
+                network,
+                file_type,
+                basename(filename))
 
 
 @celery.task

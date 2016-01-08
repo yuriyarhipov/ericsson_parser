@@ -19,7 +19,11 @@ from files.distance import Distance
 from rnd import Rnd
 import tasks
 from os import makedirs
-from os.path import exists
+from os.path import exists, basename
+from multiprocessing import Process
+
+import redis
+from pymongo import MongoClient
 
 
 def handle_uploaded_file(files):
@@ -38,25 +42,13 @@ def handle_uploaded_file(files):
 
 
 def status(request, id):
-    if FileTasks.objects.filter(task_id=id):
-        ft = FileTasks.objects.get(task_id=id)
-        tasks = ft.tasks.split(',')
-        active_tasks = []
-        for task_id in tasks:
-            if not AsyncResult(task_id).ready():
-                active_tasks.append(task_id)
-        current = ft.max_value - len(active_tasks)
-        value = float(current) / float(ft.max_value) * 100
-        return HttpResponse(json.dumps({'current': int(value), }), mimetype='application/json')
-
-    job = AsyncResult(id)
-    data = job.result or job.state
-
-    try:
-        json_data = json.dumps(data)
-    except:
-        data = {'current': 100, }
-        json_data = json.dumps(data)
+    r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
+    data = {'value': 0, 'message': 'waiting'}
+    status = r.get(id)
+    if status:
+        value, message = status.split(',')
+        data = {'value': value, 'message': message}
+    json_data = json.dumps(data)
 
     return HttpResponse(json_data, mimetype='application/json')
 
@@ -68,51 +60,41 @@ def save_files(request):
     file_type = request.POST.get('file_type')
     network = request.POST.get('network')
     filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
-    job = tasks.worker.delay(filename, project, description, vendor, file_type, network)
-    data = dict(id=job.id)
+    p = Process(target=tasks.upload_file, args=(
+        project.id,
+        description,
+        vendor,
+        file_type,
+        network,
+        filename))
+    p.start()
+    data = dict(id=basename(filename))
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def files(request):
     project = request.project
+
+    client = MongoClient('localhost', 27017)
+    db = client.myxmart
+    tables = db.tables
+
+    filenames = tables.find({'project_id': project.id}).distinct('filename')
     files = []
-
-    active_files = []
-
-    if request.lte:
-        active_files.append(request.lte.filename)
-    if request.cna:
-        active_files.append(request.cna.filename)
-    if request.wcdma:
-        active_files.append(request.wcdma.filename)
-
-    for f in Files.objects.filter(project=project):
-        status = 'uploaded'
+    for f in filenames:
+        file_row = tables.find_one({'project_id': project.id, 'filename': f})
+        print file_row
         files.append({
-            'id': f.id,
-            'filename': f.filename,
-            'date': f.date.strftime('%m.%d.%Y'),
-            'file_type': f.file_type,
-            'network': f.network,
-            'vendor': f.vendor,
-            'description': f.description,
-            'status': status
+            'filename': f,
+            'file_type': file_row.get('file_type'),
+            'network': file_row.get('network'),
+            'vendor': file_row.get('vendor'),
+            'description': file_row.get('description'),
         })
 
-    uploaded_files = []
-    for f in UploadedFiles.objects.filter(project=project):
-        job = AsyncResult(f.description)
-        data = job.result or job.state
-        status = 0
-        if 'current' in data:
-            status = data.get('current')
-        uploaded_files.append({
-            'filename': f.filename,
-            'date': f.date.strftime('%m.%d.%Y'),
-            'file_type': f.file_type,
-            'status': 'processing',
-        })
-    return HttpResponse(json.dumps({'files': files, 'uploaded_files': uploaded_files}), content_type='application/json')
+    return HttpResponse(
+        json.dumps({'files': files, }),
+        content_type='application/json')
 
 
 def measurements(request, file_type):
