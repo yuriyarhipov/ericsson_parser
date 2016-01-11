@@ -1,0 +1,6 @@
+<div class="col-md-6" ng-hide="is_ready">
+    <uib-progressbar value="value" max="100">{{value}}%, {{ message }}</uib-progressbar>
+</div>
+<div class="col-md-6" ng-show="is_ready">
+    <a ng-href="{{file_url}}">{{ file_url}}</a>
+</div>

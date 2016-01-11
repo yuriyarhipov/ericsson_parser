@@ -2,10 +2,14 @@ from lxml import etree
 import redis
 from pymongo import MongoClient
 from os.path import basename
+from django.conf import settings
+import psycopg2
+import datetime
+from files.data_file import DataFile
 
 
-class EricssonWcdma(object):
-    raw_data = []
+class EricssonWcdma(DataFile):
+    data = []
     filename = ''
 
     def get_me_context_path(self, node):
@@ -35,7 +39,7 @@ class EricssonWcdma(object):
             elif (tag != 'vsDataType') and (tag != 'vsDataFormatVersion'):
                 print('smth else')
 
-        self.raw_data.append(data)
+        self.data.append(data)
 
     def parse_managed_element(self, node, path, parent_data=dict()):
         node_tag = etree.QName(node).localname
@@ -66,6 +70,8 @@ class EricssonWcdma(object):
                 self.parse_data_container(child, path[:])
             elif tag == 'ManagedElement':
                 self.parse_managed_element(child, path[:])
+            elif tag == 'attributes':
+                pass  # TODO attributes????
             else:
                 raise Exception('unvalid xml node')
 
@@ -76,7 +82,8 @@ class EricssonWcdma(object):
             events=('end',),
             tag='{genericNrm.xsd}MeContext')
         count = 0
-        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        r = redis.StrictRedis(host=settings.REDIS, port=6379, db=0)
+        r.set(task_id, '30, estimating...')
         for event, me_context in me_contexts:
             count += 1
 
@@ -87,28 +94,7 @@ class EricssonWcdma(object):
         i = 0
         for event, me_context in me_contexts:
             i += 1
-            r.set(task_id, '%s,processing' % int(float(i) / float(count) * 100))
+            r.set(
+                task_id,
+                '%s,processing' % int(float(i) / float(count) * 100))
             self.parse_me_context(me_context)
-
-    def save_to_database(self, project_id, vendor, network, file_type, task_id):
-        client = MongoClient('localhost', 27017)
-        r = redis.StrictRedis(host='localhost', port=6379, db=0)
-        db = client.myxmart
-        tables = db.tables
-        tables.delete_many({})
-        s = len(self.raw_data)
-        i = 0
-        insert_data = []
-        for row in self.raw_data:
-            row['project_id'] = project_id
-            row['vendor'] = vendor
-            row['network'] = network
-            row['file_type'] = file_type
-            row['filename'] = basename(self.filename)
-            insert_data.append(row)
-            i += 1
-            if len(insert_data) == 100:
-                r.set(task_id, '%s, writing' % int(float(i) / float(s) * 100))
-                tables.insert_many(insert_data)
-                insert_data = []
-        r.set(task_id, '100, writing')

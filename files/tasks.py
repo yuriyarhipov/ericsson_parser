@@ -5,6 +5,7 @@ from django.conf import settings
 from celery.task.control import revoke
 from os.path import basename
 from ericsson.wcdma import EricssonWcdma
+from nokia.nokia_wcdma import NokiaWCDMA
 from archive import XmlPack
 
 
@@ -26,9 +27,9 @@ def upload_file(project_id, description, vendor, file_type, network, filename):
         'WCDMA RADIO OSS BULK CM XML FILE',
         'WCDMA TRANSPORT OSS BULK CM XML FILE',
         'LTE RADIO eNodeB BULK CM XML FILE',
-        'LTE TRANSPORT eNodeB BULK CM XML FILE'
+        'LTE TRANSPORT eNodeB BULK CM XML FILE',
     ]
-
+    print vendor
     work_file = XmlPack(filename).get_files()[0]
     if (vendor == 'Ericsson') and (network == 'WCDMA'):
         if file_type in xml_types:
@@ -39,6 +40,22 @@ def upload_file(project_id, description, vendor, file_type, network, filename):
                 vendor,
                 network,
                 file_type,
+                description,
+                basename(work_file),
+                basename(filename))
+    elif (vendor == 'Nokia') and (network == 'WCDMA'):
+        print 'nokia'
+        if file_type == 'Configuration Management XML File':
+            print 'file'
+            nw = NokiaWCDMA()
+            nw.from_xml(work_file, basename(filename))
+            nw.save_to_database(
+                project_id,
+                vendor,
+                network,
+                file_type,
+                description,
+                basename(work_file),
                 basename(filename))
 
 

@@ -10,7 +10,7 @@
         <input type="text" class="form-control" placeholder="Filter" ng-change="onFilter()" ng-model="file_filter">
     </div>
     <div class="form-group col-sm-4">
-        <a class="btn btn-default" href="/data/files/get_excel/{{ network }}/">Download ALL</a>
+        <a class="btn btn-default" ng-href="#/excel/{{project_id}}/{{ filename }}/all">Download ALL</a>
     </div>
 </div>
 <div class="row">

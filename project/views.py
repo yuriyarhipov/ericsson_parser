@@ -8,7 +8,7 @@ from project.models import Project
 def projects(request):
     data = []
     for project in Project.objects.all().order_by('project_name'):
-        data.append({'project_name': project.project_name, 'created': project.created.strftime('%m.%d.%Y')})
+        data.append({'id': project.id, 'project_name': project.project_name, 'created': project.created.strftime('%m.%d.%Y')})
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 

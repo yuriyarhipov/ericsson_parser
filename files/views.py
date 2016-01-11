@@ -23,7 +23,6 @@ from os.path import exists, basename
 from multiprocessing import Process
 
 import redis
-from pymongo import MongoClient
 
 
 def handle_uploaded_file(files):
@@ -42,7 +41,7 @@ def handle_uploaded_file(files):
 
 
 def status(request, id):
-    r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
+    r = redis.StrictRedis(host=settings.REDIS, port=6379, db=0)
     data = {'value': 0, 'message': 'waiting'}
     status = r.get(id)
     if status:
@@ -60,41 +59,68 @@ def save_files(request):
     file_type = request.POST.get('file_type')
     network = request.POST.get('network')
     filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
-    p = Process(target=tasks.upload_file, args=(
-        project.id,
-        description,
-        vendor,
-        file_type,
-        network,
-        filename))
-    p.start()
+    xml_types = [
+        'WCDMA RADIO OSS BULK CM XML FILE',
+        'WCDMA TRANSPORT OSS BULK CM XML FILE',
+        'Configuration Management XML File',
+    ]
+    print file_type
+    if file_type in xml_types:
+        print '1'
+        p = Process(target=tasks.upload_file, args=(
+            project.id,
+            description,
+            vendor,
+            file_type,
+            network,
+            filename))
+        p.start()
+    else:
+        tasks.worker.delay(filename, project, description, vendor, file_type, network)
     data = dict(id=basename(filename))
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def files(request):
     project = request.project
-
-    client = MongoClient('localhost', 27017)
-    db = client.myxmart
-    tables = db.tables
-
-    filenames = tables.find({'project_id': project.id}).distinct('filename')
     files = []
-    for f in filenames:
-        file_row = tables.find_one({'project_id': project.id, 'filename': f})
-        print file_row
+
+    active_files = []
+
+    if request.lte:
+        active_files.append(request.lte.filename)
+    if request.cna:
+        active_files.append(request.cna.filename)
+    if request.wcdma:
+        active_files.append(request.wcdma.filename)
+
+    for f in Files.objects.filter(project=project):
+        status = 'uploaded'
         files.append({
-            'filename': f,
-            'file_type': file_row.get('file_type'),
-            'network': file_row.get('network'),
-            'vendor': file_row.get('vendor'),
-            'description': file_row.get('description'),
+            'id': f.id,
+            'filename': f.filename,
+            'date': f.date.strftime('%m.%d.%Y'),
+            'file_type': f.file_type,
+            'network': f.network,
+            'vendor': f.vendor,
+            'description': f.description,
+            'status': status
         })
 
-    return HttpResponse(
-        json.dumps({'files': files, }),
-        content_type='application/json')
+    uploaded_files = []
+    for f in UploadedFiles.objects.filter(project=project):
+        job = AsyncResult(f.description)
+        data = job.result or job.state
+        status = 0
+        if 'current' in data:
+            status = data.get('current')
+        uploaded_files.append({
+            'filename': f.filename,
+            'date': f.date.strftime('%m.%d.%Y'),
+            'file_type': f.file_type,
+            'status': 'processing',
+        })
+    return HttpResponse(json.dumps({'files': files, 'uploaded_files': uploaded_files}), content_type='application/json')
 
 
 def measurements(request, file_type):

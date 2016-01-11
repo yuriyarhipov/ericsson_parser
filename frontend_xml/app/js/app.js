@@ -208,6 +208,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/login.html',
                 controller: 'authCtrl'
             }).
+            when('/excel/:project_id/:filename/:table',{
+                templateUrl: 'templates/tables/excel.html',
+                controller: 'excelCtrl'
+            }).
             otherwise({
                 templateUrl: 'templates/login.html',
                 controller: 'authCtrl'
