@@ -1,7 +1,7 @@
 var filesControllers = angular.module('filesControllers', []);
 
-filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'uploadFileService',
-    function ($scope, $http, $timeout, uploadFileService) {
+filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'uploadFileService', '$cookies', '$location',
+    function ($scope, $http, $timeout, uploadFileService, $cookies, $location) {
 
         $http.get('/data/files/').success(function(data) {
             $scope.files = data.files;
@@ -13,8 +13,8 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
         };
   }]);
 
-filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
-    function ($scope, $http, $location) {
+filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$cookies',
+    function ($scope, $http, $location, $cookies) {
         $scope.Network = [ 'WCDMA', 'GSM', 'LTE'];
         $scope.TypeFile = [
                     'Configuration Management XML File',
@@ -70,15 +70,15 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location',
         }
   }]);
 
-filesControllers.controller('licensesCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+filesControllers.controller('licensesCtrl', ['$scope', '$http','$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
         $http.get('/data/licenses/').success(function(data) {
             $scope.files = data;
         });
   }]);
 
-filesControllers.controller('licenseCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
+filesControllers.controller('licenseCtrl', ['$scope', '$http', '$routeParams','$cookies', '$location',
+    function ($scope, $http, $routeParams, $cookies, $location) {
         var filename = $routeParams.filename;
         var table = $routeParams.table;
         $http.get('/data/license/' + filename + '/' + table + '/').success(function(data) {
@@ -87,15 +87,15 @@ filesControllers.controller('licenseCtrl', ['$scope', '$http', '$routeParams',
         });
   }]);
 
-filesControllers.controller('hardwaresCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+filesControllers.controller('hardwaresCtrl', ['$scope', '$http','$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
         $http.get('/data/hardwares/').success(function(data) {
             $scope.files = data;
         });
   }]);
 
-filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
+filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams','$cookies', '$location',
+    function ($scope, $http, $routeParams, $cookies, $location) {
         $scope.filename = $routeParams.filename;
         $scope.table = $routeParams.table;
         $http.get('/data/hardware/' + $scope.filename + '/' + $scope.table + '/').success(function(data) {
@@ -112,8 +112,8 @@ filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams',
         };
   }]);
 
-filesControllers.controller('compareFilesCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+filesControllers.controller('compareFilesCtrl', ['$scope', '$http','$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
         $scope.network = 'GSM';
         $scope.hide_files = true;
 
@@ -168,8 +168,8 @@ filesControllers.controller('compareFilesCtrl', ['$scope', '$http',
   }]);
 
 
-filesControllers.controller('superfileCtrl', ['$scope', '$http', '$location',
-    function ($scope, $http, $location) {
+filesControllers.controller('superfileCtrl', ['$scope', '$http', '$location','$cookies',
+    function ($scope, $http, $location, $cookies) {
         $scope.networks = ['GSM', 'LTE', 'WCDMA'];
         $scope.network = {};
 
@@ -183,8 +183,8 @@ filesControllers.controller('superfileCtrl', ['$scope', '$http', '$location',
         };
   }]);
 
-filesControllers.controller('setCnaTemplateCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+filesControllers.controller('setCnaTemplateCtrl', ['$scope', '$http','$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
         function get_template(){
             $http.get('/data/files/get_cna_template/').success(function(data){
                 $scope.tables = data;

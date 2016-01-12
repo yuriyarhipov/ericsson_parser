@@ -64,9 +64,8 @@ def save_files(request):
         'WCDMA TRANSPORT OSS BULK CM XML FILE',
         'Configuration Management XML File',
     ]
-    print file_type
+
     if file_type in xml_types:
-        print '1'
         p = Process(target=tasks.upload_file, args=(
             project.id,
             description,

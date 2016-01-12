@@ -11,8 +11,8 @@ from dashboard import views as dash_view
 admin.autodiscover()
 
 urlpatterns = patterns('',
-
     url(r'^data/projects/$', project_views.projects),
+    url(r'^data/login/$', project_views.login),
     url(r'^data/save_project/$', project_views.save_project),
     url(r'^data/delete_projects/(\S+)/$', project_views.delete_projects),
     url(r'^data/treeview/(\S+)/$', project_views.treeview),

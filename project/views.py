@@ -2,6 +2,7 @@ import json
 
 from django.http import HttpResponse
 from django.db import connection
+from django.contrib.auth import authenticate
 from project.models import Project
 
 
@@ -83,6 +84,17 @@ def get_topology_roots(request, network):
     for row in cursor:
         data.append(row[0])
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def login(request):
+    login = request.POST.get('login')
+    password = request.POST.get('pass')
+    user = authenticate(username=login, password=password)
+    if user is not None:
+        return HttpResponse(json.dumps({'status': 'ok'}), content_type='application/json')
+    else:
+        return HttpResponse(json.dumps({'status': 'no'}), content_type='application/json')
+
 
 
 

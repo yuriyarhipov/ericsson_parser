@@ -286,33 +286,15 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
         };
 
         var create_info_control = function(color, sector){
-            var info = L.control();
-            info.onAdd = function (map) {
-                this._div = L.DomUtil.create('div', 'info');
-                this._div.setAttribute('style', 'border-color: '+color+';')
-                columns = Object.keys(sector);
-                columns.sort();
+            var info_div = L.DomUtil.create('div', 'info');
+            info_div.setAttribute('style', 'border-color: '+color+';')
+            columns = Object.keys(sector);
+            columns.sort();
 
-                for (id in columns){
-                    this._div.innerHTML += '<b>' + columns[id] + ':</b> ' + sector[columns[id]] + '<br />';
-                }
-
-                var stop = L.DomEvent.stopPropagation;
-                L.DomEvent
-                    .on(this._div, 'contextmenu', stop)
-                    .on(this._div, 'click', stop)
-                    .on(this._div, 'mousedown', stop)
-                    .on(this._div, 'touchstart', stop)
-                    .on(this._div, 'dblclick', stop)
-                    .on(this._div, 'mousewheel', stop)
-                    .on(this._div, 'MozMousePixelScroll', stop)
-                var win =  L.control.window(map,{position: 'left',});
-                win.content(this._div.outerHTML)
-                win.show();
-                return this._div;
-            };
-
-            return info
+            for (id in columns){
+                info_div.innerHTML += '<b>' + columns[id] + ':</b> ' + sector[columns[id]] + '<br />';
+            }
+            return info_div.outerHTML;
         };
 
         var latlng_control = function(){
@@ -701,9 +683,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         opacity: 0.7
                     });
                 }
-                if (layer._map._info_control){
-                    layer._map.removeControl(layer._map._info_control);
-                }
             });
 
 
@@ -720,10 +699,16 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 });
                 layer._map._current_sector = layer;
                 if (layer._map._info_control){
-                    layer._map.removeControl(layer._map._info_control);
+                    layer._map._info_control.content(create_info_control(layer.options.default_color, layer.options.sector))
+                } else {
+                    layer._map._info_control =  L.control.window(map,{position: 'left',});
+                    layer._map._info_control.content(create_info_control(layer.options.default_color, layer.options.sector))
+                    layer._map._info_control.show();
+                    layer._map._info_control.on('close', function(){
+                        delete layer._map._info_control
+                    });
                 }
-                layer._map._info_control = create_info_control(layer.options.default_color, layer.options.sector);
-                layer._map._info_control.addTo(layer._map);
+
 
             };
         });

@@ -1,7 +1,10 @@
 var auditControllers = angular.module('auditControllers', []);
 
-auditControllers.controller('setAuditTemplateCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+auditControllers.controller('setAuditTemplateCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.network = 'GSM';
         $http.get('/data/audit/get_audit_template/?network=gsm').success(function(data){
             $scope.template = data;
@@ -18,8 +21,11 @@ auditControllers.controller('setAuditTemplateCtrl', ['$scope', '$http',
         };
   }]);
 
-auditControllers.controller('runAuditCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+auditControllers.controller('runAuditCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.network = 'GSM';
         $scope.selected_file = '';
         $http.get('/data/files/get_files/GSM/').success(function(data){
@@ -92,8 +98,11 @@ auditControllers.controller('runAuditCtrl', ['$scope', '$http',
         };
   }]);
 
-auditControllers.controller('powerAuditCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+auditControllers.controller('powerAuditCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $http.get('/data/files/get_files/WCDMA/').success(function(data){
             $scope.files = data;
         });
@@ -142,8 +151,11 @@ auditControllers.controller('powerAuditCtrl', ['$scope', '$http',
         };
   }]);
 
-auditControllers.controller('auditParamCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
+auditControllers.controller('auditParamCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location',
+    function ($scope, $http, $routeParams, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $http.get('/data/audit/audit_param/' + $routeParams.network + '/' + $routeParams.filename + '/' + $routeParams.param_name + '/').success(function(data){
             $scope.template = data;
         });

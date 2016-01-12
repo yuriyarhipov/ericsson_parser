@@ -1,7 +1,10 @@
 var xmlControllers = angular.module('xmlControllers', []);
 
-xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectService', '$cookies',
-    function ($scope, $http, activeProjectService, $cookies) {
+xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectService', '$cookies', '$location',
+    function ($scope, $http, activeProjectService, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.setActiveProject = function(project){
             $scope.activeWCDMA = 'red';
             $scope.activeLTE = 'red';
@@ -31,6 +34,9 @@ xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectServ
 
 xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService', '$location',
     function($scope, $cookies, activeProjectService, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.activeProject = $cookies.get('active_project');
         $scope.activeWCDMA = $cookies.get('wcdma');
         if (!$cookies.get('active_project')){
@@ -84,8 +90,11 @@ xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activePro
         });
   }]);
 
-xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location', 'activeProjectService',
-    function ($scope, $http, $location, activeProjectService) {
+xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location', 'activeProjectService', '$cookies', '$location',
+    function ($scope, $http, $location, activeProjectService, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.project_data = {};
         $scope.processForm = function(){
             $http.post('/data/save_project/', $.param($scope.project_data)).success(function(){
@@ -97,9 +106,16 @@ xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location', 'ac
   }]);
 
 
-xmlControllers.controller('authCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+xmlControllers.controller('authCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
         $scope.onLogin = function(login, pass){
-
+             $http.post('/data/login/', $.param({'login': login, 'pass': pass})).success(function(data){
+                if (data.status == 'ok'){
+                    $cookies.put('is_auth', true);
+                    $location.path('/projects')
+                } else
+                    $cookies.put('is_auth', false);
+                }
+            )
         };
   }]);

@@ -1,7 +1,10 @@
 var distanceControllers = angular.module('distanceControllers', []);
 
-distanceControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinnerService',
-    function ($scope, $http, usSpinnerService) {
+distanceControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinnerService','$cookies', '$location',
+    function ($scope, $http, usSpinnerService, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.showComapreFilters = false;
         $scope.distance = {};
         $scope.rbs = {};
@@ -494,8 +497,11 @@ distanceControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpin
         };
   }]);
 
-distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies',
-    function ($scope, $http, $cookies) {
+distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.associated_sectors = [];
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = 'GSM';
@@ -592,8 +598,11 @@ distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookie
         };
 }]);
 
-distanceControllers.controller('pscDistanceCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+distanceControllers.controller('pscDistanceCtrl', ['$scope', '$http','$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.psc_table_config = {
             columnDefs: [
                 { field: 'Cell' },
