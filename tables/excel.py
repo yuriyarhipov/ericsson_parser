@@ -37,8 +37,10 @@ class Excel(object):
                     data.append(row)
 
                 df = DataFrame(data)
-                del df['_id']
-                del df['path']
+                if '_id' in df.columns:
+                    del df['_id']
+                if 'path' in df.columns:
+                    del df['path']
                 df.to_excel(writer, sheet_name=table_name, index=False)
             writer.save()
             self.redis.set(redis_key, '50, packing...')
