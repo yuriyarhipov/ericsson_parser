@@ -2,7 +2,9 @@ var filesControllers = angular.module('filesControllers', []);
 
 filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'uploadFileService', '$cookies', '$location',
     function ($scope, $http, $timeout, uploadFileService, $cookies, $location) {
-
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $http.get('/data/files/').success(function(data) {
             $scope.files = data.files;
         });
@@ -15,6 +17,9 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
 
 filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$cookies',
     function ($scope, $http, $location, $cookies) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.Network = [ 'WCDMA', 'GSM', 'LTE'];
         $scope.TypeFile = [
                     'Configuration Management XML File',
@@ -72,6 +77,9 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
 
 filesControllers.controller('licensesCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $http.get('/data/licenses/').success(function(data) {
             $scope.files = data;
         });
@@ -79,6 +87,9 @@ filesControllers.controller('licensesCtrl', ['$scope', '$http','$cookies', '$loc
 
 filesControllers.controller('licenseCtrl', ['$scope', '$http', '$routeParams','$cookies', '$location',
     function ($scope, $http, $routeParams, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         var filename = $routeParams.filename;
         var table = $routeParams.table;
         $http.get('/data/license/' + filename + '/' + table + '/').success(function(data) {
@@ -89,6 +100,9 @@ filesControllers.controller('licenseCtrl', ['$scope', '$http', '$routeParams','$
 
 filesControllers.controller('hardwaresCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $http.get('/data/hardwares/').success(function(data) {
             $scope.files = data;
         });
@@ -96,6 +110,9 @@ filesControllers.controller('hardwaresCtrl', ['$scope', '$http','$cookies', '$lo
 
 filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams','$cookies', '$location',
     function ($scope, $http, $routeParams, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.filename = $routeParams.filename;
         $scope.table = $routeParams.table;
         $http.get('/data/hardware/' + $scope.filename + '/' + $scope.table + '/').success(function(data) {
@@ -114,6 +131,9 @@ filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams','
 
 filesControllers.controller('compareFilesCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.network = 'GSM';
         $scope.hide_files = true;
 
@@ -170,6 +190,9 @@ filesControllers.controller('compareFilesCtrl', ['$scope', '$http','$cookies', '
 
 filesControllers.controller('superfileCtrl', ['$scope', '$http', '$location','$cookies',
     function ($scope, $http, $location, $cookies) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         $scope.networks = ['GSM', 'LTE', 'WCDMA'];
         $scope.network = {};
 
@@ -185,6 +208,9 @@ filesControllers.controller('superfileCtrl', ['$scope', '$http', '$location','$c
 
 filesControllers.controller('setCnaTemplateCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         function get_template(){
             $http.get('/data/files/get_cna_template/').success(function(data){
                 $scope.tables = data;
@@ -199,6 +225,9 @@ filesControllers.controller('setCnaTemplateCtrl', ['$scope', '$http','$cookies',
 
 filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams', '$timeout', '$location', 'Flash', 'activeProjectService', '$cookies',
     function ($scope, $http, $routeParams, $timeout, $location, Flash, activeProjectService, $cookies) {
+        if (!$cookies.get('is_auth')){
+            $location.path('/login')
+        }
         var id = $routeParams.id;
         var current = 1;
         $scope.dynamic = 1;

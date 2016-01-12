@@ -44,11 +44,10 @@ def upload_file(project_id, description, vendor, file_type, network, filename):
                 basename(work_file),
                 basename(filename))
     elif (vendor == 'Nokia') and (network == 'WCDMA'):
-        print 'nokia'
         if file_type == 'Configuration Management XML File':
-            print 'file'
             nw = NokiaWCDMA()
             nw.from_xml(work_file, basename(filename))
+            print len(nw.data)
             nw.save_to_database(
                 project_id,
                 vendor,

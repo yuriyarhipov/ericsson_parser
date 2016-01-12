@@ -37,6 +37,7 @@ class DataFile(object):
                 r.set(task_id, '%s, writing' % int(float(i) / float(s) * 100))
                 tables.insert_many(insert_data)
                 insert_data = []
+        tables.insert_many(insert_data)
         r.set(task_id, '100, writing')
         file_tables = list(file_tables)
         file_tables.sort()

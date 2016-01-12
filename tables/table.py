@@ -29,16 +29,22 @@ class Table(object):
         tables = self.db.tables
         data = []
         columns = []
+        t = tables.find({
+                'filename': self.filename,})
+        print t.count()
+
 
         for row in tables.find({
-                'project_id': self.project_id,
+                'project_id': int(self.project_id),
                 'filename': self.filename,
                 'data_type': self.table_name}):
             data.append(row)
 
         df = DataFrame(data)
-        del df['_id']
-        del df['path']
+        if '_id' in df.columns:
+            del df['_id']
+        if 'path' in df.columns:
+            del df['path']
         columns = list(df.columns.values)
         data = df.values.tolist()
         return columns, data
