@@ -1,10 +1,4 @@
-import datetime
 from lxml import etree
-import psycopg2
-from django.conf import settings
-from os.path import basename
-from pymongo import MongoClient
-import redis
 from files.data_file import DataFile
 
 

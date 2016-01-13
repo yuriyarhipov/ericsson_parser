@@ -106,16 +106,51 @@ xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location', 'ac
   }]);
 
 
-xmlControllers.controller('authCtrl', ['$scope', '$http', '$cookies', '$location',
-    function ($scope, $http, $cookies, $location) {
+xmlControllers.controller('authCtrl', ['$scope', '$http', '$cookies', '$location', 'authService',
+    function ($scope, $http, $cookies, $location, authService) {
         $scope.onLogin = function(login, pass){
              $http.post('/data/login/', $.param({'login': login, 'pass': pass})).success(function(data){
                 if (data.status == 'ok'){
                     $cookies.put('is_auth', true);
-                    $location.path('/projects')
-                } else
+                    $location.path('/projects');
+                    authService.setAuth(true);
+                } else {
                     $cookies.put('is_auth', false);
+                    authService.setAuth(false);
                 }
-            )
+
+            });
         };
-  }]);
+}]);
+
+xmlControllers.factory('authService', function($rootScope, $cookies) {
+    var status = {};
+    status.is_auth = $cookies.get('is_auth');
+    status.setAuth = function(is_auth) {
+        $cookies.put('is_auth', is_auth);
+        status.is_auth = is_auth
+        this.broadcastItem();
+    };
+
+    status.broadcastItem = function() {
+        $rootScope.$broadcast('authBroadcast');
+    };
+    return status;
+});
+
+xmlControllers.controller('mainMenuCtrl', ['$scope', 'authService',
+    function ($scope, authService) {
+        if (authService.is_auth){
+            $scope.show_menu = true;
+        } else {
+            $scope.show_menu = false;
+        }
+        $scope.$on('authBroadcast', function() {
+            if (authService.is_auth){
+                $scope.show_menu = true;
+            } else {
+                $scope.show_menu = false;
+            }
+
+        });
+}]);
