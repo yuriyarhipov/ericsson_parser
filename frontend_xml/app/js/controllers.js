@@ -112,11 +112,12 @@ xmlControllers.controller('authCtrl', ['$scope', '$http', '$cookies', '$location
              $http.post('/data/login/', $.param({'login': login, 'pass': pass})).success(function(data){
                 if (data.status == 'ok'){
                     $cookies.put('is_auth', true);
+                    $cookies.put('username', login);
                     $location.path('/projects');
-                    authService.setAuth(true);
+                    authService.setAuth(true, login);
                 } else {
                     $cookies.put('is_auth', false);
-                    authService.setAuth(false);
+                    authService.setAuth(false, '');
                 }
 
             });
@@ -126,9 +127,11 @@ xmlControllers.controller('authCtrl', ['$scope', '$http', '$cookies', '$location
 xmlControllers.factory('authService', function($rootScope, $cookies) {
     var status = {};
     status.is_auth = $cookies.get('is_auth');
-    status.setAuth = function(is_auth) {
+    status.username = $cookies.get('username');
+    status.setAuth = function(is_auth, username) {
         $cookies.put('is_auth', is_auth);
-        status.is_auth = is_auth
+        status.is_auth = is_auth;
+        status.username = username;
         this.broadcastItem();
     };
 
@@ -138,19 +141,26 @@ xmlControllers.factory('authService', function($rootScope, $cookies) {
     return status;
 });
 
-xmlControllers.controller('mainMenuCtrl', ['$scope', 'authService',
-    function ($scope, authService) {
+xmlControllers.controller('mainMenuCtrl', ['$scope', 'authService', 'activeProjectService',
+    function ($scope, authService, activeProjectService) {
         if (authService.is_auth){
+            $scope.username = authService.username;
+            $scope.project_name = activeProjectService.project;
             $scope.show_menu = true;
         } else {
             $scope.show_menu = false;
         }
+
         $scope.$on('authBroadcast', function() {
             if (authService.is_auth){
+                $scope.username = authService.username;
                 $scope.show_menu = true;
             } else {
                 $scope.show_menu = false;
             }
+        });
 
+        $scope.$on('handleBroadcast', function() {
+            $scope.project_name = activeProjectService.project;
         });
 }]);

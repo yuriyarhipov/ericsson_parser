@@ -213,8 +213,8 @@ XmlApp.config(['$routeProvider',
                 controller: 'excelCtrl'
             }).
             otherwise({
-                templateUrl: 'templates/login.html',
-                controller: 'authCtrl'
+                templateUrl: 'templates/projects.html',
+                controller: 'ProjectsCtrl'
             });
 
     }]);
