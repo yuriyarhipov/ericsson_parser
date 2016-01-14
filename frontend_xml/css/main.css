@@ -35,6 +35,10 @@
     top:20px;
 }
 
+.login {
+    height:100px;
+}
+
 html {
     overflow-x: hidden;
 }

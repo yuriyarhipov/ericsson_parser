@@ -29,7 +29,7 @@ def upload_file(project_id, description, vendor, file_type, network, filename):
         'LTE RADIO eNodeB BULK CM XML FILE',
         'LTE TRANSPORT eNodeB BULK CM XML FILE',
     ]
-    print vendor
+
     work_file = XmlPack(filename).get_files()[0]
     if (vendor == 'Ericsson') and (network == 'WCDMA'):
         if file_type in xml_types:
