@@ -45,6 +45,11 @@ class EricssonWcdma(DataFile):
         node_tag = etree.QName(node).localname
         path.append({node_tag: node.get('id')})
         m_el_data = parent_data
+        for p in path:
+            tag = p.keys()[0]
+            val = p[tag]
+            m_el_data[tag] = val
+
         if node_tag == 'UtranCell':
             m_el_data['UtranCell'] = node.get('id')
 
