@@ -21,6 +21,7 @@ import tasks
 from os import makedirs
 from os.path import exists, basename
 from multiprocessing import Process
+from shapely.geometry import box, Point
 
 import redis
 
@@ -269,6 +270,57 @@ def rnd(request, network=None):
     elif request.method == 'GET':
         data = Rnd(project.id, network).get_data()
 
+    return Response(data)
+
+
+@api_view(['POST', ])
+def map_frame(request, network):
+    project = request.project
+    data = []
+    map_bounds = request.POST.get('bounds').split(',')
+    map_box = box(
+        float(map_bounds[1]),
+        float(map_bounds[0]),
+        float(map_bounds[3]),
+        float(map_bounds[2]))
+
+    for point in Rnd(project.id, network).get_data().get('data'):
+        map_p = Point(point.get('Latitude'), point.get('Longitude'))
+        if map_p.within(map_box):
+            data.append(point)
+    return Response(data)
+
+
+@api_view(['GET', ])
+def init_map(request):
+    project = request.project
+    gsm_data = Rnd(project.id, 'gsm').get_data().get('data')
+    data = {}
+    if gsm_data:
+        for s in gsm_data:
+            lat = s.get('Latitude')
+            lng = s.get('Longitude')
+            if (lat and lng):
+                data = {'point': [lat, lng]}
+                return Response(data)
+
+    wcdma_data = Rnd(project.id, 'wcdma').get_data().get('data')
+    if wcdma_data:
+        for s in wcdma_data:
+            lat = s.get('Latitude')
+            lng = s.get('Longitude')
+            if (lat and lng):
+                data = {'point': [lat, lng]}
+                return Response(data)
+
+    lte_data = Rnd(project.id, 'lte').get_data().get('data')
+    if lte_data:
+        for s in lte_data:
+            lat = s.get('Latitude')
+            lng = s.get('Longitude')
+            if (lat and lng):
+                data = {'point': [lat, lng]}
+                return Response(data)
     return Response(data)
 
 

@@ -1,7 +1,7 @@
 var rndControllers = angular.module('rndControllers', []);
 
-rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
+rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpinnerService',
+    function ($scope, $http, $routeParams, usSpinnerService) {
         $scope.rowCollection = [];
         $scope.new_val = {};
         $scope.show_edit_panel = false;
@@ -66,6 +66,7 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
             }
         }
         $http.get('/data/rnd/' + $scope.rnd_network + '/').success(function(data){
+            usSpinnerService.stop('spinner_map_table');
             $scope.rnd_table_config.columnDefs = [];
             $scope.columns = data.columns;
             for (id in data.columns){
@@ -108,8 +109,8 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams',
         }
   }]);
 
-rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal',
-    function ($scope, $http, leafletData, $location, $cookies, $uibModal) {
+rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal', 'usSpinnerService',
+    function ($scope, $http, leafletData, $location, $cookies, $uibModal, usSpinnerService) {
         var onAddFilter = function(network, param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
             var values = {};
@@ -610,13 +611,16 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     map._pd_date_to.selectedIndex = data2.length - 1;
                 });
             }
+            $http.get('/data/rnd/init_map/').success(function(data){
+                map.setView(data.point, 10);
+            });
 
             $http.get('/data/rnd/gsm/').success(function(gsm_data){
                 $http.get('/data/rnd/wcdma/').success(function(wcdma_data){
                     $http.get('/data/rnd/lte/').success(function(lte_data){
-
+                        usSpinnerService.stop('spinner_map');
                         gsm_layer = create_rnd_layer(gsm_data, 'gsm', radius_gsm, 'orange', 'Latitude', 'Longitude', 'Cell_Name');
-                        wcdma_layer = create_rnd_layer(wcdma_data, 'wcdma', radius_wcdma, 'blue', 'Latitud', 'Longitud', 'Utrancell');
+                        wcdma_layer = create_rnd_layer(wcdma_data, 'wcdma', radius_wcdma, 'blue', 'Latitude', 'Longitude', 'Utrancell');
                         lte_layer = create_rnd_layer(lte_data, 'lte', radius_lte, 'green', 'Latitude', 'Longitude', 'Utrancell');
                         map._layerControl.addOverlay(gsm_layer, '<span class="label label-warning">GSM</span>');
                         map._layerControl.addOverlay(wcdma_layer, '<span class="label label-primary">WCDMA</span>');
@@ -629,7 +633,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         map._wcdma_data = wcdma_data;
                         map._lte_data = lte_data;
 
-                        map.setView([wcdma_data.data[0].Latitud, wcdma_data.data[0].Longitud], 10);
+
                         map.set_zoom(10);
                         map._select_filter.selectedIndex = '-1';
                         map._network_filter.selectedIndex = '-1';
@@ -650,7 +654,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         var size = zkf*current_size;
 
                         //if (size > 1){
-
                             layer.setRadius(size);
                             layer.options.zoom = zoom_value;
                         //}
@@ -665,6 +668,17 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 }
 
             };
+
+            map.on('moveend', function(e){
+                map_bounds = map.getBounds();
+                var params = {
+                    'bounds': map_bounds.toBBoxString(),
+                };
+                $http.post('/data/rnd/map_frame/wcdma/', $.param(params)).success(function(data){
+                    console.log(data);
+                });
+
+            });
 
             map.on('zoomend', function(e){
                 var zoom = e.target._zoom;

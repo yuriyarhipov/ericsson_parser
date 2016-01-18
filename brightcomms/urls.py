@@ -102,6 +102,8 @@ urlpatterns = patterns('',
     url(r'^data/rnd/get3g3gscript/$', files_views.get3g3gscript),
     url(r'^data/rnd/same_neighbor/$', files_views.get_same_neighbor),
     url(r'^data/rnd/table/(\S+)/$', files_views.rnd_table),
+    url(r'^data/rnd/init_map/$', files_views.init_map),
+    url(r'^data/rnd/map_frame/(\S+)/$', files_views.map_frame),
     url(r'^data/rnd/(\S+)/$', files_views.rnd),
     url(r'^data/rnd/$', files_views.rnd),
 
