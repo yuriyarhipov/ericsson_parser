@@ -200,7 +200,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
         };
 
         var set_legend = function(map, div, values){
-            var table = L.DomUtil.create('table', 'col-md-12', div);
+            var table = L.DomUtil.create('table', 'table_legend', div);
             var sectors = [];
             for (val in values){
                 sectors = sectors.concat(values[val].sectors);
@@ -244,7 +244,28 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         }
                     })
             };
-            return table.outerHTML;
+        };
+
+        var set_pd = function(div){
+            var colors = [
+                ['#ff0000', '90% to 100%'],
+                ['#ff6d37', '80% to 90%'],
+                ['#ffb59a', '70% to 80%'],
+                ['#ffff00', '60% to 70%'],
+                ['#ffba00', '50% to 60%'],
+                ['#7ace00', '40% to 50%'],
+                ['#00ff00', '30% to 40%'],
+                ['#00ffff', '20% to 30%'],
+                ['#0000ff', '10% to 20%'],
+                ['#c07eff', ' 1% to 10%'],
+                ['#ffffff', ' 0% to  1%'],
+            ]
+            var table = L.DomUtil.create('table', 'table_pd', div);
+            for (i in colors){
+                var row_value = L.DomUtil.create('tr', 'col-md-12', table);
+                var cell_btn = L.DomUtil.create('td', 'col-md-12', row_value);
+                cell_btn.innerHTML ='<i class="pd_i" style="background:' + colors[i][0] + '"></i> ' + colors[i][1] + '<br>';
+            }
         };
 
         var create_legend_control = function(){
@@ -506,8 +527,21 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 $http.get('/data/rnd/get_rnd_pd/' + layer.options.network + '/' + layer.options.sector.Utrancell + '/' + layer._map._pd_date_from.value + '/' + layer._map._pd_date_to.value + '/').success(function(data){
                     var s_radius = 0;
 
-                    layer._map._legend.reset_legend()
-                    layer._map._legend.set_pd();
+                if (layer._map._newlegend){
+                    var window_div = layer._map._newlegend.getContainer();
+                    while (window_div.firstChild) {
+                        window_div.removeChild(window_div.firstChild);
+                    }
+                } else {
+                    layer._map._newlegend = L.control.window(layer._map,{position: 'left',});
+                    layer._map._newlegend.show();
+                    layer._map._newlegend.on('close', function(){
+                        delete layer._map._newlegend
+                    });
+                }
+                var window_div = layer._map._newlegend.getContainer();
+                set_pd(window_div);
+
 
                     var pd_data = data[0];
                     var distances = data[2];
