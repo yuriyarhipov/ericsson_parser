@@ -180,8 +180,71 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         map.set_zoom(12);
                     }
                 }
-                map._legend.set_legend(values);
+                if (map._newlegend){
+                    var window_div = map._newlegend.getContainer();
+                    while (window_div.firstChild) {
+                        window_div.removeChild(window_div.firstChild);
+                    }
+
+                } else {
+                    map._newlegend = L.control.window(map,{position: 'left',});
+                    map._newlegend.show();
+                    map._newlegend.on('close', function(){
+                        delete map._newlegend
+                    });
+                }
+                var window_div = map._newlegend.getContainer();
+                set_legend(map, window_div, values)
+                //map._legend.set_legend(values);
             });
+        };
+
+        var set_legend = function(map, div, values){
+            var table = L.DomUtil.create('table', 'col-md-12', div);
+            var sectors = [];
+            for (val in values){
+                sectors = sectors.concat(values[val].sectors);
+                var row_value = L.DomUtil.create('tr', 'col-md-12', table);
+                var cell_btn = L.DomUtil.create('td', 'col-md-1', row_value);
+                var color_value = L.DomUtil.create('input', '', cell_btn);
+                color_value.setAttribute('type', 'color');
+                color_value.setAttribute('value', values[val].color);
+                color_value.value = values[val].color;
+
+                color_value.sectors = values[val].sectors;
+                var cell_value = L.DomUtil.create('td', 'col-md-11', row_value);
+                var cell_link = L.DomUtil.create('span', 'span-legend', cell_value);
+                cell_link.innerHTML =  values[val].param_name + '=' + val + '('+values[val].sectors.length+')';
+                cell_link.sectors = values[val].sectors;
+                cell_link.next_sector_index = 0;
+
+                var stop = L.DomEvent.stopPropagation;
+                L.DomEvent
+                    .addListener(color_value, 'change', function(e){
+                        var color = e.target.value;
+                        for (id in e.target.sectors){
+                            e.target.sectors[id].setStyle({'color': color});
+                        }
+                    })
+                    .addListener(cell_link, 'click', function(e){
+                        console.log(e.target);
+                        map.select_sector(e.target.sectors[e.target.next_sector_index]);
+                        var sector = e.target.sectors[e.target.next_sector_index].options.sector;
+                        if (e.target.next_sector_index + 1 < e.target.sectors.length){
+                            e.target.next_sector_index += 1;
+                        } else {
+                            e.target.next_sector_index = 0;
+                        }
+                        if ('Latitud' in sector){
+                            map.setView([sector.Latitud, sector.Longitud], 14);
+                            map.set_zoom(14);
+                        } else if ('Latitude' in sector){
+                            map.setView([sector.Latitude, sector.Longitude], 14);
+                            map.set_zoom(14);
+                        }
+                    })
+            };
+            return table.outerHTML;
         };
 
         var create_legend_control = function(){
@@ -674,9 +737,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 var params = {
                     'bounds': map_bounds.toBBoxString(),
                 };
-                $http.post('/data/rnd/map_frame/wcdma/', $.param(params)).success(function(data){
-                    console.log(data);
-                });
+                //$http.post('/data/rnd/map_frame/wcdma/', $.param(params)).success(function(data){
+                //    console.log(data);
+                //});
 
             });
 
