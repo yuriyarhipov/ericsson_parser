@@ -18,6 +18,7 @@ from excel import Excel as Dropbox_excel
 from multiprocessing import Process
 import redis
 
+
 def handle_uploaded_file(files):
     path = settings.STATICFILES_DIRS[0]
     result = []
@@ -54,7 +55,6 @@ def table(request, filename, table_name):
     else:
         current_table = Table(request.project.id, filename, table_name)
         columns, data = current_table.get_data()
-
 
     if request.GET.get('excel'):
         return HttpResponseRedirect(Excel(request.project.project_name, table_name, columns, data).filename)
@@ -149,6 +149,7 @@ def by_technology(request, network):
 
         tables.sort()
         data = [
+            {'label': 'Universal3g3gNeighbors', 'table': 'Universal3g3gNeighbors', 'type': 'Universal table', 'filename': filename},
 #            {'label': '3G3GNeighbors', 'table': 'new3g', 'type': 'Additional table', 'filename': filename},
 #            {'label': 'Topology', 'table': 'topology', 'type': 'Additional table', 'filename': filename},
 #            {'label': 'RND', 'table': 'rnd_wcdma', 'type': 'Additional table', 'filename': filename},

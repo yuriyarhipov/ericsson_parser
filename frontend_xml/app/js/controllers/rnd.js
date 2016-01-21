@@ -208,7 +208,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 var cell_btn = L.DomUtil.create('td', 'col-md-1', row_value);
                 var color_value = L.DomUtil.create('input', '', cell_btn);
                 color_value.setAttribute('type', 'color');
-                color_value.setAttribute('value', values[val].color);
+                //color_value.setAttribute('value', values[val].color);
                 color_value.value = values[val].color;
 
                 color_value.sectors = values[val].sectors;
