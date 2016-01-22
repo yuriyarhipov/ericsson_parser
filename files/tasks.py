@@ -4,9 +4,6 @@ from celery import current_task
 from django.conf import settings
 from celery.task.control import revoke
 from os.path import basename
-from ericsson.wcdma import EricssonWcdma
-from nokia.nokia_wcdma import NokiaWCDMA
-from archive import XmlPack
 
 
 @celery.task
@@ -20,42 +17,6 @@ def create_parameters_table(f, network, template_name):
         Template().create_template_table(template_name)
     elif network == 'LTE':
         Template().create_template_table(template_name)
-
-
-def upload_file(project_id, description, vendor, file_type, network, filename):
-    xml_types = [
-        'WCDMA RADIO OSS BULK CM XML FILE',
-        'WCDMA TRANSPORT OSS BULK CM XML FILE',
-        'LTE RADIO eNodeB BULK CM XML FILE',
-        'LTE TRANSPORT eNodeB BULK CM XML FILE',
-    ]
-
-    work_file = XmlPack(filename).get_files()[0]
-    if (vendor == 'Ericsson') and (network == 'WCDMA'):
-        if file_type in xml_types:
-            ew = EricssonWcdma()
-            ew.from_xml(work_file, basename(filename))
-            ew.save_to_database(
-                project_id,
-                vendor,
-                network,
-                file_type,
-                description,
-                basename(work_file),
-                basename(filename))
-    elif (vendor == 'Nokia') and (network == 'WCDMA'):
-        if file_type == 'Configuration Management XML File':
-            nw = NokiaWCDMA()
-            nw.from_xml(work_file, basename(filename))
-            print len(nw.data)
-            nw.save_to_database(
-                project_id,
-                vendor,
-                network,
-                file_type,
-                description,
-                basename(work_file),
-                basename(filename))
 
 
 @celery.task
@@ -72,7 +33,6 @@ def worker(filename, project, description, vendor, file_type, network):
     from files.hw import HardWare
     from files.distance import Distance
     from files.models import Files
-    from files.nokia import Nokia
 
     xml_types = [
         'WCDMA RADIO OSS BULK CM XML FILE',
@@ -106,23 +66,74 @@ def worker(filename, project, description, vendor, file_type, network):
         'HISTOGRAM FILE COUNTER - Access Distance',
     ]
 
-    nokia_xml = [
-        'Configuration Management XML File',
-    ]
-
     work_file = XmlPack(filename).get_files()[0]
     task = current_task
     task.update_state(state="PROGRESS", meta={"current": 1})
 
-    if (vendor == 'Ericsson') and (network == 'WCDMA'):
-        if file_type in xml_types:
-            ew = EricssonWcdma()
-            ew.from_xml(work_file, task)
-            ew.save_to_database(project.id, vendor, network, file_type, task)
+    if network in ['WCDMA', 'LTE']:
+        if file_type in distance_files:
+            Distance().write_file(
+                project,
+                description,
+                vendor,
+                work_file,
+                task)
 
-    task.update_state(state='PROGRESS', meta={
-        'current': 100,
-        'message': 'processing'})
+        if file_type in xml_types:
+            Files.objects.filter(
+                filename=basename(work_file),
+                project=project).delete()
+            Xml().save_xml(
+                work_file,
+                project,
+                description,
+                vendor,
+                file_type,
+                network,
+                task)
+
+    if network == 'GSM':
+        if file_type in cna_types:
+            CNA().save_cna(
+                work_file,
+                project,
+                description,
+                vendor,
+                file_type,
+                network,
+                task)
+
+    if file_type in measurements_types:
+        Measurements().save_file(
+            work_file,
+            project,
+            description,
+            vendor,
+            file_type,
+            network,
+            current_task)
+
+    if file_type in license_types:
+        lic = License(work_file)
+        lic.parse_data(
+            project,
+            description,
+            vendor,
+            file_type,
+            network,
+            current_task)
+
+    if file_type in hardware_types:
+        hw = HardWare(work_file)
+        hw.parse_data(
+            project,
+            description,
+            vendor,
+            file_type,
+            network,
+            current_task)
+
+    task.update_state(state='PROGRESS', meta={"current": 100, })
     revoke(worker.request.id, terminate=True)
 
 
@@ -207,4 +218,3 @@ def additional_tables(network):
 def write_distance_file(project_id, filename, rows):
     from files.distance import Distance
     Distance().write_rows(project_id, filename, rows)
-

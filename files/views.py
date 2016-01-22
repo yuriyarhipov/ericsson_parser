@@ -42,13 +42,25 @@ def handle_uploaded_file(files):
 
 
 def status(request, id):
-    r = redis.StrictRedis(host=settings.REDIS, port=6379, db=0)
-    data = {'value': 0, 'message': 'waiting'}
-    status = r.get(id)
-    if status:
-        value, message = status.split(',')
-        data = {'value': value, 'message': message}
-    json_data = json.dumps(data)
+    if FileTasks.objects.filter(task_id=id):
+        ft = FileTasks.objects.get(task_id=id)
+        tasks = ft.tasks.split(',')
+        active_tasks = []
+        for task_id in tasks:
+            if not AsyncResult(task_id).ready():
+                active_tasks.append(task_id)
+        current = ft.max_value - len(active_tasks)
+        value = float(current) / float(ft.max_value) * 100
+        return HttpResponse(json.dumps({'current': int(value), }), mimetype='application/json')
+
+    job = AsyncResult(id)
+    data = job.result or job.state
+
+    try:
+        json_data = json.dumps(data)
+    except:
+        data = {'current': 100, }
+        json_data = json.dumps(data)
 
     return HttpResponse(json_data, mimetype='application/json')
 
@@ -60,24 +72,8 @@ def save_files(request):
     file_type = request.POST.get('file_type')
     network = request.POST.get('network')
     filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
-    xml_types = [
-        'WCDMA RADIO OSS BULK CM XML FILE',
-        'WCDMA TRANSPORT OSS BULK CM XML FILE',
-        'Configuration Management XML File',
-    ]
-
-    if file_type in xml_types:
-        p = Process(target=tasks.upload_file, args=(
-            project.id,
-            description,
-            vendor,
-            file_type,
-            network,
-            filename))
-        p.start()
-    else:
-        tasks.worker.delay(filename, project, description, vendor, file_type, network)
-    data = dict(id=basename(filename))
+    job = tasks.worker.delay(filename, project, description, vendor, file_type, network)
+    data = dict(id=job.id)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 

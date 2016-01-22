@@ -27,8 +27,6 @@ urlpatterns = patterns('',
     url(r'^data/table/(\S+)/(\S+)/$', table_views.table),
     url(r'^data/explore/(\S+)/$', table_views.explore),
     url(r'^data/by_technology/(\S+)/$', table_views.by_technology),
-    url(r'^data/excel/$', table_views.excel),
-    url(r'^data/excel_status/(\S+)/(\S+)/(\S+)/$', table_views.excel_status),
 
     url(r'^data/maps/$', table_views.maps),
     url(r'^data/map/(\S+)/$', table_views.map),

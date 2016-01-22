@@ -12,42 +12,130 @@ from django.conf import settings
 
 from files.hw import HardWare
 from files.models import Files, CNATemplate
-from pymongo import MongoClient
-from pandas import DataFrame
+
+
+def get_mo(mo):
+    result = dict()
+    pattern = '(\w*)=(\w*-*\w*)'
+    k = re.compile(pattern)
+    for k, v in re.findall(k, mo):
+        result[k] = v
+    return result
 
 
 class Table(object):
 
-    def __init__(self, project_id, filename, table_name):
+    active_file = None
+
+    def __init__(self, table_name, filename):
+        self.conn = psycopg2.connect(
+            'host = %s dbname = %s user = %s password = %s' % (
+                settings.DATABASES['default']['HOST'],
+                settings.DATABASES['default']['NAME'],
+                settings.DATABASES['default']['USER'],
+                settings.DATABASES['default']['PASSWORD']))
         self.table_name = table_name
         self.filename = filename
-        self.project_id = project_id
-        client = MongoClient(settings.MONGO, 27017)
-        self.db = client.myxmart
+        self.sql_filename = ["'%s'" % f.lower() for f in self.filename.split(',')]
+        self.columns = self.get_columns()
+
+    def sort_columns(self, columns):
+        result = []
+        fixed_columns = [
+            'MO',
+            'Version',
+            'Vendor',
+            'Element',
+            'Element1',
+            'Element2',
+            'UtranCell',
+            'SectorCarrier',
+            'Carrier',
+            'Cell',
+            'BSC',
+            'Site',
+            'EUtrancellFDD',
+
+        ]
+        exists_columns = [column.lower() for column in columns]
+        for column in fixed_columns:
+            if column.lower() in exists_columns:
+                result.append(column)
+                exists_columns.remove(column.lower())
+        exists_columns.sort()
+        result.extend(exists_columns)
+        return result
+
+    def get_columns(self):
+        source_file = Files.objects.filter(filename=self.filename).first()
+        if source_file.network == 'GSM':
+            columns = ['%s' % col for col in CNATemplate.objects.filter(table_name=self.table_name).first().columns.split(',')]
+            return columns
+        if self.table_name in ['map_intrafreq', 'map_interfreq', 'map_gsmirat', 'hw_summary']:
+            return
+
+        if self.table_name == '3girat':
+            return ['Source', 'Target_IRAT', 'Priority', 'frequencyRelationType', 'RelationType', 'qOffset1sn']
+        elif self.table_name == 'neighbors_co-sc':
+            return ['Source', 'Primary_SC_Source', 'Site_Source', 'Target', 'Site_Target', 'Primary_SC_target', 'NEIGHBOR_CO_SC', 'SAME_SITE']
+        elif self.table_name == 'neighbors_two_ways':
+            return ['Source', 'Site_Source', 'Target', 'Site_Target', 'NEIGHBOR_MUTUAL_RELATION', 'SAME_SITE']
+        elif self.table_name == 'BrightcommsRNDDate':
+            columns = BRI(self.filename).columns
+            return columns
+
+
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT * FROM "%s" LIMIT 0' % (self.table_name.lower(), ))
+        columns = ['%s' % desc[0] for desc in cursor.description]
+        return self.sort_columns(columns)
 
     def get_data(self):
-        tables = self.db.tables
-        data = []
-        columns = []
-        t = tables.find({
-                'filename': self.filename,})
-        print t.count()
+        if self.table_name == '3girat':
+            return ThreeGIRAT(self.filename).data
 
+        elif self.table_name == 'BrightcommsRNDDate':
+            return BRI(self.filename).data
 
-        for row in tables.find({
-                'project_id': int(self.project_id),
-                'filename': self.filename,
-                'data_type': self.table_name}):
-            data.append(row)
+        elif self.table_name == 'map_intrafreq':
+            data = ThreeGMapIntraFreq(self.filename)
+            self.columns = data.columns
+            return data.data
 
-        df = DataFrame(data)
-        if '_id' in df.columns:
-            del df['_id']
-        if 'path' in df.columns:
-            del df['path']
-        columns = list(df.columns.values)
-        data = df.values.tolist()
-        return columns, data
+        elif self.table_name == 'map_interfreq':
+            data = ThreeGMapInterFreq(self.filename)
+            self.columns = data.columns
+            return data.data
+
+        elif self.table_name == 'map_interfreq':
+            data = ThreeGMapInterFreq(self.filename)
+            self.columns = data.columns
+            return data.data
+
+        elif self.table_name == 'map_gsmirat':
+            data = ThreeGMapGSMirat(self.filename)
+            self.columns = data.columns
+            return data.data
+
+        elif self.table_name == 'neighbors_co-sc':
+            return ThreeGNeighborsCOSC(self.filename).data
+
+        elif self.table_name == 'neighbors_two_ways':
+            return ThreeGNeighborsTwoWays(self.filename).data
+
+        elif self.table_name == 'hw_summary':
+            self.columns, data = HardWare().get_summary(self.filename)
+            return data
+
+        cursor = self.conn.cursor()
+        sql_columns = ','.join(['"%s"' % col.lower() for col in self.columns])
+        order_columns = sql_columns
+        if self.table_name == 'BrightcommsRNDDate':
+            order_columns = 'SITENAME, SECTORID, SITEID, CID'
+
+        cursor.execute('SELECT DISTINCT %s FROM "%s" WHERE lower(filename) IN (%s) ORDER BY %s' % (sql_columns, self.table_name.lower(), ','.join(self.sql_filename), order_columns))
+        data = cursor.fetchall()
+        return data
 
 
 class ThreeGNeighbors:
@@ -599,7 +687,7 @@ class BRI:
             rac AS RAC,
             uarfcndl AS CHANNELDL,
             uarfcnul AS CHANNELDUL,
-            band AS	FREQBAND,
+            band AS FREQBAND,
             primaryscramblingcode AS SC,
             primarycpichpower AS PCPICHPOWER,
             vendorname AS VENDOR,

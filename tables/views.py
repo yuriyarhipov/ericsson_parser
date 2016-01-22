@@ -13,10 +13,6 @@ from files.distance import Distance
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from excel import Excel as Dropbox_excel
-
-from multiprocessing import Process
-import redis
 
 
 def handle_uploaded_file(files):
@@ -53,8 +49,9 @@ def table(request, filename, table_name):
         f = Files.objects.get(filename=table_name, project=request.project)
         columns, data = f.get_data()
     else:
-        current_table = Table(request.project.id, filename, table_name)
-        columns, data = current_table.get_data()
+        current_table = Table(table_name, filename)
+        data = current_table.get_data()
+        columns = current_table.columns
 
     if request.GET.get('excel'):
         return HttpResponseRedirect(Excel(request.project.project_name, table_name, columns, data).filename)
@@ -70,30 +67,6 @@ def table(request, filename, table_name):
         data = t.page(t.num_pages)
 
     return HttpResponse(json.dumps({'columns': columns, 'data': data.object_list, 'count': data_length}), content_type='application/json')
-
-
-def excel(request):
-    def start_excel(project_id, filename, table):
-        Dropbox_excel().to_excel(project_id, filename, table)
-
-    p = Process(target=start_excel, args=(
-        request.POST.get('project_id'),
-        request.POST.get('filename'),
-        request.POST.get('table')))
-    p.start()
-    return HttpResponse(json.dumps({}), content_type='application/json')
-
-
-def excel_status(request, project_id, filename, table):
-    r = redis.StrictRedis(host=settings.REDIS, port=6379, db=0)
-    value = r.get('excel_%s_%s_%s' % (project_id, filename, table)).split(',')
-    if len(value) == 1:
-        value = value[0]
-        data = dict(url=value)
-    else:
-        value, message = value
-        data = dict(value=value, message=message)
-    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def rnd(request):
@@ -126,10 +99,11 @@ def explore(request, filename):
         if tree_file.network == 'GSM':
             if tree_file.file_type == 'GSM BSS CNA  OSS FILE':
                 tables = [{'table': cna_tables.table_name, 'filename': filename} for cna_tables in CNATemplate.objects.all()]
+
+
         else:
             tables = [{'table': table, 'filename': filename} for table in request.wcdma.tables.split(',')]
-    elif filename == 'nokia':
-        tables = []
+
     tables.sort()
     return HttpResponse(json.dumps(tables), content_type='application/json')
 
@@ -146,21 +120,20 @@ def by_technology(request, network):
     elif network == 'WCDMA':
         filename = request.wcdma.filename
         tables = request.wcdma.tables.split(',')
-
         tables.sort()
         data = [
             {'label': 'Universal3g3gNeighbors', 'table': 'Universal3g3gNeighbors', 'type': 'Universal table', 'filename': filename},
-#            {'label': '3G3GNeighbors', 'table': 'new3g', 'type': 'Additional table', 'filename': filename},
-#            {'label': 'Topology', 'table': 'topology', 'type': 'Additional table', 'filename': filename},
-#            {'label': 'RND', 'table': 'rnd_wcdma', 'type': 'Additional table', 'filename': filename},
-#            {'label': 'BrightcommsRNDDate', 'table': 'BrightcommsRNDDate', 'type': 'Additional table', 'filename': filename},
-#            {'label': '3GNeighbors', 'table': 'threegneighbors', 'type': 'Additional table', 'filename': filename},
-#            {'label': '3GIRAT', 'table': '3girat', 'type': 'Additional table', 'filename': filename},
-#            {'label': '3GMAP_INTRAFREQ', 'table': 'map_intrafreq', 'type': 'Additional table', 'filename': filename},
-#            {'label': '3GMAP_INTERFREQ', 'table': 'map_interfreq', 'type': 'Additional table', 'filename': filename},
-#            {'label': '3GMAP_GSMIRAT', 'table': 'map_gsmirat', 'type': 'Additional table', 'filename': filename},
-#            {'label': '3GNeighbors_CO-SC', 'table': 'neighbors_co-sc', 'type': 'Additional table', 'filename': filename},
-#            {'label': '3GNeighbors_TWO_WAYS', 'table': 'neighbors_two_ways', 'type': 'Additional table', 'filename': filename},
+            {'label': '3G3GNeighbors', 'table': 'new3g', 'type': 'Additional table', 'filename': filename},
+            {'label': 'Topology', 'table': 'topology', 'type': 'Additional table', 'filename': filename},
+            {'label': 'RND', 'table': 'rnd_wcdma', 'type': 'Additional table', 'filename': filename},
+            {'label': 'BrightcommsRNDDate', 'table': 'BrightcommsRNDDate', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GNeighbors', 'table': 'threegneighbors', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GIRAT', 'table': '3girat', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GMAP_INTRAFREQ', 'table': 'map_intrafreq', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GMAP_INTERFREQ', 'table': 'map_interfreq', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GMAP_GSMIRAT', 'table': 'map_gsmirat', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GNeighbors_CO-SC', 'table': 'neighbors_co-sc', 'type': 'Additional table', 'filename': filename},
+            {'label': '3GNeighbors_TWO_WAYS', 'table': 'neighbors_two_ways', 'type': 'Additional table', 'filename': filename},
         ]
         data.extend([{'label': table, 'table': table, 'type': 'XML table', 'filename': filename} for table in tables])
 
@@ -169,8 +142,8 @@ def by_technology(request, network):
         tables = request.lte.tables.split(',')
         tables.sort()
         data = [
- #           {'label': 'Topology', 'table': 'topology_lte', 'type': 'Additional table', 'filename': filename},
- #           {'label': 'RND', 'table': 'rnd_lte', 'type': 'Additional table', 'filename': filename},
+            {'label': 'Topology', 'table': 'topology_lte', 'type': 'Additional table', 'filename': filename},
+            {'label': 'RND', 'table': 'rnd_lte', 'type': 'Additional table', 'filename': filename},
         ]
         data.extend([{'label': table, 'table': table, 'type': 'XML table', 'filename': filename} for table in tables])
 
@@ -184,7 +157,7 @@ def by_technology(request, network):
             data_result.append(f)
 
     return HttpResponse(
-        json.dumps({'data': data_result, 'project_id': project.id, 'filename':filename}),
+        json.dumps(data_result),
         content_type='application/json')
 
 
@@ -415,4 +388,5 @@ def logical_sectors(request, logical_sector=None, sector=None):
 def psc_distance(request):
     project = request.project
     filename = request.wcdma.filename
+    print filename
     return Response(Distance().get_psc_distance(project.id, filename))

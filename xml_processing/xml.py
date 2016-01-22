@@ -132,6 +132,23 @@ class Tables:
               (Utrancell IS NOT NULL);
         ''')
 
+    def universal_3g3g_neighbors(self):
+        if self.network == 'LTE':
+            return
+        self.cursor.execute('DROP TABLE IF EXISTS Universal3g3gNeighbors;')
+        self.cursor.execute('''
+          SELECT DISTINCT
+            Utrancell as Source,
+            Neighbor as Target,
+            filename
+            INTO Universal3g3gNeighbors
+            FROM
+              UtranRelation
+            WHERE
+              (Neighbor IS NOT NUll) AND
+              (Utrancell IS NOT NULL);
+        ''')
+
     def topology(self):
         if self.network == 'LTE':
             return
@@ -320,17 +337,18 @@ class Tables:
 
     def create_additional_tables(self, network):
         self.network = network
+        self.universal_3g3g_neighbors()
 
-        self.topology()
-        self.topology_lte()
+        #self.topology()
+        #self.topology_lte()
 
-        self.rnd_wcdma()
-        self.rnd_lte()
+        #self.rnd_wcdma()
+        #self.rnd_lte()
 
-        self.fourgneighbors()
+        #self.fourgneighbors()
 
-        self.threegneighborss()
-        self.create_topology_tree_view()
+        #self.threegneighborss()
+        #self.create_topology_tree_view()
         self.conn.commit()
         self.conn.close()
 
