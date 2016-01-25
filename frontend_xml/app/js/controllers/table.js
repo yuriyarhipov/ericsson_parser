@@ -28,20 +28,18 @@ tableControllers.controller('byTechnologyCtrl', ['$scope', '$http',
     function ($scope, $http) {
         $scope.network = 'GSM';
         $http.get('/data/by_technology/GSM/').success(function(data) {
-            $scope.data = data.data;
+            $scope.data = data;
         });
 
         $scope.onChangeNetwork = function(){
             $http.get('/data/by_technology/' + $scope.network).success(function(data) {
-                $scope.data = data.data;
-                $scope.filename = data.filename;
-                $scope.project_id = data.project_id
+                $scope.data = data;
             });
         };
 
         $scope.onFilter = function(){
             $http.get('/data/by_technology/' + $scope.network + '?filter=' + $scope.file_filter).success(function(data) {
-                $scope.data = data.data;
+                $scope.data = data;
             });
         };
   }]);
