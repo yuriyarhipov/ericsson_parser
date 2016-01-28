@@ -186,8 +186,17 @@
                             <li><a href="#/about/">About</a></li>
                         </ul>
                     </li>
+                    <li class="dropdown" uib-dropdown>
+                        <a style="color: #ffffff" class="dropdown-toggle" data-toggle="dropdown" href="#" uib-dropdown-toggle>
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                            {{ username }} <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Change Password</a></li>
+                            <li><a href="#">Logout</a></li>
+                        </ul>
+                    </li>
                 </ul>
-                <h4 style="color:white">{{username}}({{project_name}})</h4>
         </div>
     </div>
 </nav>

@@ -29,7 +29,7 @@ class XmlPack:
             rar.extractall(self.xml_path)
             files = []
             for f in rar.infolist():
-                if ('.conf' in f.filename) or ('.msmt' in f.filename) or ('.xml' in f.filename) or ('.xls' in f.filename) or ('.txt' in f.filename):
+                if ('.conf' in f.filename) or ('.msmt' in f.filename) or ('.xml' in f.filename) or ('.xls' in f.filename) or ('.txt' in f.filename) or ('.FMT' in f.filename):
                     files.append(path.join(self.xml_path, f.filename.replace('\\','/')))
             return files
 
@@ -38,7 +38,7 @@ class XmlPack:
         with ZipFile(self.file) as zip:
             zip.extractall(self.xml_path)
             for f in zip.infolist():
-                if ('.conf' in f.filename) or ('.msmt' in f.filename) or ('.xml' in f.filename) or ('.xls' in f.filename) or ('.txt' in f.filename):
+                if ('.conf' in f.filename) or ('.msmt' in f.filename) or ('.xml' in f.filename) or ('.xls' in f.filename) or ('.txt' in f.filename) or ('.FMT' in f.filename):
                     files.append(path.join(self.xml_path, f.filename.replace('\\','/')))
         return files
 

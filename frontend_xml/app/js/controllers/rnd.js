@@ -822,6 +822,25 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
 
             };
+
+            map.drive_test = function(){
+                usSpinnerService.spin('spinner_map');
+                $http.get('/data/drive_test/').success(function(data){
+
+                    for (i in data){
+                        var circle = L.circle(data[i], 1, {
+                            color: 'black',
+                            fillColor: 'black',
+                            fillOpacity: 1,
+                            opacity:1,
+                        });
+                        circle.addTo(map)
+                    }
+                    map.setView(data[0], 18);
+                    usSpinnerService.stop('spinner_map');
+                });
+            };
+
         });
 }]);
 

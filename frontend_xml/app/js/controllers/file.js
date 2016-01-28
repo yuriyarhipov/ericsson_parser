@@ -30,7 +30,8 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
                     'WCDMA LICENSE FILE OSS XML',
                     'WCDMA HARDWARE FILE OSS XML',
                     'HISTOGRAM FORMAT COUNTER',
-                    'HISTOGRAM FILE COUNTER - Access Distance'
+                    'HISTOGRAM FILE COUNTER - Access Distance',
+                    'Drive Test'
                 ];
         $scope.CurrentNetwork = $scope.Network[0];
         $scope.CurrentTypeFile = $scope.TypeFile[0];
@@ -47,14 +48,16 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
                     'WCDMA LICENSE FILE OSS XML',
                     'WCDMA HARDWARE FILE OSS XML',
                     'HISTOGRAM FORMAT COUNTER',
-                    'HISTOGRAM FILE COUNTER - Access Distance'
+                    'HISTOGRAM FILE COUNTER - Access Distance',
+                    'Drive Test'
                 ];
             }
             if ($scope.CurrentNetwork == 'GSM'){
                 $scope.TypeFile = [
                     'GSM BSS CNA  OSS FILE',
                     'GSM NCS OSS FILE',
-                    'GSM MRR OSS FILE'
+                    'GSM MRR OSS FILE',
+                    'Drive Test'
                 ];
             }
             if ($scope.CurrentNetwork == 'LTE'){
@@ -62,7 +65,8 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
                     'LTE RADIO eNodeB BULK CM XML FILE',
                     'LTE TRANSPORT eNodeB BULK CM XML FILE',
                     'LTE LICENSE FILE OSS XML',
-                    'LTE HARDWARE FILE OSS XML'
+                    'LTE HARDWARE FILE OSS XML',
+                    'Drive Test'
                 ];
             }
 

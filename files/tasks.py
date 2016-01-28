@@ -32,6 +32,7 @@ def worker(filename, project, description, vendor, file_type, network):
     from files.lic import License
     from files.hw import HardWare
     from files.distance import Distance
+    from files.drive_test import DriveTest
     from files.models import Files
 
     xml_types = [
@@ -67,6 +68,7 @@ def worker(filename, project, description, vendor, file_type, network):
     ]
 
     work_file = XmlPack(filename).get_files()[0]
+    print work_file
     task = current_task
     task.update_state(state="PROGRESS", meta={"current": 1})
 
@@ -132,6 +134,10 @@ def worker(filename, project, description, vendor, file_type, network):
             file_type,
             network,
             current_task)
+
+    if file_type == 'Drive Test':
+        dt = DriveTest()
+        dt.upload_file(work_file, project.id, current_task)
 
     task.update_state(state='PROGRESS', meta={"current": 100, })
     revoke(worker.request.id, terminate=True)

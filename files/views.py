@@ -16,6 +16,7 @@ from tables.table import Table
 from files.compare import CompareFiles, CompareTable
 from files.excel import ExcelFile
 from files.distance import Distance
+from files.drive_test import DriveTest
 from rnd import Rnd
 import tasks
 from os import makedirs
@@ -405,3 +406,14 @@ def get_rnd_pd(request, network, sector, date_from, date_to):
 def get_same_neighbor(request):
     project = request.project
     return Response(Rnd(project.id, 'wcdma').same_neighbor(request.wcdma.filename))
+
+
+@api_view(['GET', ])
+def drive_test(request):
+    project_id = request.project.id
+    dt = DriveTest()
+    data = []
+    for p in dt.get_points():
+        data.append(p.split(','))
+
+    return Response(data)

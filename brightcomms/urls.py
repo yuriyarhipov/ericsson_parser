@@ -104,6 +104,7 @@ urlpatterns = patterns('',
     url(r'^data/rnd/map_frame/(\S+)/$', files_views.map_frame),
     url(r'^data/rnd/(\S+)/$', files_views.rnd),
     url(r'^data/rnd/$', files_views.rnd),
+    url(r'^data/drive_test/$', files_views.drive_test),
 
     url(r'^data/admin/', include(admin.site.urls)),
     url(r'^data/api-auth/', include('rest_framework.urls', namespace='rest_framework'))

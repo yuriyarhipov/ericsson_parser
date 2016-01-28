@@ -54,6 +54,9 @@ L.Control.ToolBar = L.Control.extend({
         this.neigh4gButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
         this.neigh4gButton.innerHTML = '4G-4G';
 
+        this.dtButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
+        this.dtButton.innerHTML = 'Drive Test';
+
         //layers
         this.div_checkbox_gsm = L.DomUtil.create('div', 'checkbox', map._layerDiv);
         this.layer_label_gsm = L.DomUtil.create('label', '', this.div_checkbox_gsm);
@@ -343,6 +346,9 @@ L.Control.ToolBar = L.Control.extend({
                 //map._layer_checkbox_gsm.checked = true;
                 map._layer_checkbox_gsm.setAttribute('checked', '');
                 console.log(map._layer_checkbox_gsm.checked);
+            })
+            .addListener(this.dtButton, 'click', function(e){
+                map.drive_test();
             })
 
 
