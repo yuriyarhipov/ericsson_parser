@@ -408,12 +408,22 @@ def get_same_neighbor(request):
     return Response(Rnd(project.id, 'wcdma').same_neighbor(request.wcdma.filename))
 
 
-@api_view(['GET', ])
+@api_view(['POST', ])
 def drive_test(request):
     project_id = request.project.id
+    map_bounds = request.POST.get('bounds').split(',')
+    zoom = int(request.POST.get('zoom'))
     dt = DriveTest()
     data = []
-    for p in dt.get_points():
-        data.append(p.split(','))
-
+    for p in dt.get_points(project_id, map_bounds, zoom):
+        data.append([p[0], p[1]])
     return Response(data)
+
+
+@api_view(['GET', ])
+def drive_test_init(request):
+    project_id = request.project.id
+    dt = DriveTest()
+    data = dt.init_drive_test(project_id)
+    return Response(data)
+

@@ -767,14 +767,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             };
 
             map.on('moveend', function(e){
-                map_bounds = map.getBounds();
-                var params = {
-                    'bounds': map_bounds.toBBoxString(),
-                };
-                //$http.post('/data/rnd/map_frame/wcdma/', $.param(params)).success(function(data){
-                //    console.log(data);
-                //});
-
+                map.refresh_drive_test();
             });
 
             map.on('zoomend', function(e){
@@ -823,22 +816,44 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
             };
 
-            map.drive_test = function(){
-                usSpinnerService.spin('spinner_map');
-                $http.get('/data/drive_test/').success(function(data){
+            map.refresh_drive_test = function(){
+                if (map._is_drive_test){
+                    usSpinnerService.spin('spinner_map');
+                    map_bounds = map.getBounds();
+                    var params = {
+                        'bounds': map_bounds.toBBoxString(),
+                        'zoom': map._zoom,
+                    };
 
-                    for (i in data){
-                        var circle = L.circle(data[i], 1, {
-                            color: 'black',
-                            fillColor: 'black',
-                            fillOpacity: 1,
-                            opacity:1,
-                        });
-                        circle.addTo(map)
-                    }
-                    map.setView(data[0], 18);
-                    usSpinnerService.stop('spinner_map');
-                });
+                    $http.post('/data/drive_test/', $.param(params)).success(function(data){
+                        for (i in data){
+                            var circle = L.circle(data[i], 1, {
+                                color: 'black',
+                                fillColor: 'black',
+                                fillOpacity: 1,
+                                opacity:1,
+                            });
+                            circle.addTo(map)
+                        }
+
+                        usSpinnerService.stop('spinner_map');
+                    });
+                }
+            };
+
+            map.drive_test = function(){
+                if (map._is_drive_test){
+                    map._is_drive_test = false;
+                } else {
+                    map._is_drive_test = true;
+                    usSpinnerService.spin('spinner_map');
+                    $http.get('/data/drive_test_init/').success(function(data){
+                        $scope.mobile_stations = data.mobile_stations;
+                        $scope.kpi = data.kpi;
+                        map.setView(data.start_point, 17);
+                        usSpinnerService.stop('spinner_map');
+                    });
+                }
             };
 
         });
