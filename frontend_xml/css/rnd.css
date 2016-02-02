@@ -96,3 +96,15 @@
     height: 600px;
 }
 
+.main_drive_test {
+    width: 200px;
+    height: 450px;
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-style: solid;
+    border-radius: 5px;
+    border-color: gray;
+}

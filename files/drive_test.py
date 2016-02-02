@@ -15,11 +15,21 @@ class DriveTest():
     def init_drive_test(self, project_id):
         cursor = self.conn.cursor()
         table_name = 'TERMS_%s' % project_id
+        mobile_stations = []
+        cursor.execute('''SELECT DISTINCT "MS"
+            FROM ''' + table_name + '''
+            WHERE (project_id=%s) ORDER BY "MS"''', (project_id,))
+        for row in cursor:
+            mobile_stations.append(row[0])
+
         cursor.execute('''SELECT "All-Latitude", "All-Longitude"
             FROM ''' + table_name + '''
             WHERE (project_id=%s)   LIMIT 1''', (project_id,))
         init_row = cursor.fetchone()
-        return dict(start_point=[init_row[0], init_row[1]])
+        data = dict(
+            start_point=[init_row[0], init_row[1]],
+            mobile_stations=mobile_stations)
+        return data
 
     def upload_file(self, filename, project_id, current_task):
         cursor = self.conn.cursor()

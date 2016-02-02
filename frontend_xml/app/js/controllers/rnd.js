@@ -646,6 +646,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
         leafletData.getMap().then(function(map) {
             L.Control.toolBar().addTo(map);
+            map._drive_test = L.Control.driveTest().addTo(map);
+            console.log(map);
             L.control.scale().addTo(map);
             L.Control.measureControl({ position:'topright' }).addTo(map);
             map._layerControl = L.control.layers().addTo(map);
@@ -828,8 +830,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     $http.post('/data/drive_test/', $.param(params)).success(function(data){
                         for (i in data){
                             var circle = L.circle(data[i], 1, {
-                                color: 'black',
-                                fillColor: 'black',
+                                color: randomColor({hue: 'random',luminosity: 'dark'}),
+                                fillColor: randomColor({hue: 'random',luminosity: 'dark'}),
                                 fillOpacity: 1,
                                 opacity:1,
                             });
@@ -848,6 +850,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     map._is_drive_test = true;
                     usSpinnerService.spin('spinner_map');
                     $http.get('/data/drive_test_init/').success(function(data){
+                        map._drive_test.set_mobile_stations(map, data.mobile_stations);
                         $scope.mobile_stations = data.mobile_stations;
                         $scope.kpi = data.kpi;
                         map.setView(data.start_point, 17);
