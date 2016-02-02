@@ -343,3 +343,11 @@ class AuditTemplate(models.Model):
             if float(row[1]) == float(self.value):
                 complaint += 1
         return {'complaint': complaint, }
+
+
+class DriveTestLegend(models.Model):
+    project = models.ForeignKey(Project)
+    param = models.TextField()
+    min_value = models.TextField()
+    max_value = models.TextField()
+    color = models.TextField()

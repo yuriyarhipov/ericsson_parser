@@ -24,8 +24,14 @@ L.Control.DriveTest = L.Control.extend({
         }
 
     },
-    set_kpi: function(){
-        console.log('t2')
+    set_kpi: function(map, kpi){
+        var kpi_div = L.DomUtil.create('div', 'col-md-12', this.kpi_main_div);
+        kpi_select = L.DomUtil.create('select', 'form-control', kpi_div);
+        for (i in kpi){
+            var kpi_option = L.DomUtil.create('option', '', kpi_select);
+            kpi_option.setAttribute('value', kpi[i]);
+            kpi_option.innerHTML=kpi[i];
+        }
     }
 });
 

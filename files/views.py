@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from celery.result import AsyncResult
 
-from .models import Files, UploadedFiles, SuperFile, CNATemplate, FileTasks
+from .models import Files, UploadedFiles, SuperFile, CNATemplate, FileTasks, DriveTestLegend
 from tables.table import Table
 from files.compare import CompareFiles, CompareTable
 from files.excel import ExcelFile
@@ -422,8 +422,58 @@ def drive_test(request):
 
 @api_view(['GET', ])
 def drive_test_init(request):
+    project = request.project
     project_id = request.project.id
     dt = DriveTest()
+    kpi = []
     data = dt.init_drive_test(project_id)
+    for r in DriveTestLegend.objects.filter(project=project).distinct('param'):
+        kpi.append(r.param)
+    data['kpi'] = kpi
     return Response(data)
+
+
+def set_drive_test_legend(request):
+    project = request.project
+    filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
+    wb = load_workbook(filename=filename, use_iterators=True)
+    result = []
+    sheet_name = wb.get_sheet_names()[0]
+    ws = wb.get_sheet_by_name(sheet_name)
+    param_name = ''
+    DriveTestLegend.objects.filter(project=project).delete()
+    for row in ws.iter_rows():
+        if row[0].value == '**':
+            param_name = row[1].value
+        else:
+            if row[3].value:
+                if row[1].value:
+                    min_val = row[1].value
+                else:
+                    min_val = ''
+                if row[2].value:
+                    max_val = row[2].value
+                else:
+                    max_val = ''
+                color = row[3].value
+
+            result.append([param_name, min_val, max_val, color])
+
+            DriveTestLegend.objects.create(
+                project=project,
+                param=param_name,
+                min_value=min_val,
+                max_value=max_val,
+                color=color)
+    return HttpResponse(json.dumps(result), content_type='application/json')
+
+
+@api_view(['GET', ])
+def get_drive_test_legend(request):
+    project = request.project
+    data = []
+    for dtl in DriveTestLegend.objects.filter(project=project):
+        data.append([dtl.param, dtl.min_value, dtl.max_value, dtl.color])
+    return Response(data)
+
 

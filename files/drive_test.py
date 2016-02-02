@@ -78,7 +78,7 @@ class DriveTest():
         self.conn.commit()
 
     def get_points(self, project_id, map_bounds, zoom):
-        zoom_k = [1000, 900, 800, 700, 600, 550, 500, 450, 400, 350, 300, 250, 200, 100, 50, 10, 5, 2, 1]
+        zoom_k = [2000, 1500, 1400, 1300, 1200, 1100, 1000, 900, 800, 700, 600, 500, 400, 300, 200, 100, 50, 20, 10]
         table_name = 'TERMS_%s' % project_id
         map_box = box(
             float(map_bounds[1]),

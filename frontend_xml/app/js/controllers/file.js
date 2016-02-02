@@ -263,3 +263,17 @@ filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams'
         };
         $timeout(getStatus, 0);
   }]);
+
+filesControllers.controller('driveTestLegendCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        function get_legend(){
+            $http.get('/data/files/get_drive_test_legend/').success(function(data){
+                $scope.legend = data;
+            });
+        }
+        get_legend();
+        $scope.complete = function(data){
+            $scope.legend = data;
+        };
+
+}]);

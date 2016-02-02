@@ -106,6 +106,8 @@ urlpatterns = patterns('',
     url(r'^data/rnd/$', files_views.rnd),
     url(r'^data/drive_test/$', files_views.drive_test),
     url(r'^data/drive_test_init/$', files_views.drive_test_init),
+    url(r'^data/files/set_drive_test_legend/$', files_views.set_drive_test_legend),
+    url(r'^data/files/get_drive_test_legend/$', files_views.get_drive_test_legend),
 
 
     url(r'^data/admin/', include(admin.site.urls)),

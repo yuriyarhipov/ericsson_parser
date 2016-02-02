@@ -826,6 +826,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         'bounds': map_bounds.toBBoxString(),
                         'zoom': map._zoom,
                     };
+                    if (map._drive_test.points){
+                        map.removeLayer(map._drive_test.points);
+                    }
+
+                    map._drive_test.points = L.layerGroup();
 
                     $http.post('/data/drive_test/', $.param(params)).success(function(data){
                         for (i in data){
@@ -835,8 +840,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                                 fillOpacity: 1,
                                 opacity:1,
                             });
-                            circle.addTo(map)
+                            //circle.addTo(map);
+                            map._drive_test.points.addLayer(circle);
                         }
+                        map._drive_test.points.addTo(map)
+
 
                         usSpinnerService.stop('spinner_map');
                     });
@@ -851,6 +859,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     usSpinnerService.spin('spinner_map');
                     $http.get('/data/drive_test_init/').success(function(data){
                         map._drive_test.set_mobile_stations(map, data.mobile_stations);
+                        map._drive_test.set_kpi(map, data.kpi);
                         $scope.mobile_stations = data.mobile_stations;
                         $scope.kpi = data.kpi;
                         map.setView(data.start_point, 17);

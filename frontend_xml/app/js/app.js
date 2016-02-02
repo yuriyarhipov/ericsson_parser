@@ -212,6 +212,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/tables/excel.html',
                 controller: 'excelCtrl'
             }).
+            when('/set_drive_test_legend/',{
+                templateUrl: 'templates/rnd/set_drive_test_legend.html',
+                controller: 'driveTestLegendCtrl'
+            }).
             otherwise({
                 templateUrl: 'templates/projects.html',
                 controller: 'ProjectsCtrl'
