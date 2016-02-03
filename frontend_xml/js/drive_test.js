@@ -29,6 +29,7 @@ L.Control.DriveTest = L.Control.extend({
             .addListener(this.drive_test_div, 'click', L.DomEvent.preventDefault)
             .addListener(ms_select, 'change', function (e) {
                 map._drive_test._ms = e.target.value;
+                map.refresh_drive_test();
             })
 
     },
@@ -48,6 +49,7 @@ L.Control.DriveTest = L.Control.extend({
             .addListener(kpi_div, 'click', L.DomEvent.preventDefault)
             .addListener(kpi_select, 'change', function (e) {
                 map._drive_test._parameter = e.target.value;
+                map.refresh_drive_test();
             })
     },
     set_legends: function(map, legends){
@@ -64,6 +66,7 @@ L.Control.DriveTest = L.Control.extend({
             .addListener(legend_div, 'click', L.DomEvent.preventDefault)
             .addListener(legend_select, 'change', function (e) {
                 map._drive_test._legend = e.target.value;
+                map.refresh_drive_test()
             })
     }
 });

@@ -840,36 +840,18 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     }
 
                     map._drive_test.points = L.layerGroup();
-
-                    var p = [];
-                    var color1 = 'blue';//randomColor({hue: 'random',luminosity: 'dark'});
-                    var color2 = 'red';//randomColor({hue: 'random',luminosity: 'dark'});
-                    var current_color = true;
                     $http.post('/data/drive_test/', $.param(params)).success(function(data){
                         for (i in data){
-                            p.push(data[i]);
-                            if (p.length > 10){
-                                if (current_color){
-                                    L.polyline(p, {color: color1}).addTo(map);
-                                    current_color = false;
-                                } else{
-                                    L.polyline(p, {color: color2}).addTo(map);
-                                    current_color = true;
-                                }
-                                p = [];
-                            }
-
-                            //var circle = L.circle(data[i], 1, {
-                            //    color: randomColor({hue: 'random',luminosity: 'dark'}),
-                            //    fillColor: randomColor({hue: 'random',luminosity: 'dark'}),
-                            //    fillOpacity: 1,
-                            //    opacity:1,
-                            //});
-                            //map._drive_test.points.addLayer(circle);
+                            var circle = L.circle([data[i][0],data[i][1]], 3, {
+                                color: data[i][2],
+                                fillColor: data[i][2],
+                                fillOpacity: 1,
+                                opacity:0.7,
+                                width:1,
+                            });
+                            map._drive_test.points.addLayer(circle);
                         }
-                        //map._drive_test.points.addTo(map)
-
-
+                        map._drive_test.points.addTo(map)
                         usSpinnerService.stop('spinner_map');
                     });
                 }

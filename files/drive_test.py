@@ -18,7 +18,7 @@ class DriveTest():
         cursor.execute('''SELECT *
             FROM ''' + table_name + '''
             WHERE (project_id=%s) LIMIT 0''', (project_id,))
-        colnames = [desc[0].lower() for desc in cursor.description]
+        colnames = [desc[0] for desc in cursor.description]
         return colnames
 
     def init_drive_test(self, project_id):
@@ -28,7 +28,7 @@ class DriveTest():
         cursor.execute('''SELECT *
             FROM ''' + table_name + '''
             WHERE (project_id=%s) LIMIT 0''', (project_id,))
-        parameters = [desc[0].lower() for desc in cursor.description]
+        parameters = [desc[0] for desc in cursor.description]
 
         cursor.execute('''SELECT DISTINCT "MS"
             FROM ''' + table_name + '''
@@ -43,7 +43,7 @@ class DriveTest():
         data = dict(
             start_point=[init_row[0], init_row[1]],
             mobile_stations=mobile_stations,
-            parameters = parameters)
+            parameters=parameters)
         return data
 
     def upload_file(self, filename, project_id, current_task):
@@ -69,7 +69,7 @@ class DriveTest():
         with open(filename) as f:
             columns = []
             cursor.execute("Select * FROM %s LIMIT 0" % (table_name, ))
-            colnames = [desc[0].lower() for desc in cursor.description]
+            colnames = [desc[0] for desc in cursor.description]
             for col in f.readline().split('\t'):
                 columns.append(col)
                 if (col.lower() not in colnames):
@@ -92,8 +92,18 @@ class DriveTest():
                 (filename is NULL)''', (project_id, basename(filename)))
         self.conn.commit()
 
-    def get_points(self, project_id, map_bounds, zoom):
-        zoom_k = [2000, 1500, 1400, 1300, 1200, 1100, 1000, 900, 800, 700, 600, 500, 400, 300, 200, 100, 50, 20, 10]
+    def get_color(self, legend, value):
+        for l in legend:
+            if (l.get('max_value')) and (l.get('min_value')):
+                try:
+                    if (float(value) <= float(l.get('max_value'))) and (float(value)>float(l.get('min_value'))):
+                        print 'BINGO!!!'
+                        return l.get('color')
+                except:
+                    pass
+        return '#000000'
+
+    def get_points(self, project_id, ms, param, legend, map_bounds, zoom):
         table_name = 'TERMS_%s' % project_id
         map_box = box(
             float(map_bounds[1]),
@@ -102,14 +112,19 @@ class DriveTest():
             float(map_bounds[2]))
         points = []
         cursor = self.conn.cursor()
-        cursor.execute('''SELECT "All-Latitude", "All-Longitude" FROM ''' + table_name + ''' WHERE (project_id=%s) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"='MS1') ORDER BY id''', (project_id, map_box.wkt))
+
+
+        cursor.execute('''SELECT DISTINCT id, "All-Latitude", "All-Longitude", "''' + param +'''" FROM ''' + table_name + ''' WHERE (project_id=%s) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"=%s) ORDER BY id''', (project_id, map_box.wkt, ms))
+        row_count = cursor.rowcount
+        k = row_count / 1000
+        i = 0
+        print row_count
         for row in cursor:
-            if len(points) > 0:
-                distance = vincenty(points[-1], row).meters
-                if distance > zoom_k[zoom]:
-                    points.append(row)
+            if i == k:
+                points.append([row[1], row[2], self.get_color(legend, row[3])])
+                i = 0
             else:
-                points.append(row)
+                i += 1
         return points
 
 

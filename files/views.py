@@ -413,10 +413,20 @@ def drive_test(request):
     project_id = request.project.id
     map_bounds = request.POST.get('bounds').split(',')
     zoom = int(request.POST.get('zoom'))
+    ms = request.POST.get('ms')
+    param = request.POST.get('parameter')
+    legend = []
+
+    for p in DriveTestLegend.objects.filter(project=request.project, param=request.POST.get('legend')):
+        legend.append({
+            'param': p.param,
+            'min_value': p.min_value,
+            'max_value': p.max_value,
+            'color': p.color
+        })
+
     dt = DriveTest()
-    data = []
-    for p in dt.get_points(project_id, map_bounds, zoom):
-        data.append([p[0], p[1]])
+    data = dt.get_points(project_id, ms, param, legend, map_bounds, zoom)
     return Response(data)
 
 
