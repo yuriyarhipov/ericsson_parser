@@ -791,6 +791,12 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 }
             });
 
+            map._drive_test_param = function(ms){
+                $http.get('/data/files/get_drive_test_param/'+ ms + '/').success(function(data){
+                    map._drive_test.set_kpi(map, data);
+                });
+            };
+
 
             map.select_sector = function(layer){
                 if (layer._map._current_sector){
@@ -825,6 +831,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     var params = {
                         'bounds': map_bounds.toBBoxString(),
                         'zoom': map._zoom,
+                        'ms': map._drive_test._ms,
+                        'parameter': map._drive_test._parameter,
+                        'legend': map._drive_test._legend,
                     };
                     if (map._drive_test.points){
                         map.removeLayer(map._drive_test.points);
@@ -832,18 +841,33 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
                     map._drive_test.points = L.layerGroup();
 
+                    var p = [];
+                    var color1 = 'blue';//randomColor({hue: 'random',luminosity: 'dark'});
+                    var color2 = 'red';//randomColor({hue: 'random',luminosity: 'dark'});
+                    var current_color = true;
                     $http.post('/data/drive_test/', $.param(params)).success(function(data){
                         for (i in data){
-                            var circle = L.circle(data[i], 1, {
-                                color: randomColor({hue: 'random',luminosity: 'dark'}),
-                                fillColor: randomColor({hue: 'random',luminosity: 'dark'}),
-                                fillOpacity: 1,
-                                opacity:1,
-                            });
-                            //circle.addTo(map);
-                            map._drive_test.points.addLayer(circle);
+                            p.push(data[i]);
+                            if (p.length > 10){
+                                if (current_color){
+                                    L.polyline(p, {color: color1}).addTo(map);
+                                    current_color = false;
+                                } else{
+                                    L.polyline(p, {color: color2}).addTo(map);
+                                    current_color = true;
+                                }
+                                p = [];
+                            }
+
+                            //var circle = L.circle(data[i], 1, {
+                            //    color: randomColor({hue: 'random',luminosity: 'dark'}),
+                            //    fillColor: randomColor({hue: 'random',luminosity: 'dark'}),
+                            //    fillOpacity: 1,
+                            //    opacity:1,
+                            //});
+                            //map._drive_test.points.addLayer(circle);
                         }
-                        map._drive_test.points.addTo(map)
+                        //map._drive_test.points.addTo(map)
 
 
                         usSpinnerService.stop('spinner_map');
@@ -859,10 +883,15 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     usSpinnerService.spin('spinner_map');
                     $http.get('/data/drive_test_init/').success(function(data){
                         map._drive_test.set_mobile_stations(map, data.mobile_stations);
-                        map._drive_test.set_kpi(map, data.kpi);
-                        $scope.mobile_stations = data.mobile_stations;
-                        $scope.kpi = data.kpi;
+                        map._drive_test.set_parameters(map, data.parameters);
+                        map._drive_test.set_legends(map, data.legends);
+                        map._drive_test._ms = data.mobile_stations[0];
+                        map._drive_test._parameter = data.parameters[0];
+                        map._drive_test._legend = data.legends[0];
+
                         map.setView(data.start_point, 17);
+                        //cm = L.marker(data.start_point);
+                        //map.addLayer(cm);
                         usSpinnerService.stop('spinner_map');
                     });
                 }

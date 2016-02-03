@@ -425,11 +425,11 @@ def drive_test_init(request):
     project = request.project
     project_id = request.project.id
     dt = DriveTest()
-    kpi = []
+    legends = []
     data = dt.init_drive_test(project_id)
     for r in DriveTestLegend.objects.filter(project=project).distinct('param'):
-        kpi.append(r.param)
-    data['kpi'] = kpi
+        legends.append(r.param)
+    data['legends'] = legends
     return Response(data)
 
 
@@ -475,5 +475,14 @@ def get_drive_test_legend(request):
     for dtl in DriveTestLegend.objects.filter(project=project):
         data.append([dtl.param, dtl.min_value, dtl.max_value, dtl.color])
     return Response(data)
+
+
+@api_view(['GET', ])
+def get_drive_test_param(request, ms):
+    dt = DriveTest()
+    project = request.project
+    params = dt.get_params(project.id, ms)
+    return Response(params)
+
 
 

@@ -12,10 +12,24 @@ class DriveTest():
             'host = localhost user = postgres password = 1297536 port=5432 dbname=xml2'
         )
 
+    def get_params(self, project_id, ms):
+        cursor = self.conn.cursor()
+        table_name = 'TERMS_%s' % project_id
+        cursor.execute('''SELECT *
+            FROM ''' + table_name + '''
+            WHERE (project_id=%s) LIMIT 0''', (project_id,))
+        colnames = [desc[0].lower() for desc in cursor.description]
+        return colnames
+
     def init_drive_test(self, project_id):
         cursor = self.conn.cursor()
         table_name = 'TERMS_%s' % project_id
         mobile_stations = []
+        cursor.execute('''SELECT *
+            FROM ''' + table_name + '''
+            WHERE (project_id=%s) LIMIT 0''', (project_id,))
+        parameters = [desc[0].lower() for desc in cursor.description]
+
         cursor.execute('''SELECT DISTINCT "MS"
             FROM ''' + table_name + '''
             WHERE (project_id=%s) ORDER BY "MS"''', (project_id,))
@@ -28,7 +42,8 @@ class DriveTest():
         init_row = cursor.fetchone()
         data = dict(
             start_point=[init_row[0], init_row[1]],
-            mobile_stations=mobile_stations)
+            mobile_stations=mobile_stations,
+            parameters = parameters)
         return data
 
     def upload_file(self, filename, project_id, current_task):
