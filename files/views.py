@@ -437,9 +437,11 @@ def drive_test_init(request):
     dt = DriveTest()
     legends = []
     data = dt.init_drive_test(project_id)
-    for r in DriveTestLegend.objects.filter(project=project).distinct('param'):
-        legends.append(r.param)
-    data['legends'] = legends
+    for l in DriveTestLegend.objects.filter(project=project):
+        legends.append({'param': l.param, 'max_val': l.max_value, 'min_val': l.min_value, 'color': l.color})
+
+    data['legends'] = list(set(l.get('param') for l in legends))
+    data['full_legends'] = legends
     return Response(data)
 
 

@@ -646,8 +646,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
         leafletData.getMap().then(function(map) {
             L.Control.toolBar().addTo(map);
-            map._drive_test = L.Control.driveTest().addTo(map);
-            console.log(map);
             L.control.scale().addTo(map);
             L.Control.measureControl({ position:'topright' }).addTo(map);
             map._layerControl = L.control.layers().addTo(map);
@@ -838,6 +836,20 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     if (map._drive_test.points){
                         map.removeLayer(map._drive_test.points);
                     }
+                    while (map._dt_win.legend_table.firstChild) {
+                        map._dt_win.legend_table.removeChild(map._dt_win.legend_table.firstChild);
+                    }
+
+                    for (i in map._drive_test._full_legend){
+                        if (map._drive_test._full_legend[i].param == map._drive_test._legend){
+                            var row_value = L.DomUtil.create('tr', 'col-md-12', map._dt_win.legend_table);
+                            var cell_btn = L.DomUtil.create('td', 'col-md-12', row_value);
+                            console.log(map._drive_test._full_legend[i]);
+                            cell_btn.innerHTML ='<i class="pd_i" style="background:' + map._drive_test._full_legend[i].color + '"></i> ' + map._drive_test._full_legend[i].min_val +' to '+ map._drive_test._full_legend[i].max_val + '<br>';
+                            //cell_btn.innerHTML ='<i class="pd_i" style="background:' + map._drive_test._full_legend[i].color + '"></i> ' + map._drive_test._full_legend[i].min_val +'<'+ map._drive_test._parameter + '<=' + map._drive_test._full_legend[i].max_val + '<br>';
+                        }
+                    }
+
 
                     map._drive_test.points = L.layerGroup();
                     $http.post('/data/drive_test/', $.param(params)).success(function(data){
@@ -857,23 +869,93 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 }
             };
 
+            map.create_drive_test_tool_bar = function(){
+                map._dt_win = L.control.window(map,{position: 'left',});
+                var window_div = map._dt_win.getContainer()
+                var drive_test_div = L.DomUtil.create('div', 'drive_test main_drive_test', window_div);
+                var ms_main_div = map._dt_win.ms_main_div = L.DomUtil.create('div', 'col-md-12', drive_test_div);
+                var ms_header = L.DomUtil.create('div', 'col-md-12', ms_main_div);
+                ms_header.innerHTML = '<h5>Mobile Stations</h5>'
+                var kpi_main_div = map._dt_win.kpi_main_div = L.DomUtil.create('div', 'col-md-12', drive_test_div);
+                var kpi_header = L.DomUtil.create('div', 'col-md-12', kpi_main_div);
+                kpi_header.innerHTML = '<h5>Parameters:</h5>'
+                var legend_main_div = map._dt_win.legend_main_div = L.DomUtil.create('div', 'col-md-12', drive_test_div);
+
+                map._dt_win.on('close', function(){
+                    delete map._dt_win
+                });
+
+            };
+
+            var set_dt_mobile_stations = function(ms){
+                var ms_div = L.DomUtil.create('div', 'col-md-12', map._dt_win.ms_main_div);
+                var ms_select = L.DomUtil.create('select', 'form-control', ms_div);
+                for (i in ms){
+                    var ms_option = L.DomUtil.create('option', '', ms_select);
+                    ms_option.setAttribute('value', ms[i]);
+                    ms_option.innerHTML=ms[i];
+                }
+                L.DomEvent
+                    .addListener(ms_select, 'change', function (e) {
+                        map._drive_test._ms = e.target.value;
+                        map.refresh_drive_test();
+                    })
+
+            };
+
+            set_dt_parameters = function(kpi){
+                var kpi_div = L.DomUtil.create('div', 'col-md-12', map._dt_win.kpi_main_div);
+                kpi_select = L.DomUtil.create('select', 'form-control', kpi_div);
+                for (i in kpi){
+                    var kpi_option = L.DomUtil.create('option', '', kpi_select);
+                    kpi_option.setAttribute('value', kpi[i]);
+                    kpi_option.innerHTML=kpi[i];
+                };
+                L.DomEvent
+                    .addListener(kpi_select, 'change', function (e) {
+                        map._drive_test._parameter = e.target.value;
+                        map.refresh_drive_test();
+                    })
+            };
+
+            set_dt_legends = function(legends){
+                var legend_div = L.DomUtil.create('div', 'col-md-12', map._dt_win.legend_main_div);
+                legend_select = L.DomUtil.create('select', 'form-control', legend_div);
+                map._dt_win.legend_table = L.DomUtil.create('table', 'table_pd', legend_div);
+                for (i in legends){
+                    var legend_option = L.DomUtil.create('option', '', legend_select);
+                    legend_option.setAttribute('value', legends[i]);
+                    legend_option.innerHTML=legends[i];
+                };
+
+                L.DomEvent
+                    .addListener(legend_select, 'change', function (e) {
+                        map._drive_test._legend = e.target.value;
+                        map.refresh_drive_test()
+                    })
+            };
+
             map.drive_test = function(){
                 if (map._is_drive_test){
                     map._is_drive_test = false;
                 } else {
                     map._is_drive_test = true;
+                    map._drive_test = {};
+                    map.create_drive_test_tool_bar();
+
+
                     usSpinnerService.spin('spinner_map');
                     $http.get('/data/drive_test_init/').success(function(data){
-                        map._drive_test.set_mobile_stations(map, data.mobile_stations);
-                        map._drive_test.set_parameters(map, data.parameters);
-                        map._drive_test.set_legends(map, data.legends);
                         map._drive_test._ms = data.mobile_stations[0];
                         map._drive_test._parameter = data.parameters[0];
                         map._drive_test._legend = data.legends[0];
+                        map._drive_test._full_legend = data.full_legends;
+                        set_dt_mobile_stations(data.mobile_stations);
+                        set_dt_parameters(data.parameters);
+                        set_dt_legends(data.legends, data.full_legends);
+                        map._dt_win.show();
 
                         map.setView(data.start_point, 17);
-                        //cm = L.marker(data.start_point);
-                        //map.addLayer(cm);
                         usSpinnerService.stop('spinner_map');
                     });
                 }

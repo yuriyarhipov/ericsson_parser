@@ -29,6 +29,10 @@ class DriveTest():
             FROM ''' + table_name + '''
             WHERE (project_id=%s) LIMIT 0''', (project_id,))
         parameters = [desc[0] for desc in cursor.description]
+        parameters.remove('id')
+        parameters.remove('project_id')
+        parameters.remove('point')
+        parameters.remove('filename')
 
         cursor.execute('''SELECT DISTINCT "MS"
             FROM ''' + table_name + '''
@@ -97,10 +101,22 @@ class DriveTest():
             if (l.get('max_value')) and (l.get('min_value')):
                 try:
                     if (float(value) <= float(l.get('max_value'))) and (float(value)>float(l.get('min_value'))):
-                        print 'BINGO!!!'
                         return l.get('color')
                 except:
-                    pass
+                    print 'A%sA' % value
+            elif (l.get('max_value')):
+                try:
+                    if (float(value) <= float(l.get('max_value'))):
+                        return l.get('color')
+                except:
+                    print 'B%sB' % value
+            elif (l.get('min_value')):
+                try:
+                    if (float(value) > float(l.get('min_value'))):
+                        return l.get('color')
+                except:
+                    print 'C%sC' % value
+
         return '#000000'
 
     def get_points(self, project_id, ms, param, legend, map_bounds, zoom):
@@ -113,12 +129,10 @@ class DriveTest():
         points = []
         cursor = self.conn.cursor()
 
-
-        cursor.execute('''SELECT DISTINCT id, "All-Latitude", "All-Longitude", "''' + param +'''" FROM ''' + table_name + ''' WHERE (project_id=%s) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"=%s) ORDER BY id''', (project_id, map_box.wkt, ms))
+        cursor.execute('''SELECT DISTINCT id, "All-Latitude", "All-Longitude", "''' + param +'''" FROM ''' + table_name + ''' WHERE (project_id=%s) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"=%s) AND ("''' + param +'''"!='') ORDER BY id''', (project_id, map_box.wkt, ms))
         row_count = cursor.rowcount
-        k = row_count / 1000
+        k = row_count / 2000
         i = 0
-        print row_count
         for row in cursor:
             if i == k:
                 points.append([row[1], row[2], self.get_color(legend, row[3])])
