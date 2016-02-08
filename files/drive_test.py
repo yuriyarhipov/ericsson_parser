@@ -131,7 +131,7 @@ class DriveTest():
 
         cursor.execute('''SELECT DISTINCT id, "All-Latitude", "All-Longitude", "''' + param +'''" FROM ''' + table_name + ''' WHERE (project_id=%s) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"=%s) AND ("''' + param +'''"!='') ORDER BY id''', (project_id, map_box.wkt, ms))
         row_count = cursor.rowcount
-        k = row_count / 2000
+        k = row_count / 3000
         i = 0
         for row in cursor:
             if i == k:
