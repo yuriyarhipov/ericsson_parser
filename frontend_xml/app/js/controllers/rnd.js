@@ -227,7 +227,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         }
                     })
                     .addListener(cell_link, 'click', function(e){
-                        console.log(e.target);
                         map.select_sector(e.target.sectors[e.target.next_sector_index]);
                         var sector = e.target.sectors[e.target.next_sector_index].options.sector;
                         if (e.target.next_sector_index + 1 < e.target.sectors.length){
@@ -844,21 +843,43 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         if (map._drive_test._full_legend[i].param == map._drive_test._legend){
                             var row_value = L.DomUtil.create('tr', 'col-md-12', map._dt_win.legend_table);
                             var cell_btn = L.DomUtil.create('td', 'col-md-12', row_value);
-                            console.log(map._drive_test._full_legend[i]);
                             cell_btn.innerHTML ='<i class="pd_i" style="background:' + map._drive_test._full_legend[i].color + '"></i> ' + map._drive_test._full_legend[i].min_val +' to '+ map._drive_test._full_legend[i].max_val + '<br>';
-                            //cell_btn.innerHTML ='<i class="pd_i" style="background:' + map._drive_test._full_legend[i].color + '"></i> ' + map._drive_test._full_legend[i].min_val +'<'+ map._drive_test._parameter + '<=' + map._drive_test._full_legend[i].max_val + '<br>';
+
                         }
                     }
 
-
+                    size = {
+                        1: 9,
+                        2: 9,
+                        3: 8,
+                        4: 8,
+                        5: 8,
+                        6: 7,
+                        7: 7,
+                        8: 7,
+                        9: 6,
+                        10: 6,
+                        11: 6,
+                        12: 12,
+                        13: 11,
+                        14: 10,
+                        15: 9,
+                        16: 8,
+                        17: 7,
+                        18: 6,
+                        19: 5,
+                        20: 4,
+                    }
+                    console.log(map._zoom);
+                    console.log(size[map._zoom]);
                     map._drive_test.points = L.layerGroup();
                     $http.post('/data/drive_test/', $.param(params)).success(function(data){
                         for (i in data){
-                            var circle = L.circle([data[i][0],data[i][1]], 3, {
+                            var circle = L.circle([data[i][0],data[i][1]], size[map._zoom], {
                                 color: data[i][2],
                                 fillColor: data[i][2],
-                                fillOpacity: 1,
-                                opacity:0.7,
+                                fillOpacity: 0.7,
+                                opacity:1,
                                 width:1,
                             });
                             map._drive_test.points.addLayer(circle);
@@ -938,6 +959,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             map.drive_test = function(){
                 if (map._is_drive_test){
                     map._is_drive_test = false;
+                    map.removeLayer(map._drive_test.points);
+
                 } else {
                     map._is_drive_test = true;
                     map._drive_test = {};
