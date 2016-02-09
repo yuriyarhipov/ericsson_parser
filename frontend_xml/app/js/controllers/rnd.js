@@ -780,11 +780,13 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             });
 
             map.on('click', function(e){
-                if (layer._map._current_sector){
-                    layer._map._current_sector.setStyle({
-                        weight: 2,
-                        opacity: 0.7
-                    });
+                if (typeof layer != "undefined"){
+                    if (layer._map._current_sector){
+                        layer._map._current_sector.setStyle({
+                            weight: 2,
+                            opacity: 0.7
+                        });
+                    }
                 }
             });
 
@@ -847,40 +849,36 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
                         }
                     }
-
-                    size = {
-                        1: 20,
-                        2: 20,
-                        3: 20,
-                        4: 20,
-                        5: 20,
-                        6: 20,
-                        7: 20,
-                        8: 20,
-                        9: 18,
-                        10: 17,
-                        11: 14,
-                        12: 12,
-                        13: 11,
-                        14: 10,
-                        15: 9,
-                        16: 8,
-                        17: 7,
-                        18: 6,
-                        19: 5,
-                        20: 4,
-                    }
-                    console.log(map._zoom);
-                    console.log(size[map._zoom]);
                     map._drive_test.points = L.layerGroup();
                     $http.post('/data/drive_test/', $.param(params)).success(function(data){
                         for (i in data){
-                            var circle = L.circle([data[i][0],data[i][1]], size[map._zoom], {
+                            var circle = L.circle([data[i][0],data[i][1]], 3, {
                                 color: data[i][2],
                                 fillColor: data[i][2],
                                 fillOpacity: 0.7,
                                 opacity:1,
                                 width:1,
+                                hidden_values: data[i][4],
+                            })
+                            .on('click', function(e){
+                                var dt_info_table = L.DomUtil.create('table', 'dt_info_table');
+                                for (ih in e.target.options.hidden_values){
+                                    var dt_tr = L.DomUtil.create('tr', '', dt_info_table);
+                                    var dt_td = L.DomUtil.create('td', '', dt_tr);
+                                    dt_td.innerHTML = e.target.options.hidden_values[ih];
+                                }
+                                var dt_content = dt_info_table.outerHTML;
+
+                                if (map._dt_info_win){
+                                    map._dt_info_win.content(dt_content);
+                                } else {
+                                    map._dt_info_win = L.control.window(map,{position: 'top',});
+                                    map._dt_info_win.content(dt_content);
+                                    map._dt_info_win.show();
+                                    map._dt_info_win.on('close', function(){
+                                        delete map._dt_info_win
+                                    });
+                                }
                             });
                             map._drive_test.points.addLayer(circle);
                         }

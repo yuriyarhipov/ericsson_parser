@@ -62,7 +62,7 @@ L.Control.ToolBar = L.Control.extend({
         this.layer_label_gsm = L.DomUtil.create('label', '', this.div_checkbox_gsm);
         map._layer_checkbox_gsm = this.layer_checkbox_gsm = L.DomUtil.create('input', '', this.layer_label_gsm);
         this.layer_checkbox_gsm.setAttribute('type', 'checkbox');
-        //this.layer_checkbox_gsm.setAttribute('checked', '');
+        //this.layer_checkbox_gsm.setAttribute('checkingd', '');
         //map._layer_checkbox_gsm.checked = true;
         this.span_gsm = L.DomUtil.create('span', '', this.layer_label_gsm);
         this.span_gsm.innerHTML = 'GSM';

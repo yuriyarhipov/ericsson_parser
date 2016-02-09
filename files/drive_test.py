@@ -131,13 +131,16 @@ class DriveTest():
 
         cursor.execute('''SELECT DISTINCT id, "All-Latitude", "All-Longitude", "''' + param +'''" FROM ''' + table_name + ''' WHERE (project_id=%s) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"=%s) AND ("''' + param +'''"!='') ORDER BY id''', (project_id, map_box.wkt, ms))
         row_count = cursor.rowcount
-        k = row_count / 3000
+        k = row_count / 5000
         i = 0
+        hidden_points = []
         for row in cursor:
             if i == k:
-                points.append([row[1], row[2], self.get_color(legend, row[3])])
+                points.append([row[1], row[2], self.get_color(legend, row[3]), row[3], hidden_points])
+                hidden_points = []
                 i = 0
             else:
+                hidden_points.append(row[3])
                 i += 1
         return points
 
