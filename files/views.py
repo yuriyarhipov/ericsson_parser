@@ -23,6 +23,7 @@ from os import makedirs
 from os.path import exists, basename
 from multiprocessing import Process
 from shapely.geometry import box, Point
+from django.views.decorators.gzip import gzip_page
 
 import redis
 
@@ -409,6 +410,7 @@ def get_same_neighbor(request):
 
 
 @api_view(['POST', ])
+@gzip_page
 def drive_test(request):
     project_id = request.project.id
     map_bounds = request.POST.get('bounds').split(',')
