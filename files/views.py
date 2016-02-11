@@ -429,6 +429,7 @@ def drive_test(request):
 
     dt = DriveTest()
     data = dt.get_points(project_id, ms, param, legend, map_bounds, zoom)
+    print data[0]
     return Response(data)
 
 
@@ -497,6 +498,15 @@ def get_drive_test_param(request, ms):
     project = request.project
     params = dt.get_params(project.id, ms)
     return Response(params)
+
+
+@api_view(['GET', ])
+def drive_test_point(request, id):
+    dt = DriveTest()
+    project = request.project
+    point = dt.get_point(project.id, id)
+    return Response(point)
+
 
 
 

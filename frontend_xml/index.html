@@ -212,7 +212,10 @@
                                 options="treeOptions"
                                 on-selection="showSelected(node)"
                                 selected-node="selected_node">
+                            <input type="checkbox" ng-show="node.show_check">
                             <span context-menu data-target="menu-{{node.menu}}">{{node.label}}</span>
+
+
                         </div>
                     </div>
                 </div>

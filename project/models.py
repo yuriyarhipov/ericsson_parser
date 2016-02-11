@@ -112,3 +112,6 @@ class Project(models.Model):
         if not data:
             return {}
         return data
+
+    def get_drive_test(self):
+        return []

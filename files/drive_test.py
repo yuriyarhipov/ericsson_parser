@@ -116,7 +116,6 @@ class DriveTest():
                         return l.get('color')
                 except:
                     print 'C%sC' % value
-
         return '#000000'
 
     def get_points(self, project_id, ms, param, legend, map_bounds, zoom):
@@ -131,18 +130,30 @@ class DriveTest():
 
         cursor.execute('''SELECT DISTINCT id, "All-Latitude", "All-Longitude", "''' + param +'''" FROM ''' + table_name + ''' WHERE (project_id=%s) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"=%s) AND ("''' + param +'''"!='') ORDER BY id''', (project_id, map_box.wkt, ms))
         row_count = cursor.rowcount
-        k = row_count / 5000
+        k = row_count / 10000
         i = 0
-        hidden_points = []
         for row in cursor:
             if i == k:
-                points.append([row[1], row[2], self.get_color(legend, row[3]), row[3], hidden_points])
-                hidden_points = []
+                points.append([row[1], row[2], self.get_color(legend, row[3]), row[3], row[0]])
                 i = 0
             else:
-                hidden_points.append(row[3])
                 i += 1
         return points
+
+    def get_point(self, project_id, id):
+        table_name = 'TERMS_%s' % project_id
+        cursor = self.conn.cursor()
+        cursor.execute('''SELECT * FROM ''' + table_name + ''' WHERE (id=%s)''', (id, ))
+        colnames = [desc[0] for desc in cursor.description]
+        data = cursor.fetchone()
+        point = []
+        for i in range(len(colnames)):
+            if (data[i] != '') and (colnames[i] not in ['id', 'project_id', 'filename', 'point']):
+                point.append([colnames[i], data[i]])
+        point = sorted(point)
+        return point
+
+
 
 
 
