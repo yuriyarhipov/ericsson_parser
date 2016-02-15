@@ -819,9 +819,45 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         delete layer._map._info_control
                     });
                 }
-
-
             };
+
+            map.show_drive_test_info_window = function(points){
+                var main_div = map._dt_info_win._containerContent;
+                console.log(map._dt_info_win);
+                var m_div = L.DomUtil.create('div', 'col-md-12 dt_points_div', main_div);
+                var table = L.DomUtil.create('table', 'table dt_points_table', m_div);
+                for (i in points) {
+                    var tr = L.DomUtil.create('tr', '', table);
+                    var td = L.DomUtil.create('td', '', tr);
+                    var a = L.DomUtil.create('a', '', td);
+                    a.value = points[i];
+                    a.innerHTML = 'point_' +i;
+                    L.DomEvent
+                        .addListener(a, 'click', function (e) {
+                            $http.get('/data/drive_test_point/' + e.target.value + '/').success(function(point){
+                                var dt_point_info_table = L.DomUtil.create('table', 'dt_info_table');
+                                for (ih in point){
+                                    var dt_tr = L.DomUtil.create('tr', '', dt_point_info_table);
+                                    var dt_td = L.DomUtil.create('td', '', dt_tr);
+                                    dt_td.innerHTML = point[ih][0] + ': '+ point[ih][1];
+                                }
+
+                                var dt_content = dt_point_info_table.outerHTML;
+                                if (map._dt_point_info_win){
+                                    map._dt_point_info_win.content(dt_content);
+                                } else {
+                                    map._dt_point_info_win = L.control.window(map,{position: 'top',});
+                                    map._dt_point_info_win.content(dt_content);
+                                    map._dt_point_info_win.show();
+                                    map._dt_point_info_win.on('close', function(){
+                                        delete map._dt_point_info_win
+                                    });
+                                }
+                            });
+                        })
+                    }
+                }
+
 
             map.refresh_drive_test = function(){
                 if (map._is_drive_test){
@@ -852,39 +888,28 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     map._drive_test.points = L.layerGroup();
                     $http.post('/data/drive_test/', $.param(params)).success(function(data){
                         for (i in data){
-                            var circle = L.circle([data[i][0],data[i][1]], 10, {
+                            var circle = L.circle([data[i][0],data[i][1]], 5, {
                                 color: data[i][2],
                                 fillColor: data[i][2],
                                 fillOpacity: 0.7,
                                 opacity:1,
                                 width:1,
                                 id: data[i][4],
+                                attached_ids: data[i][5],
                             })
                             .on('click', function(e){
-                                $http.get('/data/drive_test_point/' + e.target.options.id + '/').success(function(point){
-                                    var dt_info_table = L.DomUtil.create('table', 'dt_info_table');
-                                        for (ih in point){
-                                            var dt_tr = L.DomUtil.create('tr', '', dt_info_table);
-                                            var dt_td = L.DomUtil.create('td', '', dt_tr);
-                                            dt_td.innerHTML = point[ih][0] + ': '+ point[ih][1];
-                                        }
-                                    var dt_tr = L.DomUtil.create('tr', '', dt_info_table);
-                                    var dt_td = L.DomUtil.create('td', '', dt_tr);
-                                    dt_td.innerHTML = '<a href=#>prev</a>...<a href=#>next</a>'
-
-                                    var dt_content = dt_info_table.outerHTML;
-
-                                    if (map._dt_info_win){
-                                        map._dt_info_win.content(dt_content);
-                                    } else {
-                                        map._dt_info_win = L.control.window(map,{position: 'top',});
-                                        map._dt_info_win.content(dt_content);
-                                        map._dt_info_win.show();
-                                        map._dt_info_win.on('close', function(){
+                                var attached_ids = e.target.options.attached_ids;
+                                if (map._dt_info_win){
+                                    map.show_drive_test_info_window(attached_ids);
+                                } else {
+                                    map._dt_info_win = L.control.window(map,{position: 'top',});
+                                    map.show_drive_test_info_window(attached_ids);
+                                    //map._dt_info_win.content(dt_content);
+                                    map._dt_info_win.on('close', function(){
                                             delete map._dt_info_win
-                                        });
-                                    }
-                                });
+                                    });
+                                    map._dt_info_win.show();
+                                }
                             });
                             map._drive_test.points.addLayer(circle);
                         }

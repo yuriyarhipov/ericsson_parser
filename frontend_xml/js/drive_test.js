@@ -14,6 +14,7 @@ L.Control.DriveTest = L.Control.extend({
         kpi_header.innerHTML = '<h5>Parameters:</h5>'
         this.legend_main_div = L.DomUtil.create('div', 'col-md-12', this.drive_test_div);
         return this.drive_test_div;
+
     },
     set_mobile_stations: function(map, ms){
         var ms_div = L.DomUtil.create('div', 'col-md-12', this.ms_main_div);
@@ -37,7 +38,7 @@ L.Control.DriveTest = L.Control.extend({
 
     set_parameters: function(map, kpi){
         var kpi_div = L.DomUtil.create('div', 'col-md-12', this.kpi_main_div);
-        kpi_select = L.DomUtil.create('select', 'form-control', kpi_div);
+        var kpi_select = L.DomUtil.create('select', 'form-control', kpi_div);
         for (i in kpi){
             var kpi_option = L.DomUtil.create('option', '', kpi_select);
             kpi_option.setAttribute('value', kpi[i]);

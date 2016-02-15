@@ -120,5 +120,11 @@ div.circle {
 }
 
 .dt_info_table {
-    width:200px;
+    width:250px;
+}
+
+.dt_points_div {
+    width:150px;
+    min-height: 100px;
+    max-height: 200px
 }
