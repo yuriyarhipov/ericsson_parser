@@ -257,6 +257,7 @@ def get_excel(request, network):
 
 
 @api_view(['GET', 'POST'])
+@gzip_page
 def rnd(request, network=None):
     project = request.project
     data = []
