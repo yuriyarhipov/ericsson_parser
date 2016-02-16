@@ -11,8 +11,10 @@ L.Control.DriveTest = L.Control.extend({
         ms_header.innerHTML = '<h5>Mobile Stations</h5>'
         this.kpi_main_div = L.DomUtil.create('div', 'col-md-12', this.drive_test_div);
         var kpi_header = L.DomUtil.create('div', 'col-md-12', this.kpi_main_div);
-        kpi_header.innerHTML = '<h5>Parameters:</h5>'
+        kpi_header.innerHTML = '<h5>Parameters1:</h5>'
         this.legend_main_div = L.DomUtil.create('div', 'col-md-12', this.drive_test_div);
+        var legend_header = L.DomUtil.create('div', 'col-md-12', this.legend_main_div);
+        legend_header.innerHTML = '<h5>Legend:</h5>'
         return this.drive_test_div;
 
     },

@@ -937,6 +937,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 var kpi_header = L.DomUtil.create('div', 'col-md-12', kpi_main_div);
                 kpi_header.innerHTML = '<h5>Parameters:</h5>'
                 var legend_main_div = map._dt_win.legend_main_div = L.DomUtil.create('div', 'col-md-12', drive_test_div);
+                var legend_header = L.DomUtil.create('div', 'col-md-12', legend_main_div);
+                legend_header.innerHTML = '<h5>Legend:</h5>'
 
                 map._dt_win.on('close', function(){
                     delete map._dt_win
