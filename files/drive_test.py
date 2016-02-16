@@ -73,7 +73,7 @@ class DriveTest():
         with open(filename) as f:
             columns = []
             cursor.execute("Select * FROM %s LIMIT 0" % (table_name, ))
-            colnames = [desc[0] for desc in cursor.description]
+            colnames = [desc[0].lower() for desc in cursor.description]
             for col in f.readline().split('\t'):
                 columns.append(col)
                 if (col.lower() not in colnames):
@@ -118,7 +118,7 @@ class DriveTest():
                     print 'C%sC' % value
         return '#000000'
 
-    def get_points(self, project_id, ms, param, legend, map_bounds, zoom):
+    def get_points(self, project_id, filenames, ms, param, legend, map_bounds, zoom):
         table_name = 'TERMS_%s' % project_id
         map_box = box(
             float(map_bounds[1]),
@@ -127,8 +127,8 @@ class DriveTest():
             float(map_bounds[2]))
         points = []
         cursor = self.conn.cursor()
-
-        cursor.execute('''SELECT DISTINCT id, "All-Latitude", "All-Longitude", "''' + param +'''" FROM ''' + table_name + ''' WHERE (project_id=%s) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"=%s) AND ("''' + param +'''"!='') ORDER BY id''', (project_id, map_box.wkt, ms))
+        sql_filenames = ["'%s'" % f for f in filenames]
+        cursor.execute('''SELECT DISTINCT id, "All-Latitude", "All-Longitude", "''' + param +'''" FROM ''' + table_name + ''' WHERE (project_id=%s) AND (filename in (''' + ','.join(sql_filenames) + ''')) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"=%s) AND ("''' + param +'''"!='') ORDER BY id''', (project_id, map_box.wkt, ms))
         row_count = cursor.rowcount
         k = row_count / 4000
         i = 0

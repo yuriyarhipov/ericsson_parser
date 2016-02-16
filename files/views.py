@@ -417,6 +417,7 @@ def drive_test(request):
     zoom = int(request.POST.get('zoom'))
     ms = request.POST.get('ms')
     param = request.POST.get('parameter')
+    filenames = request.POST.get('filenames').split(',')
     legend = []
 
     for p in DriveTestLegend.objects.filter(project=request.project, param=request.POST.get('legend')):
@@ -428,8 +429,7 @@ def drive_test(request):
         })
 
     dt = DriveTest()
-    data = dt.get_points(project_id, ms, param, legend, map_bounds, zoom)
-    print data[0]
+    data = dt.get_points(project_id, filenames, ms, param, legend, map_bounds, zoom)
     return Response(data)
 
 

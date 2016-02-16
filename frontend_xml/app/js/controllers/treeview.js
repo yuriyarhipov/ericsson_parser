@@ -77,6 +77,11 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
 treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$http', 'activeProjectService', 'activeFileService', '$location', '$rootScope',
     function ($scope, $timeout, $cookies, $http, activeProjectService, activeFileService, $location, $rootScope) {
         $scope.checked = false;
+        $scope.files = {};
+
+        $scope.onFileClick = function(f){
+            $cookies.putObject('dt', $scope.files);
+        };
 
         $scope.onShowMenu = function(){
             $scope.checked = !$scope.checked
@@ -108,6 +113,10 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
         var loadData = function (){
             $http.get('/data/treeview/' + $cookies.get('active_project') + '/').success(function(data){
                 $scope.treedata = data;
+                for (i in data[2].children){
+                    $scope.files[data[2].children[i].label] = true;
+                }
+                $cookies.putObject('dt', $scope.files);
             });
             //$timeout(loadData, 5000);
         };
@@ -154,20 +163,22 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
         });
 
         $scope.showSelected = function(node){
-            var file_type = node.type;
-            var file_name = node.label;
-            var link = node.link;
-            activeFileService.setActiveFile(file_name, file_type);
+            if (node){
+                var file_type = node.type;
+                var file_name = node.label;
+                var link = node.link;
+                activeFileService.setActiveFile(file_name, file_type);
 
-            if (link) {
-                $location.path(link);
-            }
+                if (link) {
+                    $location.path(link);
+                }
 
-            if ((file_type == 'WCDMA RADIO OSS BULK CM XML FILE') || (file_type == 'WCDMA TRANSPORT OSS BULK CM XML FILE')){
-                $location.path('/explore/' + file_name + '/');
-            }
-            if (file_type == 'GSM BSS CNA  OSS FILE'){
-                $location.path('/explore/' + file_name + '/');
+                if ((file_type == 'WCDMA RADIO OSS BULK CM XML FILE') || (file_type == 'WCDMA TRANSPORT OSS BULK CM XML FILE')){
+                    $location.path('/explore/' + file_name + '/');
+                }
+                if (file_type == 'GSM BSS CNA  OSS FILE'){
+                    $location.path('/explore/' + file_name + '/');
+                }
             }
         };
     }

@@ -823,7 +823,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
             map.show_drive_test_info_window = function(points){
                 var main_div = map._dt_info_win._containerContent;
-                console.log(map._dt_info_win);
                 var m_div = L.DomUtil.create('div', 'col-md-12 dt_points_div', main_div);
                 var table = L.DomUtil.create('table', 'table dt_points_table', m_div);
                 for (i in points) {
@@ -863,12 +862,20 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 if (map._is_drive_test){
                     usSpinnerService.spin('spinner_map');
                     map_bounds = map.getBounds();
+                    filenames = []
+                    for (i in $cookies.getObject('dt')){
+                        if ($cookies.getObject('dt')[i]){
+                            filenames.push(i);
+                        }
+                    }
+
                     var params = {
                         'bounds': map_bounds.toBBoxString(),
                         'zoom': map._zoom,
                         'ms': map._drive_test._ms,
                         'parameter': map._drive_test._parameter,
                         'legend': map._drive_test._legend,
+                        'filenames': filenames.join(),
                     };
                     if (map._drive_test.points){
                         map.removeLayer(map._drive_test.points);
@@ -888,7 +895,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     map._drive_test.points = L.layerGroup();
                     $http.post('/data/drive_test/', $.param(params)).success(function(data){
                         for (i in data){
-                            var circle = L.circle([data[i][0],data[i][1]], 5, {
+                            var circle = L.circle([data[i][0],data[i][1]], 4, {
                                 color: data[i][2],
                                 fillColor: data[i][2],
                                 fillOpacity: 0.7,

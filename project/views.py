@@ -51,7 +51,7 @@ def treeview(request, project):
                 {'id': 'WCDMA', 'label': 'WCDMA', 'children': project.get_network_tree('WCDMA')},
                 {'id': 'LTE', 'label': 'LTE', 'children': project.get_network_tree('LTE')}
             ]},
-            {'id': 'drive_test', 'label': 'Drive Test', 'show_check': True, 'children': project.get_drive_test()},
+            {'id': 'drive_test', 'label': 'Drive Test', 'children': project.get_drive_test()},
     ]
     return HttpResponse(json.dumps(data), content_type='application/json')
 

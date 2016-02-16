@@ -138,6 +138,15 @@ def worker(filename, project, description, vendor, file_type, network):
     if file_type == 'Drive Test':
         dt = DriveTest()
         dt.upload_file(work_file, project.id, current_task)
+        Files.objects.filter(filename=basename(work_file), project=project).delete()
+        Files.objects.create(
+            filename=basename(work_file),
+            file_type=file_type,
+            project=project,
+            tables='',
+            description=description,
+            vendor=vendor,
+            network=network)
 
     task.update_state(state='PROGRESS', meta={"current": 100, })
     revoke(worker.request.id, terminate=True)

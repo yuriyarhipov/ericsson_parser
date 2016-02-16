@@ -114,4 +114,13 @@ class Project(models.Model):
         return data
 
     def get_drive_test(self):
-        return []
+        from files.models import Files
+        data = []
+        for f in Files.objects.filter(project=self, file_type='Drive Test'):
+            data.append({
+                'id': f.id,
+                'label': f.filename,
+                'children': '',
+                'type': f.file_type,
+                'show_check': True})
+        return data
