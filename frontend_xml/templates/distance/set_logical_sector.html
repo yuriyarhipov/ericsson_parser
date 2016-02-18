@@ -76,32 +76,52 @@
     <uib-tab heading="Set Logical Relations">
         <form class="form">
             <div class="form-group col-md-12">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="col-md-12">Technology from:</label>
-                    <select ng-options="t in lr_technologies_from" ng-model="lr_technology_from"></select>
+                    <select
+                            ng-options="t for t in lr_technologies_from"
+                            ng-model="lr_technology_from"
+                            ng-change="onChangelr_tech_from(lr_technology_from)"></select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="col-md-12">Carrier from:</label>
-                    <select ng-options="c in lr_carriers_from" ng-model="lr_carrier_from"></select>
+                    <select ng-options="c for c in lr_carriers_from" ng-model="lr_carrier_from"></select>
                 </div>
-            </div>
-            <div class="form-group col-md-12">
-                <div class="col-md-6">
+                <div class="col-md-2">
                     <label class="col-md-12">Symmetry:</label>
-                    <select ng-options="s in lr_symmetries" ng-model="lr_symmetry"></select>
+                    <select ng-options="s for s in lr_symmetries" ng-model="lr_symmetry"></select>
                 </div>
-            </div>
-            <div class="form-group col-md-12">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="col-md-12">Technology to:</label>
-                    <select ng-options="t in lr_technologies_to" ng-model="lr_technology_to"></select>
+                    <select ng-options="t for t in lr_technologies_to"
+                            ng-model="lr_technology_to"
+                            ng-change="onChangelr_tech_to(lr_technology_to)"></select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="col-md-12">Carrier to:</label>
-                    <select ng-options="c in lr_carriers_to" ng-model="lr_carrier_to"></select>
+                    <select ng-options="c for c in lr_carriers_to" ng-model="lr_carrier_to"></select>
                 </div>
             </div>
         </form>
+        <button class="btn btn-default" ng-click="onClick_lr(lr_technology_from, lr_carrier_from, lr_symmetry, lr_technology_to, lr_carrier_to)">Save</button>
+        <table class="table vol-md-12">
+            <tr>
+                <td>Technology from</td>
+                <td>Carrier from</td>
+                <td>Symmetry</td>
+                <td>Technology to</td>
+                <td>Carrier to</td>
+                <td></td>
+            </tr>
+            <tr ng-repeat="r in lr_data">
+                <td>{{ r.technology_from }}</td>
+                <td>{{ r.carrier_from }}</td>
+                <td>{{ r.symmetry }}</td>
+                <td>{{ r.technology_to }}</td>
+                <td>{{ r.carrier_to }}</td>
+                <td><button class="btn btn-danger" ng-click="onClickDelLr(r.id)">Delete</button></td>
+            </tr>
+        </table>
     </uib-tab>
 
 </uib-tabset>

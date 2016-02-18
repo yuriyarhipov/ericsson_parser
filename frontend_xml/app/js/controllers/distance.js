@@ -596,6 +596,53 @@ distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookie
                 }});
 
         };
+
+        $scope.lr_technologies_from = ['GSM', 'WCDMA', 'LTE'];
+        $scope.lr_technologies_to = ['GSM', 'WCDMA', 'LTE'];
+        $scope.lr_carriers_to = [];
+        $scope.lr_carriers_from = [];
+        $scope.lr_symmetries = ['<--->', '-->']
+
+        $scope.onChangelr_tech_from = function(technology){
+            if (technology == 'GSM'){
+                $scope.lr_carriers_from = ['UL', 'OL'];
+            } else {
+                $scope.lr_carriers_from = [1,2,3,4,5,6,7];
+            }
+        };
+
+        $scope.onChangelr_tech_to = function(technology){
+            console.log('OK');
+            if (technology == 'GSM'){
+                $scope.lr_carriers_to = ['UL', 'OL'];
+            } else {
+                $scope.lr_carriers_to = [1,2,3,4,5,6,7];
+            }
+        };
+
+        $scope.onClick_lr = function(technology_from, carrier_from, symmetry, technology_to, carrier_to){
+            $http.post('/data/save_logical_relation/', $.param({
+                'technology_from' : technology_from,
+                'carrier_from': carrier_from,
+                'symmetry': symmetry,
+                'technology_to': technology_to,
+                'carrier_to': carrier_to
+            })).success(function(data){
+                $scope.lr_data = data;
+            });
+        };
+
+        $http.get('/data/logical_relations/').success(function(data){
+            $scope.lr_data = data;
+        });
+
+        $scope.onClickDelLr = function(id){
+            $http.post('/data/delete_logical_relation/', $.param({'id': id})).success(function(data){
+                $scope.lr_data = data;
+            });
+        };
+
+
 }]);
 
 distanceControllers.controller('pscDistanceCtrl', ['$scope', '$http','$cookies', '$location',

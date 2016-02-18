@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from table import Table, get_excel
-from files.models import Files, SuperFile, CNATemplate, AuditTemplate
+from files.models import Files, SuperFile, CNATemplate, AuditTemplate, LogicalRelation
 from files.excel import Excel, PowerAuditExcel, AuditExcel, DistanceExcel
 from django.conf import settings
 from openpyxl import load_workbook
@@ -390,3 +390,60 @@ def psc_distance(request):
     filename = request.wcdma.filename
     print filename
     return Response(Distance().get_psc_distance(project.id, filename))
+
+
+@api_view(['POST', ])
+def save_logical_relation(request):
+    project = request.project
+
+    technology_from = request.POST.get('technology_from')
+    carrier_from = request.POST.get('carrier_from')
+    symmetry = request.POST.get('symmetry')
+    technology_to = request.POST.get('technology_to')
+    carrier_to = request.POST.get('carrier_to')
+    if not LogicalRelation.objects.filter(project=project, technology_from= technology_from, carrier_from=carrier_from, symmetry=symmetry, technology_to=technology_to, carrier_to=carrier_to).exists():
+        LogicalRelation.objects.create(project=project, technology_from= technology_from, carrier_from=carrier_from, symmetry=symmetry, technology_to=technology_to, carrier_to=carrier_to)
+    data = []
+    for lr in LogicalRelation.objects.filter(project=project):
+        data.append(dict(
+            id= lr.id,
+            technology_from= lr.technology_from,
+            carrier_from=lr.carrier_from,
+            symmetry=lr.symmetry,
+            technology_to=lr.technology_to,
+            carrier_to=lr.carrier_to
+        ))
+    return Response(data)
+
+
+@api_view(['GET', ])
+def logical_relations(request):
+    project = request.project
+    data = []
+    for lr in LogicalRelation.objects.filter(project=project):
+        data.append(dict(
+            id= lr.id,
+            technology_from= lr.technology_from,
+            carrier_from=lr.carrier_from,
+            symmetry=lr.symmetry,
+            technology_to=lr.technology_to,
+            carrier_to=lr.carrier_to
+        ))
+    return Response(data)
+
+@api_view(['POST', ])
+def delete_logical_relation(request):
+    project = request.project
+    id = request.POST.get('id')
+    data = []
+    LogicalRelation.objects.filter(project=project, id=id).delete()
+    for lr in LogicalRelation.objects.filter(project=project):
+        data.append(dict(
+            id= lr.id,
+            technology_from= lr.technology_from,
+            carrier_from=lr.carrier_from,
+            symmetry=lr.symmetry,
+            technology_to=lr.technology_to,
+            carrier_to=lr.carrier_to
+        ))
+    return Response(data)

@@ -112,6 +112,11 @@ urlpatterns = patterns('',
     url(r'^data/files/get_drive_test_param/(\S+)/$', files_views.get_drive_test_param),
     url(r'^data/drive_test_point/(\S+)/$', files_views.drive_test_point),
 
+    url(r'^data/save_logical_relation/$', table_views.save_logical_relation),
+    url(r'^data/logical_relations/$', table_views.logical_relations),
+    url(r'^data/delete_logical_relation/$', table_views.delete_logical_relation),
+
+
 
 
     url(r'^data/admin/', include(admin.site.urls)),

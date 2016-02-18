@@ -351,3 +351,12 @@ class DriveTestLegend(models.Model):
     min_value = models.TextField()
     max_value = models.TextField()
     color = models.TextField()
+
+
+class LogicalRelation(models.Model):
+    project = models.ForeignKey(Project)
+    technology_from = models.TextField()
+    carrier_from = models.TextField()
+    symmetry = models.TextField()
+    technology_to = models.TextField()
+    carrier_to = models.TextField()
