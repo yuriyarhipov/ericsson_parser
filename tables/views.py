@@ -403,14 +403,16 @@ def save_logical_relation(request):
     carrier_to = request.POST.get('carrier_to')
     hor_from = ''
     hor_to = ''
+
     if technology_from == 'GSM':
         hor_from = 'GSM-SCTYPE:%s' % carrier_from
     else:
         hor_from = '%s-Carrier:%s' % (technology_from, carrier_from)
+
     if technology_to == 'GSM':
-        hor_to = 'GSM-SCTYPE:%s' % carrier_from
+        hor_to = 'GSM-SCTYPE:%s' % carrier_to
     else:
-        hor_to = '%s-Carrier:%s' % (technology_from, carrier_from)
+        hor_to = '%s-Carrier:%s' % (technology_to, carrier_to)
 
     message = ''
     if (LogicalRelation.objects.filter(project=project, technology_from= technology_from, carrier_from=carrier_from, technology_to=technology_to, carrier_to=carrier_to).exists() or LogicalRelation.objects.filter(project=project, technology_from= technology_to, carrier_from=carrier_to, technology_to=technology_from, carrier_to=carrier_from).exists()):
