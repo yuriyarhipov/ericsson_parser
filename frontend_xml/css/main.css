@@ -76,3 +76,19 @@ html {
                 z-index: 1;
                 pointer-events: none;
             }
+
+md-menu-bar {
+    background-color: #31859C;
+    color:white;
+}
+
+md-toolbar.md-menu-toolbar{
+    background-color: #31859C;
+}
+
+#custom_filler {
+    width: 100px;
+    background-color: #31859C;
+}
+
+.material-icons.md-36 { font-size: 36px; }

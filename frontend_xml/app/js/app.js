@@ -35,7 +35,8 @@ var XmlApp = angular.module(
         'ui.grid.moveColumns',
         'ui.grid.edit',
         'ui.grid.rowEdit',
-        'ui.grid.cellNav'
+        'ui.grid.cellNav',
+        'ngMaterial',
     ]);
 
 XmlApp.config(['$routeProvider',

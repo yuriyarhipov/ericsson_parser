@@ -141,8 +141,8 @@ xmlControllers.factory('authService', function($rootScope, $cookies) {
     return status;
 });
 
-xmlControllers.controller('mainMenuCtrl', ['$scope', 'authService', 'activeProjectService',
-    function ($scope, authService, activeProjectService) {
+xmlControllers.controller('mainMenuCtrl', ['$scope', 'authService', 'activeProjectService', '$location', '$cookies',
+    function ($scope, authService, activeProjectService, $location, $cookies) {
         if (authService.is_auth){
             $scope.username = authService.username;
             $scope.project_name = activeProjectService.project;
@@ -163,4 +163,13 @@ xmlControllers.controller('mainMenuCtrl', ['$scope', 'authService', 'activeProje
         $scope.$on('handleBroadcast', function() {
             $scope.project_name = activeProjectService.project;
         });
+
+        $scope.onMenuClick = function(url,e){
+            if (url == '/logout'){
+                url = '/login';
+                $cookies.put('is_auth', false);
+                authService.setAuth(false, '');
+            }
+            $location.path(url);
+        };
 }]);
