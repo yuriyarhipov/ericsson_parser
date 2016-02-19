@@ -24,7 +24,7 @@ var XmlApp = angular.module(
         'smart-table',
         'auditControllers',
         'distanceControllers',
-        'flash',
+        'ngFlash',
         'leaflet-directive',
         'pageslide-directive',
         'ui.grid',

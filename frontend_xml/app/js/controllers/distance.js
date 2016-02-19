@@ -497,8 +497,8 @@ distanceControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpin
         };
   }]);
 
-distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies', '$location',
-    function ($scope, $http, $cookies, $location) {
+distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies', '$location', 'Flash',
+    function ($scope, $http, $cookies, $location, Flash) {
         if (!$cookies.get('is_auth')){
             $location.path('/login')
         }
@@ -601,7 +601,7 @@ distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookie
         $scope.lr_technologies_to = ['GSM', 'WCDMA', 'LTE'];
         $scope.lr_carriers_to = [];
         $scope.lr_carriers_from = [];
-        $scope.lr_symmetries = ['<--->', '-->']
+        $scope.lr_symmetries = ['<---->', '---->']
 
         $scope.onChangelr_tech_from = function(technology){
             if (technology == 'GSM'){
@@ -612,7 +612,6 @@ distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookie
         };
 
         $scope.onChangelr_tech_to = function(technology){
-            console.log('OK');
             if (technology == 'GSM'){
                 $scope.lr_carriers_to = ['UL', 'OL'];
             } else {
@@ -628,7 +627,8 @@ distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookie
                 'technology_to': technology_to,
                 'carrier_to': carrier_to
             })).success(function(data){
-                $scope.lr_data = data;
+                Flash.create('success', data.message);
+                $scope.lr_data = data.data;
             });
         };
 

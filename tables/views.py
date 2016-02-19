@@ -401,19 +401,56 @@ def save_logical_relation(request):
     symmetry = request.POST.get('symmetry')
     technology_to = request.POST.get('technology_to')
     carrier_to = request.POST.get('carrier_to')
-    if not LogicalRelation.objects.filter(project=project, technology_from= technology_from, carrier_from=carrier_from, symmetry=symmetry, technology_to=technology_to, carrier_to=carrier_to).exists():
-        LogicalRelation.objects.create(project=project, technology_from= technology_from, carrier_from=carrier_from, symmetry=symmetry, technology_to=technology_to, carrier_to=carrier_to)
+    hor_from = ''
+    hor_to = ''
+    if technology_from == 'GSM':
+        hor_from = 'GSM-SCTYPE:%s' % carrier_from
+    else:
+        hor_from = '%s-Carrier:%s' % (technology_from, carrier_from)
+    if technology_to == 'GSM':
+        hor_to = 'GSM-SCTYPE:%s' % carrier_from
+    else:
+        hor_to = '%s-Carrier:%s' % (technology_from, carrier_from)
+
+    message = ''
+    if (LogicalRelation.objects.filter(project=project, technology_from= technology_from, carrier_from=carrier_from, technology_to=technology_to, carrier_to=carrier_to).exists() or LogicalRelation.objects.filter(project=project, technology_from= technology_to, carrier_from=carrier_to, technology_to=technology_from, carrier_to=carrier_from).exists()):
+        message = 'Logical Relation with same technology and carrier exists'
+    elif symmetry == '<---->':
+        LogicalRelation.objects.create(
+            project=project,
+            technology_from= technology_from,
+            carrier_from=carrier_from,
+            symmetry=symmetry,
+            technology_to=technology_to,
+            carrier_to=carrier_to,
+            ho_realtion = '%s---->%s' % (hor_from, hor_to))
+        LogicalRelation.objects.create(
+            project=project,
+            technology_from= technology_to,
+            carrier_from=carrier_to,
+            symmetry=symmetry,
+            technology_to=technology_from,
+            carrier_to=carrier_from,
+            ho_realtion = '%s---->%s' % (hor_to, hor_from))
+        message = 'Add logical relation'
+    elif symmetry == '---->':
+        LogicalRelation.objects.create(
+            project=project,
+            technology_from= technology_from,
+            carrier_from=carrier_from,
+            symmetry=symmetry,
+            technology_to=technology_to,
+            carrier_to=carrier_to,
+            ho_realtion = '%s---->%s' % (hor_from, hor_to))
+        message = 'Add logical relation'
+
     data = []
     for lr in LogicalRelation.objects.filter(project=project):
         data.append(dict(
             id= lr.id,
-            technology_from= lr.technology_from,
-            carrier_from=lr.carrier_from,
-            symmetry=lr.symmetry,
-            technology_to=lr.technology_to,
-            carrier_to=lr.carrier_to
+            ho_realtion= lr.ho_realtion,
         ))
-    return Response(data)
+    return Response({'data': data, 'message': message})
 
 
 @api_view(['GET', ])
@@ -423,11 +460,7 @@ def logical_relations(request):
     for lr in LogicalRelation.objects.filter(project=project):
         data.append(dict(
             id= lr.id,
-            technology_from= lr.technology_from,
-            carrier_from=lr.carrier_from,
-            symmetry=lr.symmetry,
-            technology_to=lr.technology_to,
-            carrier_to=lr.carrier_to
+            ho_realtion= lr.ho_realtion,
         ))
     return Response(data)
 
@@ -440,10 +473,6 @@ def delete_logical_relation(request):
     for lr in LogicalRelation.objects.filter(project=project):
         data.append(dict(
             id= lr.id,
-            technology_from= lr.technology_from,
-            carrier_from=lr.carrier_from,
-            symmetry=lr.symmetry,
-            technology_to=lr.technology_to,
-            carrier_to=lr.carrier_to
+            ho_realtion= lr.ho_realtion,
         ))
     return Response(data)

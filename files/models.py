@@ -360,3 +360,4 @@ class LogicalRelation(models.Model):
     symmetry = models.TextField()
     technology_to = models.TextField()
     carrier_to = models.TextField()
+    ho_realtion = models.TextField()

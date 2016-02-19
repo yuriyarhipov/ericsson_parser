@@ -18,110 +18,120 @@
         </form>
     </uib-tab>
     <uib-tab heading="Set Logical Sector">
-        <div class="col-md-12">
-            <div class="col-md-3">
-                <label class="col-md-12">Logical Sector:</label>
-                <select
-                        class="col-md-12"
-                        ng-options="ls for ls in logical_sectors"
-                        ng-model="logical_sector"
-                        ng-change="onChangeLogicalSector(logical_sector)">
-                </select>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Set Logical Sector</h3>
             </div>
-            <div class="col-md-2">
-                <label class="col-md-12">Technology:</label>
-                <select
-                        class="col-md-12"
-                        ng-options="network for network in networks"
-                        ng-model="network"
-                        id="tech">
-                </select>
-                <label for="band" class="col-md-12">Band:</label>
-                <select
-                        class="col-md-12"
-                        ng-options="band for band in bands"
-                        ng-model="band"
-                        id="band">
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="col-md-12">Sector:</label>
-                <select multiple
-                        size="10"
-                        class="col-md-12"
-                        ng-options="s for s in sectors"
-                        ng-model="sector">
-                </select>
-            </div>
-            <div class="col-md-1 button_group">
+            <div class="panel-body">
                 <div class="col-md-12">
-                    <button ng-click="onAdd(logical_sector, network, band, sector)" class="btn btn-success">>></button>
-                    <button ng-click="onRemove(logical_sector, selected_associated_sectors)" class="btn btn-danger"><<
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <label class="col-md-12">Associated Sectors:</label>
-                <div class="col-md-12">
-                    <select multiple
-                            size="10"
-                            class="col-md-12"
-                            ng-options="s.sector as s.label for s in associated_sectors"
-                            ng-model="selected_associated_sectors">
-                    </select>
+                    <div class="col-md-3">
+                        <label class="col-md-12">Logical Sector:</label>
+                        <select
+                                class="col-md-12"
+                                ng-options="ls for ls in logical_sectors"
+                                ng-model="logical_sector"
+                                ng-change="onChangeLogicalSector(logical_sector)">
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="col-md-12">Technology:</label>
+                        <select
+                                class="col-md-12"
+                                ng-options="network for network in networks"
+                                ng-model="network"
+                                id="tech">
+                        </select>
+                        <label for="band" class="col-md-12">Band:</label>
+                        <select
+                                class="col-md-12"
+                                ng-options="band for band in bands"
+                                ng-model="band"
+                                id="band">
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="col-md-12">Sector:</label>
+                        <select multiple
+                                size="10"
+                                class="col-md-12"
+                                ng-options="s for s in sectors"
+                                ng-model="sector">
+                        </select>
+                    </div>
+                    <div class="col-md-1 button_group">
+                        <div class="col-md-12">
+                            <button ng-click="onAdd(logical_sector, network, band, sector)" class="btn btn-success">>>
+                            </button>
+                            <button ng-click="onRemove(logical_sector, selected_associated_sectors)"
+                                    class="btn btn-danger"><<
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="col-md-12">Associated Sectors:</label>
+                        <div class="col-md-12">
+                            <select multiple
+                                    size="10"
+                                    class="col-md-12"
+                                    ng-options="s.sector as s.label for s in associated_sectors"
+                                    ng-model="selected_associated_sectors">
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </uib-tab>
-    <uib-tab heading="Set Logical Relations">
-        <form class="form">
-            <div class="form-group col-md-12">
-                <div class="col-md-2">
-                    <label class="col-md-12">Technology from:</label>
-                    <select
-                            ng-options="t for t in lr_technologies_from"
-                            ng-model="lr_technology_from"
-                            ng-change="onChangelr_tech_from(lr_technology_from)"></select>
-                </div>
-                <div class="col-md-2">
-                    <label class="col-md-12">Carrier from:</label>
-                    <select ng-options="c for c in lr_carriers_from" ng-model="lr_carrier_from"></select>
-                </div>
-                <div class="col-md-2">
-                    <label class="col-md-12">Symmetry:</label>
-                    <select ng-options="s for s in lr_symmetries" ng-model="lr_symmetry"></select>
-                </div>
-                <div class="col-md-2">
-                    <label class="col-md-12">Technology to:</label>
-                    <select ng-options="t for t in lr_technologies_to"
-                            ng-model="lr_technology_to"
-                            ng-change="onChangelr_tech_to(lr_technology_to)"></select>
-                </div>
-                <div class="col-md-2">
-                    <label class="col-md-12">Carrier to:</label>
-                    <select ng-options="c for c in lr_carriers_to" ng-model="lr_carrier_to"></select>
-                </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Logical Relations</h3>
             </div>
-        </form>
-        <button class="btn btn-default" ng-click="onClick_lr(lr_technology_from, lr_carrier_from, lr_symmetry, lr_technology_to, lr_carrier_to)">Save</button>
-        <table class="table vol-md-12">
-            <tr>
-                <td>Technology from</td>
-                <td>Carrier from</td>
-                <td>Symmetry</td>
-                <td>Technology to</td>
-                <td>Carrier to</td>
-                <td></td>
-            </tr>
-            <tr ng-repeat="r in lr_data">
-                <td>{{ r.technology_from }}</td>
-                <td>{{ r.carrier_from }}</td>
-                <td>{{ r.symmetry }}</td>
-                <td>{{ r.technology_to }}</td>
-                <td>{{ r.carrier_to }}</td>
-                <td><button class="btn btn-danger" ng-click="onClickDelLr(r.id)">Delete</button></td>
-            </tr>
-        </table>
+            <div class="panel-body">
+                <form class="form">
+                    <div class="form-group col-md-12">
+                        <div class="col-md-3">
+                            <label class="col-md-12">Technology from:</label>
+                            <select
+                                    ng-options="t for t in lr_technologies_from"
+                                    ng-model="lr_technology_from"
+                                    ng-change="onChangelr_tech_from(lr_technology_from)"></select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="col-md-12">Carrier from:</label>
+                            <select ng-options="c for c in lr_carriers_from" ng-model="lr_carrier_from"></select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="col-md-12">Symmetry:</label>
+                            <select ng-options="s for s in lr_symmetries" ng-model="lr_symmetry"></select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-md-12">Technology to:</label>
+                            <select ng-options="t for t in lr_technologies_to"
+                                    ng-model="lr_technology_to"
+                                    ng-change="onChangelr_tech_to(lr_technology_to)"></select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="col-md-12">Carrier to:</label>
+                            <select ng-options="c for c in lr_carriers_to" ng-model="lr_carrier_to"></select>
+                        </div>
+                    </div>
+                </form>
+                <button class="btn btn-default"
+                        ng-click="onClick_lr(lr_technology_from, lr_carrier_from, lr_symmetry, lr_technology_to, lr_carrier_to)">
+                    Save
+                </button>
+                <table class="table vol-md-12">
+                    <tr>
+                        <td>HO Realtion</td>
+                        <td></td>
+                    </tr>
+                    <tr ng-repeat="r in lr_data">
+                        <td>{{ r.ho_realtion }}</td>
+                        <td>
+                            <button class="btn btn-danger" ng-click="onClickDelLr(r.id)">Delete</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </uib-tab>
-
 </uib-tabset>
