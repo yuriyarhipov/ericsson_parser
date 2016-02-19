@@ -99,6 +99,7 @@
 .main_drive_test {
     width: 350px;
     height: 300px;
+    overflow-y: scroll;
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
     background: white;
