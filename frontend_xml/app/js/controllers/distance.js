@@ -642,6 +642,16 @@ distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookie
             });
         };
 
+        function get_legend(){
+            $http.get('/data/files/get_drive_test_legend/').success(function(data){
+                $scope.legend = data;
+            });
+        }
+        get_legend();
+        $scope.complete = function(data){
+            $scope.legend = data;
+        };
+
 
 }]);
 
