@@ -929,14 +929,13 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             map.create_drive_test_tool_bar = function(){
                 map._dt_win = L.control.window(map,{position: 'left',});
                 var window_div = map._dt_win.getContainer()
-                var drive_test_div = L.DomUtil.create('div', 'drive_test main_drive_test', window_div);
-                var ms_main_div = map._dt_win.ms_main_div = L.DomUtil.create('div', 'col-md-12', drive_test_div);
+                var ms_main_div = map._dt_win.ms_main_div = L.DomUtil.create('div', 'col-md-12', window_div);
                 var ms_header = L.DomUtil.create('div', 'col-md-12', ms_main_div);
                 ms_header.innerHTML = '<h5>Mobile Stations</h5>'
-                var kpi_main_div = map._dt_win.kpi_main_div = L.DomUtil.create('div', 'col-md-12', drive_test_div);
+                var kpi_main_div = map._dt_win.kpi_main_div = L.DomUtil.create('div', 'col-md-12', window_div);
                 var kpi_header = L.DomUtil.create('div', 'col-md-12', kpi_main_div);
                 kpi_header.innerHTML = '<h5>Parameters:</h5>'
-                var legend_main_div = map._dt_win.legend_main_div = L.DomUtil.create('div', 'col-md-12', drive_test_div);
+                var legend_main_div = map._dt_win.legend_main_div = L.DomUtil.create('div', 'col-md-12', window_div);
                 var legend_header = L.DomUtil.create('div', 'col-md-12', legend_main_div);
                 legend_header.innerHTML = '<h5>Legend:</h5>'
 
