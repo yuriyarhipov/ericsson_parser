@@ -637,9 +637,11 @@ distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookie
         });
 
         $scope.onClickDelLr = function(id){
-            $http.post('/data/delete_logical_relation/', $.param({'id': id})).success(function(data){
-                $scope.lr_data = data;
-            });
+            for (i in id){
+                $http.post('/data/delete_logical_relation/', $.param({'id': id[i]})).success(function(data){
+                    $scope.lr_data = data;
+                });
+            }
         };
 
         function get_legend(){

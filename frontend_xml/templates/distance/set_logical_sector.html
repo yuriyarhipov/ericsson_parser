@@ -1,174 +1,211 @@
-<uib-tabset>
-    <uib-tab heading="Map Settings">
-        <form class="form">
-            <div class="form-group">
-                <label>Radius WCDMA:</label>
-                <input type="text" name='radiusw' ng-model="radius_wcdma">
-            </div>
-            <div class="form-group">
-                <label>Radius LTE:</label>
-                <input type="text" name='radiusw' ng-model="radius_lte">
-            </div>
-            <div class="form-group">
-                <label>Radius GSM:</label>
-                <input type="text" name='radiusw' ng-model="radius_gsm">
-            </div>
-            <button class="btn btn-default" ng-click="onSaveMapSettings(radius_wcdma,radius_lte, radius_gsm)">Save
-            </button>
-        </form>
-    </uib-tab>
-    <uib-tab heading="Set Logical Sector">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Set Logical Sector</h3>
-            </div>
-            <div class="panel-body">
-                <div class="col-md-12">
-                    <div class="col-md-3">
-                        <label class="col-md-12">Logical Sector:</label>
-                        <select
-                                class="col-md-12"
-                                ng-options="ls for ls in logical_sectors"
-                                ng-model="logical_sector"
-                                ng-change="onChangeLogicalSector(logical_sector)">
-                        </select>
+<md-content>
+    <md-tabs md-dynamic-height md-border-bottom>
+        <md-tab label="Map Settings">
+            <md-content class="md-padding">
+                <form class="form">
+                    <md-input-container class="md-block">
+                        <label>Radius GSM</label>
+                        <input ng-model="radius_gsm">
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Radius WCDMA</label>
+                        <input ng-model="radius_wcdma">
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Radius LTE</label>
+                        <input ng-model="radius_lte">
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <md-button
+                                class="md-raised md-primary"
+                                ng-click="onSaveMapSettings(radius_wcdma,radius_lte, radius_gsm)">
+                            Save
+                        </md-button>
+                    </md-input-container>
+                </form>
+            </md-content>
+        </md-tab>
+        <md-tab label="Set Logical Sector">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h3>
+                        <span>Set Logical Sector</span>
+                    </h3>
+                </div>
+            </md-toolbar>
+            <md-content class="md-padding">
+                <div layout="row">
+                    <div flex>
+                        <md-input-container class="md-block">
+                            <label>Logical Sector</label>
+                            <md-select ng-model="logical_sector" ng-change="onChangeLogicalSector(logical_sector)">
+                                <md-option ng-repeat="ls in logical_sectors" value="{{ ls }}">
+                                    {{ ls }}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
                     </div>
-                    <div class="col-md-2">
-                        <label class="col-md-12">Technology:</label>
-                        <select
-                                class="col-md-12"
-                                ng-options="network for network in networks"
-                                ng-model="network"
-                                id="tech">
-                        </select>
-                        <label for="band" class="col-md-12">Band:</label>
-                        <select
-                                class="col-md-12"
-                                ng-options="band for band in bands"
-                                ng-model="band"
-                                id="band">
-                        </select>
+                    <div flex>
+                        <md-input-container class="md-block">
+                            <label>Technology</label>
+                            <md-select ng-model="network">
+                                <md-option ng-repeat="network in networks" value="{{ network }}">
+                                    {{ network }}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label>Band</label>
+                            <md-select ng-model="band">
+                                <md-option ng-repeat="band in bands" value="{{ band }}">
+                                    {{ band }}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
                     </div>
-                    <div class="col-md-3">
-                        <label class="col-md-12">Sector:</label>
-                        <select multiple
+                    <div class="flex">
+                        <md-input-container>
+                            <select multiple
                                 size="10"
                                 class="col-md-12"
                                 ng-options="s for s in sectors"
                                 ng-model="sector">
-                        </select>
-                    </div>
-                    <div class="col-md-1 button_group">
-                        <div class="col-md-12">
-                            <button ng-click="onAdd(logical_sector, network, band, sector)" class="btn btn-success">>>
+                            </select>
+                        </md-input-container>
+                        <md-input-container>
+                            <button ng-click="onAdd(logical_sector, network, band, sector)"
+                                    class="btn btn-success">>>
                             </button>
+                            </br>
                             <button ng-click="onRemove(logical_sector, selected_associated_sectors)"
                                     class="btn btn-danger"><<
                             </button>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="col-md-12">Associated Sectors:</label>
-                        <div class="col-md-12">
+                        </md-input-container>
+                        <md-input-container>
                             <select multiple
                                     size="10"
                                     class="col-md-12"
                                     ng-options="s.sector as s.label for s in associated_sectors"
                                     ng-model="selected_associated_sectors">
                             </select>
-                        </div>
+                        </md-input-container>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Logical Relations</h3>
-            </div>
-            <div class="panel-body">
-                <form class="form">
-                    <div class="form-group col-md-12">
-                        <div class="col-md-3">
-                            <label class="col-md-12">Technology from:</label>
-                            <select
-                                    ng-options="t for t in lr_technologies_from"
-                                    ng-model="lr_technology_from"
-                                    ng-change="onChangelr_tech_from(lr_technology_from)"></select>
+                <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h3>
+                        <span>Logical Relations</span>
+                    </h3>
+                </div>
+            </md-toolbar>
+            <md-content class="md-padding">
+            </md-content>
+                <div layout="row">
+                    <div flex="20">
+                        <md-input-container class="md-block">
+                            <label>Technology from</label>
+                            <md-select ng-model="lr_technology_from" ng-change="onChangelr_tech_from(lr_technology_from)">
+                                <md-option ng-repeat="t in lr_technologies_from" value="{{ t }}">
+                                    {{ t }}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label>Carrier from</label>
+                            <md-select ng-model="lr_carrier_from" ng-change="onChangelr_tech_from(lr_technology_from)">
+                                <md-option ng-repeat="c in lr_carriers_from" value="{{ c }}">
+                                    {{ c }}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </div>
+                    <div flex="20">
+                        <md-input-container class="md-block">
+                            <label>Symmetry</label>
+                            <md-select ng-model="lr_symmetry">
+                                <md-option ng-repeat="s in lr_symmetries" value="{{ s }}">
+                                    {{ s }}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </div>
+                    <div flex="20">
+                        <md-input-container class="md-block">
+                            <label>Technology to</label>
+                            <md-select ng-model="lr_technology_to" ng-change="onChangelr_tech_to(lr_technology_to)">
+                                <md-option ng-repeat="t in lr_technologies_to" value="{{ t }}">
+                                    {{ t }}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label>Carrier to</label>
+                            <md-select ng-model="lr_carrier_to" ng-change="onChangelr_tech_to(lr_technology_to)">
+                                <md-option ng-repeat="c in lr_carriers_to" value="{{ c }}">
+                                    {{ c }}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </div>
+                    <div flex="40">
+                        <md-input-container>
+                            <button ng-click="onClick_lr(lr_technology_from, lr_carrier_from, lr_symmetry, lr_technology_to, lr_carrier_to)"
+                                    class="btn btn-success">>>
+                            </button>
+                            </br>
+                            <button ng-click="onClickDelLr(selected_ho_realtions)"
+                                    class="btn btn-danger"><<
+                            </button>
+                        </md-input-container>
+                        <md-input-container>
+                            <select multiple
+                                    size="10"
+                                    class="col-md-12"
+                                    ng-options="r.id as r.ho_realtion for r in lr_data"
+                                    ng-model="selected_ho_realtions">
+                            </select>
+                        </md-input-container>
+                    </div>
+                </div>
+            </md-content>
+        </md-tab>
+        <md-tab label="Map Legend">
+            <md-content class="md-padding">
+                <form ng-upload="complete(content)" class="form-horizontal col-sm-6" role="form"
+                      action="/data/files/set_drive_test_legend/" upload-options-enable-rails-csrf>
+                    <div class="form-group">
+                        <label for="file" class="col-sm-3 control-label">File</label>
+                        <div class="col-sm-9">
+                            <input type="file" id="file" name="uploaded_file">
                         </div>
-                        <div class="col-md-2">
-                            <label class="col-md-12">Carrier from:</label>
-                            <select ng-options="c for c in lr_carriers_from" ng-model="lr_carrier_from"></select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="col-md-12">Symmetry:</label>
-                            <select ng-options="s for s in lr_symmetries" ng-model="lr_symmetry"></select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="col-md-12">Technology to:</label>
-                            <select ng-options="t for t in lr_technologies_to"
-                                    ng-model="lr_technology_to"
-                                    ng-change="onChangelr_tech_to(lr_technology_to)"></select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="col-md-12">Carrier to:</label>
-                            <select ng-options="c for c in lr_carriers_to" ng-model="lr_carrier_to"></select>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-9">
+                            <button type="submit" ng-disabled="$isLoading" class="btn btn-success">Upload</button>
+                            <button class="btn btn-default" type="reset">Cancel</button>
                         </div>
                     </div>
                 </form>
-                <button class="btn btn-default"
-                        ng-click="onClick_lr(lr_technology_from, lr_carrier_from, lr_symmetry, lr_technology_to, lr_carrier_to)">
-                    Save
-                </button>
-                <table class="table vol-md-12">
+                <table class="table table-bordered">
+                    <thead>
                     <tr>
-                        <td>HO Realtion</td>
-                        <td></td>
+                        <td>Parameter</td>
+                        <td>Min Value</td>
+                        <td>Max Value</td>
+                        <td>Color</td>
                     </tr>
-                    <tr ng-repeat="r in lr_data">
-                        <td>{{ r.ho_realtion }}</td>
-                        <td>
-                            <button class="btn btn-danger" ng-click="onClickDelLr(r.id)">Delete</button>
-                        </td>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="l in legend">
+                        <td>{{ l[0] }}</td>
+                        <td>{{ l[1] }}</td>
+                        <td>{{ l[2] }}</td>
+                        <td style="background-color:{{ l[3] }} ">{{ l[3] }}</td>
                     </tr>
+                    </tbody>
                 </table>
-            </div>
-        </div>
-    </uib-tab>
-    <uib-tab heading="Set Drive Test Legend">
-        <form ng-upload="complete(content)" class="form-horizontal col-sm-6" role="form"
-              action="/data/files/set_drive_test_legend/" upload-options-enable-rails-csrf>
-            <div class="form-group">
-                <label for="file" class="col-sm-3 control-label">File</label>
-                <div class="col-sm-9">
-                    <input type="file" id="file" name="uploaded_file">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-3"></div>
-                <div class="col-sm-9">
-                    <button type="submit" ng-disabled="$isLoading" class="btn btn-success">Upload</button>
-                    <button class="btn btn-default" type="reset">Cancel</button>
-                </div>
-            </div>
-        </form>
-
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <td>Parameter</td>
-                <td>Min Value</td>
-                <td>Max Value</td>
-                <td>Color</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="l in legend">
-                <td>{{ l[0] }}</td>
-                <td>{{ l[1] }}</td>
-                <td>{{ l[2] }}</td>
-                <td style="background-color:{{ l[3] }} ">{{ l[3] }}</td>
-            </tr>
-            </tbody>
-        </table>
-    </uib-tab>
-</uib-tabset>
+            </md-content>
+        </md-tab>
+    </md-tabs>
+</md-content>
