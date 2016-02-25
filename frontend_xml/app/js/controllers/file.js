@@ -20,9 +20,10 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
         if (!$cookies.get('is_auth')){
             $location.path('/login')
         }
-        $scope.Network = [ 'WCDMA', 'GSM', 'LTE'];
+        $scope.vendors = ['Ericsson', 'Nokia', 'Universal'];
+        $scope.Network = [ 'GSM', 'WCDMA', 'LTE'];
+
         $scope.TypeFile = [
-                    'Configuration Management XML File',
                     'WCDMA RADIO OSS BULK CM XML FILE',
                     'WCDMA TRANSPORT OSS BULK CM XML FILE',
                     'WNCS OSS FILE',
@@ -32,16 +33,19 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
                     'HISTOGRAM FORMAT COUNTER',
                     'HISTOGRAM FILE COUNTER - Access Distance',
                     'Drive Test',
-                    'RND file'
                 ];
-        $scope.CurrentNetwork = $scope.Network[0];
+        $scope.CurrentVendor = 'Ericsson';
+        $scope.CurrentNetwork = $scope.Network[1];
         $scope.CurrentTypeFile = $scope.TypeFile[0];
         $scope.file_data = {};
 
+        $scope.onChangeVendor = function(vendor){
+            $scope.onChangeNetwork()
+        };
+
         $scope.onChangeNetwork = function(){
-            if ($scope.CurrentNetwork == 'WCDMA'){
+            if (($scope.CurrentNetwork == 'WCDMA') && ($scope.CurrentVendor == 'Ericsson')){
                 $scope.TypeFile = [
-                    'Configuration Management XML File',
                     'WCDMA RADIO OSS BULK CM XML FILE',
                     'WCDMA TRANSPORT OSS BULK CM XML FILE',
                     'WNCS OSS FILE',
@@ -51,26 +55,34 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
                     'HISTOGRAM FORMAT COUNTER',
                     'HISTOGRAM FILE COUNTER - Access Distance',
                     'Drive Test',
-                    'RND file'
                 ];
             }
-            if ($scope.CurrentNetwork == 'GSM'){
+            if (($scope.CurrentNetwork == 'WCDMA') && ($scope.CurrentVendor == 'Nokia')){
+                $scope.TypeFile = [
+                    'Configuration Management XML File',
+                ];
+            }
+            if (($scope.CurrentNetwork == 'GSM') && ($scope.CurrentVendor == 'Ericsson')){
                 $scope.TypeFile = [
                     'GSM BSS CNA  OSS FILE',
                     'GSM NCS OSS FILE',
                     'GSM MRR OSS FILE',
                     'Drive Test',
-                    'RND file'
                 ];
             }
-            if ($scope.CurrentNetwork == 'LTE'){
+            if (($scope.CurrentNetwork == 'LTE') && ($scope.CurrentVendor == 'Ericsson')){
                 $scope.TypeFile = [
                     'LTE RADIO eNodeB BULK CM XML FILE',
                     'LTE TRANSPORT eNodeB BULK CM XML FILE',
                     'LTE LICENSE FILE OSS XML',
                     'LTE HARDWARE FILE OSS XML',
                     'Drive Test',
-                    'RND file'
+
+                ];
+            }
+            if ($scope.CurrentVendor == 'Universal'){
+                $scope.TypeFile = [
+                    'RND',
                 ];
             }
 

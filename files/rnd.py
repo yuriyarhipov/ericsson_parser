@@ -19,6 +19,7 @@ class Rnd:
                 id SERIAL,
                 project_id INT,
                 network TEXT,
+                description TEXT,
                 data JSON)
             ''')
         cursor.close()
@@ -44,18 +45,33 @@ class Rnd:
         params.sort()
         return params
 
-    def get_data(self):
+    def get_data(self, filenames=None):
         cursor = connection.cursor()
+        project_id = self.project_id
+        network = self.network.upper()
+        #if filenames:
+        sql_des = ','.join(["'%s'" % f for f in filenames])
         cursor.execute('''
             SELECT
                 data
             FROM
                 rnd
             WHERE
-                (project_id=%s) AND (network=%s)''', (
-            self.project_id,
-            self.network))
+                (project_id=%s) AND (network=%s) AND (description IN (''' + sql_des + '''))''', (
+            project_id,
+            network))
+        #else:
+        #    cursor.execute('''
+        #        SELECT
+        #            data
+        #        FROM
+        #            rnd
+        #        WHERE
+        #            (project_id=%s) AND (network=%s)''', (
+        #        project_id,
+        #        network))
         result = []
+
         if cursor.rowcount > 0:
             result = cursor.fetchone()[0]
         else:
@@ -115,8 +131,7 @@ class Rnd:
             json.dumps(data, encoding='latin1')))
         connection.commit()
 
-
-    def write_file(self, filename):
+    def write_file(self, filename, description):
         cursor = connection.cursor()
         excel_dataframe = pd.read_excel(filename, keep_default_na=False)
         columns = excel_dataframe.columns.values.tolist()
@@ -137,10 +152,12 @@ class Rnd:
                 rnd (
                     project_id,
                     network,
+                    description,
                     data)
-            VALUES (%s, %s, %s)''', (
+            VALUES (%s, %s, %s, %s)''', (
             self.project_id,
             self.network,
+            description,
             json.dumps(result, encoding='latin1')
         ))
         connection.commit()

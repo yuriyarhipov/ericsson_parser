@@ -110,10 +110,20 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
             console.log('TEST');
         });
         var loadData = function (){
+            $scope.files = $cookies.getObject('dt');
+            console.log($scope.files);
             $http.get('/data/treeview/' + $cookies.get('active_project') + '/').success(function(data){
                 $scope.treedata = data;
                 for (i in data[2].children){
                     $scope.files[data[2].children[i].label] = true;
+                }
+                for (i in data[0].children){
+                    for (y in data[0].children[i].children){
+                        if (!(data[0].children[i].children[y].label in $scope.files)){
+                            $scope.files[data[0].children[i].children[y].label] = true;
+                        }
+
+                    }
                 }
                 $cookies.putObject('dt', $scope.files);
             });

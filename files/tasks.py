@@ -153,9 +153,9 @@ def worker(filename, project, description, vendor, file_type, network):
             vendor=vendor,
             network=network)
 
-    if file_type == 'RND file':
-        Rnd(project.id, network).write_file(work_file)
-        Files.objects.filter(filename=basename(work_file), project=project).delete()
+    if file_type == 'RND':
+        Rnd(project.id, network).write_file(work_file, description)
+        Files.objects.filter(project=project, description=description).delete()
         Files.objects.create(
             filename=basename(work_file),
             file_type=file_type,

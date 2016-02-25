@@ -8,9 +8,13 @@
     <div class="form-group">
         <label for="vendor" class="col-sm-3 control-label">Vendor</label>
         <div class="col-sm-9">
-            <select class="form-control" id="vendor" name="vendor">
-                <option selected>Ericsson</option>
-                <option selected>Nokia</option>
+            <select
+                    class="form-control"
+                    id="vendor"
+                    ng-change="onChangeVendor(CurrentVendor)"
+                    ng-model="CurrentVendor"
+                    ng-options="v for v in vendors track by v"
+                    name="vendor">
             </select>
         </div>
     </div>

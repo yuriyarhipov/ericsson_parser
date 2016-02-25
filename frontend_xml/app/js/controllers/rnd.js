@@ -111,6 +111,12 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
 
 rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal', 'usSpinnerService',
     function ($scope, $http, leafletData, $location, $cookies, $uibModal, usSpinnerService) {
+        var filenames = []
+        for (i in $cookies.getObject('dt')){
+            if ($cookies.getObject('dt')[i]){
+                filenames.push(i);
+            }
+        }
         var onAddFilter = function(network, param, value){
             var color = randomColor({hue: 'random',luminosity: 'dark'});
             var values = {};
@@ -707,13 +713,21 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     map._pd_date_to.selectedIndex = data2.length - 1;
                 });
             }
-            $http.get('/data/rnd/init_map/').success(function(data){
+            var params = ''
+            for (i in filenames){
+                params = params + 'filename='+filenames[i] + '&'
+            }
+
+
+            $http.get('/data/rnd/init_map?' + params).success(function(data){
                 map.setView(data.point, 10);
             });
 
-            $http.get('/data/rnd/gsm/').success(function(gsm_data){
-                $http.get('/data/rnd/wcdma/').success(function(wcdma_data){
-                    $http.get('/data/rnd/lte/').success(function(lte_data){
+
+
+            $http.get('/data/rnd/GSM/?' + params).success(function(gsm_data){
+                $http.get('/data/rnd/WCDMA/?' + params).success(function(wcdma_data){
+                    $http.get('/data/rnd/LTE/?' + params).success(function(lte_data){
                         usSpinnerService.stop('spinner_map');
                         gsm_layer = create_rnd_layer(gsm_data, 'gsm', radius_gsm, 'orange', 'Latitude', 'Longitude', 'Cell_Name');
                         wcdma_layer = create_rnd_layer(wcdma_data, 'wcdma', radius_wcdma, 'blue', 'Latitude', 'Longitude', 'Utrancell');
@@ -862,7 +876,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 if (map._is_drive_test){
                     usSpinnerService.spin('spinner_map');
                     map_bounds = map.getBounds();
-                    filenames = []
+                    var filenames = []
                     for (i in $cookies.getObject('dt')){
                         if ($cookies.getObject('dt')[i]){
                             filenames.push(i);

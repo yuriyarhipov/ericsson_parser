@@ -260,15 +260,8 @@ def get_excel(request, network):
 @gzip_page
 def rnd(request, network=None):
     project = request.project
-    data = []
-    if request.method == 'POST':
-        filename = handle_uploaded_file(
-            request.data.getlist('uploaded_file'))[0]
-        network = request.POST.get('network')
-        data = Rnd(project.id, network).write_file(filename)
-    elif request.method == 'GET':
-        data = Rnd(project.id, network).get_data()
-
+    filenames = request.GET.getlist('filename')
+    data = Rnd(project.id, network).get_data(filenames)
     return Response(data)
 
 
@@ -293,7 +286,8 @@ def map_frame(request, network):
 @api_view(['GET', ])
 def init_map(request):
     project = request.project
-    gsm_data = Rnd(project.id, 'gsm').get_data().get('data')
+    filenames = request.GET.getlist('filename')
+    gsm_data = Rnd(project.id, 'GSM').get_data(filenames).get('data')
     data = {}
     if gsm_data:
         for s in gsm_data:
@@ -303,7 +297,7 @@ def init_map(request):
                 data = {'point': [lat, lng]}
                 return Response(data)
 
-    wcdma_data = Rnd(project.id, 'wcdma').get_data().get('data')
+    wcdma_data = Rnd(project.id, 'WCDMA').get_data(filenames).get('data')
     if wcdma_data:
         for s in wcdma_data:
             lat = s.get('Latitude')
@@ -312,7 +306,7 @@ def init_map(request):
                 data = {'point': [lat, lng]}
                 return Response(data)
 
-    lte_data = Rnd(project.id, 'lte').get_data().get('data')
+    lte_data = Rnd(project.id, 'LTE').get_data(filenames).get('data')
     if lte_data:
         for s in lte_data:
             lat = s.get('Latitude')

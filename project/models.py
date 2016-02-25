@@ -130,7 +130,7 @@ class Project(models.Model):
     def get_rnd_items(self, network):
         from files.models import Files
         data = []
-        for f in Files.objects.filter(project=self, file_type='RND file', network=network):
+        for f in Files.objects.filter(project=self, file_type='RND', network=network):
             data.append({
                 'id': f.id,
                 'label': f.description,
@@ -144,7 +144,7 @@ class Project(models.Model):
     def get_rnd_tree(self):
         from files.models import Files
         data = []
-        db_networks = [f.network for f in Files.objects.filter(project=self, file_type='RND file').distinct('network')]
+        db_networks = [f.network for f in Files.objects.filter(project=self, file_type='RND').distinct('network')]
         for net in ['GSM', 'WCDMA', 'LTE']:
             if net in db_networks:
                 data.append({
