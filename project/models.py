@@ -123,4 +123,6 @@ class Project(models.Model):
                 'children': '',
                 'type': f.file_type,
                 'show_check': True})
+        if not data:
+            data = {}
         return data

@@ -3,7 +3,7 @@ from celery import current_task
 
 from django.conf import settings
 from celery.task.control import revoke
-from os.path import basename
+from os.path import basename, splitext
 
 
 @celery.task
@@ -34,6 +34,7 @@ def worker(filename, project, description, vendor, file_type, network):
     from files.distance import Distance
     from files.drive_test import DriveTest
     from files.models import Files
+    from rnd import Rnd
 
     xml_types = [
         'WCDMA RADIO OSS BULK CM XML FILE',
@@ -67,8 +68,12 @@ def worker(filename, project, description, vendor, file_type, network):
         'HISTOGRAM FILE COUNTER - Access Distance',
     ]
 
-    work_file = XmlPack(filename).get_files()[0]
-    print work_file
+    ext = splitext(filename)[1]
+    if ext in ['rar', 'zip', 'gz']:
+        work_file = XmlPack(filename).get_files()[0]
+    else:
+        work_file = filename
+
     task = current_task
     task.update_state(state="PROGRESS", meta={"current": 1})
 
@@ -138,6 +143,18 @@ def worker(filename, project, description, vendor, file_type, network):
     if file_type == 'Drive Test':
         dt = DriveTest()
         dt.upload_file(work_file, project.id, current_task)
+        Files.objects.filter(filename=basename(work_file), project=project).delete()
+        Files.objects.create(
+            filename=basename(work_file),
+            file_type=file_type,
+            project=project,
+            tables='',
+            description=description,
+            vendor=vendor,
+            network=network)
+
+    if file_type == 'RND file':
+        Rnd(project.id, network).write_file(work_file)
         Files.objects.filter(filename=basename(work_file), project=project).delete()
         Files.objects.create(
             filename=basename(work_file),
