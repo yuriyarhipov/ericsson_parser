@@ -110,9 +110,8 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
             console.log('TEST');
         });
         var loadData = function (){
-            $scope.files = $cookies.getObject('dt');
-            console.log($scope.files);
             $http.get('/data/treeview/' + $cookies.get('active_project') + '/').success(function(data){
+                $scope.files = $cookies.getObject('dt');
                 $scope.treedata = data;
                 for (i in data[2].children){
                     $scope.files[data[2].children[i].label] = true;
