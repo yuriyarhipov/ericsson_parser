@@ -24,7 +24,6 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
         $scope.$watch( 'tree_view.currentNode', function( newObj, oldObj ) {
             if( $scope.tree_view && angular.isObject($scope.tree_view.currentNode) ) {
                 var node_type = $scope.tree_view.currentNode.type;
-                console.log($scope.tree_view.currentNode.link);
                 var network = $scope.tree_view.currentNode.network;
                 if ((node_type == 'xml') && (network == '3g')){
                     var wcdma = $scope.tree_view.currentNode.id;
