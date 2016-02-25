@@ -103,17 +103,17 @@
                     </button>
                     <md-menu-content>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/add_project', $event)">
+                            <md-button ng-href="#/add_project">
                                 Create Project
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/projects', $event)">
+                            <md-button ng-href="#/projects">
                                 Projects
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/files_hub', $event)">
+                            <md-button ng-href="#/files_hub">
                                 Files Hub
                             </md-button>
                         </md-menu-item>
@@ -125,27 +125,28 @@
                     </button>
                     <md-menu-content>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/map', $event)">
+                            <md-button ng-href="#/map">
                                 Map
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/create_group_of_cells', $event)">
+                            <md-button ng-href="#/create_group_of_cells">
                                 Create group of cells
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/groups', $event)">
+                            <md-button ng-href="#/groups">
                                 Group of cells
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/table/rnd/rnd', $event)">
+                            <md-button ng-href="#/table/rnd/rnd">
                                 Radio Network Data
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <a href="/data/rnd/get3g3gscript">3G3G Script</a>
+                            <md-button
+                                ng-href="/data/rnd/get3g3gscript">3G3G Script</md-button>
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>
@@ -155,22 +156,22 @@
                     </button>
                     <md-menu-content>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/register_version_release', $event)">
+                            <md-button ng-href="#/register_version_release">
                                 Register Version Release
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/create_predefined_template', $event)">
+                            <md-button ng-href="#/create_predefined_template">
                                 Create Predefined Template
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/predefined_templates', $event)">
+                            <md-button ng-href="#/predefined_templates">
                                 Predefined Templates
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/run_template', $event)">
+                            <md-button ng-href="#/run_template">
                                 Run a Template
                             </md-button>
                         </md-menu-item>
@@ -182,22 +183,22 @@
                     </button>
                     <md-menu-content>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/explore/tables', $event)">
+                            <md-button ng-href="#/explore/tables">
                                 Explore
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/by_technology', $event)">
+                            <md-button ng-href="#/by_technology">
                                 By Technology
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/dashboard_wcdma', $event)">
+                            <md-button ng-href="#/dashboard_wcdma">
                                 Dashboard WCDMA
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/parameters_overview', $event)">
+                            <md-button ng-href="#/parameters_overview">
                                 Parameters Overview
                             </md-button>
                         </md-menu-item>
@@ -213,23 +214,23 @@
                                 <md-button ng-click="$mdOpenMenu()">Ericsson</md-button>
                                 <md-menu-content>
                                     <md-menu-item>
-                                        <md-button ng-click="onMenuClick('/access_distance', $event)">Access Distance
+                                        <md-button ng-href="#/access_distance">Access Distance
                                         </md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="onMenuClick('/measurements/wncs', $event)">WNCS
+                                        <md-button ng-href="#/measurements/wncs">WNCS
                                         </md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="onMenuClick('/measurements/wmrr', $event)">WMRR
+                                        <md-button ng-href="#/measurements/wmrr">WMRR
                                         </md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="onMenuClick('/measurements/ncs', $event)">NCS
+                                        <md-button ng-href="#/measurements/ncs">NCS
                                         </md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="onMenuClick('/measurements/mrr', $event)">MRR
+                                        <md-button ng-href="#/measurements/mrr">MRR
                                         </md-button>
                                     </md-menu-item>
                                 </md-menu-content>
@@ -253,12 +254,12 @@
                     </button>
                     <md-menu-content>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/licenses', $event)">
+                            <md-button ng-href="#/licenses">
                                 Check Licenses
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/hardwares', $event)">
+                            <md-button ng-href="#/hardwares">
                                 Check Hardware
                             </md-button>
                         </md-menu-item>
@@ -270,22 +271,22 @@
                     </button>
                     <md-menu-content>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/compare_files', $event)">
+                            <md-button ng-href="#/compare_files">
                                 Compare Files
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/compare_templates', $event)">
+                            <md-button ng-href="#/compare_templates">
                                 Compare Templates
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/compare_queries', $event)">
+                            <md-button ng-href="#/compare_queries">
                                 Compare Queries
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/compare_neighbors', $event)">
+                            <md-button ng-href="#/compare_neighbors">
                                 Compare Neighbors
                             </md-button>
                         </md-menu-item>
@@ -301,19 +302,19 @@
                                 <md-button ng-click="$mdOpenMenu()">Ericsson</md-button>
                                 <md-menu-content>
                                     <md-menu-item>
-                                        <md-button ng-click="onMenuClick('/run_audit', $event)">Run Network Audit
+                                        <md-button ng-href="#/run_audit">Run Network Audit
                                         </md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="onMenuClick('/power_audit', $event)">WCDMA Power Audit
+                                        <md-button ng-href="#/power_audit">WCDMA Power Audit
                                         </md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="onMenuClick('/psc_distance', $event)">PSC Distance Re-Use REPORT
+                                        <md-button ng-href="#/psc_distance">PSC Distance Re-Use REPORT
                                         </md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="onMenuClick('/same_neighbor', $event)">SAME SECTOR NEIGHBOR
+                                        <md-button ng-href="#/same_neighbor">SAME SECTOR NEIGHBOR
                                         </md-button>
                                     </md-menu-item>
                                 </md-menu-content>
@@ -337,37 +338,37 @@
                     </button>
                     <md-menu-content>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/help', $event)">
+                            <md-button ng-href="#/help">
                                 Help
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/set_logical_sector', $event)">
+                            <md-button ng-href="#/set_logical_sector">
                                 Settings
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/set_automatic_site_query', $event)">
+                            <md-button ng-href="#/set_automatic_site_query">
                                 Set Automatic Site Query
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/set_cna_template', $event)">
+                            <md-button ng-href="#/set_cna_template">
                                 Set Cna Template
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/set_audit_template', $event)">
+                            <md-button ng-href="#/set_audit_template">
                                 Set Audit Template
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/set_drive_test_legend', $event)">
+                            <md-button ng-href="#/set_drive_test_legend">
                                 Set Drive Test Legend
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/about', $event)">
+                            <md-button ng-href="#/about">
                                 About
                             </md-button>
                         </md-menu-item>
@@ -382,12 +383,12 @@
                             <h5>{{ username }}</h5>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/change_pass', $event)">
+                            <md-button ng-href="#/change_pass">
                                 Change Password
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="onMenuClick('/logout', $event)">
+                            <md-button ng-href="#/logout">
                                 Logout
                             </md-button>
                         </md-menu-item>
