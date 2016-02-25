@@ -77,6 +77,9 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
     function ($scope, $timeout, $cookies, $http, activeProjectService, activeFileService, $location, $rootScope) {
         $scope.checked = false;
         $scope.files = {};
+        if ($cookies.getObject('dt')){
+            $scope.files = $cookies.getObject('dt');
+        }
 
         $scope.onFileClick = function(f){
             $cookies.putObject('dt', $scope.files);
@@ -111,19 +114,21 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
         });
         var loadData = function (){
             $http.get('/data/treeview/' + $cookies.get('active_project') + '/').success(function(data){
-                $scope.files = $cookies.getObject('dt');
                 $scope.treedata = data;
                 for (i in data[2].children){
                     $scope.files[data[2].children[i].label] = true;
                 }
+
                 for (i in data[0].children){
                     for (y in data[0].children[i].children){
+                        console.log($scope.files);
+                        console.log(data[0].children[i].children[y].label);
                         if (!(data[0].children[i].children[y].label in $scope.files)){
                             $scope.files[data[0].children[i].children[y].label] = true;
                         }
-
                     }
                 }
+
                 $cookies.putObject('dt', $scope.files);
             });
             //$timeout(loadData, 5000);
