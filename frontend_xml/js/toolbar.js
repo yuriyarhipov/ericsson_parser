@@ -5,8 +5,10 @@ L.Control.ToolBar = L.Control.extend({
     },
 
     onAdd: function(map) {
-        this.controlDiv = L.DomUtil.create('div', 'toolbar col-md-12');
-        this.buttonsDiv = L.DomUtil.create('div', 'col-md-12', this.controlDiv);
+        map._controlDiv = this.controlDiv = L.DomUtil.create('div', 'toolbar col-md-12 small');
+        map._buttonsDiv = this.buttonsDiv = L.DomUtil.create('div', 'col-md-11 hide', this.controlDiv);
+        var closeButton = L.DomUtil.create('btn', 'btn', this.controlDiv);
+        closeButton.innerHTML = '<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>';
         map._appsDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
         map._3gDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
         map._layerDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
@@ -349,6 +351,21 @@ L.Control.ToolBar = L.Control.extend({
             })
             .addListener(this.dtButton, 'click', function(e){
                 map.drive_test();
+            })
+
+            .addListener(closeButton, 'click', function(e){
+                if (L.DomUtil.hasClass(map._controlDiv, 'small')){
+                    L.DomUtil.removeClass(map._controlDiv, 'small');
+                    L.DomUtil.removeClass(map._buttonsDiv, 'hide');
+                } else {
+                    L.DomUtil.addClass(map._controlDiv, 'small');
+                    L.DomUtil.addClass(map._buttonsDiv, 'hide');
+                    L.DomUtil.addClass(map._appsDiv, 'hide');
+                    L.DomUtil.addClass(map._3gDiv, 'hide');
+                    L.DomUtil.addClass(map._layerDiv, 'hide');
+                    L.DomUtil.addClass(fDiv, 'hide');
+                }
+
             })
 
 

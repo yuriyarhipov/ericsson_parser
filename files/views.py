@@ -507,6 +507,3 @@ def universal_table(request, relation):
     ut = UniversalTable(relation.lower())
     columns, data = ut.get_table()
     return Response({'columns': columns, 'data': data})
-
-
-
