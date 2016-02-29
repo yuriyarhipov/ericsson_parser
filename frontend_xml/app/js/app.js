@@ -221,6 +221,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/tables/universal.html',
                 controller: 'universalTablesCtrl'
             }).
+            when('/universal_table/:table_name', {
+                templateUrl: 'templates/tables/universal_table.html',
+                controller: 'universalTableCtrl'
+            }).
             otherwise({
                 templateUrl: 'templates/projects.html',
                 controller: 'ProjectsCtrl'

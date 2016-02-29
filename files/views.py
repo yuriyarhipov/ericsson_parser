@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from celery.result import AsyncResult
 
-from .models import Files, UploadedFiles, SuperFile, CNATemplate, FileTasks, DriveTestLegend
+from .models import Files, UploadedFiles, CNATemplate, FileTasks, DriveTestLegend
 from tables.table import Table
 from files.compare import CompareFiles, CompareTable
 from files.excel import ExcelFile
@@ -20,12 +20,12 @@ from files.drive_test import DriveTest
 from rnd import Rnd
 import tasks
 from os import makedirs
-from os.path import exists, basename
-from multiprocessing import Process
+from os.path import exists
 from shapely.geometry import box, Point
 from django.views.decorators.gzip import gzip_page
+from tables.universal_tables import UniversalTable
 
-import redis
+
 
 
 def handle_uploaded_file(files):
@@ -502,6 +502,11 @@ def drive_test_point(request, id):
     point = dt.get_point(project.id, id)
     return Response(point)
 
+@api_view(['GET', ])
+def universal_table(request, relation):
+    ut = UniversalTable(relation.lower())
+    columns, data = ut.get_table()
+    return Response({'columns': columns, 'data': data})
 
 
 

@@ -63,6 +63,7 @@ urlpatterns = patterns('',
     url(r'^data/files/get_cna_template/$', files_views.get_cna_template),
     url(r'^data/files/status/(\S+)/$', files_views.status),
     url(r'^data/files/get_excel/(\S+)/$', files_views.get_excel),
+    url(r'^data/universal_table/(\S+)/$', files_views.universal_table),
 
     url(r'^data/dash_num_sectors/$', dash_view.dash_num_sectors),
     url(r'^data/dash_model_eq/$', dash_view.dash_model_eq),
@@ -115,6 +116,7 @@ urlpatterns = patterns('',
     url(r'^data/save_logical_relation/$', table_views.save_logical_relation),
     url(r'^data/logical_relations/$', table_views.logical_relations),
     url(r'^data/delete_logical_relation/$', table_views.delete_logical_relation),
+
 
 
 

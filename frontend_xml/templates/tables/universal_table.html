@@ -1,0 +1,16 @@
+<div class="row">
+    <table st-table="rowCollection" class="table table-striped">
+        <thead>
+            <tr>
+                <th  st-sort="{{ column }}" ng-repeat="column in columns">{{ column }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in data track by $index">
+                <td ng-repeat="col in row track by $index">
+                    {{ col }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

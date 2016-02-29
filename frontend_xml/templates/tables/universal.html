@@ -1,9 +1,9 @@
 <div>
-    <md-content>
-        <md-virtual-repeat-container id="vertical-container">
-            <div md-virtual-repeat="t in universal_tables" md-on-demand class="repeated-item" flex>
-                {{ t }}
-            </div>
-        </md-virtual-repeat-container>
-    </md-content>
+    <table class="table">
+        <tr ng-repeat="t in tables">
+            <td>
+                <a href="#/universal_table/{{ t }}/">{{ t }}</a>
+            </td>
+        </tr>
+    </table>
 </div>

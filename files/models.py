@@ -361,3 +361,72 @@ class LogicalRelation(models.Model):
     technology_to = models.TextField()
     carrier_to = models.TextField()
     ho_realtion = models.TextField()
+
+class GsmGsm(models.Model):
+    project = models.ForeignKey(Project)
+    cellSource = models.TextField()
+    cellTarget = models.TextField()
+    status = models.TextField()
+
+class WcdmaWcdma(models.Model):
+    project = models.ForeignKey(Project)
+    rncSource = models.TextField()
+    utrancellSource = models.TextField()
+    carrierSource = models.TextField()
+    rncTarget = models.TextField()
+    utrancellTarget = models.TextField()
+    carrierTarget = models.TextField()
+    status = models.TextField()
+
+class LteLte(models.Model):
+    project = models.ForeignKey(Project)
+    rncSource = models.TextField()
+    utrancellSource = models.TextField()
+    carrierSource = models.TextField()
+    rncTarget = models.TextField()
+    utrancellTarget = models.TextField()
+    carrierTarget = models.TextField()
+    status = models.TextField()
+
+class WcdmaLte(models.Model):
+    project = models.ForeignKey(Project)
+    rncSource = models.TextField()
+    utrancellSource = models.TextField()
+    carrierSource = models.TextField()
+    rncTarget = models.TextField()
+    utrancellTarget = models.TextField()
+    carrierTarget = models.TextField()
+    status = models.TextField()
+
+class GsmLte(models.Model):
+    project = models.ForeignKey(Project)
+    cellSource = models.TextField()
+    rncTarget = models.TextField()
+    utrancellTarget = models.TextField()
+    carrierTarget = models.TextField()
+    status = models.TextField()
+
+class LteGsm(models.Model):
+    project = models.ForeignKey(Project)
+    rncSource = models.TextField()
+    utrancellSource = models.TextField()
+    carrierSource = models.TextField()
+    cellTarget = models.TextField()
+    status = models.TextField()
+
+class GsmWcdma(models.Model):
+    project = models.ForeignKey(Project)
+    cellSource = models.TextField()
+    rncTarget = models.TextField()
+    utrancellTarget = models.TextField()
+    carrierTarget = models.TextField()
+    status = models.TextField()
+
+class WcdmaGsm(models.Model):
+    project = models.ForeignKey(Project)
+    rncSource = models.TextField()
+    utrancellSource = models.TextField()
+    carrierSource = models.TextField()
+    cellTarget = models.TextField()
+    status = models.TextField()
+

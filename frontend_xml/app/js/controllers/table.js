@@ -76,3 +76,17 @@ tableControllers.controller('excelCtrl', ['$scope', '$http', '$routeParams', '$t
             $timeout(getStatus, 0);
         });
 }]);
+
+tableControllers.controller('universalTablesCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.tables = [
+            'GsmGsm', 'GsmLte', 'GsmWcdma', 'WcdmaWcdma', 'WcdmaGsm', 'WcdmaLte', 'LteLte', 'LteGsm', 'LteWcdma'
+        ]
+}]);
+
+tableControllers.controller('universalTableCtrl', ['$scope', '$http', '$routeParams',
+    function ($scope, $http, $routeParams) {
+        $http.get('/data/universal_table/' + $routeParams.table_name + '/').success(function(data){
+            $scope.columns = data.columns;
+        });
+}]);
