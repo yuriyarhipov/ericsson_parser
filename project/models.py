@@ -142,16 +142,21 @@ class Project(models.Model):
         return data
 
     def get_rnd_tree(self):
-        from files.models import Files
-        data = []
-        db_networks = [f.network for f in Files.objects.filter(project=self, file_type='RND').distinct('network')]
-        for net in ['GSM', 'WCDMA', 'LTE']:
-            if net in db_networks:
-                data.append({
-                    'id': 'rnd_5%s' % net,
-                    'label': net,
-                    'children': self.get_rnd_items(net),
-                    'show_check': False})
-        if not data:
-            data = {}
+        data = [
+            {
+                'id': 'rnd_gsm',
+                'label': 'GSM',
+                'children': self.get_rnd_items('GSM'),
+                'show_check': False},
+            {
+                'id': 'rnd_wcdma',
+                'label': 'WCDMA',
+                'children': self.get_rnd_items('WCDMA'),
+                'show_check': False},
+            {
+                'id': 'rnd_lte',
+                'label': 'LTE',
+                'children': self.get_rnd_items('LTE'),
+                'show_check': False}
+        ]
         return data
