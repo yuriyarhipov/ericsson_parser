@@ -136,6 +136,7 @@ class Project(models.Model):
                 'label': f.description,
                 'children': '',
                 'type': f.file_type,
+                'link': '/rnd/%s/' % network,
                 'show_check': True})
         if not data:
             data = {}

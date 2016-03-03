@@ -1,7 +1,7 @@
 var rndControllers = angular.module('rndControllers', []);
 
-rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpinnerService',
-    function ($scope, $http, $routeParams, usSpinnerService) {
+rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpinnerService', '$cookies',
+    function ($scope, $http, $routeParams, usSpinnerService, $cookies) {
         $scope.rowCollection = [];
         $scope.new_val = {};
         $scope.show_edit_panel = false;
@@ -65,7 +65,19 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
                 });
             }
         }
-        $http.get('/data/rnd/' + $scope.rnd_network + '/').success(function(data){
+
+        var filenames = []
+        for (i in $cookies.getObject('dt')){
+            if ($cookies.getObject('dt')[i]){
+                filenames.push(i);
+            }
+        }
+
+        var params = ''
+        for (i in filenames){
+            params = params + 'filename='+filenames[i] + '&'
+        }
+        $http.get('/data/rnd/' + $scope.rnd_network + '/?' + params).success(function(data){
             usSpinnerService.stop('spinner_map_table');
             $scope.rnd_table_config.columnDefs = [];
             $scope.columns = data.columns;
