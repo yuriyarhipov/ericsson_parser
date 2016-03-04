@@ -123,7 +123,7 @@
                 </md-menu>
                 <md-menu>
                     <button ng-click="$mdOpenMenu()">
-                        Map & Cells
+                        Network
                     </button>
                     <md-menu-content>
                         <md-menu-item>
@@ -148,7 +148,8 @@
                         </md-menu-item>
                         <md-menu-item>
                             <md-button
-                                ng-href="/data/rnd/get3g3gscript">3G3G Script</md-button>
+                                    ng-href="/data/rnd/get3g3gscript">3G3G Script
+                            </md-button>
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>
@@ -177,13 +178,106 @@
                                 Run a Template
                             </md-button>
                         </md-menu-item>
+                        <md-menu-item>
+                            <md-menu>
+                                <md-button ng-click="$mdOpenMenu()">
+                                    Licenses & Hardware
+                                </md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-button ng-href="#/licenses">
+                                            Check Licenses
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-href="#/hardwares">
+                                            Check Hardware
+                                        </md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-menu>
+                                <md-button ng-click="$mdOpenMenu()">
+                                    Compare
+                                </md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-button ng-href="#/compare_files">
+                                            Compare Files
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-href="#/compare_templates">
+                                            Compare Templates
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-href="#/compare_queries">
+                                            Compare Queries
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-href="#/compare_neighbors">
+                                            Compare Neighbors
+                                        </md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
                     </md-menu-content>
                 </md-menu>
                 <md-menu>
                     <button ng-click="$mdOpenMenu()">
-                        Tables & Graphs
+                        Statistics
                     </button>
                     <md-menu-content>
+                        <md-menu-item>
+                            <md-menu>
+                                <md-button ng-click="$mdOpenMenu()">Measurement</md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdOpenMenu()">Ericsson</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item>
+                                                    <md-button ng-href="#/access_distance">Access Distance
+                                                    </md-button>
+                                                </md-menu-item>
+                                                <md-menu-item>
+                                                    <md-button ng-href="#/measurements/wncs">WNCS
+                                                    </md-button>
+                                                </md-menu-item>
+                                                <md-menu-item>
+                                                    <md-button ng-href="#/measurements/wmrr">WMRR
+                                                    </md-button>
+                                                </md-menu-item>
+                                                <md-menu-item>
+                                                    <md-button ng-href="#/measurements/ncs">NCS
+                                                    </md-button>
+                                                </md-menu-item>
+                                                <md-menu-item>
+                                                    <md-button ng-href="#/measurements/mrr">MRR
+                                                    </md-button>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="onMenuClick('', $event)">
+                                            Nokia
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="onMenuClick('', $event)">
+                                            Huawei
+                                        </md-button>
+                                    </md-menu-item>
+
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
                         <md-menu-item>
                             <md-button ng-href="#/explore/tables">
                                 Explore
@@ -209,96 +303,14 @@
                                 Parameters Overview
                             </md-button>
                         </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-                <md-menu>
-                    <button ng-click="$mdOpenMenu()">
-                        Measurements
-                    </button>
-                    <md-menu-content>
                         <md-menu-item>
-                            <md-menu>
-                                <md-button ng-click="$mdOpenMenu()">Ericsson</md-button>
-                                <md-menu-content>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/access_distance">Access Distance
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/measurements/wncs">WNCS
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/measurements/wmrr">WMRR
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/measurements/ncs">NCS
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/measurements/mrr">MRR
-                                        </md-button>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-click="onMenuClick('', $event)">
-                                Nokia
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-click="onMenuClick('', $event)">
-                                Huawei
+                            <md-button>
+                                Statistics
                             </md-button>
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>
-                <md-menu>
-                    <button ng-click="$mdOpenMenu()">
-                        Licenses & Hardware
-                    </button>
-                    <md-menu-content>
-                        <md-menu-item>
-                            <md-button ng-href="#/licenses">
-                                Check Licenses
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/hardwares">
-                                Check Hardware
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-                <md-menu>
-                    <button ng-click="$mdOpenMenu()">
-                        Compare
-                    </button>
-                    <md-menu-content>
-                        <md-menu-item>
-                            <md-button ng-href="#/compare_files">
-                                Compare Files
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/compare_templates">
-                                Compare Templates
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/compare_queries">
-                                Compare Queries
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/compare_neighbors">
-                                Compare Neighbors
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
+
                 <md-menu>
                     <button ng-click="$mdOpenMenu()">
                         Optimization
