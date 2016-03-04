@@ -94,10 +94,6 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/tables/explore.html',
                 controller: 'exploreCtrl'
             }).
-            when('/measurements/:file_type',{
-                templateUrl: 'templates/measurements/measurements_table.html',
-                controller: 'measurementsCtrl'
-            }).
             when('/licenses',{
                 templateUrl: 'templates/files/licenses.html',
                 controller: 'licensesCtrl'
@@ -224,6 +220,10 @@ XmlApp.config(['$routeProvider',
             when('/universal_table/:table_name', {
                 templateUrl: 'templates/tables/universal_table.html',
                 controller: 'universalTableCtrl'
+            }).
+            when('/measurements/wncs', {
+                templateUrl: 'templates/measurements/wncs.html',
+                controller: 'wncsCtrl'
             }).
             otherwise({
                 templateUrl: 'templates/projects.html',

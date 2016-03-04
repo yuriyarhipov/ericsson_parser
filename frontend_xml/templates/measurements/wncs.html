@@ -1,0 +1,26 @@
+<div>
+  <div layout="row">
+    <div flex>
+        <md-input-container>
+            <label>Max distance</label>
+            <input ng-model="distance" ng-change="change()" ng-model-options="{ debounce: { 'default': 500, }, }">
+        </md-input-container>
+        <md-input-container>
+            <label>Min numbers of drop</label>
+            <input ng-model="min_numbers_drop" ng-change="change()" ng-model-options="{ debounce: { 'default': 500, }, }">
+        </md-input-container>
+        <md-input-container>
+            <label>Cells</label>
+            <input ng-model="cells" ng-change="change()" ng-model-options="{ debounce: { 'default': 500, }, }">
+        </md-input-container>
+    </div>
+  </div>
+  <div layout="row">
+    <div flex="50">
+        <div ui-grid="table_config" ui-grid-selection ui-grid-resize-columns ui-grid-move-columns></div>
+    </div>
+    <div flex="50">
+        <highchart config="chart_config"></highchart>
+    </div>
+  </div>
+</div>

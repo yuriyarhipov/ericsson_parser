@@ -1,7 +1,8 @@
 import psycopg2
 from django.conf import settings
 from os.path import basename
-from files.models import Files
+from files.models import Files, WNCS
+import csv
 
 
 class Measurements(object):
@@ -16,40 +17,32 @@ class Measurements(object):
         self.cursor = self.conn.cursor()
 
     def save_file(self, filename, project, description, vendor, file_type, network, current_task):
-        table_name = basename(filename).split('.')[0]
-        with open(filename) as f:
-            columns = []
-            for col in f.readline().split():
-                if col not in columns:
-                    columns.append(col)
+        with open(filename) as mfile:
+            reader = csv.DictReader(mfile, delimiter='\t')
+            i = 0
+            for row in reader:
+                i += 1
+                try:
+                    sc = float(row.get('SC'))
+                    events = float(row.get('numberOfEvents'))
+                    drop = float(row.get('numberOfDrops'))
+                    distance = float(row.get('distance'))
+                    WNCS.objects.create(
+                        project = project,
+                        filename = basename(filename),
+                        cell_name = row.get('CellName'),
+                        nb_cell_name = row.get('NbCellName'),
+                        sc = row.get('SC'),
+                        events = row.get('numberOfEvents'),
+                        drop = row.get('numberOfDrops'),
+                        distance = row.get('distance'))
+                except:
+                    pass
+                if i % 1000 == 0:
+                    current_task.update_state(state="PROGRESS", meta={"current": int(i / 1000)})
 
-            sql_columns = []
-            for field in columns:
-                sql_columns.append('"%s" TEXT' % field)
 
-            self.cursor.execute('DROP TABLE IF EXISTS "%s"' % table_name)
-            self.cursor.execute('CREATE TABLE IF NOT EXISTS "%s" (%s);' % (table_name, ', '.join(sql_columns)))
-            i = float(1)
 
-            for row in f:
-
-                values = dict()
-                row = row.split()
-                sql_columns = []
-                sql_values = []
-                for i in range(0, len(columns)):
-                    if i < len(row):
-                        values[columns[i]] = row[i]
-
-                for k, v in values.iteritems():
-                    sql_columns.append('"%s"' % k)
-                    sql_values.append("'%s'" % v)
-
-                sql_insert = 'INSERT INTO "%s" (%s) VALUES (%s)' % (table_name, ','.join(sql_columns), ','.join(sql_values))
-                self.cursor.execute(sql_insert)
-
-                i = i + float(0.01)
-                current_task.update_state(state="PROGRESS", meta={"current": int(i)})
         Files.objects.filter(filename=basename(filename), project=project).delete()
         Files.objects.create(
                 filename=basename(filename),

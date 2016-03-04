@@ -430,3 +430,13 @@ class WcdmaGsm(models.Model):
     cellTarget = models.TextField()
     status = models.TextField()
 
+
+class WNCS(models.Model):
+    project = models.ForeignKey(Project)
+    filename = models.TextField()
+    cell_name = models.TextField()
+    nb_cell_name = models.TextField()
+    sc = models.FloatField(default=0)
+    events = models.FloatField(default=0)
+    drop = models.FloatField(default=0)
+    distance = models.FloatField(default=0)

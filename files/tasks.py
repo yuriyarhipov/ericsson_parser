@@ -69,10 +69,12 @@ def worker(filename, project, description, vendor, file_type, network):
     ]
 
     ext = splitext(filename)[1]
-    if ext in ['rar', 'zip', 'gz']:
+
+    if ext in ['rar', 'zip', 'gz', '.rar', '.zip', '.gz']:
         work_file = XmlPack(filename).get_files()[0]
     else:
         work_file = filename
+
 
     task = current_task
     task.update_state(state="PROGRESS", meta={"current": 1})

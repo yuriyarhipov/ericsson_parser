@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from celery.result import AsyncResult
 
-from .models import Files, UploadedFiles, CNATemplate, FileTasks, DriveTestLegend
+from .models import Files, UploadedFiles, CNATemplate, FileTasks, DriveTestLegend, WNCS
 from tables.table import Table
 from files.compare import CompareFiles, CompareTable
 from files.excel import ExcelFile
@@ -507,3 +507,58 @@ def universal_table(request, relation):
     ut = UniversalTable(relation.lower())
     columns, data = ut.get_table()
     return Response({'columns': columns, 'data': data})
+
+@api_view(['GET', ])
+@gzip_page
+def measurements_wncs(request):
+    project = request.project
+    distance = request.GET.get('distance')
+    drop = request.GET.get('drop')
+    cells = request.GET.get('cells')
+    params = dict(project=project)
+    if (distance != 'undefined') and distance:
+        params['distance__lte'] = distance
+    if (drop != 'undefined') and drop:
+        params['drop__gte'] = drop
+    if (cells != 'undefined') and cells:
+        params['cell_name__icontains'] = cells
+
+    wncs = WNCS.objects.filter(**params)
+    data = []
+    for row in wncs:
+        data.append({
+            'id': row.id,
+            'cell_name': row.cell_name,
+            'nb_cell_name': row.nb_cell_name,
+            'sc': row.sc,
+            'events': row.events,
+            'drop': row.drop,
+            'distance': row.distance
+        })
+    return Response({'data': data})
+
+
+@api_view(['GET', ])
+@gzip_page
+def measurements_wncs_top(request):
+    project = request.project
+    distance = request.GET.get('distance')
+    drop = request.GET.get('drop')
+    cells = request.GET.get('cells')
+    params = dict(project=project)
+    if (distance != 'undefined') and distance:
+        params['distance__lte'] = distance
+    if (drop != 'undefined') and drop:
+        params['drop__gte'] = drop
+    if (cells != 'undefined') and cells:
+        params['cell_name__icontains'] = cells
+
+    wncs = WNCS.objects.filter(**params).order_by('-drop')[:20]
+    data = []
+    for row in wncs:
+        data.append({
+            'cell_name': row.cell_name,
+            'drop': row.drop,
+        })
+    return Response({'data': data})
+
