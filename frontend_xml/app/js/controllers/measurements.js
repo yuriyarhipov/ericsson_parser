@@ -27,11 +27,11 @@ measurementsControllers.controller('wncsCtrl', ['$scope', '$http',
             multiSelect: false,
             columnDefs: [
                 { name:'CellName', field: 'cell_name' },
-                { name:'NbCellFriend', field: 'nb_cell_name' },
+                { name:'NbCellName', field: 'nb_cell_name' },
                 { name:'SC', field: 'sc', type: 'number'},
                 { name:'Events', field: 'events', type: 'number'},
                 { name:'Drop call', field: 'drop', type: 'number'},
-                { name:'Distance', field: 'distance', type: 'number'},
+                { name:'Distance[km]', field: 'distance', type: 'number'},
             ],
         };
 
@@ -67,6 +67,10 @@ measurementsControllers.controller('wncsCtrl', ['$scope', '$http',
                 series: [{'data': chart_data, 'name': 'Drop'}, ],
             };
         });
+
+        $scope.onexcel = function(){
+
+        };
 
         $scope.change = function(){
             $http.get('/data/measurements/wncs/?distance='+ $scope.distance+'&drop='+$scope.min_numbers_drop+'&cells='+$scope.cells).success(function(data){

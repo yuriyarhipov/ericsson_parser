@@ -30,6 +30,7 @@ class Excel:
         if exists(archive_filename):
             return
 
+
         excel_filename = join(tempfile.mkdtemp(), self.table_name + '.xlsx')
         workbook = xlsxwriter.Workbook(excel_filename)
         worksheet = workbook.add_worksheet(self.table_name)

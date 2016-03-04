@@ -14,7 +14,7 @@ from celery.result import AsyncResult
 from .models import Files, UploadedFiles, CNATemplate, FileTasks, DriveTestLegend, WNCS
 from tables.table import Table
 from files.compare import CompareFiles, CompareTable
-from files.excel import ExcelFile
+from files.excel import ExcelFile, Excel
 from files.distance import Distance
 from files.drive_test import DriveTest
 from rnd import Rnd
@@ -515,6 +515,7 @@ def measurements_wncs(request):
     distance = request.GET.get('distance')
     drop = request.GET.get('drop')
     cells = request.GET.get('cells')
+    excel = request.GET.get('excel')
     params = dict(project=project)
     if (distance != 'undefined') and distance:
         params['distance__lte'] = distance
@@ -523,7 +524,7 @@ def measurements_wncs(request):
     if (cells != 'undefined') and cells:
         params['cell_name__icontains'] = cells
 
-    wncs = WNCS.objects.filter(**params)
+    wncs = WNCS.objects.filter(**params).order_by('-drop')
     data = []
     for row in wncs:
         data.append({
@@ -535,7 +536,26 @@ def measurements_wncs(request):
             'drop': row.drop,
             'distance': row.distance
         })
-    return Response({'data': data})
+    if excel == 'true':
+        excel_data = []
+        for row in data:
+            excel_data.append([
+                row.get('cell_name'),
+                row.get('nb_cell_name'),
+                row.get('sc'),
+                row.get('events'),
+                row.get('drop'),
+                row.get('distance')
+            ])
+        s = Excel(
+            project.project_name,
+            'wncs',
+            ['CellName', 'nbCellName', 'SC', 'Events', 'Drop call', 'Distance[km]'],
+            excel_data).filename
+        print s
+        return HttpResponseRedirect(s)
+    else:
+        return Response({'data': data})
 
 
 @api_view(['GET', ])
