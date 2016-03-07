@@ -3,7 +3,7 @@ import json
 from django.http import HttpResponse
 from django.db import connection
 from django.contrib.auth import authenticate
-from project.models import Project
+from project.models import Project, UserSettings
 
 
 def projects(request):
@@ -90,6 +90,80 @@ def login(request):
         return HttpResponse(json.dumps({'status': 'ok'}), content_type='application/json')
     else:
         return HttpResponse(json.dumps({'status': 'no'}), content_type='application/json')
+
+
+def user_settings(request, username):
+    project = request.project
+    if not UserSettings.objects.filter(current_project=project, user=username).exists():
+        UserSettings.objects.create(
+                current_project=project,
+                user=username,
+                gsm_file = '',
+                wcdma_file = '',
+                lte_file = '',
+                rnd_gsm_file = '',
+                rnd_wcdma_file = '',
+                rnd_lte_file = '',
+                gsm_color = '#ffa500',
+                wcdma_color = '#0000FF',
+                lte_color = '#008000',
+                gsm_radius = '1000',
+                wcdma_radius = '1200',
+                lte_radius = '1500',
+                map_center = '0,0',
+                map_zoom = '10',
+            )
+
+
+    if request.method == 'GET':
+        data = {
+            'gsm_color': '#ffa500',
+            'wcdma_color': '#0000FF',
+            'lte_color': '#008000'
+        }
+        if UserSettings.objects.filter(current_project=project, user=username).exists():
+            us = UserSettings.objects.get(current_project=project, user=username)
+            data['gsm_color'] = us.gsm_color
+            data['wcdma_color'] = us.wcdma_color
+            data['lte_color'] = us.lte_color
+            return HttpResponse(json.dumps(data), content_type='application/json')
+    elif request.method == 'POST':
+
+        if UserSettings.objects.filter(current_project=project, user=username).exists():
+            us = UserSettings.objects.get(current_project=project, user=username)
+            us.gsm_color = request.POST.get('gsm_color', us.gsm_color)
+            us.wcdma_color = request.POST.get('wcdma_color', us.wcdma_color)
+            us.lte_color = request.POST.get('lte_color', us.lte_color)
+            us.save()
+            print us.gsm_color
+        else:
+            UserSettings.objects.create(
+                current_project=project,
+                user=username,
+                gsm_file = '',
+                wcdma_file = '',
+                lte_file = '',
+                rnd_gsm_file = '',
+                rnd_wcdma_file = '',
+                rnd_lte_file = '',
+                gsm_color = 'orange',
+                wcdma_color = 'blue',
+                lte_color = 'green',
+                gsm_radius = '1000',
+                wcdma_radius = '1200',
+                lte_radius = '1500',
+                map_center = '0,0',
+                map_zoom = '10',
+            )
+    data = {}
+    us = UserSettings.objects.get(current_project=project, user=username)
+    data['gsm_color'] = us.gsm_color
+    data['wcdma_color'] = us.wcdma_color
+    data['lte_color'] = us.lte_color
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+
 
 
 

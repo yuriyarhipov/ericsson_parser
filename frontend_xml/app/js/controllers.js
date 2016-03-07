@@ -135,6 +135,7 @@ xmlControllers.factory('authService', function($rootScope, $cookies) {
         this.broadcastItem();
     };
 
+
     status.broadcastItem = function() {
         $rootScope.$broadcast('authBroadcast');
     };

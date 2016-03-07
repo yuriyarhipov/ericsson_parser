@@ -1,27 +1,54 @@
 <md-content>
     <md-tabs md-dynamic-height md-border-bottom>
-        <md-tab label="Map Settings">
+        <md-tab label="Map Color Settings">
+            <div flex="20">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="gsm_color" class="col-sm-6 control-label">GSM Color</label>
+                        <div class="col-sm-6">
+                            <input type="color" class="form-control" id="gsm_color" ng-model="gsm_color"> {{ gsm_color }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="color_wcdma" class="col-sm-6 control-label">WCDMA Color</label>
+                        <div class="col-sm-6">
+                            <input type="color" class="form-control" id="color_wcdma" ng-model="wcdma_color">{{ wcdma_color }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="color_lte" class="col-sm-6 control-label">LTE Color</label>
+                        <div class="col-sm-6">
+                            <input type="color" class="form-control" id="color_lte" ng-model="lte_color">{{ lte_color }}
+                        </div>
+                    </div>
+                </form>
+                <md-button class="md-raised md-primary" ng-click="onSaveMapColor(gsm_color, wcdma_color, lte_color)">Save</md-button>
+            </div>
+        </md-tab>
+        <md-tab label="Map Radius Settings">
             <md-content class="md-padding">
                 <form class="form">
-                    <md-input-container class="md-block">
-                        <label>Radius GSM</label>
-                        <input ng-model="radius_gsm">
-                    </md-input-container>
-                    <md-input-container class="md-block">
-                        <label>Radius WCDMA</label>
-                        <input ng-model="radius_wcdma">
-                    </md-input-container>
-                    <md-input-container class="md-block">
-                        <label>Radius LTE</label>
-                        <input ng-model="radius_lte">
-                    </md-input-container>
-                    <md-input-container class="md-block">
-                        <md-button
-                                class="md-raised md-primary"
-                                ng-click="onSaveMapSettings(radius_wcdma,radius_lte, radius_gsm)">
-                            Save
-                        </md-button>
-                    </md-input-container>
+                    <div flex="30">
+                        <md-input-container class="md-block">
+                            <label>Radius GSM</label>
+                            <input ng-model="radius_gsm">
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label>Radius WCDMA</label>
+                            <input ng-model="radius_wcdma">
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label>Radius LTE</label>
+                            <input ng-model="radius_lte">
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <md-button
+                                    class="md-raised md-primary"
+                                    ng-click="onSaveMapSettings(radius_wcdma,radius_lte, radius_gsm)">
+                                Save
+                            </md-button>
+                        </md-input-container>
+                    </div>
                 </form>
             </md-content>
         </md-tab>
@@ -66,10 +93,10 @@
                     <div class="flex">
                         <md-input-container>
                             <select multiple
-                                size="10"
-                                class="col-md-12"
-                                ng-options="s for s in sectors"
-                                ng-model="sector">
+                                    size="10"
+                                    class="col-md-12"
+                                    ng-options="s for s in sectors"
+                                    ng-model="sector">
                             </select>
                         </md-input-container>
                         <md-input-container>
@@ -92,19 +119,20 @@
                     </div>
                 </div>
                 <md-toolbar>
-                <div class="md-toolbar-tools">
-                    <h3>
-                        <span>Logical Relations</span>
-                    </h3>
-                </div>
-            </md-toolbar>
-            <md-content class="md-padding">
-            </md-content>
+                    <div class="md-toolbar-tools">
+                        <h3>
+                            <span>Logical Relations</span>
+                        </h3>
+                    </div>
+                </md-toolbar>
+                <md-content class="md-padding">
+                </md-content>
                 <div layout="row">
                     <div flex="20">
                         <md-input-container class="md-block">
                             <label>Technology from</label>
-                            <md-select ng-model="lr_technology_from" ng-change="onChangelr_tech_from(lr_technology_from)">
+                            <md-select ng-model="lr_technology_from"
+                                       ng-change="onChangelr_tech_from(lr_technology_from)">
                                 <md-option ng-repeat="t in lr_technologies_from" value="{{ t }}">
                                     {{ t }}
                                 </md-option>

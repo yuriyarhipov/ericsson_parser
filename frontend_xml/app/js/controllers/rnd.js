@@ -121,8 +121,18 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
         }
   }]);
 
-rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal', 'usSpinnerService',
-    function ($scope, $http, leafletData, $location, $cookies, $uibModal, usSpinnerService) {
+rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal', 'usSpinnerService', 'authService',
+    function ($scope, $http, leafletData, $location, $cookies, $uibModal, usSpinnerService, authService) {
+
+        if (authService.is_auth){
+            var username = authService.username;
+            $http.get('/data/get_user_settings/' + username + '/').success(function(data){
+                $scope.gsm_color = data.gsm_color;
+                $scope.wcdma_color = data.wcdma_color;
+                $scope.lte_color = data.lte_color;
+            });
+        }
+
         var filenames = []
         for (i in $cookies.getObject('dt')){
             if ($cookies.getObject('dt')[i]){
@@ -741,9 +751,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 $http.get('/data/rnd/WCDMA/?' + params).success(function(wcdma_data){
                     $http.get('/data/rnd/LTE/?' + params).success(function(lte_data){
                         usSpinnerService.stop('spinner_map');
-                        gsm_layer = create_rnd_layer(gsm_data, 'gsm', radius_gsm, 'orange', 'Latitude', 'Longitude', 'Cell_Name');
-                        wcdma_layer = create_rnd_layer(wcdma_data, 'wcdma', radius_wcdma, 'blue', 'Latitude', 'Longitude', 'Utrancell');
-                        lte_layer = create_rnd_layer(lte_data, 'lte', radius_lte, 'green', 'Latitude', 'Longitude', 'Utrancell');
+                        gsm_layer = create_rnd_layer(gsm_data, 'gsm', radius_gsm, $scope.gsm_color, 'Latitude', 'Longitude', 'Cell_Name');
+                        wcdma_layer = create_rnd_layer(wcdma_data, 'wcdma', radius_wcdma, $scope.wcdma_color, 'Latitude', 'Longitude', 'Utrancell');
+                        lte_layer = create_rnd_layer(lte_data, 'lte', radius_lte, $scope.lte_color, 'Latitude', 'Longitude', 'Utrancell');
                         map._layerControl.addOverlay(gsm_layer, '<span class="label label-warning">GSM</span>');
                         map._layerControl.addOverlay(wcdma_layer, '<span class="label label-primary">WCDMA</span>');
                         map._layerControl.addOverlay(lte_layer, '<span class="label label-success">LTE</span>');

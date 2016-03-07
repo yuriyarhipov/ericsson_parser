@@ -118,6 +118,9 @@ urlpatterns = patterns('',
     url(r'^data/logical_relations/$', table_views.logical_relations),
     url(r'^data/delete_logical_relation/$', table_views.delete_logical_relation),
 
+    url(r'^data/get_user_settings/(\S+)/$', project_views.user_settings),
+    url(r'^data/set_user_settings/(\S+)/$', project_views.user_settings),
+
 
 
 

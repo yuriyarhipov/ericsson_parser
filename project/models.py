@@ -161,3 +161,28 @@ class Project(models.Model):
                 'show_check': False}
         ]
         return data
+
+
+class UserSettings(models.Model):
+    current_project = models.ForeignKey(Project)
+    user = models.TextField()
+
+    #xml_files
+    gsm_file = models.TextField()
+    wcdma_file = models.TextField()
+    lte_file = models.TextField()
+
+    #rnd_files
+    rnd_gsm_file = models.TextField()
+    rnd_wcdma_file = models.TextField()
+    rnd_lte_file = models.TextField()
+
+    #map
+    gsm_color = models.TextField()
+    wcdma_color = models.TextField()
+    lte_color = models.TextField()
+    gsm_radius = models.TextField()
+    wcdma_radius = models.TextField()
+    lte_radius = models.TextField()
+    map_center = models.TextField()
+    map_zoom = models.TextField()
