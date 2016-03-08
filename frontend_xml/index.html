@@ -424,13 +424,13 @@
                      options="treeOptions"
                      on-selection="showSelected(node)"
                      selected-node="selected_node">
-                    <input type="checkbox"
+                    <input type="radio"
                            ng-show="node.show_check"
-                           ng-click="onFileClick(node.label)"
-                           ng-model="files[node.label]">
+                           ng-change="onFileChange()"
+                           ng-model="files[node.radio_input_name]"
+                           ng-value = "node.label"
+                           name="{{ node.radio_input_name }}">
                     <span context-menu data-target="menu-{{node.menu}}">{{node.label}}</span>
-
-
                 </div>
             </div>
         </div>

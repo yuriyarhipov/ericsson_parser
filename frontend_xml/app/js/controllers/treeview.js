@@ -76,12 +76,13 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
 treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$http', 'activeProjectService', 'activeFileService', '$location', '$rootScope',
     function ($scope, $timeout, $cookies, $http, activeProjectService, activeFileService, $location, $rootScope) {
         $scope.checked = false;
-        $scope.files = {};
-        if ($cookies.getObject('dt')){
-            $scope.files = $cookies.getObject('dt');
-        }
+        $scope.files = {
+            'gsm_rnd': '',
+            'wcdma_rnd': '',
+            'lte_rnd': '',
+        };
 
-        $scope.onFileClick = function(f){
+        $scope.onFileChange = function(){
             $cookies.putObject('dt', $scope.files);
         };
 
@@ -109,31 +110,18 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
                 labelSelected: "a8"
             }
         };
-        $rootScope.$on('uploadFile', function(){
-            console.log('TEST');
-        });
+
         var loadData = function (){
             $http.get('/data/treeview/' + $cookies.get('active_project') + '/').success(function(data){
                 $scope.treedata = data;
-                for (i in data[2].children){
-                    $scope.files[data[2].children[i].label] = true;
-                }
-
                 for (i in data[0].children){
-                    for (y in data[0].children[i].children){
-                        console.log($scope.files);
-                        console.log(data[0].children[i].children[y].label);
-                        if (!(data[0].children[i].children[y].label in $scope.files)){
-                            $scope.files[data[0].children[i].children[y].label] = true;
-                        }
+                    if (data[0].children[i].children.length > 0){
+                        $scope.files[data[0].children[i].children[0].radio_input_name] = data[0].children[i].children[0].label;
                     }
                 }
-
-                $cookies.putObject('dt', $scope.files);
             });
-            //$timeout(loadData, 5000);
         };
-        //$timeout(loadData, 0);
+
         loadData();
         function LoadTopology(network, root){
             $http.get('/data/topology_treeview/' + network +'/' + root + '/').success(function(data){

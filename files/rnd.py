@@ -49,38 +49,40 @@ class Rnd:
         cursor = connection.cursor()
         project_id = self.project_id
         network = self.network.upper()
-        #if filenames:
-        sql_des = ','.join(["'%s'" % f for f in filenames])
-        cursor.execute('''
+        if filenames:
+         sql_des = ','.join(["'%s'" % f for f in filenames])
+         cursor.execute('''
             SELECT
                 data
             FROM
                 rnd
             WHERE
-                (project_id=%s) AND (network=%s) AND (description IN (''' + sql_des + '''))''', (
+                (project_id=%s) AND (lower(network)=lower(%s)) AND (description IN (''' + sql_des + '''))''', (
             project_id,
             network))
-        #else:
-        #    cursor.execute('''
-        #        SELECT
-        #            data
-        #        FROM
-        #            rnd
-        #        WHERE
-        #            (project_id=%s) AND (network=%s)''', (
-        #        project_id,
-        #        network))
+        else:
+            cursor.execute('''
+                SELECT
+                    data
+                FROM
+                    rnd
+                WHERE
+                    (project_id=%s) AND (network=%s)''', (
+                project_id,
+                network))
         result = []
 
         if cursor.rowcount > 0:
             result = cursor.fetchone()[0]
         else:
-            result = {'columns': [], 'data': []}
+            result = {'columns': [], 'data': [], 'filenames': filenames}
         return result
 
     def save_row(self, row):
         cursor = connection.cursor()
-        data = self.get_data()
+        filename = row.get('filename')
+        data = self.get_data([filename, ])
+        print len(data.get('data'))
         if self.network == 'wcdma':
             if 'current_rnc' in row:
                 i = 0
@@ -122,12 +124,15 @@ class Rnd:
                         break
         else:
             data['data'].append(row)
-        cursor.execute('DELETE FROM rnd WHERE (project_id=%s) AND (network=%s)''', (
-            self.project_id,
-            self.network))
-        cursor.execute('INSERT INTO rnd (project_id, network, data) VALUES (%s, %s, %s)', (
+        print self.network
+        cursor.execute('DELETE FROM rnd WHERE (project_id=%s) AND (LOWER(network)=%s) AND (description=%s)''', (
             self.project_id,
             self.network,
+            filename))
+        cursor.execute('INSERT INTO rnd (project_id, network, description, data) VALUES (%s, %s, %s, %s)', (
+            self.project_id,
+            self.network,
+            filename,
             json.dumps(data, encoding='latin1')))
         connection.commit()
 

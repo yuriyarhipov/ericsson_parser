@@ -1,7 +1,15 @@
 var rndControllers = angular.module('rndControllers', []);
 
-rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpinnerService', '$cookies',
-    function ($scope, $http, $routeParams, usSpinnerService, $cookies) {
+rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpinnerService', '$cookies', '$q',
+    function ($scope, $http, $routeParams, usSpinnerService, $cookies, $q) {
+        var filenames = []
+        for (i in $cookies.getObject('dt')){
+            if ($cookies.getObject('dt')[i]){
+                filenames.push($cookies.getObject('dt')[i]);
+            }
+        }
+
+
         $scope.rowCollection = [];
         $scope.new_val = {};
         $scope.show_edit_panel = false;
@@ -18,8 +26,9 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
             onRegisterApi: function(gridApi){
                 $scope.gridApi = gridApi;
                 gridApi.edit.on.afterCellEdit($scope,function(rowEntity, colDef, newValue, oldValue){
-                    if ($scope.rnd_network == 'wcdma'){
+                    if ($scope.rnd_network == 'WCDMA'){
                         var new_data = {
+                            'filename': $cookies.getObject('dt')['wcdma_rnd'],
                             'current_rnc': rowEntity.RNC,
                             'current_utrancell': rowEntity.Utrancell,
                             'column': colDef.name,
@@ -32,8 +41,9 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
                             new_data.current_rnc = oldValue;
                         }
                         $http.post('/data/rnd/table/' + $scope.rnd_network + '/', $.param(new_data)).success(function(){});
-                    } else if ($scope.rnd_network == 'lte'){
+                    } else if ($scope.rnd_network == 'LTE'){
                         var new_data = {
+                            'filename': $cookies.getObject('dt')['lte_rnd'],
                             'current_site': rowEntity.SITE,
                             'current_utrancell': rowEntity.Utrancell,
                             'column': colDef.name,
@@ -47,8 +57,9 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
                         }
                         $http.post('/data/rnd/table/' + $scope.rnd_network + '/', $.param(new_data)).success(function(){});
 
-                    } else if ($scope.rnd_network == 'gsm'){
+                    } else if ($scope.rnd_network == 'GSM'){
                         var new_data = {
+                            'filename': $cookies.getObject('dt')['gsm_rnd'],
                             'current_bsc': rowEntity.BSC,
                             'current_cellname': rowEntity.Cell_Name,
                             'column': colDef.name,
@@ -62,14 +73,8 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
                         }
                         $http.post('/data/rnd/table/' + $scope.rnd_network + '/', $.param(new_data)).success(function(){});
                     }
+                    $scope.$apply();
                 });
-            }
-        }
-
-        var filenames = []
-        for (i in $cookies.getObject('dt')){
-            if ($cookies.getObject('dt')[i]){
-                filenames.push(i);
             }
         }
 
@@ -77,6 +82,7 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
         for (i in filenames){
             params = params + 'filename='+filenames[i] + '&'
         }
+
         $http.get('/data/rnd/' + $scope.rnd_network + '/?' + params).success(function(data){
             usSpinnerService.stop('spinner_map_table');
             $scope.rnd_table_config.columnDefs = [];
@@ -107,13 +113,14 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
         $scope.onDelete = function(){
             var selected_rows = $scope.gridApi.selection.getSelectedRows();
             for (var i in selected_rows){
-                if ($scope.rnd_network == 'wcdma'){
+                if ($scope.rnd_network == 'WCDMA'){
                     var del_row = {'del_rnc': selected_rows[i].RNC, 'del_utrancell': selected_rows[i].Utrancell};
-                } else if ($scope.rnd_network == 'lte'){
+                } else if ($scope.rnd_network == 'LTE'){
                     var del_row = {'del_site': selected_rows[i].SITE, 'del_utrancell': selected_rows[i].Utrancell};
-                } else if ($scope.rnd_network == 'gsm'){
+                } else if ($scope.rnd_network == 'GSM'){
                     var del_row = {'del_bsc': selected_rows[i].BSC, 'del_cellname': selected_rows[i].Cell_Name};
                 }
+
                 $http.post('/data/rnd/table/' + $scope.rnd_network + '/', $.param(del_row));
                 var id = $scope.rnd_table_config.data.indexOf(selected_rows[i]);
                 $scope.rnd_table_config.data.splice(id, 1);

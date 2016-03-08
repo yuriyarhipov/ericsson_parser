@@ -136,6 +136,7 @@ class Project(models.Model):
                 'label': f.description,
                 'children': '',
                 'type': f.file_type,
+                'radio_input_name': '%s_rnd' % network.lower(),
                 'link': '/rnd/%s/' % network,
                 'show_check': True})
         if not data:
