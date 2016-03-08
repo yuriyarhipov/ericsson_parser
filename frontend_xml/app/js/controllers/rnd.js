@@ -143,7 +143,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
         var filenames = []
         for (i in $cookies.getObject('dt')){
             if ($cookies.getObject('dt')[i]){
-                filenames.push(i);
+                filenames.push($cookies.getObject('dt')[i]);
             }
         }
         var onAddFilter = function(network, param, value){
