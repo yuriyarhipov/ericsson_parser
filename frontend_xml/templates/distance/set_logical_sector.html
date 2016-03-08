@@ -6,23 +6,29 @@
                     <div class="form-group">
                         <label for="gsm_color" class="col-sm-6 control-label">GSM Color</label>
                         <div class="col-sm-6">
-                            <input type="color" class="form-control" id="gsm_color" ng-model="gsm_color"> {{ gsm_color }}
+                            <input type="color" class="form-control" id="gsm_color" ng-model="gsm_color">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="color_wcdma" class="col-sm-6 control-label">WCDMA Color</label>
                         <div class="col-sm-6">
-                            <input type="color" class="form-control" id="color_wcdma" ng-model="wcdma_color">{{ wcdma_color }}
+                            <input type="color" class="form-control" id="color_wcdma" ng-model="wcdma_color">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="color_lte" class="col-sm-6 control-label">LTE Color</label>
                         <div class="col-sm-6">
-                            <input type="color" class="form-control" id="color_lte" ng-model="lte_color">{{ lte_color }}
+                            <input type="color" class="form-control" id="color_lte" ng-model="lte_color">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="color_element" class="col-sm-6 control-label">One Element Search</label>
+                        <div class="col-sm-6">
+                            <input type="color" class="form-control" id="color_element" ng-model="element_color">
                         </div>
                     </div>
                 </form>
-                <md-button class="md-raised md-primary" ng-click="onSaveMapColor(gsm_color, wcdma_color, lte_color)">Save</md-button>
+                <md-button class="md-raised md-primary" ng-click="onSaveMapColor(gsm_color, wcdma_color, lte_color, element_color)">Save</md-button>
             </div>
         </md-tab>
         <md-tab label="Map Radius Settings">

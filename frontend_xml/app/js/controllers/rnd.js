@@ -137,6 +137,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 $scope.gsm_color = data.gsm_color;
                 $scope.wcdma_color = data.wcdma_color;
                 $scope.lte_color = data.lte_color;
+                $scope.element_color = data.element_color;
             });
         }
 
@@ -147,7 +148,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             }
         }
         var onAddFilter = function(network, param, value){
-            var color = randomColor({hue: 'random',luminosity: 'dark'});
+            var color = $scope.element_color;
             var values = {};
             var last_marker = {};
 

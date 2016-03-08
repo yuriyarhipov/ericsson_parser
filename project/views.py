@@ -107,6 +107,7 @@ def user_settings(request, username):
                 gsm_color = '#ffa500',
                 wcdma_color = '#0000FF',
                 lte_color = '#008000',
+                element_color = '#FF00FF',
                 gsm_radius = '1000',
                 wcdma_radius = '1200',
                 lte_radius = '1500',
@@ -114,18 +115,19 @@ def user_settings(request, username):
                 map_zoom = '10',
             )
 
-
     if request.method == 'GET':
         data = {
             'gsm_color': '#ffa500',
             'wcdma_color': '#0000FF',
-            'lte_color': '#008000'
+            'lte_color': '#008000',
+            'element_color': '#FF00FF',
         }
         if UserSettings.objects.filter(current_project=project, user=username).exists():
             us = UserSettings.objects.get(current_project=project, user=username)
             data['gsm_color'] = us.gsm_color
             data['wcdma_color'] = us.wcdma_color
             data['lte_color'] = us.lte_color
+            data['element_color'] = us.element_color
             return HttpResponse(json.dumps(data), content_type='application/json')
     elif request.method == 'POST':
 
@@ -134,8 +136,8 @@ def user_settings(request, username):
             us.gsm_color = request.POST.get('gsm_color', us.gsm_color)
             us.wcdma_color = request.POST.get('wcdma_color', us.wcdma_color)
             us.lte_color = request.POST.get('lte_color', us.lte_color)
+            us.element_color = request.POST.get('element_color', us.element_color)
             us.save()
-            print us.gsm_color
         else:
             UserSettings.objects.create(
                 current_project=project,
@@ -146,9 +148,10 @@ def user_settings(request, username):
                 rnd_gsm_file = '',
                 rnd_wcdma_file = '',
                 rnd_lte_file = '',
-                gsm_color = 'orange',
-                wcdma_color = 'blue',
-                lte_color = 'green',
+                gsm_color = '#ffa500',
+                wcdma_color = '#0000FF',
+                lte_color = '#008000',
+                element_color = '#FF00FF',
                 gsm_radius = '1000',
                 wcdma_radius = '1200',
                 lte_radius = '1500',
@@ -160,11 +163,5 @@ def user_settings(request, username):
     data['gsm_color'] = us.gsm_color
     data['wcdma_color'] = us.wcdma_color
     data['lte_color'] = us.lte_color
+    data['element_color'] = us.element_color
     return HttpResponse(json.dumps(data), content_type='application/json')
-
-
-
-
-
-
-

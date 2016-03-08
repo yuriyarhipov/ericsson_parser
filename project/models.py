@@ -182,6 +182,7 @@ class UserSettings(models.Model):
     gsm_color = models.TextField()
     wcdma_color = models.TextField()
     lte_color = models.TextField()
+    element_color = models.TextField()
     gsm_radius = models.TextField()
     wcdma_radius = models.TextField()
     lte_radius = models.TextField()
