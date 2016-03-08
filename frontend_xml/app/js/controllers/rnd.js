@@ -761,9 +761,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         gsm_layer = create_rnd_layer(gsm_data, 'gsm', radius_gsm, $scope.gsm_color, 'Latitude', 'Longitude', 'Cell_Name');
                         wcdma_layer = create_rnd_layer(wcdma_data, 'wcdma', radius_wcdma, $scope.wcdma_color, 'Latitude', 'Longitude', 'Utrancell');
                         lte_layer = create_rnd_layer(lte_data, 'lte', radius_lte, $scope.lte_color, 'Latitude', 'Longitude', 'Utrancell');
-                        map._layerControl.addOverlay(gsm_layer, '<span class="label label-warning">GSM</span>');
-                        map._layerControl.addOverlay(wcdma_layer, '<span class="label label-primary">WCDMA</span>');
-                        map._layerControl.addOverlay(lte_layer, '<span class="label label-success">LTE</span>');
+                        map._layerControl.addOverlay(gsm_layer, '<span class="label" style="background-color:' + $scope.gsm_color + '">GSM</span>');
+                        map._layerControl.addOverlay(wcdma_layer, '<span class="label" style="background-color:' + $scope.wcdma_color + '">WCDMA</span>');
+                        map._layerControl.addOverlay(lte_layer, '<span class="label" style="background-color:' + $scope.lte_color + '">LTE</span>');
                         map.addLayer(gsm_layer);
                         map.addLayer(wcdma_layer);
                         map.addLayer(lte_layer);
