@@ -148,9 +148,10 @@ class Rnd:
             DELETE FROM
                 rnd
             WHERE
-                (project_id=%s) AND (network=%s)''', (
+                (project_id=%s) AND (network=%s) AND (description=%s)''', (
             self.project_id,
-            self.network))
+            self.network,
+            description))
 
         cursor.execute('''
             INSERT INTO
