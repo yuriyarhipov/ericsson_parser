@@ -225,6 +225,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/measurements/wncs.html',
                 controller: 'wncsCtrl'
             }).
+            when('/psc_collision/', {
+                templateUrl: 'templates/distance/psc_collision.html',
+                controller: 'pscCollisionCtrl'
+            }).
             otherwise({
                 templateUrl: 'templates/projects.html',
                 controller: 'ProjectsCtrl'

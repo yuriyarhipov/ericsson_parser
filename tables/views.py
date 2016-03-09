@@ -480,3 +480,8 @@ def delete_logical_relation(request):
             ho_realtion= lr.ho_realtion,
         ))
     return Response(data)
+
+@api_view(['GET', ])
+def psc_collision(request):
+    data = []
+    return Response(data)

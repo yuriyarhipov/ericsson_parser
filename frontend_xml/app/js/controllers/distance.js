@@ -505,7 +505,7 @@ distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookie
                 $scope.gsm_color = data.gsm_color;
                 $scope.wcdma_color = data.wcdma_color;
                 $scope.lte_color = data.lte_color;
-                $scope.element_color = data.element_color;                
+                $scope.element_color = data.element_color;
             });
         }
 
@@ -708,4 +708,31 @@ distanceControllers.controller('pscDistanceCtrl', ['$scope', '$http','$cookies',
                 $scope.psc_table_config.data = data;
             });
         }
+}]);
+
+distanceControllers.controller('pscCollisionCtrl', ['$scope', '$http','$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        $scope.table_config = {
+            columnDefs: [
+
+                { field: 'Source' },
+                { field: 'Label'},
+                { field: 'Target' },
+                { field: 'PSC_Source' },
+                { field: 'PSC_Target' },
+                { field: 'uarfcnDl_Source' },
+                { field: 'uarfcnDl_Target'},
+            ],
+            enableGridMenu: true,
+            enableSelectAll: true,
+            exporterMenuPdf: false,
+            exporterCsvFilename: 'psc.csv',
+            exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+            onRegisterApi: function(gridApi){
+                $scope.gridApi = gridApi;
+            }
+        }
+        $http.get('/data/distance/psc_collision').success(function(data){
+            $scope.table_config.data = data;
+        });        
 }]);

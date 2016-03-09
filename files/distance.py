@@ -490,3 +490,7 @@ class Distance(object):
                     })
         return data
 
+    def psc_collision(self, project_id, filename):
+        cursor = connection.cursor()
+        data = []
+        return data

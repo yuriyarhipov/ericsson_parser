@@ -91,6 +91,7 @@ urlpatterns = patterns('',
     url(r'^data/distance/logical_sectors/(\S+)/(\S+)/$', table_views.logical_sectors),
     url(r'^data/distance/logical_sectors/$', table_views.logical_sectors),
     url(r'^data/distance/psc_distance/$', table_views.psc_distance),
+    url(r'^data/distance/psc_collision/$', table_views.psc_collision),
 
     url(r'^data/rnd/get_param_values/(\S+)/(\S+)/$', files_views.get_param_values),
     url(r'^data/rnd/get_rnd_pd/(\S+)/(\S+)/(\S+)/(\S+)/$', files_views.get_rnd_pd),
