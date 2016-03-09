@@ -99,16 +99,21 @@ L.Control.ToolBar = L.Control.extend({
         map._appButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
         map._appButton.innerHTML = '<span class="glyphicon glyphicon-th" aria-hidden="true"></span>';
 
-        this.close3gButton = L.DomUtil.create('button', 'btn btn-default', map._3gDiv);
+
+        this.bt3gpanel = L.DomUtil.create('div', 'col-md-10', map._3gDiv);
+        this.close3gButton = L.DomUtil.create('button', 'btn btn-default', this.bt3gpanel);
         this.close3gButton.innerHTML = '3G <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>';
 
-        map._arrowLeftButton = L.DomUtil.create('button', 'btn btn-default', map._3gDiv);
+        map._arrowLeftButton = L.DomUtil.create('button', 'btn btn-default', this.bt3gpanel);
         map._arrowLeftButton.innerHTML = '<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>';
 
-        map._arrowRightButton = L.DomUtil.create('button', 'btn btn-default', map._3gDiv);
+        map._arrowRightButton = L.DomUtil.create('button', 'btn btn-default', this.bt3gpanel);
         map._arrowRightButton.innerHTML = '<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>';
 
-        this.flushNeighButton = L.DomUtil.create('button', 'btn btn-default', map._3gDiv);
+        this.flbtnpanel = L.DomUtil.create('div', 'col-md-2', map._3gDiv);
+
+
+        this.flushNeighButton = L.DomUtil.create('button', 'btn btn-default', this.flbtnpanel);
         this.flushNeighButton.innerHTML = '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>';
 
         this.filterNeighButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
