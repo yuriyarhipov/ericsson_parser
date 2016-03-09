@@ -9,7 +9,6 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
             }
         }
 
-
         $scope.rowCollection = [];
         $scope.new_val = {};
         $scope.show_edit_panel = false;

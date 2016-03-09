@@ -7,7 +7,6 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
         });
 
         $scope.$on('handleBroadcast', function() {
-            console.log('reload');
             var project = activeProjectService.project;
             $http.get('/data/treeview/' + project).success(function(data){
                 $scope.treedata = data;
@@ -117,6 +116,7 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
                 for (i in data[0].children){
                     if (data[0].children[i].children.length > 0){
                         $scope.files[data[0].children[i].children[0].radio_input_name] = data[0].children[i].children[0].label;
+                        $cookies.putObject('dt', $scope.files);
                     }
                 }
             });
