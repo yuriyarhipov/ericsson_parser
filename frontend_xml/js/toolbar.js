@@ -62,28 +62,27 @@ L.Control.ToolBar = L.Control.extend({
         //layers
         this.div_checkbox_gsm = L.DomUtil.create('div', 'checkbox', map._layerDiv);
         this.layer_label_gsm = L.DomUtil.create('label', '', this.div_checkbox_gsm);
-        map._layer_checkbox_gsm = this.layer_checkbox_gsm = L.DomUtil.create('input', '', this.layer_label_gsm);
-        this.layer_checkbox_gsm.setAttribute('type', 'checkbox');
-        //this.layer_checkbox_gsm.setAttribute('checkingd', '');
-        //map._layer_checkbox_gsm.checked = true;
-        this.span_gsm = L.DomUtil.create('span', '', this.layer_label_gsm);
-        this.span_gsm.innerHTML = 'GSM';
+        map._layer_checkbox_gsm = L.DomUtil.create('input', '', this.layer_label_gsm);
+        map._layer_checkbox_gsm.setAttribute('type', 'checkbox');
+        map._layer_checkbox_gsm.setAttribute('disabled', '');
+        map._span_gsm = L.DomUtil.create('span', 'label', this.layer_label_gsm);
+        map._span_gsm.innerHTML = 'GSM';
 
         this.div_checkbox_wcdma = L.DomUtil.create('div', 'checkbox', map._layerDiv);
         this.layer_label_wcdma = L.DomUtil.create('label', '', this.div_checkbox_wcdma);
-        map._layer_checkbox_wcdma = this.layer_checkbox_wcdma = L.DomUtil.create('input', '', this.layer_label_wcdma);
-        this.layer_checkbox_wcdma.setAttribute('type', 'checkbox');
-        this.layer_checkbox_wcdma.checked = true;
-        this.span_wcdma = L.DomUtil.create('span', '', this.layer_label_wcdma);
-        this.span_wcdma.innerHTML = 'WCDMA';
+        map._layer_checkbox_wcdma = L.DomUtil.create('input', '', this.layer_label_wcdma);
+        map._layer_checkbox_wcdma.setAttribute('type', 'checkbox');
+        map._layer_checkbox_wcdma.setAttribute('disabled', '');
+        map._span_wcdma = L.DomUtil.create('span', 'label', this.layer_label_wcdma);
+        map._span_wcdma.innerHTML = 'WCDMA';
 
         this.div_checkbox_lte = L.DomUtil.create('div', 'checkbox', map._layerDiv);
         this.layer_label_lte = L.DomUtil.create('label', '', this.div_checkbox_lte);
-        map._layer_checkbox_lte = this.layer_checkbox_lte = L.DomUtil.create('input', '', this.layer_label_lte);
-        this.layer_checkbox_lte.setAttribute('type', 'checkbox');
-        this.layer_checkbox_lte.checked = true;
-        this.span_lte = L.DomUtil.create('span', '', this.layer_label_lte);
-        this.span_lte.innerHTML = 'LTE';
+        map._layer_checkbox_lte = L.DomUtil.create('input', '', this.layer_label_lte);
+        map._layer_checkbox_lte.setAttribute('type', 'checkbox');
+        map._layer_checkbox_lte.setAttribute('disabled', 'disabled');
+        map._span_lte = L.DomUtil.create('span', 'label', this.layer_label_lte);
+        map._span_lte.innerHTML = 'LTE';
 
         //pd section
         this.pdButton = L.DomUtil.create('button', 'btn btn-default', map._appsDiv);
@@ -131,7 +130,6 @@ L.Control.ToolBar = L.Control.extend({
         L.DomEvent
             .addListener(this.controlDiv, 'mousedown', L.DomEvent.stopPropagation)
             .addListener(this.controlDiv, 'click', L.DomEvent.stopPropagation)
-            .addListener(this.controlDiv, 'click', L.DomEvent.preventDefault)
             .addListener(this.neigh3gButton, 'click', function () {
                 L.DomUtil.addClass(map._appsDiv, 'hide');
                 L.DomUtil.removeClass(map._3gDiv, 'hide');
@@ -344,10 +342,26 @@ L.Control.ToolBar = L.Control.extend({
                     }
                 });
             })
-            .addListener(this.layer_checkbox_gsm, 'click', function(e){
-                //map._layer_checkbox_gsm.checked = true;
-                map._layer_checkbox_gsm.setAttribute('checked', '');
-                console.log(map._layer_checkbox_gsm.checked);
+            .addListener(map._layer_checkbox_gsm, 'click', function(e){
+                if (map._layer_checkbox_gsm.checked){
+                    map.addLayer(map._gsm_layer);
+                } else {
+                    map.removeLayer(map._gsm_layer);
+                }
+            })
+            .addListener(map._layer_checkbox_wcdma, 'click', function(e){
+                if (map._layer_checkbox_wcdma.checked){
+                    map.addLayer(map._wcdma_layer);
+                } else {
+                    map.removeLayer(map._wcdma_layer);
+                }
+            })
+            .addListener(map._layer_checkbox_lte, 'click', function(e){
+                if (map._layer_checkbox_lte.checked){
+                    map.addLayer(map._lte_layer);
+                } else {
+                    map.removeLayer(map._lte_layer);
+                }
             })
             .addListener(this.dtButton, 'click', function(e){
                 map.drive_test();
@@ -382,4 +396,3 @@ L.Map.addInitHook(function () {
 L.Control.toolBar = function (options) {
     return new L.Control.ToolBar(options);
 };
-

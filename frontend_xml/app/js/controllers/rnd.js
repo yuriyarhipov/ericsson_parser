@@ -683,7 +683,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             L.Control.toolBar().addTo(map);
             L.control.scale().addTo(map);
             L.Control.measureControl({ position:'topright' }).addTo(map);
-            map._layerControl = L.control.layers().addTo(map);
             map._show_neighbors = false;
             map._show_pd = false;
             map._add_filter = onAddFilter;
@@ -750,29 +749,42 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
 
             $http.get('/data/rnd/init_map?' + params).success(function(data){
-                map.setView(data.point, 10);
+                if ('point' in data ){
+                    map.setView(data.point, 10);
+                }
             });
-
-
 
             $http.get('/data/rnd/GSM/?' + params).success(function(gsm_data){
                 $http.get('/data/rnd/WCDMA/?' + params).success(function(wcdma_data){
                     $http.get('/data/rnd/LTE/?' + params).success(function(lte_data){
                         usSpinnerService.stop('spinner_map');
-                        gsm_layer = create_rnd_layer(gsm_data, 'gsm', radius_gsm, $scope.gsm_color, 'Latitude', 'Longitude', 'Cell_Name');
-                        wcdma_layer = create_rnd_layer(wcdma_data, 'wcdma', radius_wcdma, $scope.wcdma_color, 'Latitude', 'Longitude', 'Utrancell');
-                        lte_layer = create_rnd_layer(lte_data, 'lte', radius_lte, $scope.lte_color, 'Latitude', 'Longitude', 'Utrancell');
-                        map._layerControl.addOverlay(gsm_layer, '<span class="label" style="background-color:' + $scope.gsm_color + '">GSM</span>');
-                        map._layerControl.addOverlay(wcdma_layer, '<span class="label" style="background-color:' + $scope.wcdma_color + '">WCDMA</span>');
-                        map._layerControl.addOverlay(lte_layer, '<span class="label" style="background-color:' + $scope.lte_color + '">LTE</span>');
-                        map.addLayer(gsm_layer);
-                        map.addLayer(wcdma_layer);
-                        map.addLayer(lte_layer);
+
+                        if (gsm_data.data.length != 0){
+                            map._gsm_layer = create_rnd_layer(gsm_data, 'gsm', radius_gsm, $scope.gsm_color, 'Latitude', 'Longitude', 'Cell_Name');
+                            map.addLayer(map._gsm_layer);
+                            map._layer_checkbox_gsm.removeAttribute('disabled');
+                            map._layer_checkbox_gsm.setAttribute('checked', 'checked');
+                        }
+                        if (wcdma_data.data.length != 0){
+                            map._wcdma_layer = create_rnd_layer(wcdma_data, 'wcdma', radius_wcdma, $scope.wcdma_color, 'Latitude', 'Longitude', 'Utrancell');
+                            map.addLayer(map._wcdma_layer);
+                            map._layer_checkbox_wcdma.removeAttribute('disabled');
+                            map._layer_checkbox_wcdma.setAttribute('checked', 'checked');
+                        }
+                        if (lte_data.data.length != 0){
+                            map._lte_layer = create_rnd_layer(lte_data, 'lte', radius_lte, $scope.lte_color, 'Latitude', 'Longitude', 'Utrancell');
+                            map.addLayer(map._lte_layer);
+                            map._layer_checkbox_lte.removeAttribute('disabled');
+                            map._layer_checkbox_lte.setAttribute('checked', 'checked');
+                        }
+
+                        map._span_gsm.setAttribute('style', 'background-color:'+ $scope.gsm_color);
+                        map._span_wcdma.setAttribute('style', 'background-color:'+ $scope.wcdma_color);
+                        map._span_lte.setAttribute('style', 'background-color:'+ $scope.lte_color);
 
                         map._gsm_data = gsm_data;
                         map._wcdma_data = wcdma_data;
                         map._lte_data = lte_data;
-
 
                         map.set_zoom(10);
                         map._select_filter.selectedIndex = '-1';
