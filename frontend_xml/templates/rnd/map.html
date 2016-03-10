@@ -1,4 +1,14 @@
-<div class="col-md-12">
+<div class="col-md-11">
     <span us-spinner spinner-key="spinner_map" spinner-start-active="true"></span>
     <leaflet class="leaflet-map"></leaflet>
+</div>
+<div pageslide ps-open="checked" ps-side="right" ng-mouseleave="onShowMenu()" ps-custom-top="60px">
+    <div style="padding:20px">
+        <table>
+            <tr ng-repeat="(key, value) in sectors">
+                <td>{{ key }}:</td>
+                <td><b>{{ value }}</b></td>
+            </tr>
+        </table>
+    </div>
 </div>

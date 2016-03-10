@@ -140,6 +140,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             });
         }
 
+        $scope.checked = false;
+        $scope.onShowMenu = function(){
+            $scope.checked = !$scope.checked
+        }
+
         var filenames = []
         for (i in $cookies.getObject('dt')){
             if ($cookies.getObject('dt')[i]){
@@ -696,6 +701,19 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             var radius_gsm = 1200;
             var radius_lte = 1800;
 
+            var side_nav_btn = L.control();
+            side_nav_btn.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'side_nav_btn');
+                var btn = L.DomUtil.create('btn', 'btn', this._div);
+                btn.innerHTML = '<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>';
+                L.DomEvent.addListener(btn, 'click', function () {
+                    $scope.onShowMenu();
+                })
+                return this._div;
+            };
+            side_nav_btn.addTo(map);
+
+
             if ($cookies.get('radius_gsm')){
                 radius_gsm = $cookies.get('radius_gsm');
             }
@@ -868,7 +886,8 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     layer._map._info_control.content(create_info_control(layer.options.default_color, layer.options.sector))
                 } else {
                     layer._map._info_control =  L.control.window(map,{position: 'left',});
-                    layer._map._info_control.content(create_info_control(layer.options.default_color, layer.options.sector))
+                    layer._map._info_control.content(create_info_control(layer.options.default_color, layer.options.sector));
+                    $scope.sectors = layer.options.sector;
                     layer._map._info_control.show();
                     layer._map._info_control.on('close', function(){
                         delete layer._map._info_control

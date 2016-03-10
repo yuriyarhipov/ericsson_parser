@@ -8,7 +8,7 @@ L.Control.ToolBar = L.Control.extend({
         map._controlDiv = this.controlDiv = L.DomUtil.create('div', 'toolbar col-md-12 small');
         map._buttonsDiv = this.buttonsDiv = L.DomUtil.create('div', 'col-md-11 hide', this.controlDiv);
         var closeButton = L.DomUtil.create('btn', 'btn', this.controlDiv);
-        closeButton.innerHTML = '<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>';
+        closeButton.innerHTML = '<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>';
         map._appsDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
         map._3gDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
         map._layerDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
