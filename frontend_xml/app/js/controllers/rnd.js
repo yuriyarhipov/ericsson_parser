@@ -874,18 +874,18 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                         weight: 2,
                         opacity: 0.7
                     });
-                }
+                }$
                 layer.setStyle({
                     weight: 4,
                     opacity: 1
                 });
                 layer._map._current_sector = layer;
+                $scope.sectors = layer.options.sector;                
                 if (layer._map._info_control){
                     layer._map._info_control.content(create_info_control(layer.options.default_color, layer.options.sector))
                 } else {
                     layer._map._info_control =  L.control.window(map,{position: 'left',});
                     layer._map._info_control.content(create_info_control(layer.options.default_color, layer.options.sector));
-                    $scope.sectors = layer.options.sector;
                     layer._map._info_control.show();
                     layer._map._info_control.on('close', function(){
                         delete layer._map._info_control
