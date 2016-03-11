@@ -704,9 +704,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             var side_nav_btn = L.control();
             side_nav_btn.onAdd = function (map) {
                 this._div = L.DomUtil.create('div', 'side_nav_btn');
-                var btn = L.DomUtil.create('btn', 'btn', this._div);
-                btn.innerHTML = '<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>';
-                L.DomEvent.addListener(btn, 'click', function () {
+                L.DomEvent.addListener(this._div, 'mouseenter', function () {
                     $scope.onShowMenu();
                 })
                 return this._div;

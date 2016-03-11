@@ -141,3 +141,8 @@ div.circle {
     min-height: 100px;
     max-height: 200px
 }
+
+.side_nav_btn {    
+    width: 5px;
+    height:500px;
+}
