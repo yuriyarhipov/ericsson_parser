@@ -50,16 +50,16 @@ class Rnd:
         project_id = self.project_id
         network = self.network.upper()
         if filenames:
-         sql_des = ','.join(["'%s'" % f for f in filenames])
-         cursor.execute('''
+            sql_des = ','.join(["'%s'" % f for f in filenames])
+            cursor.execute('''
             SELECT
                 data
             FROM
                 rnd
             WHERE
                 (project_id=%s) AND (lower(network)=lower(%s)) AND (description IN (''' + sql_des + '''))''', (
-            project_id,
-            network))
+                project_id,
+                network))
         else:
             cursor.execute('''
                 SELECT
@@ -300,3 +300,34 @@ class Rnd:
                     neighbors[site] = [utrancell, ]
 
         return result
+
+    def psc_collision(self, filename):
+        cursor = connection.cursor()
+        data = []
+        cursor.execute('''
+            SELECT DISTINCT
+                Utrancell.Utrancell as source,
+                neighbor as target,
+                UtranCell.primaryscramblingcode as source_psc,
+                target.primaryscramblingcode as target_psc,
+                UtranCell.uarfcnul as source_uarfcnul,
+                target.uarfcnul as target_uarfcnul
+            FROM
+                UtranRelation INNER JOIN Utrancell ON (UtranRelation.utrancell = utrancell.utrancell)
+                INNER JOIN utrancell as target ON (UtranRelation.neighbor = target.utrancell)
+            WHERE
+                (UtranCell.primaryscramblingcode = target.primaryscramblingcode) AND
+                (UtranCell.filename = %s) AND
+                (target.filename = %s);
+        ''', (filename, filename))
+        for row in cursor:
+            data.append({
+                'Source': row[0],
+                'Label': '%s-%s' % (row[0], row[1]),
+                'Target': row[1],
+                'PSC_Source': row[2],
+                'PSC_Target': row[3],
+                'uarfcnDl_Source': row[4],
+                'uarfcnDl_Target': row[5]
+            })
+        return data

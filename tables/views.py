@@ -10,6 +10,7 @@ from files.excel import Excel, PowerAuditExcel, AuditExcel, DistanceExcel
 from django.conf import settings
 from openpyxl import load_workbook
 from files.distance import Distance
+from files.rnd import Rnd
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -388,7 +389,6 @@ def logical_sectors(request, logical_sector=None, sector=None):
 def psc_distance(request):
     project = request.project
     filename = request.wcdma.filename
-    print filename
     return Response(Distance().get_psc_distance(project.id, filename))
 
 
@@ -481,7 +481,33 @@ def delete_logical_relation(request):
         ))
     return Response(data)
 
+
 @api_view(['GET', ])
 def psc_collision(request):
-    data = []
+    project = request.project
+    filename = request.wcdma.filename
+    data = Rnd(project.id, 'WCDMA').psc_collision(filename)
+    if request.GET.get('excel'):
+        table_name = 'psc_collision'
+        columns = [
+            'Source',
+            'Label',
+            'Target',
+            'PSC_Source',
+            'PSC_Target',
+            'uarfcnDl_Source',
+            'uarfcnDl_Target'
+        ]
+        excel_data = []
+        for r in data:
+            excel_data.append([
+                r.get('Source'),
+                r.get('Label'),
+                r.get('Target'),
+                r.get('PSC_Source'),
+                r.get('PSC_Target'),
+                r.get('uarfcnDl_Source'),
+                r.get('uarfcnDl_Target')])
+        return HttpResponseRedirect(Excel(request.project.project_name, table_name, columns, excel_data).filename)
+
     return Response(data)

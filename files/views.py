@@ -26,8 +26,6 @@ from django.views.decorators.gzip import gzip_page
 from tables.universal_tables import UniversalTable
 
 
-
-
 def handle_uploaded_file(files):
     path = settings.STATICFILES_DIRS[0]
     result = []
@@ -581,4 +579,3 @@ def measurements_wncs_top(request):
             'drop': row.drop,
         })
     return Response({'data': data})
-

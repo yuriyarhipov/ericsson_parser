@@ -714,7 +714,6 @@ distanceControllers.controller('pscCollisionCtrl', ['$scope', '$http','$cookies'
     function ($scope, $http, $cookies, $location) {
         $scope.table_config = {
             columnDefs: [
-
                 { field: 'Source' },
                 { field: 'Label'},
                 { field: 'Target' },
@@ -734,5 +733,5 @@ distanceControllers.controller('pscCollisionCtrl', ['$scope', '$http','$cookies'
         }
         $http.get('/data/distance/psc_collision').success(function(data){
             $scope.table_config.data = data;
-        });        
+        });
 }]);
