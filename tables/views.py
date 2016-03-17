@@ -1,4 +1,10 @@
 import json
+from os.path import join, exists
+from os import makedirs
+from shutil import copy
+import tempfile
+import xlsxwriter
+from zipfile import ZipFile
 
 from django.shortcuts import HttpResponseRedirect
 from django.http import HttpResponse
@@ -488,16 +494,6 @@ def psc_collision(request):
     filename = request.wcdma.filename
     data = Rnd(project.id, 'WCDMA').psc_collision(filename)
     if request.GET.get('excel'):
-        table_name = 'psc_collision'
-        columns = [
-            'Source',
-            'Label',
-            'Target',
-            'PSC_Source',
-            'PSC_Target',
-            'uarfcnDl_Source',
-            'uarfcnDl_Target'
-        ]
         excel_data = []
         for r in data:
             excel_data.append([
@@ -507,7 +503,55 @@ def psc_collision(request):
                 r.get('PSC_Source'),
                 r.get('PSC_Target'),
                 r.get('uarfcnDl_Source'),
-                r.get('uarfcnDl_Target')])
-        return HttpResponseRedirect(Excel(request.project.project_name, table_name, columns, excel_data).filename)
+                r.get('uarfcnDl_Target'),
+                '1st Order Collision'])
+
+        static_path = settings.STATICFILES_DIRS[0]
+        file_path = '%s/%s' % (static_path, project.id)
+        if not exists(file_path):
+            makedirs(file_path)
+        excel_filename = join(tempfile.mkdtemp(), 'psc_collision.xlsx')
+        workbook = xlsxwriter.Workbook('/home/arhipov/images.xlsx')
+        worksheet = workbook.add_worksheet()
+
+        worksheet.insert_image('A1', '/home/arhipov/work/xml/frontend_xml/static/XMART.png', {
+            'x_scale': 0.17,
+            'y_scale': 0.2})
+        format = workbook.add_format({'font_size': 20, 'bg_color': '#31859c', 'font_color': 'white'})
+        worksheet.write(0, 0, '', format)
+        worksheet.write(0, 1, '', format)
+        worksheet.write(0, 2, '1stOrder_CoSC_Collision', format)
+        worksheet.write(0, 3, '', format)
+        worksheet.write(0, 4, '', format)
+        worksheet.write(0, 5, '', format)
+        worksheet.write(0, 6, '', format)
+        worksheet.write(0, 7, '', format)
+        format_columns = workbook.add_format({'bg_color': '#31859c', 'font_color': 'white'})
+        worksheet.write(1, 0, 'Source', format_columns)
+        worksheet.write(1, 1, 'Label', format_columns)
+        worksheet.write(1, 2, 'Target', format_columns)
+        worksheet.write(1, 3, 'PSC_Source', format_columns)
+        worksheet.write(1, 4, 'PSC_Target', format_columns)
+        worksheet.write(1, 5, 'uarfcnDl_Source', format_columns)
+        worksheet.write(1, 6, 'uarfcnDl_Target', format_columns)
+        worksheet.write(1, 7, 'Report', format_columns)
+        worksheet.set_row(0, 60)
+        worksheet.add_table(1, 0, len(excel_data)+1, 7,
+                            {'data': excel_data,
+                             'header_row': False})
+        worksheet.set_column('A:A', 10)
+        worksheet.set_column('A:B', 10)
+        worksheet.set_column('A:C', 10)
+        worksheet.set_column('A:D', 15)
+        worksheet.set_column('A:E', 15)
+        worksheet.set_column('A:F', 15)
+        worksheet.set_column('A:G', 15)
+        worksheet.set_column('A:H', 15)
+        archive_filename = join(file_path, 'psc_collision.zip')
+        zip = ZipFile(archive_filename, 'w')
+        zip.write(excel_filename, arcname='psc_collision.xlsx')
+        zip.close()
+
+        return HttpResponseRedirect(join('/static/%s' % project.id, 'psc_collision.zip'))
 
     return Response(data)

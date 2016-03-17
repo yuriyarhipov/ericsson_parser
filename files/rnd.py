@@ -317,6 +317,7 @@ class Rnd:
                 INNER JOIN utrancell as target ON (UtranRelation.neighbor = target.utrancell)
             WHERE
                 (UtranCell.primaryscramblingcode = target.primaryscramblingcode) AND
+                
                 (UtranCell.filename = %s) AND
                 (target.filename = %s);
         ''', (filename, filename))
