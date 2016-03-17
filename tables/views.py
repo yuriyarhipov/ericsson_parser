@@ -514,7 +514,7 @@ def psc_collision(request):
         workbook = xlsxwriter.Workbook(excel_filename)
         worksheet = workbook.add_worksheet()
 
-        worksheet.insert_image('A1', '/home/arhipov/work/xml/frontend_xml/static/XMART.png', {
+        worksheet.insert_image('A1', static_path + '/XMART.png', {
             'x_scale': 0.17,
             'y_scale': 0.2})
         format = workbook.add_format({'font_size': 20, 'bg_color': '#31859c', 'font_color': 'white'})
