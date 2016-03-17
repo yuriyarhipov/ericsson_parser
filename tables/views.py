@@ -511,7 +511,7 @@ def psc_collision(request):
         if not exists(file_path):
             makedirs(file_path)
         excel_filename = join(tempfile.mkdtemp(), 'psc_collision.xlsx')
-        workbook = xlsxwriter.Workbook('/home/arhipov/images.xlsx')
+        workbook = xlsxwriter.Workbook(excel_filename)
         worksheet = workbook.add_worksheet()
 
         worksheet.insert_image('A1', '/home/arhipov/work/xml/frontend_xml/static/XMART.png', {
@@ -547,6 +547,7 @@ def psc_collision(request):
         worksheet.set_column('A:F', 15)
         worksheet.set_column('A:G', 15)
         worksheet.set_column('A:H', 15)
+        workbook.close()
         archive_filename = join(file_path, 'psc_collision.zip')
         zip = ZipFile(archive_filename, 'w')
         zip.write(excel_filename, arcname='psc_collision.xlsx')
