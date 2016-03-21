@@ -648,6 +648,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             var data = data.data;
             var gsm_bands = ['GSM1900', 'GSM850', ];
             var sectors = [];
+            if (network == 'wcdma'){
+                data.sort(function(a,b){
+                    return parseFloat(a.Carrier) - parseFloat(b.Carrier);
+                });
+            }
             for (sid in data){
                 var zoom_k = 1;
                 if (network == 'gsm'){
@@ -660,15 +665,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     zoom_k = gsm_bands.indexOf(data[sid].Band) +1;
                     radius = base_radius * (11-zoom_k)/10;
                 } else {
-                    data.sort(function(a,b){
-                        return parseFloat(a.Carrier) - parseFloat(b.Carrier);
-                    });
                     if (parseFloat(data[sid].Carrier)){
                         zoom_k = parseFloat(data[sid].Carrier)
                         radius = base_radius * (11-parseFloat(data[sid].Carrier))/10;
                     }
                 }
-
                 var sector = create_sector(
                     network,
                     data[sid][lat],
@@ -880,7 +881,7 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     opacity: 1
                 });
                 layer._map._current_sector = layer;
-                $scope.sectors = layer.options.sector;                
+                $scope.sectors = layer.options.sector;
                 if (layer._map._info_control){
                     layer._map._info_control.content(create_info_control(layer.options.default_color, layer.options.sector))
                 } else {
