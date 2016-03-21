@@ -315,8 +315,11 @@ class Rnd:
             FROM
                 UtranRelation INNER JOIN Utrancell ON (UtranRelation.utrancell = utrancell.utrancell)
                 INNER JOIN utrancell as target ON (UtranRelation.neighbor = target.utrancell)
+                INNER JOIN Topology ON (UtranRelation.utrancell = Topology.utrancell)
+                INNER JOIN Topology as target_topology ON (target_topology.utrancell = Topology.utrancell)
             WHERE
                 (UtranCell.primaryscramblingcode = target.primaryscramblingcode) AND
+                (Topology.carrier = target_topology.carrier) AND
                 (UtranCell.uarfcnul = target.uarfcnul) AND
                 (UtranCell.filename = %s) AND
                 (target.filename = %s);
