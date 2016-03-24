@@ -92,6 +92,20 @@ def login(request):
         return HttpResponse(json.dumps({'status': 'no'}), content_type='application/json')
 
 
+def change_pass(request):
+    new_pass = request.POST.get('new_pass')
+    old_pass = request.POST.get('old_pass')
+    user_name = request.POST.get('user_name')
+    user = authenticate(username=user_name, password=old_pass)
+    if user is not None:
+        user.set_password(new_pass)
+        user.save()
+        return HttpResponse(json.dumps({'status': 'ok'}), content_type='application/json')
+    else:
+        return HttpResponse(json.dumps({'status': 'no'}), content_type='application/json')
+
+
+
 def user_settings(request, username):
     project = request.project
     if not UserSettings.objects.filter(current_project=project, user=username).exists():

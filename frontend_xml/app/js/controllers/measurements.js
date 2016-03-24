@@ -1,7 +1,10 @@
 var measurementsControllers = angular.module('measurementsControllers', []);
 
-measurementsControllers.controller('measurementsCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
+measurementsControllers.controller('measurementsCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location',
+    function ($scope, $http, $routeParams, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         function load_files(f_type){
             $http.get('/data/measurements/' + f_type + '/').success(function(data) {
                 $scope.files = data;
@@ -17,8 +20,11 @@ measurementsControllers.controller('measurementsCtrl', ['$scope', '$http', '$rou
   }]);
 
 
-measurementsControllers.controller('wncsCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+measurementsControllers.controller('wncsCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.table_config = {
             enableGridMenu: true,
             enableRowHeaderSelection: false,

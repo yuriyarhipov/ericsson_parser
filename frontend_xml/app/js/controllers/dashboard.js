@@ -2,7 +2,7 @@ var treeViewControllers = angular.module('dashControllers', []);
 
 treeViewControllers.controller('dashWcdmaCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $http.get('/data/dash_num_sectors/').success(function(data) {

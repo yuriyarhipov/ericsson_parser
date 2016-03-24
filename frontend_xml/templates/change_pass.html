@@ -1,0 +1,19 @@
+<div layout="row">
+    <div flex="30">
+        <md-content>
+            <md-input-container>
+                <label>Old password</label>
+                <input ng-model="old_pass" type="password">
+            </md-input-container>
+            <md-input-container>
+                <label>New password</label>
+                <input ng-model="new_pass" type="password" ng-change="change_pass()">
+            </md-input-container>
+            <md-input-container>
+                <label>Confirm password</label>
+                <input ng-model="confirm_pass" type="password" ng-change="change_pass()">
+            </md-input-container>
+        </md-content>
+        <md-button ng-disabled="btn_disabled" class="md-primary" ng-click="onSave(old_pass, new_pass)">Save</md-button>
+    </div>
+</div>

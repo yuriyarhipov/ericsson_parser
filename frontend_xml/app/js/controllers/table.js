@@ -1,7 +1,10 @@
 var tableControllers = angular.module('tableControllers', []);
 
-tableControllers.controller('TableCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
+tableControllers.controller('TableCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location',
+    function ($scope, $http, $routeParams, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.filename = $routeParams.filename;
         $scope.tablename = $routeParams.table_name;
         $http.get('/data/table/' + $scope.filename + '/' + $scope.tablename + '/').success(function(data) {
@@ -17,15 +20,21 @@ tableControllers.controller('TableCtrl', ['$scope', '$http', '$routeParams',
         };
   }]);
 
-tableControllers.controller('exploreCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
+tableControllers.controller('exploreCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location',
+    function ($scope, $http, $routeParams, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $http.get('/data/explore/' + $routeParams.filename + '/').success(function(data) {
             $scope.tables = data;
         });
   }]);
 
-tableControllers.controller('byTechnologyCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+tableControllers.controller('byTechnologyCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.network = 'GSM';
         $http.get('/data/by_technology/GSM/').success(function(data) {
             $scope.data = data;
@@ -44,16 +53,22 @@ tableControllers.controller('byTechnologyCtrl', ['$scope', '$http',
         };
   }]);
 
-tableControllers.controller('cellDefCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+tableControllers.controller('cellDefCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.radius = 100;
         $http.get('/data/cell_definition/').success(function(data) {
                 $scope.radius = data.radius;
         });
 }]);
 
-tableControllers.controller('excelCtrl', ['$scope', '$http', '$routeParams', '$timeout',
-    function ($scope, $http, $routeParams, $timeout) {
+tableControllers.controller('excelCtrl', ['$scope', '$http', '$routeParams', '$timeout', '$cookies', '$location',
+    function ($scope, $http, $routeParams, $timeout, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         params = {
             'project_id':  $routeParams.project_id,
             'filename': $routeParams.filename,
@@ -77,15 +92,21 @@ tableControllers.controller('excelCtrl', ['$scope', '$http', '$routeParams', '$t
         });
 }]);
 
-tableControllers.controller('universalTablesCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+tableControllers.controller('universalTablesCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.tables = [
             'GsmGsm', 'GsmLte', 'GsmWcdma', 'WcdmaWcdma', 'WcdmaGsm', 'WcdmaLte', 'LteLte', 'LteGsm', 'LteWcdma'
         ]
 }]);
 
-tableControllers.controller('universalTableCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
+tableControllers.controller('universalTableCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location',
+    function ($scope, $http, $routeParams, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $http.get('/data/universal_table/' + $routeParams.table_name + '/').success(function(data){
             $scope.columns = data.columns;
         });

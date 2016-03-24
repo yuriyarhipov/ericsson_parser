@@ -229,6 +229,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/distance/psc_collision.html',
                 controller: 'pscCollisionCtrl'
             }).
+            when('/change_pass/:user_name', {
+                templateUrl: 'templates/change_pass.html',
+                controller: 'changePassCtrl'
+            }).
             otherwise({
                 templateUrl: 'templates/projects.html',
                 controller: 'ProjectsCtrl'
@@ -237,6 +241,7 @@ XmlApp.config(['$routeProvider',
     }]);
 
 XmlApp.run(function($rootScope, $http, $cookies){
+    console.log('GO');
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
     $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 

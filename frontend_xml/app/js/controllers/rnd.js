@@ -1,7 +1,10 @@
 var rndControllers = angular.module('rndControllers', []);
 
-rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpinnerService', '$cookies', '$q',
-    function ($scope, $http, $routeParams, usSpinnerService, $cookies, $q) {
+rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpinnerService', '$cookies', '$q', '$location',
+    function ($scope, $http, $routeParams, usSpinnerService, $cookies, $q, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         var filenames = []
         for (i in $cookies.getObject('dt')){
             if ($cookies.getObject('dt')[i]){
@@ -129,7 +132,9 @@ rndControllers.controller('rndCtrl', ['$scope', '$http', '$routeParams', 'usSpin
 
 rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$location', '$cookies', '$uibModal', 'usSpinnerService', 'authService',
     function ($scope, $http, leafletData, $location, $cookies, $uibModal, usSpinnerService, authService) {
-
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         if (authService.is_auth){
             var username = authService.username;
             $http.get('/data/get_user_settings/' + username + '/').success(function(data){
@@ -1098,8 +1103,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 }]);
 
 
-rndControllers.controller('mapSettingsCtrl', ['$scope', '$http', '$cookies',
-    function ($scope, $http, $cookies) {
+rndControllers.controller('mapSettingsCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.radius_wcdma = 1500;
         $scope.radius_gsm = 1200;
         $scope.radius_lte = 1800;
@@ -1122,8 +1130,11 @@ rndControllers.controller('mapSettingsCtrl', ['$scope', '$http', '$cookies',
 }]);
 
 
-rndControllers.controller('sameNeighborCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+rndControllers.controller('sameNeighborCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.neighbor_table_config = {
             columnDefs: [
                 { field: 'utrancell_source' },

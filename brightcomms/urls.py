@@ -121,6 +121,7 @@ urlpatterns = patterns('',
 
     url(r'^data/get_user_settings/(\S+)/$', project_views.user_settings),
     url(r'^data/set_user_settings/(\S+)/$', project_views.user_settings),
+    url(r'^data/change_pass/$', project_views.change_pass),
 
 
 

@@ -2,6 +2,9 @@ var treeViewControllers = angular.module('treeViewControllers', []);
 
 treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', 'activeProjectService', '$location',
     function ($scope, $http, $cookies, activeProjectService, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $http.get('/data/treeview/' + $cookies.active_project).success(function(data){
             $scope.treedata = data;
         });
@@ -74,6 +77,9 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
 
 treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$http', 'activeProjectService', 'activeFileService', '$location', '$rootScope',
     function ($scope, $timeout, $cookies, $http, activeProjectService, activeFileService, $location, $rootScope) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.checked = false;
         $scope.files = {
             'gsm_rnd': '',

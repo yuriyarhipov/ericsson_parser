@@ -2,7 +2,7 @@ var filesControllers = angular.module('filesControllers', []);
 
 filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'uploadFileService', '$cookies', '$location',
     function ($scope, $http, $timeout, uploadFileService, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $http.get('/data/files/').success(function(data) {
@@ -17,7 +17,7 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
 
 filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$cookies',
     function ($scope, $http, $location, $cookies) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.vendors = ['Ericsson', 'Nokia', 'Universal'];
@@ -97,7 +97,7 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
 
 filesControllers.controller('licensesCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $http.get('/data/licenses/').success(function(data) {
@@ -107,7 +107,7 @@ filesControllers.controller('licensesCtrl', ['$scope', '$http','$cookies', '$loc
 
 filesControllers.controller('licenseCtrl', ['$scope', '$http', '$routeParams','$cookies', '$location',
     function ($scope, $http, $routeParams, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         var filename = $routeParams.filename;
@@ -120,7 +120,7 @@ filesControllers.controller('licenseCtrl', ['$scope', '$http', '$routeParams','$
 
 filesControllers.controller('hardwaresCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $http.get('/data/hardwares/').success(function(data) {
@@ -130,7 +130,7 @@ filesControllers.controller('hardwaresCtrl', ['$scope', '$http','$cookies', '$lo
 
 filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams','$cookies', '$location',
     function ($scope, $http, $routeParams, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.filename = $routeParams.filename;
@@ -151,7 +151,7 @@ filesControllers.controller('hardwareCtrl', ['$scope', '$http', '$routeParams','
 
 filesControllers.controller('compareFilesCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.network = 'GSM';
@@ -210,7 +210,7 @@ filesControllers.controller('compareFilesCtrl', ['$scope', '$http','$cookies', '
 
 filesControllers.controller('superfileCtrl', ['$scope', '$http', '$location','$cookies',
     function ($scope, $http, $location, $cookies) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.networks = ['GSM', 'LTE', 'WCDMA'];
@@ -228,7 +228,7 @@ filesControllers.controller('superfileCtrl', ['$scope', '$http', '$location','$c
 
 filesControllers.controller('setCnaTemplateCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         function get_template(){
@@ -245,6 +245,9 @@ filesControllers.controller('setCnaTemplateCtrl', ['$scope', '$http','$cookies',
 
 filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams', '$timeout', '$location', 'Flash', 'activeProjectService', '$cookies',
     function ($scope, $http, $routeParams, $timeout, $location, Flash, activeProjectService, $cookies) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         var id = $routeParams.id;
         var current = 1;
         $scope.dynamic = 1;
@@ -280,8 +283,11 @@ filesControllers.controller('uploadFileCtrl', ['$scope', '$http', '$routeParams'
         $timeout(getStatus, 0);
   }]);
 
-filesControllers.controller('driveTestLegendCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+filesControllers.controller('driveTestLegendCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         function get_legend(){
             $http.get('/data/files/get_drive_test_legend/').success(function(data){
                 $scope.legend = data;

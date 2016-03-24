@@ -2,7 +2,7 @@ var distanceControllers = angular.module('distanceControllers', []);
 
 distanceControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpinnerService','$cookies', '$location',
     function ($scope, $http, usSpinnerService, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.showComapreFilters = false;
@@ -499,6 +499,10 @@ distanceControllers.controller('accessDistanceCtrl', ['$scope', '$http', 'usSpin
 
 distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookies', '$location', 'Flash', 'authService',
     function ($scope, $http, $cookies, $location, Flash, authService) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
+
         if (authService.is_auth){
             var username = authService.username;
             $http.get('/data/get_user_settings/' + username + '/').success(function(data){
@@ -675,7 +679,7 @@ distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookie
 
 distanceControllers.controller('pscDistanceCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.psc_table_config = {
@@ -712,6 +716,10 @@ distanceControllers.controller('pscDistanceCtrl', ['$scope', '$http','$cookies',
 
 distanceControllers.controller('pscCollisionCtrl', ['$scope', '$http','$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
+
         $scope.table_config = {
             columnDefs: [
                 { field: 'Source' },

@@ -1,15 +1,21 @@
 var parameterControllers = angular.module('parameterControllers', []);
 
-parameterControllers.controller('registerVRCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+parameterControllers.controller('registerVRCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $http.get('/data/version_release/').success(function(data) {
             $scope.columns = data.columns;
             $scope.data = data.data;
         });
   }]);
 
-parameterControllers.controller('createTemplateCtrl', ['$scope', '$http', '$location',
-    function ($scope, $http, $location) {
+parameterControllers.controller('createTemplateCtrl', ['$scope', '$http', '$location', '$cookies',
+    function ($scope, $http, $location, $cookies) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.lable_mo = 'MO';
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = {};
@@ -40,8 +46,11 @@ parameterControllers.controller('createTemplateCtrl', ['$scope', '$http', '$loca
   }]);
 
 
-parameterControllers.controller('editTemplateCtrl', ['$scope', '$http', '$location', '$routeParams',
-    function ($scope, $http, $location, $routeParams) {
+parameterControllers.controller('editTemplateCtrl', ['$scope', '$http', '$location', '$routeParams', '$cookies',
+    function ($scope, $http, $location, $routeParams, $cookies) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         var template = $routeParams.template;
         $http.get('/data/edit_template/' + template + '/').success(function(data) {
             console.log(data)
@@ -86,8 +95,11 @@ parameterControllers.controller('editTemplateCtrl', ['$scope', '$http', '$locati
         };
   }]);
 
-parameterControllers.controller('predefinedTemplatesCtrl', ['$scope', '$http', '$location',
-    function ($scope, $http, $location) {
+parameterControllers.controller('predefinedTemplatesCtrl', ['$scope', '$http', '$location', '$cookies',
+    function ($scope, $http, $location, $cookies) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $http.get('/data/predefined_templates/').success(function(data) {
             $scope.templates = data;
         });
@@ -100,8 +112,11 @@ parameterControllers.controller('predefinedTemplatesCtrl', ['$scope', '$http', '
         };
   }]);
 
-parameterControllers.controller('runTemplateCtrl', ['$scope', '$http', 'Flash',
-    function ($scope, $http, Flash) {
+parameterControllers.controller('runTemplateCtrl', ['$scope', '$http', 'Flash', '$cookies', '$location',
+    function ($scope, $http, Flash, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.selected_group_cells = [];
         $scope.selected_cells = [];
         $scope.form_data = {'cells': []};

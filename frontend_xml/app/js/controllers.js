@@ -2,7 +2,7 @@ var xmlControllers = angular.module('xmlControllers', []);
 
 xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectService', '$cookies', '$location',
     function ($scope, $http, activeProjectService, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.setActiveProject = function(project){
@@ -34,7 +34,7 @@ xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectServ
 
 xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService', '$location',
     function($scope, $cookies, activeProjectService, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.activeProject = $cookies.get('active_project');
@@ -92,7 +92,7 @@ xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activePro
 
 xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location', 'activeProjectService', '$cookies', '$location',
     function ($scope, $http, $location, activeProjectService, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.project_data = {};
@@ -124,6 +124,32 @@ xmlControllers.controller('authCtrl', ['$scope', '$http', '$cookies', '$location
         };
 }]);
 
+xmlControllers.controller('changePassCtrl', ['$scope', '$http', '$cookies', '$location', 'authService', '$routeParams', 'Flash',
+    function ($scope, $http, $cookies, $location, authService, $routeParams, Flash) {
+        var user_name = $routeParams.user_name;
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
+
+        $scope.btn_disabled = true;
+        $scope.change_pass = function(){
+            if (($scope.new_pass == $scope.confirm_pass) && ($scope.new_pass.length > 0) && ($scope.confirm_pass.length > 0)){
+                $scope.btn_disabled = false;
+            } else {
+                $scope.btn_disabled = true;
+            }
+        };
+        $scope.onSave = function(old_pass, new_pass){
+            $http.post('/data/change_pass/', $.param({'old_pass': old_pass, 'new_pass': new_pass, 'user_name': user_name })).success(function(data){
+                if (data.status == 'ok'){
+                    Flash.create('success', 'Password changed');
+                } else {
+                    Flash.create('danger', 'Error');
+                }
+            });
+        };
+}]);
+
 xmlControllers.factory('authService', function($rootScope, $cookies) {
     var status = {};
     status.is_auth = $cookies.get('is_auth');
@@ -144,7 +170,7 @@ xmlControllers.factory('authService', function($rootScope, $cookies) {
 
 xmlControllers.controller('mainMenuCtrl', ['$scope', 'authService', 'activeProjectService', '$location', '$cookies',
     function ($scope, authService, activeProjectService, $location, $cookies) {
-        if (authService.is_auth){
+        if ($cookies.get('is_auth') == 'true'){
             $scope.username = authService.username;
             $scope.project_name = activeProjectService.project;
             $scope.show_menu = true;
@@ -153,7 +179,7 @@ xmlControllers.controller('mainMenuCtrl', ['$scope', 'authService', 'activeProje
         }
 
         $scope.$on('authBroadcast', function() {
-            if (authService.is_auth){
+            if ($cookies.get('is_auth') == 'true'){
                 $scope.username = authService.username;
                 $scope.show_menu = true;
             } else {

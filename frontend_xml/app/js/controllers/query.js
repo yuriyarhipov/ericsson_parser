@@ -1,7 +1,10 @@
 var queryControllers = angular.module('queryControllers', []);
 
-queryControllers.controller('CreateGroupOfCellsCtrl', ['$scope', '$http', '$location',
-    function ($scope, $http, $location) {
+queryControllers.controller('CreateGroupOfCellsCtrl', ['$scope', '$http', '$location', '$cookies',
+    function ($scope, $http, $location, $cookies) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.selected_group_cells = [];
         $scope.selected_cells = [];
         $scope.form_data = {'cells': []};
@@ -55,16 +58,22 @@ queryControllers.controller('CreateGroupOfCellsCtrl', ['$scope', '$http', '$loca
 
   }]);
 
-queryControllers.controller('GroupsCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+queryControllers.controller('GroupsCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $http.get('/data/get_groups/').success(function(data) {
                 $scope.projects = data;
             });
 
   }]);
 
-queryControllers.controller('automaticSiteQueryCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+queryControllers.controller('automaticSiteQueryCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.network = 'GSM';
         $http.get('data/automatic_site_query/' + $scope.network + '/').success(function(data){
             $scope.site_query = data.data;
@@ -82,8 +91,11 @@ queryControllers.controller('automaticSiteQueryCtrl', ['$scope', '$http',
 
   }]);
 
-queryControllers.controller('parameters_overviewCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+queryControllers.controller('parameters_overviewCtrl', ['$scope', '$http', '$cookies', '$location',
+    function ($scope, $http, $cookies, $location) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
         $scope.network = 'GSM';
 
         $scope.onChangeNetwork = function(){

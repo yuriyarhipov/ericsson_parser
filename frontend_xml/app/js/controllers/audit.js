@@ -2,7 +2,7 @@ var auditControllers = angular.module('auditControllers', []);
 
 auditControllers.controller('setAuditTemplateCtrl', ['$scope', '$http', '$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.network = 'GSM';
@@ -23,7 +23,7 @@ auditControllers.controller('setAuditTemplateCtrl', ['$scope', '$http', '$cookie
 
 auditControllers.controller('runAuditCtrl', ['$scope', '$http', '$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.network = 'GSM';
@@ -100,7 +100,7 @@ auditControllers.controller('runAuditCtrl', ['$scope', '$http', '$cookies', '$lo
 
 auditControllers.controller('powerAuditCtrl', ['$scope', '$http', '$cookies', '$location',
     function ($scope, $http, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $http.get('/data/files/get_files/WCDMA/').success(function(data){
@@ -153,7 +153,7 @@ auditControllers.controller('powerAuditCtrl', ['$scope', '$http', '$cookies', '$
 
 auditControllers.controller('auditParamCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location',
     function ($scope, $http, $routeParams, $cookies, $location) {
-        if (!$cookies.get('is_auth')){
+        if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $http.get('/data/audit/audit_param/' + $routeParams.network + '/' + $routeParams.filename + '/' + $routeParams.param_name + '/').success(function(data){
