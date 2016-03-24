@@ -163,7 +163,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
 
 
             leafletData.getMap().then(function(map) {
-                map._legend.reset_legend();
                 map.eachLayer(function (layer) {
                     if (layer.options.sector) {
                         if ((layer.options.sector[param] == value) && (network == layer.options.network)){
@@ -240,7 +239,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 }
                 var window_div = map._newlegend.getContainer();
                 set_legend(map, window_div, values)
-                //map._legend.set_legend(values);
             });
         };
 
@@ -310,108 +308,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 var cell_btn = L.DomUtil.create('td', 'col-md-12', row_value);
                 cell_btn.innerHTML ='<i class="pd_i" style="background:' + colors[i][0] + '"></i> ' + colors[i][1] + '<br>';
             }
-        };
-
-        var create_legend_control = function(){
-            var legend = L.control({position: 'bottomright'});
-
-            legend.onAdd = function (map) {
-                legend._map = map;
-                this._div = L.DomUtil.create('div', 'legend hide');
-                this.sectors = [];
-                return this._div;
-            };
-
-            legend.reset_legend = function(){
-                L.DomUtil.addClass(this._div, 'hide');
-                while (this._div.firstChild) {
-                    this._div.removeChild(this._div.firstChild);
-                }
-                for (id in this.sectors){
-                    var layer = this.sectors[id];
-                    layer.setStyle({'color': layer.options.default_color});
-                }
-                this.sectors = [];
-            };
-
-            legend.set_pd = function(){
-
-                L.DomUtil.removeClass(this._div, 'hide');
-                var colors = [
-                    ['#ff0000', '90% to 100%'],
-                    ['#ff6d37', '80% to 90%'],
-                    ['#ffb59a', '70% to 80%'],
-                    ['#ffff00', '60% to 70%'],
-                    ['#ffba00', '50% to 60%'],
-                    ['#7ace00', '40% to 50%'],
-                    ['#00ff00', '30% to 40%'],
-                    ['#00ffff', '20% to 30%'],
-                    ['#0000ff', '10% to 20%'],
-                    ['#c07eff', ' 1% to 10%'],
-                    ['#ffffff', ' 0% to  1%'],
-
-                ]
-                var table = L.DomUtil.create('table', 'col-md-12', this._div);
-                for (i in colors){
-                    var row_value = L.DomUtil.create('tr', 'col-md-12', table);
-                    var cell_btn = L.DomUtil.create('td', 'col-md-12', row_value);
-                    cell_btn.innerHTML ='<i style="background:' + colors[i][0] + '"></i> ' + colors[i][1] + '<br>';
-                }
-
-            };
-
-            legend.set_legend = function(values){
-                L.DomUtil.removeClass(this._div, 'hide');
-                for (val in values){
-                    this.sectors = legend.sectors.concat(values[val].sectors);
-                    var table = L.DomUtil.create('table', 'col-md-12', this._div);
-                    var row_value = L.DomUtil.create('tr', 'col-md-12', table);
-                    var cell_btn = L.DomUtil.create('td', 'col-md-1', row_value);
-                    var color_value = L.DomUtil.create('input', '', cell_btn);
-                    color_value.setAttribute('type', 'color');
-                    color_value.value = values[val].color;
-
-                    color_value.sectors = values[val].sectors;
-                    var cell_value = L.DomUtil.create('td', 'col-md-11', row_value);
-                    var cell_link = L.DomUtil.create('span', 'span-legend', cell_value);
-                    cell_link.innerHTML =  values[val].param_name + '=' + val + '('+values[val].sectors.length+')';
-                    cell_link.sectors = values[val].sectors;
-                    cell_link.next_sector_index = 0;
-
-                    var stop = L.DomEvent.stopPropagation;
-                    L.DomEvent
-                        .addListener(this._div, 'contextmenu', stop)
-                        .addListener(this._div, 'click', stop)
-                        .addListener(this._div, 'mousedown', stop)
-                        .addListener(this._div, 'touchstart', stop)
-                        .addListener(this._div, 'dblclick', stop)
-                        .addListener(this._div, 'mousewheel', stop)
-                        .addListener(this._div, 'MozMousePixelScroll', stop)
-                        .addListener(color_value, 'change', function(e){
-                            var color = e.target.value;
-                            for (id in e.target.sectors){
-                                e.target.sectors[id].setStyle({'color': color});
-                            }
-                        })
-                        .addListener(cell_link, 'click', function(e){
-                            legend._map.select_sector(e.target.sectors[e.target.next_sector_index]);
-                            var sector = e.target.sectors[e.target.next_sector_index].options.sector;
-                            if (e.target.next_sector_index + 1 < e.target.sectors.length){
-                                e.target.next_sector_index += 1;
-                            } else {
-                                e.target.next_sector_index = 0;
-                            }
-                            if ('Latitud' in sector){
-                                legend._map.setView([sector.Latitud, sector.Longitud], 14);
-                                legend._map.set_zoom(14);
-                            } else if ('Latitude' in sector){
-                                legend._map.setView([sector.Latitude, sector.Longitude], 14);
-                                legend._map.set_zoom(14);
-                            }
-                        })
-                    };
-            };
-            return legend;
         };
 
         var create_info_control = function(color, sector){
@@ -696,8 +592,6 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             map._show_neighbors = false;
             map._show_pd = false;
             map._add_filter = onAddFilter;
-            map._legend = create_legend_control();
-            map._legend.addTo(map);
             map._latlng = latlng_control();
             map._latlng.addTo(map);
             var control = L.control.zoomBox({ modal: true, });

@@ -260,7 +260,13 @@ L.Control.ToolBar = L.Control.extend({
                 map._add_filter(map._network_filter.network, map._select_filter.value, event.target.value);
             })
             .addListener(this.resetFiltersButton, 'click', function () {
-                map._legend.reset_legend();
+                map._newlegend.close()
+                delete map._newlegend;
+                map.eachLayer(function (layer) {
+                    if (layer.options.sector) {
+                        layer.setStyle({'color': layer.options.default_color});
+                    }
+                });
                 sValues.selectedIndex = '-1';
                 map._select_filter.selectedIndex = '-1';
             })
