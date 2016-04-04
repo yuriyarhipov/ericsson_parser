@@ -71,8 +71,8 @@ def save_files(request):
     vendor = request.POST.get('vendor')
     file_type = request.POST.get('file_type')
     network = request.POST.get('network')
-    filename = handle_uploaded_file(request.FILES.getlist('uploaded_file'))[0]
-    job = tasks.worker.delay(filename, project, description, vendor, file_type, network)
+    filenames = handle_uploaded_file(request.FILES.getlist('uploaded_file'))
+    job = tasks.worker.delay(filenames, project, description, vendor, file_type, network)
     data = dict(id=job.id)
     return HttpResponse(json.dumps(data), content_type='application/json')
 

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bulkCmConfigDataFile xmlns:es="EricssonSpecificAttributes.12.26.xsd"
+    xmlns:un="utranNrm.xsd" xmlns:xn="genericNrm.xsd"
+    xmlns:gn="geranNrm.xsd" xmlns="configData.xsd">
+    <fileHeader fileFormatVersion="32.615 V4.5" vendorName="Ericsson"/>
+    <configData dnPrefix="Undefined">
+        <xn:SubNetwork id="AXE">
+                <xn:attributes>
+                    <xn:userDefinedNetworkType>GSM</xn:userDefinedNetworkType>
+                    <xn:userLabel>ADMGW1</xn:userLabel>
+                </xn:attributes>
+                <xn:MeContext id="DAMGW1">
+                    <xn:VsDataContainer id="DAMGW1">
+                        <xn:attributes>
+                            <xn:vsDataType>vsDataMeContext</xn:vsDataType>
+                            <xn:vsDataFormatVersion>EricssonSpecificAttributes.12.26</xn:vsDataFormatVersion>
+                            <es:vsDataMeContext>
+                                <es:userLabel>DAMGW1</es:userLabel>
+                                <es:ipAddress>172.18.249.4</es:ipAddress>
+                                <es:neMIMversion>vB.16.24</es:neMIMversion>
+                                <es:lostSynchronisation>SYNCHRONISED</es:lostSynchronisation>
+                                <es:neType>7</es:neType>
+                                <es:bcrLastChange>1385705706125</es:bcrLastChange>
+                                <es:bctLastChange>1385705706125</es:bctLastChange>
+                                <es:neLinkRelations></es:neLinkRelations>
+                                <es:mirrorMIBversion>B.16.0.D.1.4</es:mirrorMIBversion>
+                            </es:vsDataMeContext>
+                        </xn:attributes>
+                    </xn:VsDataContainer>
+                    <xn:ManagedElement id="1">
+                            <un:UtranCell id="CC1405C">
+                                <un:attributes>
+                                    <un:localCellId>14053</un:localCellId>
+                                </un:attributes>
+                                <xn:VsDataContainer id="CC1405C">
+                                    <xn:attributes>
+                                    <xn:vsDataType>vsDataUtranCell</xn:vsDataType>
+                                    <xn:vsDataFormatVersion>EricssonSpecificAttributes.12.26</xn:vsDataFormatVersion>
+                                    <es:vsDataUtranCell>
+                                        <es:tCell>2</es:tCell>
+                                    <es:cellReserved>1</es:cellReserved>
+                                    <es:treSelection>2</es:treSelection>
+                                    <es:releaseRedirectEutraTriggers>
+                                        <es:normalRelease>1</es:normalRelease>
+                                    </es:releaseRedirectEutraTriggers>
+                                    </es:vsDataUtranCell>
+                                    </xn:attributes>
+                                </xn:VsDataContainer>
+                                <xn:VsDataContainer id="1">
+                                    <xn:attributes>
+                                    <xn:vsDataType>vsDataFach</xn:vsDataType>
+                                    <xn:vsDataFormatVersion>EricssonSpecificAttributes.12.26</xn:vsDataFormatVersion>
+                                    <es:vsDataFach>
+                                    <es:userLabel>Fach 1</es:userLabel>
+                                    </es:vsDataFach>
+                                    </xn:attributes>
+                                </xn:VsDataContainer>
+                                <gn:GsmRelation id="CC405A">
+                                    <gn:attributes>
+                                    <gn:adjacentCell>SubNetwork=ONRM_RootMo_R,ExternalGsmCell=714_1_2_200_1405</gn:adjacentCell>
+                                    </gn:attributes>
+                                    <xn:VsDataContainer id="CC405A">
+                                    <xn:attributes>
+                                    <xn:vsDataType>vsDataGsmRelation</xn:vsDataType>
+                                    <xn:vsDataFormatVersion>EricssonSpecificAttributes.12.26</xn:vsDataFormatVersion>
+                                    <es:vsDataGsmRelation>
+                                    <es:qOffset1sn>7</es:qOffset1sn>
+                                    <es:mobilityRelationType>0</es:mobilityRelationType>
+                                    <es:selectionPriority>10</es:selectionPriority>
+                                    </es:vsDataGsmRelation>
+                                    </xn:attributes>
+                                    </xn:VsDataContainer>
+                                </gn:GsmRelation>
+                                <xn:VsDataContainer id="1">
+                                    <xn:attributes>
+                                    <xn:vsDataType>vsDataHsdsch</xn:vsDataType>
+                                    <xn:vsDataFormatVersion>EricssonSpecificAttributes.12.26</xn:vsDataFormatVersion>
+                                    <es:vsDataHsdsch>
+                                    <es:administrativeState>1</es:administrativeState>
+                                    <es:hsAqmCongCtrlSupport>0</es:hsAqmCongCtrlSupport>
+                                    </es:vsDataHsdsch>
+                                    </xn:attributes>
+                                    <xn:VsDataContainer id="1">
+                                    <xn:attributes>
+                                    <xn:vsDataType>vsDataEul</xn:vsDataType>
+                                    <xn:vsDataFormatVersion>EricssonSpecificAttributes.12.26</xn:vsDataFormatVersion>
+                                    <es:vsDataEul>
+                                    <es:userLabel></es:userLabel>
+                                    <es:administrativeState>1</es:administrativeState>
+                                    <es:numEagchCodes>1</es:numEagchCodes>
+                                    <es:numEhichErgchCodes>2</es:numEhichErgchCodes>
+                                    <es:eulMaxTargetRtwp>-499</es:eulMaxTargetRtwp>
+                                    <es:edchTti2Support>1</es:edchTti2Support>
+                                    <es:eulDchBalancingEnabled>0</es:eulDchBalancingEnabled>
+                                    <es:eulDchBalancingLoad>32</es:eulDchBalancingLoad>
+                                    <es:eulDchBalancingOverload>0</es:eulDchBalancingOverload>
+                                    <es:eulDchBalancingReportPeriod>200</es:eulDchBalancingReportPeriod>
+                                    <es:eulDchBalancingSupport>0</es:eulDchBalancingSupport>
+                                    <es:eulDchBalancingSuspendDownSw>0</es:eulDchBalancingSuspendDownSw>
+                                    <es:eulDchBalancingTimerNg>1000</es:eulDchBalancingTimerNg>
+                                    <es:releaseAseUlNg>3</es:releaseAseUlNg>
+                                    <es:eulLoadTriggeredSoftCong>0</es:eulLoadTriggeredSoftCong>
+                                    <es:eulTdSchedulingSupport>0</es:eulTdSchedulingSupport>
+                                    <es:improvedL2Support>0</es:improvedL2Support>
+                                    <es:pathlossThresholdEulTti2>170</es:pathlossThresholdEulTti2>
+                                    <es:threshEulTti2Ecno>-24</es:threshEulTti2Ecno>
+                                    </es:vsDataEul>
+                                    </xn:attributes>
+                                    <xn:VsDataContainer id="1">
+                                    <xn:attributes>
+                                    <xn:vsDataType>vsDataMultiCarrier</xn:vsDataType>
+                                    <xn:vsDataFormatVersion>EricssonSpecificAttributes.12.26</xn:vsDataFormatVersion>
+                                    <es:vsDataMultiCarrier>
+                                    <es:cellRefsDl></es:cellRefsDl>
+                                    <es:multiCarrierSupport>0</es:multiCarrierSupport>
+                                    <es:dualBandMultiCarrierSupport>0</es:dualBandMultiCarrierSupport>
+                                    <es:multiCarrierMimoSupport>0</es:multiCarrierMimoSupport>
+                                    </es:vsDataMultiCarrier>
+                                    </xn:attributes>
+                                    </xn:VsDataContainer>
+                                    </xn:VsDataContainer>
+                                </xn:VsDataContainer>
+                                <xn:VsDataContainer id="1">
+                                    <xn:attributes>
+                                    <xn:vsDataType>vsDataPch</xn:vsDataType>
+                                    <xn:vsDataFormatVersion>EricssonSpecificAttributes.12.26</xn:vsDataFormatVersion>
+                                    <es:vsDataPch>
+                                    <es:userLabel>Pch 1</es:userLabel>
+                                    <es:pchPower>-4</es:pchPower>
+                                    <es:pichPower>-7</es:pichPower>
+                                    <es:sccpchOffset>20</es:sccpchOffset>
+                                    <es:administrativeState>1</es:administrativeState>
+                                    </es:vsDataPch>
+                                    </xn:attributes>
+                                </xn:VsDataContainer>
+                                <xn:VsDataContainer id="1">
+                                    <xn:attributes>
+                                    <xn:vsDataType>vsDataRach</xn:vsDataType>
+                                    <xn:vsDataFormatVersion>EricssonSpecificAttributes.12.26</xn:vsDataFormatVersion>
+                                    <es:vsDataRach>
+                                    <es:userLabel>Rach 1</es:userLabel>
+                                    </es:vsDataRach>
+                                    </xn:attributes>
+                                </xn:VsDataContainer>
+                                <un:UtranRelation id="CC1405B">
+                                    <un:attributes>
+                                    <un:adjacentCell>SubNetwork=ONRM_RootMo_R,SubNetwork=ADRNC1,MeContext=ADRNC1,ManagedElement=1,RncFunction=1,UtranCell=CC1405A</un:adjacentCell>
+                                    </un:attributes>
+                                    <xn:VsDataContainer id="CC1405A">
+                                    <xn:attributes>
+                                    <xn:vsDataType>vsDataUtranRelation</xn:vsDataType>
+                                    <xn:vsDataFormatVersion>EricssonSpecificAttributes.12.26</xn:vsDataFormatVersion>
+                                    <es:vsDataUtranRelation>
+                                    <es:qOffset1sn>0</es:qOffset1sn>
+                                    </es:vsDataUtranRelation>
+                                    </xn:attributes>
+                                    </xn:VsDataContainer>
+                                </un:UtranRelation>
+                            </un:UtranCell>
+                        </xn:ManagedElement>
+            </xn:MeContext>
+        </xn:SubNetwork>
+                        </configData>
+<fileFooter dateTime="2014-03-18T00:09:42Z"/>
+</bulkCmConfigDataFile>

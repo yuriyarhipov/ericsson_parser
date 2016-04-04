@@ -10,7 +10,6 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
         });
 
         $scope.onDeleteFile = function(filename){
-            console.log(filename);
             $http.get('/data/delete_file/' + filename + '/');
         };
   }]);

@@ -20,13 +20,13 @@ def create_parameters_table(f, network, template_name):
 
 
 @celery.task
-def worker(filename, project, description, vendor, file_type, network):
+def worker(filenames, project, description, vendor, file_type, network):
     if not project:
         return
 
     from os.path import basename
     from archive import XmlPack
-    from xml_processing.xml import Xml
+    from xml_processing.xml import Xml, Table, WcdmaXML
     from files.cna import CNA
     from files.measurements import Measurements
     from files.lic import License
@@ -68,16 +68,15 @@ def worker(filename, project, description, vendor, file_type, network):
         'HISTOGRAM FILE COUNTER - Access Distance',
     ]
 
-    ext = splitext(filename)[1]
-
-    if ext in ['rar', 'zip', 'gz', '.rar', '.zip', '.gz']:
-        work_file = XmlPack(filename).get_files()[0]
-    else:
-        work_file = filename
-
-
     task = current_task
     task.update_state(state="PROGRESS", meta={"current": 1})
+    work_files = []
+    for f in filenames:
+        ext = splitext(f)[1]
+        if ext in ['rar', 'zip', 'gz', '.rar', '.zip', '.gz']:
+            work_files.extend(XmlPack(f).get_files())
+        else:
+            work_files.append(filename)
 
     if network in ['WCDMA', 'LTE']:
         if file_type in distance_files:
@@ -88,10 +87,10 @@ def worker(filename, project, description, vendor, file_type, network):
                 work_file,
                 task)
 
-        if file_type in xml_types:
+        if (file_type in xml_types) and (network == 'LTE'):
             Files.objects.filter(
-                filename=basename(work_file),
-                project=project).delete()
+            filename=basename(work_file),
+            project=project).delete()
             Xml().save_xml(
                 work_file,
                 project,
@@ -100,6 +99,35 @@ def worker(filename, project, description, vendor, file_type, network):
                 file_type,
                 network,
                 task)
+        if (file_type in xml_types) and (network == 'WCDMA'):
+            percent_per_file = 100 / len(work_files)
+            i = 0
+            available_percent = percent_per_file / 2
+            for f in work_files:
+                wx = WcdmaXML(f, task, i, available_percent)
+                table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
+                table_count = len(wx.data)
+                table_index = 0.0
+                for table_name, data in wx.data.iteritems():
+                    table_index += 1
+                    percent = int(table_index / table_count * 100)
+                    task.update_state(state="PROGRESS", meta={"current": i + available_percent + int(float(available_percent) * float(percent) / 100)})
+                    table.write_table(table_name, data)
+                i += percent_per_file
+                Files.objects.filter(filename=basename(f), project=project).delete()
+                Files.objects.create(
+                    filename=basename(f),
+                    file_type=file_type,
+                    project=project,
+                    tables=','.join(list(wx.data.keys())),
+                    description=description,
+                    vendor=vendor,
+                    network=network)
+                task.update_state(state="PROGRESS", meta={"current": percent_per_file})
+
+            task.update_state(state="PROGRESS", meta={"current": 100})
+
+
 
     if network == 'GSM':
         if file_type in cna_types:

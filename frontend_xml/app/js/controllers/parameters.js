@@ -52,8 +52,7 @@ parameterControllers.controller('editTemplateCtrl', ['$scope', '$http', '$locati
             $location.path('/login')
         }
         var template = $routeParams.template;
-        $http.get('/data/edit_template/' + template + '/').success(function(data) {
-            console.log(data)
+        $http.get('/data/edit_template/' + template + '/').success(function(data) {            
             $scope.network.selected = data.network;
             $scope.template_name = template;
             $scope.param_table = data.param_table

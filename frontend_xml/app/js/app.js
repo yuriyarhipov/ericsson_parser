@@ -240,8 +240,7 @@ XmlApp.config(['$routeProvider',
 
     }]);
 
-XmlApp.run(function($rootScope, $http, $cookies){
-    console.log('GO');
+XmlApp.run(function($rootScope, $http, $cookies){    
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
     $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
