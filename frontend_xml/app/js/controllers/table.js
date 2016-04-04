@@ -1,24 +1,34 @@
 var tableControllers = angular.module('tableControllers', []);
 
-tableControllers.controller('TableCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location',
-    function ($scope, $http, $routeParams, $cookies, $location) {
+tableControllers.controller('TableCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location', 'uiGridConstants', 'usSpinnerService',
+    function ($scope, $http, $routeParams, $cookies, $location, uiGridConstants, usSpinnerService) {
         if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
-        $scope.filename = $routeParams.filename;
         $scope.tablename = $routeParams.table_name;
-        $http.get('/data/table/' + $scope.filename + '/' + $scope.tablename + '/').success(function(data) {
-            $scope.columns = data.columns;
-            $scope.data = data.data;
-            $scope.totalItems = data.count;
-            $scope.itemsPerPage = 20;
+        var columns = [];
+        $scope.table_config = {
+            columnDefs: columns,
+            enableGridMenu: true,
+            enableSelectAll: true,
+            enableFiltering: true,
+            flatEntityAccess: true,
+            showGridFooter: true,
+        }
+
+        $http.get('/data/table/' + $scope.tablename + '/').success(function(data) {
+            for (col_id in data.columns){
+                columns.push({
+                    field: data.columns[col_id],
+                    name: data.columns[col_id],
+                    width:100
+                })
+            }
+            $scope.table_config.data = data.data;
+            usSpinnerService.stop('spinner_table');
         });
-        $scope.pageChanged = function() {
-            $http.get('/data/table/' + $scope.filename + '/' + $scope.tablename + '?page=' + $scope.currentPage ).success(function(data) {
-                $scope.data = data.data;
-            });
-        };
-  }]);
+    }]
+);
 
 tableControllers.controller('exploreCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location',
     function ($scope, $http, $routeParams, $cookies, $location) {

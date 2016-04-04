@@ -66,7 +66,7 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/query/groups.html',
                 controller: 'GroupsCtrl'
             }).
-            when('/table/:filename/:table_name',{
+            when('/table/:table_name',{
                 templateUrl: 'templates/tables/table.html',
                 controller: 'TableCtrl'
             }).
@@ -240,7 +240,7 @@ XmlApp.config(['$routeProvider',
 
     }]);
 
-XmlApp.run(function($rootScope, $http, $cookies){    
+XmlApp.run(function($rootScope, $http, $cookies){
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
     $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 

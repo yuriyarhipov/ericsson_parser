@@ -104,7 +104,7 @@ def worker(filenames, project, description, vendor, file_type, network):
             i = 0
             available_percent = percent_per_file / 2
             for f in work_files:
-                wx = WcdmaXML(f, task, i, available_percent)
+                wx = WcdmaXML(f, project, task, i, available_percent)
                 table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
                 table_count = len(wx.data)
                 table_index = 0.0

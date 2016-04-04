@@ -14,6 +14,7 @@ from table import Table, get_excel
 from files.models import Files, SuperFile, CNATemplate, AuditTemplate, LogicalRelation
 from files.excel import Excel, PowerAuditExcel, AuditExcel, DistanceExcel
 from django.conf import settings
+from django.views.decorators.gzip import gzip_page
 from openpyxl import load_workbook
 from files.distance import Distance
 from files.rnd import Rnd
@@ -35,9 +36,9 @@ def handle_uploaded_file(files):
     return result
 
 
-def table(request, filename, table_name):
-    if SuperFile.objects.filter(filename=filename, project=request.project).exists():
-        filename = SuperFile.objects.filter(filename=filename, project=request.project).first().files
+@gzip_page
+def table(request, table_name):
+    project = request.project
     if table_name == 'rnd':
         active_file = request.COOKIES.get('active_file')
         if Files.objects.filter(filename__iexact=active_file, project=request.project).exists():
@@ -52,28 +53,14 @@ def table(request, filename, table_name):
                 table_name = 'rnd_lte'
             filename = active_file.filename
 
-    if Files.objects.filter(filename=table_name, project=request.project).exists():
-        f = Files.objects.get(filename=table_name, project=request.project)
-        columns, data = f.get_data()
-    else:
-        current_table = Table(table_name, filename)
-        data = current_table.get_data()
-        columns = current_table.columns
+    current_table = Table(table_name, project.id)
+    data = current_table.get_data()
+    columns = current_table.columns
 
     if request.GET.get('excel'):
         return HttpResponseRedirect(Excel(request.project.project_name, table_name, columns, data).filename)
 
-    page = request.GET.get('page', 1)
-    data_length = len(data)
-    t = Paginator(data, 20)
-    try:
-        data = t.page(page)
-    except PageNotAnInteger:
-        data = t.page(1)
-    except EmptyPage:
-        data = t.page(t.num_pages)
-
-    return HttpResponse(json.dumps({'columns': columns, 'data': data.object_list, 'count': data_length}), content_type='application/json')
+    return HttpResponse(json.dumps({'columns': columns, 'data': data}), content_type='application/json')
 
 
 def rnd(request):

@@ -27,7 +27,7 @@ class Table(object):
 
     active_file = None
 
-    def __init__(self, table_name, filename):
+    def __init__(self, table_name, project_id):
         self.conn = psycopg2.connect(
             'host = %s dbname = %s user = %s password = %s' % (
                 settings.DATABASES['default']['HOST'],
@@ -35,8 +35,7 @@ class Table(object):
                 settings.DATABASES['default']['USER'],
                 settings.DATABASES['default']['PASSWORD']))
         self.table_name = table_name
-        self.filename = filename
-        self.sql_filename = ["'%s'" % f.lower() for f in self.filename.split(',')]
+        self.project_id = project_id
         self.columns = self.get_columns()
 
     def sort_columns(self, columns):
@@ -67,24 +66,6 @@ class Table(object):
         return result
 
     def get_columns(self):
-        source_file = Files.objects.filter(filename=self.filename).first()
-        if source_file.network == 'GSM':
-            columns = ['%s' % col for col in CNATemplate.objects.filter(table_name=self.table_name).first().columns.split(',')]
-            return columns
-        if self.table_name in ['map_intrafreq', 'map_interfreq', 'map_gsmirat', 'hw_summary']:
-            return
-
-        if self.table_name == '3girat':
-            return ['Source', 'Target_IRAT', 'Priority', 'frequencyRelationType', 'RelationType', 'qOffset1sn']
-        elif self.table_name == 'neighbors_co-sc':
-            return ['Source', 'Primary_SC_Source', 'Site_Source', 'Target', 'Site_Target', 'Primary_SC_target', 'NEIGHBOR_CO_SC', 'SAME_SITE']
-        elif self.table_name == 'neighbors_two_ways':
-            return ['Source', 'Site_Source', 'Target', 'Site_Target', 'NEIGHBOR_MUTUAL_RELATION', 'SAME_SITE']
-        elif self.table_name == 'BrightcommsRNDDate':
-            columns = BRI(self.filename).columns
-            return columns
-
-
         cursor = self.conn.cursor()
         cursor.execute('SELECT * FROM "%s" LIMIT 0' % (self.table_name.lower(), ))
         columns = ['%s' % desc[0] for desc in cursor.description]
@@ -133,8 +114,13 @@ class Table(object):
         if self.table_name == 'BrightcommsRNDDate':
             order_columns = 'SITENAME, SECTORID, SITEID, CID'
 
-        cursor.execute('SELECT DISTINCT %s FROM "%s" WHERE lower(filename) IN (%s) ORDER BY %s' % (sql_columns, self.table_name.lower(), ','.join(self.sql_filename), order_columns))
-        data = cursor.fetchall()
+        cursor.execute('''SELECT DISTINCT %s FROM "%s" WHERE (project_id='%s') ORDER BY %s''' % (sql_columns, self.table_name.lower(), self.project_id, order_columns))
+        data = []
+        for row in cursor.fetchall():
+            dict_row = dict()
+            for i in range(len(self.columns)):
+                dict_row[self.columns[i]] = row[i]
+            data.append(dict_row)
         return data
 
 

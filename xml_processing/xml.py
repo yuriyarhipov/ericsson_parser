@@ -67,11 +67,12 @@ class WcdmaXML:
     data = dict()
     xml_mask = re.compile('\{.*\}')
 
-    def __init__(self, filename, task=None, current_percent=None, available_percent=None):
+    def __init__(self, filename, project, task=None, current_percent=None, available_percent=None):
         self.filename = filename
         self.task = task
         self.available_percent = available_percent
         self.current_percent = current_percent
+        self.project_id = project.id
         self.parse_file()
 
     def get_mo(self, node):
@@ -121,6 +122,8 @@ class WcdmaXML:
         row.update(self.get_fields(node))
         mo = self.get_mo(node)
         row['MO'] = ','.join(mo)
+        row['project_id'] = self.project_id
+        row['filename'] = basename(self.filename)
         mo = self.parse_mo(row['MO'])
 
         additional_fields = [

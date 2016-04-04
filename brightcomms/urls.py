@@ -24,7 +24,7 @@ urlpatterns = patterns('',
     url(r'^data/get_groups/$', query_views.get_groups),
     url(r'^data/upload_cells_template/$', query_views.upload_cells_template),
 
-    url(r'^data/table/(\S+)/(\S+)/$', table_views.table),
+    url(r'^data/table/(\S+)/$', table_views.table),
     url(r'^data/explore/(\S+)/$', table_views.explore),
     url(r'^data/by_technology/(\S+)/$', table_views.by_technology),
 
