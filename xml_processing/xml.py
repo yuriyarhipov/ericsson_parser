@@ -57,8 +57,8 @@ class Table:
         cursor = self.conn.cursor()
 
         self.create_table(table_name, columns)
-        df.to_csv('/home/arhipov/temp.csv', sep='\t', index=False, header=False)
-        with open('/home/arhipov/temp.csv') as f:
+        df.to_csv('/tmp/temp.csv', sep='\t', index=False, header=False)
+        with open('/tmp/temp.csv') as f:
             cursor.copy_from(f, table_name, columns=columns)
         self.conn.commit()
 
