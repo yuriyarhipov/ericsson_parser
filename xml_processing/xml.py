@@ -11,12 +11,109 @@ from files.excel import ExcelFile
 from files.tasks import create_table
 
 
+class Diff:
+
+    def __init__(self, project_id,  host, db, login, password):
+        self.project_id = project_id
+        self.conn = psycopg2.connect(
+            'host = %s dbname = %s user = %s password = %s' % (host, db, login, password)
+        )
+        cursor = self.conn.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS ChangeLog (
+            id SERIAL,
+            project_id INT,
+            mo TEXT,
+            rnc TEXT,
+            site TEXT,
+            Utrancell TEXT,
+            param_name TEXT,
+            new_value TEXT,
+            old_value TEXT,
+            change_time DATE)''')
+
+    def write_to_log(self, tablename, mo, param_name, new_value, old_value):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            'SELECT column_name FROM information_schema.columns WHERE table_catalog = %s AND table_name=%s;',
+            ('xml2', tablename.lower()))
+        column_names = [row[0].lower() for row in cursor]
+        sql_columns = []
+        if 'utrancell' in column_names:
+            sql_columns.append('utrancell')
+        if 'element1' in column_names:
+            sql_columns.append('element1')
+        if 'element2' in column_names:
+            sql_columns.append('element2')
+        cursor.execute('''SELECT %s FROM %s WHERE (mo='%s') AND (project_id='%s') AND (status='draft')''' % (','.join(sql_columns), tablename, mo, self.project_id))
+        utrancell = ''
+        rnc = ''
+        site = ''
+        if cursor.rowcount == 1:
+            row = cursor.fetchone()
+            if 'utrancell' in sql_columns:
+                utrancell = row[0]
+            else:
+                utrancell = ''
+            if 'element1' in sql_columns:
+                rnc = row[sql_columns.index('element1')]
+            else:
+                rnc = ''
+            if 'element2' in sql_columns:
+                site = row[sql_columns.index('element2')]
+            else:
+                site = ''
+        cursor.execute('''INSERT INTO Changelog (project_id, mo, rnc, site, Utrancell, param_name, new_value, old_value, change_time)
+            VALUES
+            ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', NOW())
+        ''' % (self.project_id, mo, rnc, site, utrancell, param_name, new_value, old_value))
+        cursor.close()
+
+    def check_parameter(self, tablename, param):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT DRAFT.mo, '%s' as param_name, DRAFT.%s as new_value, READY.%s as old_value FROM (
+            	SELECT mo, %s from %s where status='draft'
+                    EXCEPT
+            	SELECT mo, %s from %s where status='ready') as DRAFT
+            INNER JOIN (
+            	SELECT mo, %s from %s where status='ready'
+            		EXCEPT
+            	SELECT mo, %s from %s where status='draft'
+            	) AS READY
+            ON (DRAFT.mo=READY.mo)
+        ''' % (param, param, param, param, tablename, param, tablename, param, tablename, param, tablename))
+        for row in cursor.fetchall():
+            print tablename, row[2], row[3]
+            self.write_to_log(tablename, row[0], param, row[2], row[3])
+
+    def diff(self, tablename):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            'SELECT column_name FROM information_schema.columns WHERE table_catalog = %s AND table_name=%s;',
+            ('xml2', tablename.lower()))
+        column_names = [row[0].lower() for row in cursor]
+
+        column_names.remove('status')
+        column_names.remove('filename')
+        column_names.remove('project_id')
+        column_names.remove('mo')
+
+        for param in column_names:
+            self.check_parameter(tablename, param)
+        cursor.execute('''DELETE FROM %s
+            WHERE (project_id='%s')
+                AND (status = 'ready')
+        ''' % (tablename, self.project_id))
+        cursor.execute('''Update %s set status = 'ready' WHERE (project_id='%s')''' % (tablename, self.project_id))
+        self.conn.commit()
+
 class Table:
 
     def __init__(self, project_id,  host, db, login, password):
         self.conn = psycopg2.connect(
             'host = %s dbname = %s user = %s password = %s' % (host, db, login, password)
         )
+        cursor = self.conn.cursor()
 
     def check_table(self, table_name, exist_column_names, columns):
         cursor = self.conn.cursor()
@@ -51,15 +148,15 @@ class Table:
             self.conn.commit()
             self.add_indexes(table_name, columns)
 
-    def write_table(self, table_name, data):
+    def write_table(self, tablename, data):
         df = pd.DataFrame(data)
         columns = list(df.columns.values)
         cursor = self.conn.cursor()
 
-        self.create_table(table_name, columns)
+        self.create_table(tablename, columns)
         df.to_csv('/tmp/temp.csv', sep='\t', index=False, header=False)
         with open('/tmp/temp.csv') as f:
-            cursor.copy_from(f, table_name, columns=columns)
+            cursor.copy_from(f, tablename, columns=columns)
         self.conn.commit()
 
 
@@ -124,6 +221,7 @@ class WcdmaXML:
         row['MO'] = ','.join(mo)
         row['project_id'] = self.project_id
         row['filename'] = basename(self.filename)
+        row['status'] = 'draft'
         mo = self.parse_mo(row['MO'])
 
         additional_fields = [

@@ -179,3 +179,25 @@ def user_settings(request, username):
     data['lte_color'] = us.lte_color
     data['element_color'] = us.element_color
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+def changelog(request):
+    project = request.project
+    cursor = connection.cursor()
+    cursor.execute('''
+        SELECT
+            mo, rnc, site, Utrancell, param_name, new_value, old_value, change_time
+        FROM changelog
+        WHERE (project_id=%s)''', (project.id, ))
+    data = []
+    for row in cursor.fetchall():
+        data.append({
+            'mo': row[0],
+            'rnc': row[1],
+            'site': row[2],
+            'utrancell': row[3],
+            'parameter': row[4],
+            'new_value': row[5],
+            'old_value': row[6],
+            'date': row[7].strftime("%B %d, %Y"),
+        })
+    return HttpResponse(json.dumps(data), content_type='application/json')

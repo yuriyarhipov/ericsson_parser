@@ -233,6 +233,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/change_pass.html',
                 controller: 'changePassCtrl'
             }).
+            when('/changelog', {
+                templateUrl: 'templates/changelog.html',
+                controller: 'changelogCtrl'
+            }).
             otherwise({
                 templateUrl: 'templates/projects.html',
                 controller: 'ProjectsCtrl'

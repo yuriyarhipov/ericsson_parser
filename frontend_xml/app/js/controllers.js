@@ -200,3 +200,34 @@ xmlControllers.controller('mainMenuCtrl', ['$scope', 'authService', 'activeProje
             $location.path(url);
         };
 }]);
+
+xmlControllers.controller('changelogCtrl', ['$scope', 'authService','$location', '$cookies', '$http', 'usSpinnerService',
+    function ($scope, authService, $location, $cookies, $http, usSpinnerService) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
+
+        $scope.table_config = {
+            columnDefs: [
+                { field: 'mo' },
+                { field: 'rnc' },
+                { field: 'site'},
+                { field: 'utrancell' },
+                { field: 'parameter' },
+                { field: 'new_value' },
+                { field: 'old_value' },
+                { field: 'date' }
+            ],
+            enableGridMenu: true,
+            enableSelectAll: true,
+            enableFiltering: true,
+            flatEntityAccess: true,
+            showGridFooter: true,
+        }
+
+        $http.get('/data/changelog/').success(function(data){
+            $scope.table_config.data = data;
+            usSpinnerService.stop('spinner_table');
+        });
+
+}]);
