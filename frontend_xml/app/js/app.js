@@ -37,6 +37,7 @@ var XmlApp = angular.module(
         'ui.grid.rowEdit',
         'ui.grid.cellNav',
         'ngMaterial',
+        'angularFileUpload',
     ]);
 
 XmlApp.config(['$routeProvider',

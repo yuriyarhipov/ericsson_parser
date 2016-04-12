@@ -14,11 +14,30 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
         };
   }]);
 
-filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$cookies',
-    function ($scope, $http, $location, $cookies) {
+filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$cookies', 'FileUploader',
+    function ($scope, $http, $location, $cookies, FileUploader) {
         if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
+
+        var uploader = $scope.uploader = new FileUploader({
+            url: '/data/save_file/',
+            removeAfterUpload: true,
+        });
+
+        uploader.onAfterAddingFile = function(fileItem) {
+            fileItem.formData.push({
+                'description': $scope.description,
+                'vendor': $scope.CurrentVendor,
+                'network': $scope.CurrentNetwork,
+                'file_type': $scope.CurrentTypeFile,
+            });
+            console.info('onAfterAddingFile', fileItem);
+        };
+
+        $http.get('/data/uploaded_files/').success(function(data){
+            $scope.uploaded_files = data;
+        });
         $scope.vendors = ['Ericsson', 'Nokia', 'Universal'];
         $scope.Network = [ 'GSM', 'WCDMA', 'LTE'];
 
@@ -88,10 +107,22 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
             $scope.CurrentTypeFile = $scope.TypeFile[0];
         };
 
-        $scope.complete = function(data){
-            var id = data.id;
-            $location.path('/status/' + id + '/');
-        }
+        uploader.onCompleteAll = function() {
+            $http.get('/data/uploaded_files/').success(function(data){
+                $scope.uploaded_files = data;
+                uploader.clearQueue();
+            });
+        };
+
+        $scope.onUploadAll = function(){
+            var files = [];
+            for (id in $scope.uploaded_files){
+                files.push($scope.uploaded_files[id].id);
+            }
+            $http.post('/data/run_tasks/', $.param({'files_id': files})).success(function(data){
+                $location.path('/status/' + data.id + '/');
+            });
+        };
   }]);
 
 filesControllers.controller('licensesCtrl', ['$scope', '$http','$cookies', '$location',

@@ -1,4 +1,5 @@
 import json
+from os.path import basename
 
 from openpyxl import load_workbook
 
@@ -65,16 +66,60 @@ def status(request, id):
     return HttpResponse(json_data, mimetype='application/json')
 
 
+def uploaded_files(request):
+    project = request.project
+    data = []
+    for f in UploadedFiles.objects.filter(project=project):
+        data.append(dict(
+            id=f.id,
+            filename=basename(f.filename),
+            file_type=f.file_type,
+            description=f.description,
+            vendor=f.vendor,
+            network=f.network,
+            date=f.date.strftime('%d.%m.%Y'),
+        ))
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
 def save_files(request):
     project = request.project
     description = request.POST.get('description')
     vendor = request.POST.get('vendor')
     file_type = request.POST.get('file_type')
     network = request.POST.get('network')
-    filenames = handle_uploaded_file(request.FILES.getlist('uploaded_file'))
-    job = tasks.worker.delay(filenames, project, description, vendor, file_type, network)
+    filenames = handle_uploaded_file(request.FILES.getlist('file'))
+    print description, vendor, file_type, network, filenames
+    for f in filenames:
+        UploadedFiles.objects.create(
+            filename=f,
+            file_type=file_type,
+            description=description,
+            vendor=vendor,
+            network=network,
+            project=project
+        )
+
+    data = []
+    for f in UploadedFiles.objects.filter(project=project):
+        data.append(dict(
+            id=f.id,
+            filename=basename(f.filename),
+            file_type=f.file_type,
+            description=f.description,
+            vendor=f.vendor,
+            network=f.network,
+        ))
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+def run_tasks(request):
+    data = []
+    file_ids = request.POST.getlist('files_id[]')
+    job = tasks.worker.delay(file_ids)
     data = dict(id=job.id)
     return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 
 def files(request):
@@ -102,21 +147,7 @@ def files(request):
             'description': f.description,
             'status': status
         })
-
-    uploaded_files = []
-    for f in UploadedFiles.objects.filter(project=project):
-        job = AsyncResult(f.description)
-        data = job.result or job.state
-        status = 0
-        if 'current' in data:
-            status = data.get('current')
-        uploaded_files.append({
-            'filename': f.filename,
-            'date': f.date.strftime('%m.%d.%Y'),
-            'file_type': f.file_type,
-            'status': 'processing',
-        })
-    return HttpResponse(json.dumps({'files': files, 'uploaded_files': uploaded_files}), content_type='application/json')
+    return HttpResponse(json.dumps({'files': files, }), content_type='application/json')
 
 
 def measurements(request, file_type):

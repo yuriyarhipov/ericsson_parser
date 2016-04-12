@@ -65,6 +65,8 @@ urlpatterns = patterns('',
     url(r'^data/files/status/(\S+)/$', files_views.status),
     url(r'^data/files/get_excel/(\S+)/$', files_views.get_excel),
     url(r'^data/universal_table/(\S+)/$', files_views.universal_table),
+    url(r'^data/uploaded_files/$', files_views.uploaded_files),
+    url(r'^data/run_tasks/$', files_views.run_tasks),
 
     url(r'^data/dash_num_sectors/$', dash_view.dash_num_sectors),
     url(r'^data/dash_model_eq/$', dash_view.dash_model_eq),

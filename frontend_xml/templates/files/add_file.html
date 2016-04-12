@@ -1,55 +1,74 @@
-<form ng-upload="complete(content)" class="form-horizontal col-sm-6" role="form" action="/data/save_file/" upload-options-enable-rails-csrf>
-    <div class="form-group">
-        <label for="description" class="col-sm-3 control-label">Description</label>
-        <div class="col-sm-9">
-            <input type="text" class="form-control" id="description" placeholder="Description" name="description">
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="vendor" class="col-sm-3 control-label">Vendor</label>
-        <div class="col-sm-9">
-            <select
-                    class="form-control"
-                    id="vendor"
-                    ng-change="onChangeVendor(CurrentVendor)"
-                    ng-model="CurrentVendor"
-                    ng-options="v for v in vendors track by v"
-                    name="vendor">
-            </select>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="network" class="col-sm-3 text-left control-label left-label">Network</label>
-        <div class="col-sm-9">
-            <select
-                    class="form-control"
-                    id="network"
-                    ng-change="onChangeNetwork()"
-                    ng-model="CurrentNetwork"
-                    ng-options="net for net in Network track by net"
-                    name="network">
-            </select>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="type_file" class="col-sm-3 control-label">Type File</label>
-        <div class="col-sm-9">
-            <select class="form-control" id="type_file" ng-model="CurrentTypeFile" ng-options="type for type in TypeFile track by type" name="file_type"></select>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="file" class="col-sm-3 control-label">File</label>
-        <div class="col-sm-9">
-            <input type="file" id="file" name="uploaded_file" multiple>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-9">
-            <button type="submit" ng-disabled="$isLoading" class="btn btn-success">Upload</button>
-            <button class="btn btn-default" type="reset">Cancel</button>
-        </div>
-
-    </div>
-
-</form>
+<div layout="column">
+    <md-card>
+        <md-card-content>
+                <md-input-container>
+                    <label>Description</label>
+                    <input type="text" name="description" ng-model="description">
+                </md-input-container>
+                <md-input-container>
+                    <label>Vendor</label>
+                    <md-select ng-model="CurrentVendor" ng-change="onChangeVendor(CurrentVendor)" name="vendor">
+                      <md-option ng-repeat="v in vendors" value="{{ v }}">
+                        {{ v }}
+                      </md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container>
+                    <label>Network</label>
+                    <md-select ng-model="CurrentNetwork" ng-change="onChangeNetwork()" name="network">
+                      <md-option ng-repeat="n in Network" value="{{ n }}">
+                        {{ n }}
+                      </md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container>
+                    <label>File Type</label>
+                    <md-select ng-model="CurrentTypeFile" ng-change="onChangeNetwork()" name="file_type">
+                      <md-option ng-repeat="t in TypeFile" value="{{ t }}">
+                        {{ t }}
+                      </md-option>
+                    </md-select>
+                </md-input-container>
+                <input type="file" nv-file-select="" uploader="uploader" />
+                <md-input-container>
+                    <md-button class="md-raised md-primary" ng-disabled="$isLoading" ng-click="uploader.uploadAll()" >Upload</md-button>
+                    <md-button class="md-warn" type="reset">Cancel</md-button>
+                </md-input-container>
+                <md-progress-linear md-mode="determinate" value="{{ uploader.progress }}"></md-progress-linear>
+        </md-card-content>
+    </md-card>
+    <md-card>
+        <md-card-content>
+            <div flex>
+                <md-button class="md-raised md-primary" ng-click='onUploadAll()'>Process all</md-button>
+                <md-button class="md-warn" ng-click='onDeleteAll()'>Delete all</md-button>
+            </div>
+            <div flex>
+                <table class="table">
+                    <thead>
+                        <th>Filename</th>
+                        <th>Description</th>
+                        <th>Network</th>
+                        <th>File Type</th>
+                        <th>Vendor</th>
+                        <th>Date</th>
+                        <th></th>
+                        <th></th>
+                    </thead>
+                    <thead>
+                        <tr ng-repeat="f in uploaded_files">
+                            <td>{{ f.filename}}</td>
+                            <td>{{ f.description}}</td>
+                            <td>{{ f.network}}</td>
+                            <td>{{ f.file_type}}</td>
+                            <td>{{ f.vendor}}</td>
+                            <td>{{ f.date}}</td>
+                            <th><md-button class="md-primary">Process</md-button></th>
+                            <th><md-button class="md-warn">Delete</md-button></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </md-card-content>
+    </md-card>
+</div>

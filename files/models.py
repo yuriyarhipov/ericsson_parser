@@ -7,11 +7,10 @@ from query.models import SiteQuery
 from math import radians
 
 
-
 class UploadedFiles(models.Model):
     filename = models.TextField()
     date = models.DateTimeField(auto_now=True)
-    file_type = models.CharField(max_length=50, blank=True)
+    file_type = models.CharField(max_length=100)
     description = models.TextField()
     vendor = models.TextField()
     network = models.TextField()
