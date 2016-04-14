@@ -105,7 +105,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
             available_percent = percent_per_file / 2
             tables = set()
             for f in work_files:
-                wx = WcdmaXML(f, project, task, i, available_percent)
+                wx = WcdmaXML('localhost', 'xml2', 'postgres', '1297536', f, project, file_id, i, available_percent)
                 table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
                 table_count = len(wx.data)
                 table_index = 0.0
@@ -113,9 +113,10 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                     tables.add(table_name)
                     table_index += 1
                     percent = int(table_index / table_count * 100)
-                    task.update_state(state="PROGRESS", meta={"current": i + available_percent + int(float(available_percent) * float(percent) / 100)})
+                    wx.set_percent(i + available_percent + int(float(available_percent) * float(percent) / 100))
                     table.write_table(table_name, data)
                 i += percent_per_file
+                UploadedFiles.objetcs.filter(id=file_id).delete()
                 Files.objects.filter(filename=basename(f), project=project).delete()
                 Files.objects.create(
                     filename=basename(f),

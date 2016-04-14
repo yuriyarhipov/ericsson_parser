@@ -1,24 +1,32 @@
 var filesControllers = angular.module('filesControllers', []);
 
-filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'uploadFileService', '$cookies', '$location',
-    function ($scope, $http, $timeout, uploadFileService, $cookies, $location) {
+filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'uploadFileService', '$cookies', '$location', 'FileUploader', '$timeout',
+    function ($scope, $http, $timeout, uploadFileService, $cookies, $location, FileUploader, $timeout) {
         if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
+        $scope.show_add_file = false;
         $http.get('/data/files/').success(function(data) {
             $scope.files = data.files;
         });
 
+        var getUploadedFiles = function(){
+            $http.get('/data/uploaded_files/').success(function(data){
+                $scope.uploaded_files = data;
+                $timeout(getUploadedFiles, 1000);
+            });
+        }
+
+        $timeout(getUploadedFiles, 0);
+
         $scope.onDeleteFile = function(filename){
             $http.get('/data/delete_file/' + filename + '/');
         };
-  }]);
 
-filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$cookies', 'FileUploader',
-    function ($scope, $http, $location, $cookies, FileUploader) {
-        if ($cookies.get('is_auth') != 'true'){
-            $location.path('/login')
-        }
+
+        $scope.onAddFile = function(){
+            $scope.show_add_file = !$scope.show_add_file;
+        };
 
         var uploader = $scope.uploader = new FileUploader({
             url: '/data/save_file/',
@@ -141,6 +149,16 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
                 $scope.uploaded_files = [];
             });
         };
+
+  }]);
+
+filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$cookies', 'FileUploader',
+    function ($scope, $http, $location, $cookies, FileUploader) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
+
+
   }]);
 
 filesControllers.controller('licensesCtrl', ['$scope', '$http','$cookies', '$location',

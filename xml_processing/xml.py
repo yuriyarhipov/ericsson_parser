@@ -164,13 +164,22 @@ class WcdmaXML:
     data = dict()
     xml_mask = re.compile('\{.*\}')
 
-    def __init__(self, filename, project, task=None, current_percent=None, available_percent=None):
+    def __init__(self, host, db, login, password, filename, project, file_id=None, current_percent=None, available_percent=None):
         self.filename = filename
-        self.task = task
         self.available_percent = available_percent
         self.current_percent = current_percent
         self.project_id = project.id
+        self.file_id = file_id
+        self.conn = psycopg2.connect(
+            'host = %s dbname = %s user = %s password = %s' % (host, db, login, password)
+        )
         self.parse_file()
+
+    def set_percent(self, value):
+        cursor = self.conn.cursor()
+        cursor.execute('UPDATE files_uploadedfiles SET status=%s WHERE id=%s;', (value, self.file_id))
+        cursor.close()
+        self.conn.commit()
 
     def get_mo(self, node):
         result = []
@@ -302,9 +311,8 @@ class WcdmaXML:
             percent = int(i / count_countainers * 100)
             if current_percent < percent:
                 current_percent = percent
-                self.task.update_state(state="PROGRESS", meta={"current": self.current_percent + int(float(self.available_percent) * float(current_percent) / 100)})
+                self.set_percent(self.current_percent + int(float(self.available_percent) * float(current_percent) / 100))
             self.parse_node(elem)
-
 
 class Tables:
 

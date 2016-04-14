@@ -1,53 +1,114 @@
-<div class="row">
-    <a href="#/add_file" class="btn btn-success">Add File</a>
-    <a href="#/superfile" class="btn btn-success">Create SuperFile</a>
-</div>
-
-<div ng-show="uploaded_files" class="row">
-    <h4>Uploading...</h4>
-    <table class="table table-bordered table-stripped">
-        <thead>
-            <td>Date</td>
-            <td>File name</td>
-            <td>Type of file</td>
-            <td>Status</td>
-        </thead>
-        <tbody>
-            <tr ng-repeat="f in uploaded_files">
-                <td>{{ f.date }}</td>
-                <td>{{ f.filename }}</td>
-                <td>{{ f.file_type }}</td>
-                <td>{{ f.status }}%</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div class="row">
-    <table class="table table-bordered table-stripped">
-        <thead>
-            <td>Date</td>
-            <td>File name</td>
-            <td>Type of file</td>
-            <td>Network</td>
-            <td>Vendor</td>
-            <td>Description</td>
-            <td>Status</td>
-            <td>Action</td>
-        </thead>
-        <tbody>
-            <tr ng-repeat="f in files">
-                <td>{{ f.date }}</td>
-                <td>{{ f.filename }}</td>
-                <td>{{ f.file_type }}</td>
-                <td>{{ f.network }}</td>
-                <td>{{ f.vendor }}</td>
-                <td>{{ f.description }}</td>
-                <td>{{ f.status }}</td>
-                <td><a href="" ng-click="onDeleteFile(f.id)">delete</a></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-
+<md-card>
+    <md-card-title>
+          <md-card-title-text>
+              <span class="md-headline">FilesHub</span>
+          </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+        <div layout="column">
+            <div flex>
+                <md-button class="md-raised" ng-click="onAddFile()">Add Files</md-button>
+            </div>
+            <div ng-show="show_add_file" flex>
+                <div layout="row">
+                    <div flex="30">
+                        <form name="addFileForm">
+                            <div layout="column">
+                                <md-input-container class="md-block">
+                                    <label>Description</label>
+                                    <input type="text" name="description" ng-model="description">
+                                </md-input-container>
+                                <md-input-container class="md-block">
+                                    <label>Vendor</label>
+                                    <md-select ng-model="CurrentVendor" ng-change="onChangeVendor(CurrentVendor)" name="vendor">
+                                      <md-option ng-repeat="v in vendors" value="{{ v }}">
+                                        {{ v }}
+                                      </md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label>Network</label>
+                                    <md-select ng-model="CurrentNetwork" ng-change="onChangeNetwork()" name="network">
+                                      <md-option ng-repeat="n in Network" value="{{ n }}">
+                                        {{ n }}
+                                      </md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label>File Type</label>
+                                    <md-select ng-model="CurrentTypeFile" ng-change="onChangeNetwork()" name="file_type">
+                                      <md-option ng-repeat="t in TypeFile" value="{{ t }}">
+                                        {{ t }}
+                                      </md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <input type="file" nv-file-select="" uploader="uploader" />
+                                <md-input-container>
+                                    <md-button class="md-raised md-primary" ng-disabled="$isLoading" ng-click="uploader.uploadAll()" >Upload</md-button>
+                                    <md-button class="md-warn" type="reset">Cancel</md-button>
+                                </md-input-container>
+                                <md-input-container>
+                                    <md-progress-linear md-mode="determinate" value="{{ uploader.progress }}"></md-progress-linear>
+                                </md-input-container>
+                            </div>
+                        </form>
+                    </div>
+                    <div flex="70">
+                        <div flex>
+                            <md-button class="md-raised md-primary" ng-click='onUploadAll()'>Process all</md-button>
+                            <md-button class="md-warn" ng-click='onDeleteAll()'>Delete all</md-button>
+                        </div>
+                        <div flex>
+                            <table class="table">
+                                <thead>
+                                    <th>Filename</th>
+                                    <th>Description</th>
+                                    <th>File Type</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </thead>
+                                <thead>
+                                    <tr ng-repeat="f in uploaded_files">
+                                        <td>{{ f.filename}}</td>
+                                        <td>{{ f.description}}</td>
+                                        <td>{{ f.file_type}}</td>
+                                        <th><md-button class="md-raised md-primary" ng-click="onUpload(f.id)">Process</md-button></th>
+                                        <th><md-button class="md-raised md-warn" ng-click="onDelete(f.id)">Delete</md-button></th>
+                                        <th><md-progress-circular md-mode="determinate" value="{{ f.status }}"></md-progress-circular></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div flex>
+            <table class="table table-bordered table-stripped">
+                <thead>
+                    <td>Date</td>
+                    <td>File name</td>
+                    <td>Type of file</td>
+                    <td>Network</td>
+                    <td>Vendor</td>
+                    <td>Description</td>
+                    <td>Status</td>
+                    <td>Action</td>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="f in files">
+                        <td>{{ f.date }}</td>
+                        <td>{{ f.filename }}</td>
+                        <td>{{ f.file_type }}</td>
+                        <td>{{ f.network }}</td>
+                        <td>{{ f.vendor }}</td>
+                        <td>{{ f.description }}</td>
+                        <td>{{ f.status }}</td>
+                        <td><a href="" ng-click="onDeleteFile(f.id)">delete</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </md-card-content>
+</md-card>

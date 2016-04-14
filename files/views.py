@@ -77,7 +77,7 @@ def uploaded_files(request):
             description=f.description,
             vendor=f.vendor,
             network=f.network,
-            status='60',
+            status=f.status,
             date=f.date.strftime('%d.%m.%Y'),
         ))
     return HttpResponse(json.dumps(data), content_type='application/json')
