@@ -114,9 +114,12 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                     table_index += 1
                     percent = int(table_index / table_count * 100)
                     wx.set_percent(i + available_percent + int(float(available_percent) * float(percent) / 100))
-                    table.write_table(table_name, data)
+                    try:
+                        table.write_table(table_name, data)
+                    except:
+                        pass
                 i += percent_per_file
-                UploadedFiles.objetcs.filter(id=file_id).delete()
+                UploadedFiles.objects.filter(id=file_id).delete()
                 Files.objects.filter(filename=basename(f), project=project).delete()
                 Files.objects.create(
                     filename=basename(f),
