@@ -129,9 +129,6 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                     description=description,
                     vendor=vendor,
                     network=network)
-                uf = UploadedFiles.objects.get(id=file_id)
-                uf.status = percent_per_file
-                uf.save()
                 wx.set_percent(percent_per_file)
             diff = Diff(1, 'localhost', 'xml2', 'postgres', '1297536')
             i = 0.0
