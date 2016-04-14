@@ -129,14 +129,14 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                 uf = UploadedFiles.objects.get(id=file_id)
                 uf.status = percent_per_file
                 uf.save()
-                task.update_state(state="PROGRESS", meta={"current": percent_per_file})
+                wx.set_percent(percent_per_file)
             diff = Diff(1, 'localhost', 'xml2', 'postgres', '1297536')
             i = 0.0
             l = float(len(tables))
             for table in tables:
                 i += 1
                 percent = int(i / l * 10)
-                task.update_state(state="PROGRESS", meta={"current": 90 + percent})
+                wx.set_percent(90 + percent)
                 diff.diff(table)
 
             task.update_state(state="PROGRESS", meta={"current": 100})
