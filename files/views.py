@@ -77,6 +77,29 @@ def uploaded_files(request):
             description=f.description,
             vendor=f.vendor,
             network=f.network,
+            status='60',
+            date=f.date.strftime('%d.%m.%Y'),
+        ))
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+def delete_uploaded_all(request):
+    project = request.project
+    UploadedFiles.objects.filter(project=project).delete()
+    return HttpResponse(json.dumps([]), content_type='application/json')
+
+def delete_uploaded(request):
+    project = request.project
+    id = request.POST.get('id')
+    UploadedFiles.objects.filter(id=id).delete()
+    data = []
+    for f in UploadedFiles.objects.filter(project=project):
+        data.append(dict(
+            id=f.id,
+            filename=basename(f.filename),
+            file_type=f.file_type,
+            description=f.description,
+            vendor=f.vendor,
+            network=f.network,
             date=f.date.strftime('%d.%m.%Y'),
         ))
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -89,7 +112,6 @@ def save_files(request):
     file_type = request.POST.get('file_type')
     network = request.POST.get('network')
     filenames = handle_uploaded_file(request.FILES.getlist('file'))
-    print description, vendor, file_type, network, filenames
     for f in filenames:
         UploadedFiles.objects.create(
             filename=f,
@@ -113,13 +135,12 @@ def save_files(request):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
-def run_tasks(request):
+def run_tasks_all(request):
+    project = request.project
     data = []
-    file_ids = request.POST.getlist('files_id[]')
-    job = tasks.worker.delay(file_ids)
-    data = dict(id=job.id)
-    return HttpResponse(json.dumps(data), content_type='application/json')
-
+    for f in UploadedFiles.objects.filter(project=project):
+        job = tasks.worker.delay(f.filename, project, f.description, f.vendor, f.file_type, f.network, f.id)
+    return HttpResponse(json.dumps([]), content_type='application/json')
 
 
 def files(request):

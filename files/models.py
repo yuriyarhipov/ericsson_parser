@@ -15,6 +15,7 @@ class UploadedFiles(models.Model):
     vendor = models.TextField()
     network = models.TextField()
     project = models.ForeignKey(Project)
+    status = models.TextField()
 
 
 class Files(models.Model):

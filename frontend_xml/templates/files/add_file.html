@@ -54,6 +54,7 @@
                         <th>Date</th>
                         <th></th>
                         <th></th>
+                        <th></th>
                     </thead>
                     <thead>
                         <tr ng-repeat="f in uploaded_files">
@@ -63,8 +64,9 @@
                             <td>{{ f.file_type}}</td>
                             <td>{{ f.vendor}}</td>
                             <td>{{ f.date}}</td>
-                            <th><md-button class="md-primary">Process</md-button></th>
-                            <th><md-button class="md-warn">Delete</md-button></th>
+                            <th><md-button class="md-primary" ng-click="onUpload(f.id)">Process</md-button></th>
+                            <th><md-button class="md-warn" ng-click="onDelete(f.id)">Delete</md-button></th>
+                            <th><md-progress-circular md-mode="determinate" value="{{ f.status }}"></md-progress-circular></th>
                         </tr>
                     </thead>
                 </table>

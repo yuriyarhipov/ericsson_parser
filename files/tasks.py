@@ -19,8 +19,11 @@ def create_parameters_table(f, network, template_name):
         Template().create_template_table(template_name)
 
 
+
 @celery.task
-def worker(file_ids):
+def worker(filename, project, description, vendor, file_type, network, file_id):
+    if not project:
+        return
     from os.path import basename
     from archive import XmlPack
     from xml_processing.xml import Xml, Table, WcdmaXML, Diff
@@ -67,144 +70,141 @@ def worker(file_ids):
 
     task = current_task
     task.update_state(state="PROGRESS", meta={"current": 1})
+    work_files = []
 
-    for f in UploadedFiles.objects.filter(id__in=file_ids):
-        work_files = []
-        filename = f.filename
-        vendor = f.vendor
-        file_type = f.file_type
-        description = f.description
+    ext = splitext(filename)[1]
+    if ext in ['rar', 'zip', 'gz', '.rar', '.zip', '.gz']:
+        work_files.extend(XmlPack(filename).get_files())
+    else:
+        work_files.append(filename)
 
-        ext = splitext(f)[1]
-        if ext in ['rar', 'zip', 'gz', '.rar', '.zip', '.gz']:
-            work_files.extend(XmlPack(filename).get_files())
-        else:
-            work_files.append(filename)
+    if network in ['WCDMA', 'LTE']:
+        if file_type in distance_files:
+            Distance().write_file(
+                project,
+                description,
+                vendor,
+                work_file,
+                task)
 
-        if network in ['WCDMA', 'LTE']:
-            if file_type in distance_files:
-                Distance().write_file(
-                    project,
-                    description,
-                    vendor,
-                    work_file,
-                    task)
-
-            if (file_type in xml_types) and (network == 'LTE'):
-                Files.objects.filter(
-                    filename=basename(work_file),
-                    project=project).delete()
-                Xml().save_xml(
-                    work_file,
-                    project,
-                    description,
-                    vendor,
-                    file_type,
-                    network,
-                    task)
-            if (file_type in xml_types) and (network == 'WCDMA'):
-                percent_per_file = 90 / len(work_files)
-                i = 0
-                available_percent = percent_per_file / 2
-                tables = set()
-                for f in work_files:
-                    wx = WcdmaXML(f, project, task, i, available_percent)
-                    table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
-                    table_count = len(wx.data)
-                    table_index = 0.0
-                    for table_name, data in wx.data.iteritems():
-                        tables.add(table_name)
-                        table_index += 1
-                        percent = int(table_index / table_count * 100)
-                        task.update_state(state="PROGRESS", meta={"current": i + available_percent + int(float(available_percent) * float(percent) / 100)})
-                        table.write_table(table_name, data)
-                    i += percent_per_file
-                    Files.objects.filter(filename=basename(f), project=project).delete()
-                    Files.objects.create(
-                        filename=basename(f),
-                        file_type=file_type,
-                        project=project,
-                        tables=','.join(list(wx.data.keys())),
-                        description=description,
-                        vendor=vendor,
-                        network=network)
-                    task.update_state(state="PROGRESS", meta={"current": percent_per_file})
-                diff = Diff(1, 'localhost', 'xml2', 'postgres', '1297536')
-                i = 0.0
-                l = float(len(tables))
-                for table in tables:
-                    i += 1
-                    percent = int(i / l * 10)
-                    task.update_state(state="PROGRESS", meta={"current": 90 + percent})
-                    diff.diff(table)
-
-                task.update_state(state="PROGRESS", meta={"current": 100})
-
-        if network == 'GSM':
-            if file_type in cna_types:
-                CNA().save_cna(
-                    work_file,
-                    project,
-                    description,
-                    vendor,
-                    file_type,
-                    network,
-                    task)
-
-        if file_type in measurements_types:
-            Measurements().save_file(
+        if (file_type in xml_types) and (network == 'LTE'):
+            Files.objects.filter(
+            filename=basename(work_file),
+            project=project).delete()
+            Xml().save_xml(
                 work_file,
                 project,
                 description,
                 vendor,
                 file_type,
                 network,
-                current_task)
+                task)
+        if (file_type in xml_types) and (network == 'WCDMA'):
+            percent_per_file = 90 / len(work_files)
+            i = 0
+            available_percent = percent_per_file / 2
+            tables = set()
+            for f in work_files:
+                wx = WcdmaXML(f, project, task, i, available_percent)
+                table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
+                table_count = len(wx.data)
+                table_index = 0.0
+                for table_name, data in wx.data.iteritems():
+                    tables.add(table_name)
+                    table_index += 1
+                    percent = int(table_index / table_count * 100)
+                    task.update_state(state="PROGRESS", meta={"current": i + available_percent + int(float(available_percent) * float(percent) / 100)})
+                    table.write_table(table_name, data)
+                i += percent_per_file
+                Files.objects.filter(filename=basename(f), project=project).delete()
+                Files.objects.create(
+                    filename=basename(f),
+                    file_type=file_type,
+                    project=project,
+                    tables=','.join(list(wx.data.keys())),
+                    description=description,
+                    vendor=vendor,
+                    network=network)
+                uf = UploadedFiles.objects.get(id=file_id)
+                uf.status = percent_per_file
+                uf.save()
+                task.update_state(state="PROGRESS", meta={"current": percent_per_file})
+            diff = Diff(1, 'localhost', 'xml2', 'postgres', '1297536')
+            i = 0.0
+            l = float(len(tables))
+            for table in tables:
+                i += 1
+                percent = int(i / l * 10)
+                task.update_state(state="PROGRESS", meta={"current": 90 + percent})
+                diff.diff(table)
 
-        if file_type in license_types:
-            lic = License(work_file)
-            lic.parse_data(
+            task.update_state(state="PROGRESS", meta={"current": 100})
+
+    if network == 'GSM':
+        if file_type in cna_types:
+            CNA().save_cna(
+                work_file,
                 project,
                 description,
                 vendor,
                 file_type,
                 network,
-                current_task)
+                task)
 
-        if file_type in hardware_types:
-            hw = HardWare(work_file)
-            hw.parse_data(
-                project,
-                description,
-                vendor,
-                file_type,
-                network,
-                current_task)
+    if file_type in measurements_types:
+        Measurements().save_file(
+            work_file,
+            project,
+            description,
+            vendor,
+            file_type,
+            network,
+            current_task)
 
-        if file_type == 'Drive Test':
-            dt = DriveTest()
-            dt.upload_file(work_file, project.id, current_task)
-            Files.objects.filter(filename=basename(work_file), project=project).delete()
-            Files.objects.create(
-                filename=basename(work_file),
-                file_type=file_type,
-                project=project,
-                tables='',
-                description=description,
-                vendor=vendor,
-                network=network)
+    if file_type in license_types:
+        lic = License(work_file)
+        lic.parse_data(
+            project,
+            description,
+            vendor,
+            file_type,
+            network,
+            current_task)
 
-        if file_type == 'RND':
-            Rnd(project.id, network).write_file(work_file, description)
-            Files.objects.filter(project=project, description=description).delete()
-            Files.objects.create(
-                filename=basename(work_file),
-                file_type=file_type,
-                project=project,
-                tables='',
-                description=description,
-                vendor=vendor,
-                network=network)
+    if file_type in hardware_types:
+        hw = HardWare(work_file)
+        hw.parse_data(
+            project,
+            description,
+            vendor,
+            file_type,
+            network,
+            current_task)
+
+    if file_type == 'Drive Test':
+        dt = DriveTest()
+        dt.upload_file(work_file, project.id, current_task)
+        Files.objects.filter(filename=basename(work_file), project=project).delete()
+        Files.objects.create(
+            filename=basename(work_file),
+            file_type=file_type,
+            project=project,
+            tables='',
+            description=description,
+            vendor=vendor,
+            network=network)
+
+    if file_type == 'RND':
+        Rnd(project.id, network).write_file(work_file, description)
+        Files.objects.filter(project=project, description=description).delete()
+        Files.objects.create(
+            filename=basename(work_file),
+            file_type=file_type,
+            project=project,
+            tables='',
+            description=description,
+            vendor=vendor,
+            network=network)
 
     task.update_state(state='PROGRESS', meta={"current": 100, })
     revoke(worker.request.id, terminate=True)

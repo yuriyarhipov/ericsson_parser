@@ -119,8 +119,26 @@ filesControllers.controller('AddFileCtrl', ['$scope', '$http', '$location','$coo
             for (id in $scope.uploaded_files){
                 files.push($scope.uploaded_files[id].id);
             }
-            $http.post('/data/run_tasks/', $.param({'files_id': files})).success(function(data){
-                $location.path('/status/' + data.id + '/');
+            $http.post('/data/run_tasks_all/').success();
+        };
+
+        $scope.onUpload = function(id){
+            console.log(id);
+        };
+
+        $scope.onDelete = function(id){
+            $http.post('/data/delete_uploaded/', $.param({'id': id})).success(function(data){
+                $scope.uploaded_files = data;
+            });
+        };
+
+        $scope.onDeleteAll = function(){
+            var files = [];
+            for (id in $scope.uploaded_files){
+                files.push($scope.uploaded_files[id].id);
+            }
+            $http.post('/data/delete_uploaded_all/').success(function(){
+                $scope.uploaded_files = [];
             });
         };
   }]);
