@@ -19,7 +19,6 @@ def create_parameters_table(f, network, template_name):
         Template().create_template_table(template_name)
 
 
-
 @celery.task
 def worker(filename, project, description, vendor, file_type, network, file_id):
     if not project:
