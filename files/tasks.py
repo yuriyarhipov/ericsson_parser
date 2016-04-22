@@ -7,8 +7,7 @@ from os.path import basename, splitext
 from django.db import connection
 
 
-def set_percent(file_id, percent):
-    print file_id, percent
+def set_percent(file_id, percent):    
     cursor = connection.cursor()
     cursor.execute('UPDATE files_uploadedfiles SET status=%s WHERE id=%s;', (percent, file_id))
     cursor.close()
