@@ -93,10 +93,12 @@ def explore(request, filename):
         if tree_file.network == 'GSM':
             if tree_file.file_type == 'GSM BSS CNA  OSS FILE':
                 tables = [{'table': cna_tables.table_name, 'filename': filename} for cna_tables in CNATemplate.objects.all()]
-
-
         else:
             tables = [{'table': table, 'filename': filename} for table in request.wcdma.tables.split(',')]
+    elif (filename == 'nokia'):
+        f = Files.objects.filter(project=project, vendor='Nokia').first()
+        for t in f.tables.split(','):
+            tables.append({'table': t, 'filename': f.filename})
 
     tables.sort()
     return HttpResponse(json.dumps(tables), content_type='application/json')

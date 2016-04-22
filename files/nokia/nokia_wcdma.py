@@ -49,6 +49,7 @@ class NokiaWCDMA():
             table_name = elem.get('class')
             tables.add(table_name)
             row = self.get_data(elem)
+            row['project_id'] = self.project.id            
             if table_name in self.data:
                 self.data[table_name].append(row)
             else:
