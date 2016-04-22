@@ -1,105 +1,159 @@
 from lxml import etree
-import redis
-from pymongo import MongoClient
 from os.path import basename
-from django.conf import settings
-import psycopg2
 import datetime
-from files.data_file import DataFile
+import re
 
 
-class EricssonWcdma(DataFile):
-    data = []
-    filename = ''
+class WcdmaXML:
+    data = dict()
+    xml_mask = re.compile('\{.*\}')
 
-    def get_me_context_path(self, node):
-        path = []
-        parent = node.getparent()
-        if etree.QName(parent).localname == 'SubNetwork':
-            path = self.get_me_context_path(parent)
-            path.append({'SubNetwork': parent.get('id')})
-        return path
-
-    def parse_data_container(self, node, path, parent_data=dict()):
-        if parent_data:
-            data = parent_data
-            data['path'] = path
-        else:
-            data = dict(path=path)
-        data_type = node.find('{genericNrm.xsd}attributes/{genericNrm.xsd}vsDataType').text
-        data_format_version = node.find('{genericNrm.xsd}attributes/{genericNrm.xsd}vsDataFormatVersion').text
-        data['data_type'] = data_type.replace('vsData', '')
-        data['data_format_version'] = data_format_version
-
-        for attr in node.find('{genericNrm.xsd}attributes'):
-            tag = etree.QName(attr).localname
-            if (tag == data_type):
-                for elem in attr:
-                    data[etree.QName(elem).localname] = elem.text
-            elif (tag != 'vsDataType') and (tag != 'vsDataFormatVersion'):
-                print('smth else')
-
-        self.data.append(data)
-
-    def parse_managed_element(self, node, path, parent_data=dict()):
-        node_tag = etree.QName(node).localname
-        path.append({node_tag: node.get('id')})
-        m_el_data = parent_data
-        for p in path:
-            tag = p.keys()[0]
-            val = p[tag]
-            m_el_data[tag] = val
-
-        if node_tag == 'UtranCell':
-            m_el_data['UtranCell'] = node.get('id')
-
-        for elem in node:
-            tag = etree.QName(elem).localname
-            if tag == 'attributes':
-                for attr in elem:
-                    if attr.text:
-                        m_el_data[etree.QName(attr).localname] = attr.text
-                    else:
-                        m_el_data[etree.QName(attr).localname] = ''
-            elif tag == 'VsDataContainer':
-                self.parse_data_container(elem, path[:], m_el_data.copy())
-            else:
-                self.parse_managed_element(elem, path[:], m_el_data.copy())
-
-    def parse_me_context(self, node):
-        path = self.get_me_context_path(node)
-        path.append(dict(MeContext=node.get('id')))
-        for child in node:
-            tag = etree.QName(child).localname
-            if tag == 'VsDataContainer':
-                self.parse_data_container(child, path[:])
-            elif tag == 'ManagedElement':
-                self.parse_managed_element(child, path[:])
-            elif tag == 'attributes':
-                pass  # TODO attributes????
-            else:
-                raise Exception('unvalid xml node')
-
-    def from_xml(self, filename, task_id):
+    def __init__(self, host, db, login, password, filename, project, file_id=None, current_percent=None, available_percent=None):
         self.filename = filename
-        me_contexts = etree.iterparse(
-            filename,
-            events=('end',),
-            tag='{genericNrm.xsd}MeContext')
-        count = 0
-        r = redis.StrictRedis(host=settings.REDIS, port=6379, db=0)
-        r.set(task_id, '30, estimating...')
-        for event, me_context in me_contexts:
-            count += 1
+        self.available_percent = available_percent
+        self.current_percent = current_percent
+        self.project_id = project.id
+        self.file_id = file_id
+        self.conn = psycopg2.connect(
+            'host = %s dbname = %s user = %s password = %s' % (host, db, login, password)
+        )
+        self.parse_file()
 
-        me_contexts = etree.iterparse(
-            filename,
+    def set_percent(self, value):
+        cursor = self.conn.cursor()
+        cursor.execute('UPDATE files_uploadedfiles SET status=%s WHERE id=%s;', (value, self.file_id))
+        cursor.close()
+        self.conn.commit()
+
+    def get_mo(self, node):
+        result = []
+        parent = node.getparent()
+        if parent is not None:
+            result = self.get_mo(parent)
+        value = node.get('id')
+        name = None
+        if value is not None:
+            tag = self.xml_mask.sub('', node.tag)
+            if tag != 'VsDataContainer':
+                name = tag
+            if name and value:
+                result.append('%s=%s' % (name, value))
+        return result
+
+    def get_fields(self, node):
+        row = dict()
+        for child in node.iter():
+            if child.text:
+                field_name = self.xml_mask.sub('', child.tag)
+                field_value = child.text.strip()
+                if field_value:
+                    row[field_name] = field_value
+        return row
+
+    def parse_mo(self, mo):
+        result = dict()
+        pattern = '(\w*)=(\w*-*\w*)'
+        k = re.compile(pattern)
+        for k, v in re.findall(k, mo):
+            result[k] = v
+        return result
+
+    def parse_node(self, node):
+        row = dict()
+        table_name = node.find('.//{genericNrm.xsd}vsDataType').text[6:]
+        id = node.get('id')
+        row[table_name] = id
+        attrs = node.find('..{utranNrm.xsd}attributes[1]')
+        if attrs is None:
+            attrs = node.find('..{genericNrm}attributes[1]')
+        if (attrs is not None):
+            row.update(self.get_fields(attrs))
+
+        row.update(self.get_fields(node))
+        mo = self.get_mo(node)
+        row['MO'] = ','.join(mo)
+        row['project_id'] = self.project_id
+        row['filename'] = basename(self.filename)
+        row['status'] = 'draft'
+        mo = self.parse_mo(row['MO'])
+
+        additional_fields = [
+            'UtranCell', 'IubLink', 'EUtranCellFDD', 'SectorEquipmentFunction',
+            'AntennaUnitGroup', 'GsmRelation', 'IubLink', 'Iub', 'IurLink',
+            'UeRabType', 'UeRc', 'Carrier', 'TermPointToMme']
+
+        for at in additional_fields:
+            if (at in mo) and (at not in row):
+                row[at] = mo.get(at, '')
+
+        if 'Sector' in mo:
+            if 'Element' not in row:
+                row['Element'] = mo.get('MeContext', '')
+            row['Sector'] = mo.get('Sector')
+
+        if 'RbsLocalCell' in mo:
+            if 'Element' not in row:
+                row['Element'] = mo.get('MeContext', '')
+            row['SectorCarrier'] = mo.get('RbsLocalCell')
+
+        site = mo.get('MeContext')
+        sub = mo.get('SubNetwork')
+
+        if site and sub:
+            if site == sub:
+                row['Element1'] = site
+            else:
+                row['Element2'] = site
+
+        if table_name == 'UtranRelation':
+            if 'adjacentCell' in row:
+                ac = self.parse_mo(row.get('adjacentCell'))
+                row['Neighbor'] = ac.get('UtranCell')
+        elif table_name == 'IubLink':
+            if 'iubLinkNodeBFunction' in row:
+                ib = self.parse_mo(row.get('iubLinkNodeBFunction'))
+                row['Element2'] = ib.get('MeContext')
+
+        elif table_name == 'SectorEquipmentFunction':
+            rb = self.parse_mo(row.get('reservedBy'))
+            rf_branch_ref = self.parse_mo(row.get('rfBranchRef'))
+            row['EUtranCellFDD'] = rb.get('EUtranCellFDD')
+            row['AntennaUnitGroup'] = rf_branch_ref.get('AntennaUnitGroup')
+
+        elif table_name == 'EUtranCellRelation':
+            ac = self.parse_mo(row.get('adjacentCell'))
+            row['Target'] = ac.get('EUtranCellFDD')
+            if 'EUtranCellFDD' not in row:
+                row['EUtranCellFDD'] = row['Target']
+
+        elif table_name == 'CoverageRelation':
+            tc = self.parse_mo(row.get('utranCellRef'))
+            row['Target_coverage'] = tc.get('UtranCell', '')
+
+        if table_name in self.data:
+            self.data[table_name].append(row)
+        else:
+            self.data[table_name] = [row, ]
+
+    def parse_file(self):
+        count_countainers = 0.0
+        context = etree.iterparse(
+            self.filename,
             events=('end',),
-            tag='{genericNrm.xsd}MeContext')
-        i = 0
-        for event, me_context in me_contexts:
+            tag='{genericNrm.xsd}VsDataContainer')
+        for event, elem in context:
+            count_countainers += 1
+
+        context = etree.iterparse(
+            self.filename,
+            events=('end',),
+            tag='{genericNrm.xsd}VsDataContainer')
+        i = 0.0
+        current_percent = 0
+        for event, elem in context:
             i += 1
-            r.set(
-                task_id,
-                '%s,processing' % int(float(i) / float(count) * 100))
-            self.parse_me_context(me_context)
+            percent = int(i / count_countainers * 100)
+            if current_percent < percent:
+                current_percent = percent
+                self.set_percent(self.current_percent + int(float(self.available_percent) * float(current_percent) / 100))
+            self.parse_node(elem)

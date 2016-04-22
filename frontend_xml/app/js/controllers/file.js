@@ -13,7 +13,10 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
         var getUploadedFiles = function(){
             $http.get('/data/uploaded_files/').success(function(data){
                 $scope.uploaded_files = data;
-                $timeout(getUploadedFiles, 1000);
+                $http.get('/data/files/').success(function(data) {
+                    $scope.files = data.files;
+                    $timeout(getUploadedFiles, 3000);
+                });
             });
         }
 
@@ -46,7 +49,7 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
         $http.get('/data/uploaded_files/').success(function(data){
             $scope.uploaded_files = data;
         });
-        $scope.vendors = ['Ericsson', 'Nokia', 'Universal'];
+        $scope.vendors = ['Ericsson', 'Nokia', 'Huawei', 'Universal'];
         $scope.Network = [ 'GSM', 'WCDMA', 'LTE'];
 
         $scope.TypeFile = [
@@ -86,6 +89,11 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
             if (($scope.CurrentNetwork == 'WCDMA') && ($scope.CurrentVendor == 'Nokia')){
                 $scope.TypeFile = [
                     'Configuration Management XML File',
+                ];
+            }
+            if (($scope.CurrentNetwork == 'WCDMA') && ($scope.CurrentVendor == 'Huawei')){
+                $scope.TypeFile = [
+                    'MMLCFG',
                 ];
             }
             if (($scope.CurrentNetwork == 'GSM') && ($scope.CurrentVendor == 'Ericsson')){
