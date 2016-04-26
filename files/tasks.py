@@ -36,6 +36,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     from xml_processing.xml import Xml, Table, Diff
     from files.nokia.nokia_wcdma import NokiaWCDMA
     from files.ericsson.wcdma import WcdmaXML
+    from files.huawei.huawei_wcdma import HuaweiWCDMA
     from files.cna import CNA
     from files.measurements import Measurements
     from files.lic import License
@@ -97,6 +98,8 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
             data_file = WcdmaXML(f, project, file_id, i, available_percent).data
         elif (vendor == 'Nokia'):
             data_file = NokiaWCDMA(f, project, file_id, i, available_percent, set_percent).data
+        elif (vendor == 'Huawei'):
+            data_file = HuaweiWCDMA(f, project, file_id, i, available_percent, set_percent).data
 
         table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
         table_count = len(data_file)
@@ -110,9 +113,6 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                 table.write_table(table_name, data)
             except:
                 pass
-
-        #elif (vendor == 'Huawei'):
-    #        data_file = HuaweiWCDMA()
 
         if network in ['WCDMA', 'LTE']:
             if file_type in distance_files:

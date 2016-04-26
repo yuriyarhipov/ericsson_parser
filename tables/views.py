@@ -104,54 +104,24 @@ def explore(request, filename):
     return HttpResponse(json.dumps(tables), content_type='application/json')
 
 
-def by_technology(request, network):
-    data = []
-    file_filter = request.GET.get('filter')
+def by_technology(request, vendor, network):
+    table_filter = request.GET.get('filter')
     project = request.project
-    if network == 'GSM':
-        filename = request.gsm.filename
-        for cna_table in CNATemplate.objects.all().order_by('table_name'):
-            data.append({'label': cna_table.table_name, 'table': cna_table.table_name, 'type': 'CNA Table', 'filename': filename})
-
-    elif network == 'WCDMA':
-        filename = request.wcdma.filename
-        tables = request.wcdma.tables.split(',')
-        tables.sort()
-        data = [
-            {'label': 'Universal3g3gNeighbors', 'table': 'Universal3g3gNeighbors', 'type': 'Universal table', 'filename': filename},
-            {'label': '3G3GNeighbors', 'table': 'new3g', 'type': 'Additional table', 'filename': filename},
-            {'label': 'Topology', 'table': 'topology', 'type': 'Additional table', 'filename': filename},
-            {'label': 'RND', 'table': 'rnd_wcdma', 'type': 'Additional table', 'filename': filename},
-            {'label': 'BrightcommsRNDDate', 'table': 'BrightcommsRNDDate', 'type': 'Additional table', 'filename': filename},
-            {'label': '3GNeighbors', 'table': 'threegneighbors', 'type': 'Additional table', 'filename': filename},
-            {'label': '3GIRAT', 'table': '3girat', 'type': 'Additional table', 'filename': filename},
-            {'label': '3GMAP_INTRAFREQ', 'table': 'map_intrafreq', 'type': 'Additional table', 'filename': filename},
-            {'label': '3GMAP_INTERFREQ', 'table': 'map_interfreq', 'type': 'Additional table', 'filename': filename},
-            {'label': '3GMAP_GSMIRAT', 'table': 'map_gsmirat', 'type': 'Additional table', 'filename': filename},
-            {'label': '3GNeighbors_CO-SC', 'table': 'neighbors_co-sc', 'type': 'Additional table', 'filename': filename},
-            {'label': '3GNeighbors_TWO_WAYS', 'table': 'neighbors_two_ways', 'type': 'Additional table', 'filename': filename},
-        ]
-        data.extend([{'label': table, 'table': table, 'type': 'XML table', 'filename': filename} for table in tables])
-
-    elif network == 'LTE':
-        filename = request.lte.filename
-        tables = request.lte.tables.split(',')
-        tables.sort()
-        data = [
-            {'label': 'Topology', 'table': 'topology_lte', 'type': 'Additional table', 'filename': filename},
-            {'label': 'RND', 'table': 'rnd_lte', 'type': 'Additional table', 'filename': filename},
-        ]
-        data.extend([{'label': table, 'table': table, 'type': 'XML table', 'filename': filename} for table in tables])
-
+    tables = set()
+    for f in Files.objects.filter(vendor=vendor, network=network, project=project):
+        for t in f.tables.split(','):
+            tables.add(t)
+    tables = list(tables)
     data_result = []
+    print tables
 
-    for f in data:
-        if file_filter and f.get('label'):
-            if file_filter.lower() in f.get('label').lower():
-                data_result.append(f)
+    for t in tables:
+        if table_filter:
+            if table_filter.lower() in t.lower():
+                data_result.append(t)
         else:
-            data_result.append(f)
-
+            data_result.append(t)
+    data_result.sort()
     return HttpResponse(
         json.dumps(data_result),
         content_type='application/json')

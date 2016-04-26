@@ -1,35 +1,56 @@
-<div class="row">
-    <div class="form-group col-sm-4">
-        <select ng-model="network" ng-change="onChangeNetwork()" class="form-control">
-            <option value="GSM" selected>GSM</option>
-            <option value="WCDMA">WCDMA</option>
-            <option value="LTE">LTE</option>
-        </select>
-    </div>
-    <div class="form-group col-sm-4">
-        <input type="text" class="form-control" placeholder="Filter" ng-change="onFilter()" ng-model="file_filter">
-    </div>
-    <div class="form-group col-sm-4">
-        <a class="btn btn-default" ng-href="#/excel/{{project_id}}/{{ filename }}/all">Download ALL</a>
-    </div>
-</div>
-<div class="row">
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <td>Table name</td>
-                <td>Type</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="row in data">
-                <td>
-                    <a href="#/table/{{ row.table }}">{{ row.label }}</a>
-                </td>
-                <td>
-                    {{ row.type }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+<md-card>
+    <md-card-title>
+          <md-card-title-text>
+              <span class="md-headline">Tables:</span>
+          </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+        <div layout="row">
+            <div flex>
+                <md-input-container>
+                    <label>Vendor</label>
+                    <md-select ng-model="vendor" ng-change="refreshData(vendor, network, filter)">
+                        <md-option ng-repeat="v in vendors" value="{{ v }}">
+                            {{ v }}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+            <div flex>
+                <md-input-container>
+                    <label>Network</label>
+                    <md-select ng-model="network" ng-change="refreshData(vendor, network, filter)">
+                        <md-option ng-repeat="n in networks" value="{{ n }}">
+                            {{ n }}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+            <div flex>
+                <md-input-container>
+                    <label>Filter</label>
+                    <input ng-model='filter' ng-change="refreshData(vendor, network, filter)">
+                </md-input-container>
+            </div>
+            <div flex>
+                <md-button>Download Excel</md-button>
+            </div>
+        </div>
+        <div layout="row">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <td>Table name</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="t in data">
+                        <td>
+                            <a href="#/table/{{ t }}">{{ t }}</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </md-card-content>
+</md-card>

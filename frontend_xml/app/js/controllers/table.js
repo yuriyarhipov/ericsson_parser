@@ -45,22 +45,20 @@ tableControllers.controller('byTechnologyCtrl', ['$scope', '$http', '$cookies', 
         if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
-        $scope.network = 'GSM';
-        $http.get('/data/by_technology/GSM/').success(function(data) {
-            $scope.data = data;
-        });
+        $scope.vendors = ['Ericsson', 'Nokia', 'Huawei'];
+        $scope.vendor = 'Ericsson';
 
-        $scope.onChangeNetwork = function(){
-            $http.get('/data/by_technology/' + $scope.network).success(function(data) {
+        $scope.networks = ['GSM', 'WCDMA', 'LTE'];
+        $scope.network = 'WCDMA';
+        $scope.filter = ''
+
+        $scope.refreshData = function(vendor, network, filter){
+            $http.get('/data/by_technology/' + vendor + '/' + network + '/?filter=' + filter).success(function(data) {
                 $scope.data = data;
             });
         };
 
-        $scope.onFilter = function(){
-            $http.get('/data/by_technology/' + $scope.network + '?filter=' + $scope.file_filter).success(function(data) {
-                $scope.data = data;
-            });
-        };
+        $scope.refreshData('Ericsson', 'WCDMA', '');
   }]);
 
 tableControllers.controller('cellDefCtrl', ['$scope', '$http', '$cookies', '$location',

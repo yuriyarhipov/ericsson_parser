@@ -156,6 +156,9 @@ class Table:
         self.create_table(tablename, columns)
         df.to_csv('/tmp/temp.csv', sep='\t', index=False, header=False)
         with open('/tmp/temp.csv') as f:
+            if tablename == 'SECTOREQM':
+                print columns
+                print df
             cursor.copy_from(f, tablename, columns=columns)
         self.conn.commit()
 
