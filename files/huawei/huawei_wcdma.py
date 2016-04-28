@@ -2,6 +2,41 @@ import re
 from lxml import etree
 
 
+class HuaweiConfig:
+    data = dict()
+
+    def __init__(self, filename, project, file_id=None, current_percent=None, available_percent=None, set_percent=None):
+        self.filename = filename
+        self.project = project
+        self.file_id = file_id
+        self.current_percent = current_percent
+        self.available_percent = available_percent
+        self.set_percent = set_percent
+        self.from_file()
+
+    def get_row(self, data):
+        result = dict(project_id=self.project.id)
+        for v in data.split(','):
+            key, value = v.split('=')
+            key = key.strip().replace(';', '')
+            value = value.strip().replace(';', '')
+            value = value.strip().replace('"', '')
+            result[key] = value
+        return result
+
+    def from_file(self):
+        with open(self.filename) as f:
+            for row in f:
+                if (row[:2] != '//') and (':' in row):
+                    system_info, data_row = row.split(':')
+                    table_name = system_info.split()[1]
+                    data_row = self.get_row(data_row)
+                    if table_name in self.data:
+                        self.data[table_name].append(data_row)
+                    else:
+                        self.data[table_name] = [data_row, ]
+
+
 class HuaweiWCDMA:
     xml_mask = re.compile('\{.*\}')
     data = dict()

@@ -94,6 +94,7 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
             if (($scope.CurrentNetwork == 'WCDMA') && ($scope.CurrentVendor == 'Huawei')){
                 $scope.TypeFile = [
                     'MMLCFG',
+                    'MML script file',
                 ];
             }
             if (($scope.CurrentNetwork == 'GSM') && ($scope.CurrentVendor == 'Ericsson')){

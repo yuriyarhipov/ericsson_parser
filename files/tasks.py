@@ -36,7 +36,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     from xml_processing.xml import Xml, Table, Diff
     from files.nokia.nokia_wcdma import NokiaWCDMA
     from files.ericsson.wcdma import WcdmaXML
-    from files.huawei.huawei_wcdma import HuaweiWCDMA
+    from files.huawei.huawei_wcdma import HuaweiWCDMA, HuaweiConfig
     from files.cna import CNA
     from files.measurements import Measurements
     from files.lic import License
@@ -99,7 +99,10 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
         elif (vendor == 'Nokia'):
             data_file = NokiaWCDMA(f, project, file_id, i, available_percent, set_percent).data
         elif (vendor == 'Huawei'):
-            data_file = HuaweiWCDMA(f, project, file_id, i, available_percent, set_percent).data
+            if file_type == 'MMLCFG':
+                data_file = HuaweiWCDMA(f, project, file_id, i, available_percent, set_percent).data
+            elif file_type == 'MML script file':
+                data_file = HuaweiConfig(f, project, file_id, i, available_percent, set_percent).data
 
         table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
         table_count = len(data_file)
@@ -109,6 +112,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
             table_index += 1
             percent = int(table_index / table_count * 100)
             set_percent(file_id, i + available_percent + int(float(available_percent) * float(percent) / 100))
+
             try:
                 table.write_table(table_name, data)
             except:
