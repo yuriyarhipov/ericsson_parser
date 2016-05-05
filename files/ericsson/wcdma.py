@@ -149,5 +149,5 @@ class WcdmaXML:
             percent = int(i / count_countainers * 100)
             if current_percent < percent:
                 current_percent = percent
-                self.set_percent(self.current_percent + int(float(self.available_percent) * float(current_percent) / 100))
+                self.set_percent(self.file_id, self.current_percent + int(float(self.available_percent) * float(current_percent) / 100))
             self.parse_node(elem)
