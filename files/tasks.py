@@ -95,7 +95,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
 
     for f in work_files:
         if (file_type in xml_types) and (network == 'WCDMA'):
-            data_file = WcdmaXML(f, project, file_id, i, available_percent).data
+            data_file = WcdmaXML(f, project, file_id, i, available_percent, set_percent).data
         elif (vendor == 'Nokia'):
             data_file = NokiaWCDMA(f, project, file_id, i, available_percent, set_percent).data
         elif (vendor == 'Huawei'):

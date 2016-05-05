@@ -8,22 +8,16 @@ class WcdmaXML:
     data = dict()
     xml_mask = re.compile('\{.*\}')
 
-    def __init__(self, host, db, login, password, filename, project, file_id=None, current_percent=None, available_percent=None):
+    def __init__(self, filename, project, file_id=None, current_percent=None, available_percent=None, set_percent=None):
         self.filename = filename
         self.available_percent = available_percent
         self.current_percent = current_percent
         self.project_id = project.id
         self.file_id = file_id
-        self.conn = psycopg2.connect(
-            'host = %s dbname = %s user = %s password = %s' % (host, db, login, password)
-        )
+        self.set_percent = set_percent
         self.parse_file()
 
-    def set_percent(self, value):
-        cursor = self.conn.cursor()
-        cursor.execute('UPDATE files_uploadedfiles SET status=%s WHERE id=%s;', (value, self.file_id))
-        cursor.close()
-        self.conn.commit()
+
 
     def get_mo(self, node):
         result = []
