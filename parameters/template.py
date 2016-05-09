@@ -65,16 +65,28 @@ class Template(object):
         elif 'element2' in columns:
             sql_key = 'Element2'
             topology_key = 'SITE'
+        print 'A'
+        print cells
+        if cells:
+            sql = 'TOPOLOGY_LTE INNER JOIN %s ON ((%s.%s = TOPOLOGY_LTE.%s) AND (%s.filename=TOPOLOGY_LTE.filename) AND (%s.filename IN (%s)) AND (TOPOLOGY_LTE.EUtrancell in (%s)))' % (
+                table_name,
+                table_name,
+                sql_key,
+                topology_key,
+                table_name,
+                table_name,
+                filename,
+                sql_cells)
+        else:
+            sql = 'TOPOLOGY_LTE INNER JOIN %s ON ((%s.%s = TOPOLOGY_LTE.%s) AND (%s.filename=TOPOLOGY_LTE.filename) AND (%s.filename IN (%s)))' % (
+                table_name,
+                table_name,
+                sql_key,
+                topology_key,
+                table_name,
+                table_name,
+                filename)
 
-        sql = 'TOPOLOGY_LTE INNER JOIN %s ON ((%s.%s = TOPOLOGY_LTE.%s) AND (%s.filename=TOPOLOGY_LTE.filename) AND (%s.filename IN (%s)) AND (TOPOLOGY_LTE.EUtrancell in (%s)))' % (
-            table_name,
-            table_name,
-            sql_key,
-            topology_key,
-            table_name,
-            table_name,
-            filename,
-            sql_cells)
         return sql
 
     def get_join_wcdma(self, table_name, filename, cells):
@@ -93,13 +105,21 @@ class Template(object):
             join_sql.append('(%s.Carrier = TOPOLOGY.Carrier)' % table_name)
         join_sql = ' AND '.join(join_sql)
 
-        sql = 'TOPOLOGY INNER JOIN %s ON (%s AND (TOPOLOGY.filename=%s.filename) AND (%s.filename IN (%s)) AND (Topology.UtranCell IN (%s)) )' % (
-            table_name,
-            join_sql,
-            table_name,
-            table_name,
-            filename,
-            sql_cells)
+        if cells:
+            sql = 'TOPOLOGY INNER JOIN %s ON (%s AND (TOPOLOGY.filename=%s.filename) AND (%s.filename IN (%s)) AND (Topology.UtranCell IN (%s)) )' % (
+                table_name,
+                join_sql,
+                table_name,
+                table_name,
+                filename,
+                sql_cells)
+        else:
+            sql = 'TOPOLOGY INNER JOIN %s ON (%s AND (TOPOLOGY.filename=%s.filename) AND (%s.filename IN (%s)))' % (
+                table_name,
+                join_sql,
+                table_name,
+                table_name,
+                filename)
         return sql
 
     def get_tables_cna(self, sql_tables, filename, cells):
@@ -316,7 +336,3 @@ class Template(object):
                 for row in cursor:
                     data.append(dict(name=row[0]))
         return data
-
-
-
-

@@ -206,5 +206,3 @@ def get_network_files(request, network):
     data = dict()
     data['files'] = [f.filename for f in Files.objects.filter(project=request.project, network=network)]
     return HttpResponse(json.dumps(data), content_type='application/json')
-
-

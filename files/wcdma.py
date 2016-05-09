@@ -67,15 +67,16 @@ class WCDMA:
         return params
 
     def get_status(self, column, value, params):
-        result = False
+        print column, value, params
+        result = True
         column = column.lower()
         if column in params:
             min_value, max_value = params[column]
             if min_value and max_value and value:
                 try:
-                    result = not ((float(min_value) < float(value)) and (float(max_value) > float(value)))
+                    result = ((float(min_value) <= float(value)) and (float(max_value) >= float(value)))
                 except:
-                    result = False
+                    result = True
         return result
 
 
@@ -99,7 +100,8 @@ class WCDMA:
         data = []
         columns = []
         cells = self.convert_form_cells(cells, filenames)
-        if template and cells:
+
+        if template:
             params = self.get_params_with_min_max(template)
             sql = Template().get_select(project, template, filenames, cells)
             self.cursor.execute(sql)
@@ -109,9 +111,16 @@ class WCDMA:
             columns = [self.get_right_column_name(col, template) for col in colnames]
             for r in self.cursor:
                 row = []
+                row_status = False
                 for i in range(0, len(r)):
-                    row.append([r[i], self.get_status(colnames[i], r[i], params), ])
-                data.append(row)
+                    row.append(r[i])
+                    print self.get_status(colnames[i], r[i], params)
+                    if not self.get_status(colnames[i], r[i], params):
+                        row_status = True
+
+                if row_status:
+                    data.append(row)
+
         return columns, data
 
     def create_superfile(self, filename, files, tables):
@@ -134,4 +143,3 @@ class WCDMA:
             )
             cursor.execute(sql)
         self.conn.commit()
-
