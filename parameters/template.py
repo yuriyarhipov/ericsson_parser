@@ -350,8 +350,8 @@ class Template(object):
             sql_columns.append('Element1')
         sql_columns = reversed(sql_columns)        
         if min_value and max_value:
-            try:            
-                cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND (''' + column + '''::float<%s) AND (''' + column + '''::float>%s)''', ( project.id, float(min_value), float(max_value)))
+            try:
+                cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND ((''' + column + '''::float<%s) OR (''' + column + '''::float>%s))''', ( project.id, float(min_value), float(max_value)))
             except:
                 cursor.close()
                 self.conn.rollback()
