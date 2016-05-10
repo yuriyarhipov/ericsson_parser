@@ -348,15 +348,30 @@ class Template(object):
             sql_columns.append('Element2')
         if 'element1' in columns:
             sql_columns.append('Element1')
-        sql_columns = reversed(sql_columns)
-        cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND (''' + column + '''::float<%s) AND (''' + column + '''::float>%s)''', ( project.id, float(min_value), float(max_value)))
-        columns = ['%s' % desc[0] for desc in cursor.description]
+        sql_columns = reversed(sql_columns)        
+        if min_value and max_value:
+            try:            
+                cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND (''' + column + '''::float<%s) AND (''' + column + '''::float>%s)''', ( project.id, float(min_value), float(max_value)))
+            except:
+                cursor.close()
+                self.conn.rollback()
+                cursor = self.conn.cursor()
+        else:
+            try:
+                cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s)''', ( project.id, ))
+            except:
+                cursor.close()
+                self.conn.rollback()
+                cursor = self.conn.cursor()
+        columns = []
         data = []
-        for row in cursor:
-            data_row = dict()
-            for col in columns:
-                data_row[col] = row[columns.index(col)]
-            data.append(data_row)
+        if cursor.rowcount > 0:
+            columns = ['%s' % desc[0] for desc in cursor.description]            
+            for row in cursor:
+                data_row = dict()
+                for col in columns:
+                    data_row[col] = row[columns.index(col)]
+                data.append(data_row)
         return columns, data
 
     def get_parameter(self, project, param_name, min_value, max_value):
@@ -372,8 +387,10 @@ class Template(object):
         tabs = {}
         for row in cursor:
             table_name = row[0]
-            columns, data = self.get_table(project, table_name, param_name, min_value, max_value)
-            tabs['%s (%s)' % (param_name, table_name)] = {'columns': columns, 'data': data}
+            print table_name
+            if table_name not in ['topology', 'utrancell']:
+                columns, data = self.get_table(project, table_name, param_name, min_value, max_value)
+                tabs['%s (%s)' % (param_name, table_name)] = {'columns': columns, 'data': data}
         return tabs
 
     def get_data(self, project, template):
