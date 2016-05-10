@@ -125,7 +125,7 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http', 'Flash', 
             $scope.columns = data.columns;
             $scope.data = data.data;
         };
-
+        
         $scope.onClickRun = function(){
             Flash.create('success', 'Please wait');
             $http.get('/data/run_template/?template=' + $scope.template).success(function(data) {

@@ -349,7 +349,7 @@ class Template(object):
         if 'element1' in columns:
             sql_columns.append('Element1')
         sql_columns = reversed(sql_columns)
-        cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND (''' + column + '''::float<%s) AND (''' + column + '''::float>%s)''', ( project.id, float(min_value), float(max_value)))
+        cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND (''' + column + '''::float<=%s) AND (''' + column + '''::float>=%s)''', ( project.id, float(min_value), float(max_value)))
         columns = ['%s' % desc[0] for desc in cursor.description]
         data = []
         for row in cursor:

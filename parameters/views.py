@@ -7,7 +7,12 @@ from django.http import HttpResponse
 from django.shortcuts import HttpResponseRedirect
 from django.db import connection
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.conf import settings
 
+import xlsxwriter
+from zipfile import ZipFile
+from os.path import join
+import tempfile
 
 from query.models import QueryTemplate, SiteQuery
 from files.wcdma import WCDMA
@@ -110,10 +115,30 @@ def run_template(request):
     tabs = Template().get_data(project, template)
 
     if request.GET.get('excel'):
-        excel_data = []
-        for row in data:
-            new_row = [cell[0] for cell in row]
-            excel_data.append(new_row)
+        static_path = settings.STATICFILES_DIRS[0]
+        archive_filename = join(static_path, template +'.zip')
+        excel_filename = join(tempfile.mkdtemp(), template + '.xlsx')
+        workbook = xlsxwriter.Workbook(excel_filename, {'constant_memory': True})        
+        for worksheet_name in tabs:
+            columns = tabs.get(worksheet_name).get('columns')            
+            worksheet = workbook.add_worksheet(columns[-1][:30])
+            i = 0
+            for column in tabs.get(worksheet_name).get('columns'):               
+                worksheet.write(0, i, column)
+                i += 1
+            row_id = 1            
+            for row in tabs.get(worksheet_name).get('data'):                
+                i = 0
+                for col in columns:                    
+                    worksheet.write(row_id, i, row.get(col))
+                    i += 1
+                row_id += 1
+                    
+        workbook.close()
+        zip = ZipFile(archive_filename, 'w')
+        zip.write(excel_filename, arcname=template + '.xlsx')
+        zip.close()
+        excel_data = []        
         return HttpResponseRedirect('/static/%s' % get_excel(template, columns, excel_data))
     return HttpResponse(json.dumps(tabs), content_type='application/json')
 
