@@ -36,7 +36,7 @@ urlpatterns = patterns('',
     url(r'^data/add_template/$', parameters_views.add_template),
     url(r'^data/predefined_templates/$', parameters_views.predefined_templates),
     url(r'^data/delete_template/(\S+)/$', parameters_views.delete_template),
-    url(r'^data/get_templates/(\S+)/$', parameters_views.get_templates),
+    url(r'^data/get_templates/$', parameters_views.get_templates),
 
     url(r'^data/get_template_cells/(\S+)/(\S+)/$', parameters_views.get_template_cells),
     url(r'^data/run_template/$', parameters_views.run_template),

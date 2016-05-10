@@ -336,3 +336,48 @@ class Template(object):
                 for row in cursor:
                     data.append(dict(name=row[0]))
         return data
+
+    def get_table(self, project, table_name, column, min_value, max_value):
+        cursor = self.conn.cursor()
+        sql_columns = [column, ]
+        cursor.execute('SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name=%s', (table_name, ))
+        columns = [row[0] for row in cursor]
+        if 'utrancell' in columns:
+            sql_columns.append('Utrancell')
+        if 'element2' in columns:
+            sql_columns.append('Element2')
+        if 'element1' in columns:
+            sql_columns.append('Element1')
+        sql_columns = reversed(sql_columns)
+        cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND (''' + column + '''::float<%s) AND (''' + column + '''::float>%s)''', ( project.id, float(min_value), float(max_value)))
+        columns = ['%s' % desc[0] for desc in cursor.description]
+        data = []
+        for row in cursor:
+            data_row = dict()
+            for col in columns:
+                data_row[col] = row[columns.index(col)]
+            data.append(data_row)
+        return columns, data
+
+    def get_parameter(self, project, param_name, min_value, max_value):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT
+                table_name
+            FROM
+                INFORMATION_SCHEMA.COLUMNS
+            WHERE
+                (lower(column_name)=%s);
+            ''', (param_name.lower(), ))
+        tabs = {}
+        for row in cursor:
+            table_name = row[0]
+            columns, data = self.get_table(project, table_name, param_name, min_value, max_value)
+            tabs['%s (%s)' % (param_name, table_name)] = {'columns': columns, 'data': data}
+        return tabs
+
+    def get_data(self, project, template):
+        data = {}
+        for t in QueryTemplate.objects.filter(project=project, template_name=template):
+            data.update(self.get_parameter(project, t.param_name, t.min_value, t.max_value))
+        return data

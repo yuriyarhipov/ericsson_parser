@@ -85,9 +85,11 @@ def delete_template(request, template_name):
     QueryTemplate.objects.filter(project=request.project, template_name=template_name).delete()
     return HttpResponse(json.dumps({'sucess': 'ok', }), content_type='application/json')
 
-def get_templates(request, network):
-    templates = [qt.template_name for qt in QueryTemplate.objects.filter(project=request.project, network=network).distinct('template_name')]
+
+def get_templates(request):
+    templates = [qt.template_name for qt in QueryTemplate.objects.filter(project=request.project).distinct('template_name')]
     return HttpResponse(json.dumps(templates), content_type='application/json')
+
 
 def get_template_cells(request, network, filename):
     data = []
@@ -105,16 +107,7 @@ def get_template_cells(request, network, filename):
 def run_template(request):
     project = request.project
     template = request.GET.get('template')
-    cells = request.GET.getlist('cell')
-    network = request.GET.get('network')
-    file = request.GET.get('file')
-
-    if network == 'GSM':
-        columns, data = CNA().run_query(template, cells, file)
-    elif network == 'WCDMA':
-        columns, data = WCDMA().run_query(project, template, cells, file)
-    elif network == 'LTE':
-        columns, data = LTE().run_query(template, cells, file)
+    tabs = Template().get_data(project, template)
 
     if request.GET.get('excel'):
         excel_data = []
@@ -122,17 +115,7 @@ def run_template(request):
             new_row = [cell[0] for cell in row]
             excel_data.append(new_row)
         return HttpResponseRedirect('/static/%s' % get_excel(template, columns, excel_data))
-
-    page = request.GET.get('page', 1)
-    data_length = len(data)
-    t = Paginator(data, 20)
-    try:
-        data = t.page(page)
-    except PageNotAnInteger:
-        data = t.page(1)
-    except EmptyPage:
-        data = t.page(t.num_pages)
-    return HttpResponse(json.dumps({'columns': columns, 'data': data.object_list, 'count': data_length}), content_type='application/json')
+    return HttpResponse(json.dumps(tabs), content_type='application/json')
 
 
 def upload_template(request):
