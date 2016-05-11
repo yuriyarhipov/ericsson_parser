@@ -94,6 +94,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     tables = set()
 
     for f in work_files:
+        data_file = None
         if (file_type in xml_types) and (network == 'WCDMA'):
             data_file = WcdmaXML(f, project, file_id, i, available_percent, set_percent).data
         elif (vendor == 'Nokia'):
@@ -103,20 +104,30 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                 data_file = HuaweiWCDMA(f, project, file_id, i, available_percent, set_percent).data
             elif file_type == 'MML script file':
                 data_file = HuaweiConfig(f, project, file_id, i, available_percent, set_percent).data
+        if data_file:
+            table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
+            table_count = len(data_file)
+            table_index = 0.0
+            for table_name, data in data_file.iteritems():
+                tables.add(table_name)
+                table_index += 1
+                percent = int(table_index / table_count * 100)
+                set_percent(file_id, i + available_percent + int(float(available_percent) * float(percent) / 100))
 
-        table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
-        table_count = len(data_file)
-        table_index = 0.0
-        for table_name, data in data_file.iteritems():
-            tables.add(table_name)
-            table_index += 1
-            percent = int(table_index / table_count * 100)
-            set_percent(file_id, i + available_percent + int(float(available_percent) * float(percent) / 100))
-
-            try:
-                table.write_table(table_name, data)
-            except:
-                pass
+                try:
+                    table.write_table(table_name, data)
+                except:
+                    pass
+            UploadedFiles.objects.filter(id=file_id).delete()
+            Files.objects.filter(filename=basename(f), project=project).delete()
+            Files.objects.create(
+                filename=basename(f),
+                file_type=file_type,
+                project=project,
+                tables=','.join(list(data_file.keys())),
+                description=description,
+                vendor=vendor,
+                network=network)
 
         if network in ['WCDMA', 'LTE']:
             if file_type in distance_files:
@@ -139,42 +150,33 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                     file_type,
                     network,
                     task)
-
-            if file_type == 'Drive Test':
-                dt = DriveTest()
-                dt.upload_file(work_file, project.id, current_task)
-                Files.objects.filter(filename=basename(work_file), project=project).delete()
-                Files.objects.create(
-                    filename=basename(work_file),
-                    file_type=file_type,
-                    project=project,
-                    tables='',
-                    description=description,
-                    vendor=vendor,
-                    network=network)
-            if file_type == 'RND':
-                Rnd(project.id, network).write_file(work_file, description)
-                Files.objects.filter(project=project, description=description).delete()
-                Files.objects.create(
-                    filename=basename(work_file),
-                    file_type=file_type,
-                    project=project,
-                    tables='',
-                    description=description,
-                    vendor=vendor,
-                    network=network)
+        
+        if file_type == 'Drive Test':
+            dt = DriveTest()
+            dt.upload_file(f, project.id, current_task)
+            Files.objects.filter(filename=basename(f), project=project).delete()
+            Files.objects.create(
+                filename=basename(f),
+                file_type=file_type,
+                project=project,
+                tables='',
+                description=description,
+                vendor=vendor,
+                network=network)
+        if file_type == 'RND':            
+            Rnd(project.id, network).write_file(f, description)            
+            Files.objects.filter(project=project, filename=basename(f)).delete()
+            Files.objects.create(
+                filename=basename(f),
+                file_type=file_type,
+                project=project,
+                tables='',
+                description=description,
+                vendor=vendor,
+                network=network)
 
         i += percent_per_file
-        UploadedFiles.objects.filter(id=file_id).delete()
-        Files.objects.filter(filename=basename(f), project=project).delete()
-        Files.objects.create(
-            filename=basename(f),
-            file_type=file_type,
-            project=project,
-            tables=','.join(list(data_file.keys())),
-            description=description,
-            vendor=vendor,
-            network=network)
+        
     revoke(worker.request.id, terminate=True)
 
 
