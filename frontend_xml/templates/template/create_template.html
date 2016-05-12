@@ -1,90 +1,94 @@
-<div class="row">
-    <form ng-upload="excel_complete(content)" class="form-horizontal col-sm-10" role="form" action="/data/upload_template/">
-        <div class="form-group">
-            <label class="col-sm-3 control-label" for="upload">Upload Excel</label>
-            <div class="col-sm-4">
-                <input type="file" name="excel" id="upload">
-            </div>
-            <div class="col-sm-5">
-                <button class="btn btn-success" type="submit">Upload</button>
-            </div>
+<md-card ng-cloak>
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Create a Template:</span>
+        </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+        <div class="row">
+            <form ng-upload="excel_complete(content)" class="form-horizontal col-sm-10" role="form" action="/data/upload_template/">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="upload">Upload Excel</label>
+                    <div class="col-sm-4">
+                        <input type="file" name="excel" id="upload">
+                    </div>
+                    <div class="col-sm-5">
+                        <button class="btn btn-success" type="submit">Upload</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
-</div>
-<div class="row">
-    <form ng-upload="complete()" class="form-horizontal col-sm-10" role="form" action="/data/add_template/">
-        <div class="form-group">
-            <label class="col-sm-3 control-label" for="network">Network:</label>
-            <div class="col-sm-9" id="network">
-                <ui-select ng-change="onChangeNetwork()" ng-model="network.selected" theme="bootstrap"
-                    ng-disabled="disabled"
-                    reset-search-input="false">
-                    <ui-select-match placeholder="Network...">{{$select.selected}}</ui-select-match>
-                    <ui-select-choices repeat="net in networks | filter:$select.search">
-                        {{ net }}
-                    </ui-select-choices>
-                </ui-select>
-                <input type="hidden" name="network" value="{{network.selected}}">
-            </div>
+        <div class="row">
+            <form ng-upload="complete()" class="form-horizontal col-sm-10" role="form" action="/data/add_template/">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="network">Network:</label>
+                    <div class="col-sm-9" id="network">
+                        <ui-select ng-change="onChangeNetwork()" ng-model="network.selected" theme="bootstrap" ng-disabled="disabled" reset-search-input="false">
+                            <ui-select-match placeholder="Network...">{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="net in networks | filter:$select.search">
+                                {{ net }}
+                            </ui-select-choices>
+                        </ui-select>
+                        <input type="hidden" name="network" value="{{network.selected}}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="template_name">Template Name:</label>
+                    <div class="col-sm-9">
+                        <input ng-model="template_name" type="text" class="form-control" id="template_name" placeholder="Template Name" name="template_name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="param">Parameter:</label>
+                    <div class="col-sm-9" id="param">
+                        <ui-select ng-model="param.selected" theme="bootstrap" ng-disabled="disabled" reset-search-input="false">
+                            <ui-select-match placeholder="Enter a param...">{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="col in columns | filter:$select.search">
+                                {{col}}
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Min:</label>
+                    <div class="col-sm-9">
+                        <input ng-model="min_value" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Max:</label>
+                    <div class="col-sm-9">
+                        <input ng-model="max_value" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-9">
+                        <button ng-click="onClickAddParam()" type="button" class="btn btn-success">Add</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <td>PARAMETER</td>
+                                <td>MIN</td>
+                                <td>MAX</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="row in param_table">
+                                <td>{{ row.param }}<input type="hidden" name="param" value="{{ row.param }}"></td>
+                                <td>{{ row.min_value }}<input type="hidden" name="min_value" value="{{ row.min_value }}"></td>
+                                <td>{{ row.max_value }}<input type="hidden" name="max_value" value="{{ row.max_value }}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success" type="submit">Save template</button>
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-            <label class="col-sm-3 control-label" for="template_name">Template Name:</label>
-            <div class="col-sm-9">
-                <input ng-model="template_name" type="text" class="form-control" id="template_name" placeholder="Template Name" name="template_name">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-3 control-label" for="param">Parameter:</label>
-            <div class="col-sm-9" id="param">
-                <ui-select ng-model="param.selected" theme="bootstrap"
-                    ng-disabled="disabled"
-                    reset-search-input="false">
-                    <ui-select-match placeholder="Enter a param...">{{$select.selected}}</ui-select-match>
-                    <ui-select-choices repeat="col in columns | filter:$select.search">
-                        {{col}}
-                    </ui-select-choices>
-                </ui-select>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-3 control-label">Min:</label>
-            <div class="col-sm-9">
-                <input ng-model="min_value" type="text" class="form-control">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-3 control-label">Max:</label>
-            <div class="col-sm-9">
-                <input ng-model="max_value" type="text" class="form-control">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-3"></div>
-            <div class="col-sm-9">
-                <button ng-click="onClickAddParam()" type="button" class="btn btn-success">Add</button>
-            </div>
-        </div>
-        <div class="form-group">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <td>PARAMETER</td>
-                        <td>MIN</td>
-                        <td>MAX</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="row in param_table">
-                        <td>{{ row.param }}<input type="hidden" name="param" value="{{ row.param }}"></td>
-                        <td>{{ row.min_value }}<input type="hidden" name="min_value" value="{{ row.min_value }}"></td>
-                        <td>{{ row.max_value }}<input type="hidden" name="max_value" value="{{ row.max_value }}"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="form-group">
-            <button class="btn btn-success" type="submit">Save template</button>
-        </div>
-    </form>
-
-</div>
+    </md-card-content>
+</md-card>

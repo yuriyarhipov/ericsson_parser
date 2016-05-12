@@ -51,6 +51,7 @@ parameterControllers.controller('editTemplateCtrl', ['$scope', '$http', '$locati
         if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
+        console.log('OK1');
         var template = $routeParams.template;
         $http.get('/data/edit_template/' + template + '/').success(function(data) {
             $scope.network.selected = data.network;
@@ -115,7 +116,60 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http', 'Flash', 
     function ($scope, $http, Flash, $cookies, $location) {
         if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
-        }
+        }       
+        
+        $scope.selected_group_cells = [];
+        $scope.selected_cells = [];
+        $scope.form_data = {'cells': []};
+        $scope.group_cells = [];
+
+        $scope.hideTable = true;
+        $scope.hideForm = false;
+
+        $scope.onChangeNetwork = function(){
+            $http.get('/data/get_templates/' + $scope.network +'/').success(function(data) {
+                $scope.templates = data;
+                if (data.length > 0){
+                    $scope.template = $scope.templates[0];
+                }
+            });
+
+            $http.get('/data/get_network_files/' + $scope.network +'/').success(function(data){
+                $scope.files = data.files;
+                $scope.file = data.files[0];
+                $http.get('/data/get_template_cells/' + $scope.network + '/' + $scope.file + '/').success(function(data) {
+                    $scope.data_cells = data;
+                });
+            });
+        };
+
+        $scope.onChangeFile = function(){
+            $http.get('/data/get_template_cells/' + $scope.network + '/' + $scope.file + '/').success(function(data) {
+                $scope.data_cells = data;
+            });
+
+        };
+
+        $scope.onAddCell = function(){
+            $scope.group_cells = $scope.group_cells.concat($scope.selected_cells);
+            var cells_length = $scope.selected_cells.length;
+            for (var i=0; i< cells_length; i++){
+                var index = $scope.data_cells.indexOf($scope.selected_cells[i]);
+                $scope.data_cells.splice(index, 1);
+            }
+            $scope.group_cells.sort();
+        };
+
+        $scope.onDeleteCell = function(){
+
+            var cells_length = $scope.selected_group_cells.length;
+            for (var i=0; i< cells_length; i++){
+                var index = $scope.group_cells.indexOf($scope.selected_group_cells[i]);
+                $scope.group_cells.splice(index, 1);
+            }
+            $scope.data_cells = $scope.data_cells.concat($scope.selected_group_cells);
+            $scope.data_cells.sort();
+        };
 
         $http.get('/data/get_templates/').success(function(data) {
             $scope.templates = data;

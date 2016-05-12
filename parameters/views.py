@@ -163,7 +163,7 @@ def edit_template(request, template):
     data['param_table'] = []
     for qt in QueryTemplate.objects.filter(template_name=template).all():
         data['network'] = qt.network
-        data['param_table'].append({'mo': qt.mo, 'param': qt.param_name, 'min_value': qt.min_value, 'max_value': qt.max_value})
+        data['param_table'].append({'param': qt.param_name, 'min_value': qt.min_value, 'max_value': qt.max_value})
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
