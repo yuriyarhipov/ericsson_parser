@@ -44,7 +44,7 @@
                                 </md-input-container>
                                 <input type="file" nv-file-select="" uploader="uploader" />
                                 <md-input-container>
-                                    <md-button class="md-raised md-primary" ng-disabled="$isLoading" ng-click="uploader.uploadAll()" >Upload</md-button>
+                                    <md-button class="md-raised md-primary" ng-disabled="$isLoading" ng-click="addFile()" >Upload</md-button>
                                     <md-button class="md-warn" type="reset">Cancel</md-button>
                                 </md-input-container>
                                 <md-input-container>
@@ -55,7 +55,7 @@
                     </div>
                     <div flex="70">
                         <div flex>
-                            <md-button class="md-raised md-primary" ng-click='onUploadAll()'>Process all</md-button>
+                            <md-button class="md-raised md-primary" ng-disabled="disable_btn" ng-click='onUploadAll()'>Process all</md-button>
                             <md-button class="md-warn" ng-click='onDeleteAll()'>Delete all</md-button>
                         </div>
                         <div flex>

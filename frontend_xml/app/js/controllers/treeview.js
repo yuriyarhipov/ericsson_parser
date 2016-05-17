@@ -8,6 +8,7 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
         $http.get('/data/treeview/' + $cookies.active_project).success(function(data){
             $scope.treedata = data;
         });
+             
 
         $scope.$on('handleBroadcast', function() {
             var project = activeProjectService.project;
@@ -15,6 +16,8 @@ treeViewControllers.controller('TreeViewCtrl', ['$scope', '$http', '$cookies', '
                 $scope.treedata = data;
             });
         });
+        
+        
 
         $scope.$on('uploadFile', function() {
             $http.get('/data/treeview/' + $cookies.active_project).success(function(data){
@@ -125,10 +128,12 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
                         $cookies.putObject('dt', $scope.files);
                     }
                 }
+                $timeout(loadData, 3000);                
             });
         };
-
+        
         loadData();
+        
         function LoadTopology(network, root){
             $http.get('/data/topology_treeview/' + network +'/' + root + '/').success(function(data){
                 $scope.topology_treedata = data;

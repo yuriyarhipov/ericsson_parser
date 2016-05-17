@@ -1,11 +1,12 @@
 var filesControllers = angular.module('filesControllers', []);
 
-filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'uploadFileService', '$cookies', '$location', 'FileUploader', '$timeout',
-    function ($scope, $http, $timeout, uploadFileService, $cookies, $location, FileUploader, $timeout) {
+filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'uploadFileService', '$cookies', '$location', 'FileUploader', 'Flash',
+    function ($scope, $http, $timeout, uploadFileService, $cookies, $location, FileUploader, Flash) {
         if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.show_add_file = false;
+        $scope.disable_btn = false;
         $http.get('/data/files/').success(function(data) {
             $scope.files = data.files;
         });
@@ -132,15 +133,18 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
         };
 
         $scope.onUploadAll = function(){
-            var files = [];
-            for (id in $scope.uploaded_files){
-                files.push($scope.uploaded_files[id].id);
-            }
-            $http.post('/data/run_tasks_all/').success();
+            
+            $http.post('/data/run_tasks_all/');
+            Flash.create('success', 'Please, wait a minute');
+            $scope.disable_btn = true;
+            $timeout(function(){$scope.disable_btn = false}, 5000);
         };
 
-        $scope.onUpload = function(id){
-            console.log(id);
+        $scope.addFile = function(){
+            while (uploader.queue.length > 1){
+                uploader.removeFromQueue(uploader.queue[0])
+            }            
+            uploader.uploadAll()
         };
 
         $scope.onDelete = function(id){
