@@ -141,9 +141,8 @@ def run_tasks_all(request):
     for f in UploadedFiles.objects.filter(project=project):
         if f.file_type not in ['RND', 'Drive Test', 'HISTOGRAM FILE COUNTER - Access Distance']:
             Files.objects.filter(project=project, file_type=f.file_type).delete()
-    for f in UploadedFiles.objects.filter(project=project):
-        pass
-        #job = tasks.worker.delay(f.filename, project, f.description, f.vendor, f.file_type, f.network, f.id)
+    for f in UploadedFiles.objects.filter(project=project):        
+        job = tasks.worker.delay(f.filename, project, f.description, f.vendor, f.file_type, f.network, f.id)
     return HttpResponse(json.dumps([]), content_type='application/json')
 
 
