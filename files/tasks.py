@@ -135,7 +135,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                     project,
                     description,
                     vendor,
-                    work_file,
+                    f,
                     task)
 
             if (file_type in xml_types) and (network == 'LTE'):
@@ -143,7 +143,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                 filename=basename(work_file),
                 project=project).delete()
                 Xml().save_xml(
-                    work_file,
+                    f,
                     project,
                     description,
                     vendor,
