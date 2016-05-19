@@ -261,6 +261,17 @@ class Files(models.Model):
                 pass
 
         return [value, status]
+    
+    def clear_tables(self):
+        tables = self.tables.split(',')                
+        cursor = connection.cursor()
+        for table_name in tables:            
+            cursor.execute('''DELETE FROM %s WHERE (filename='%s') AND (project_id='%s')''' % (
+                table_name,
+                self.filename,
+                self.project.id))
+        connection.commit()
+        
 
 
 class SuperFile(models.Model):

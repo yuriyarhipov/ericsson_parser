@@ -113,7 +113,6 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                 table_index += 1
                 percent = int(table_index / table_count * 100)
                 set_percent(file_id, i + available_percent + int(float(available_percent) * float(percent) / 100))
-
                 try:
                     table.write_table(table_name, data)
                 except:
