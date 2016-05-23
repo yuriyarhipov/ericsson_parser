@@ -74,7 +74,7 @@ class ExcelFile:
         excel_filename = join(tempfile.mkdtemp(), excel_name + '.xlsx')        
         workbook = xlsxwriter.Workbook(excel_filename)
         for table in tables:
-            sql = "SELECT * FROM " + table + "  WHERE (project_id='" + str(self.project.id) + "') LIMIT 100;"
+            sql = "SELECT * FROM " + table + "  WHERE (project_id='" + str(self.project.id) + "');"
             cursor.execute(sql)
             columns = [{'header':'%s' % desc[0]} for desc in cursor.description]
             data = cursor.fetchall()                       
