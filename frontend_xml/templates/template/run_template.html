@@ -52,13 +52,22 @@
                         <input type="hidden" value="{{ cell.cell }}" name="cell">
                     </div>
                     <div class="col-sm-1"></div>
-                    <div class="col-sm-9"><button ng-click="onClickRun()" type="button" class="btn btn-success">Run</button></div>
+                    <div class="col-sm-1"><button ng-click="onClickRun()" type="button" class="btn btn-success">Run</button></div>
+                    <div class="col-sm-5" ng-show="show_excel_dialog">
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" placeholder="Excel FileName" ng-model="excelFileName">
+                        </div>                
+                        <div class="col-md-5">        
+                            <button ng-click="onClickExcel()" type="button" class="btn btn-success">OK</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-5" ng-hide="show_excel_dialog"><button ng-click="show_excel_dialog = !show_excel_dialog" type="button" class="btn btn-success">Download Excel</button></div>
                 </div>
             </form>
         </div>
         <div flex>
             <md-tabs md-dynamic-height md-border-bottom>
-                <md-tab label="{{ tab }}" ng-repeat="(tab, data) in data">                    
+                <md-tab label="{{ tab }}" ng-repeat="(tab, data) in data">
                     <md-content class="md-padding">
                         <div flex ng-show="check_hide(data.data)">
                             No elements out of range

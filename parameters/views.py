@@ -116,31 +116,37 @@ def run_template(request):
     tabs = Template().get_data(project, template, cells)
     
     if request.GET.get('excel'):
+        excel_name = request.GET.get('excel')
+        if not excel_name:
+            excel_name = template
         static_path = settings.STATICFILES_DIRS[0]
-        archive_filename = join(static_path, template +'.zip')
-        excel_filename = join(tempfile.mkdtemp(), template + '.xlsx')
-        workbook = xlsxwriter.Workbook(excel_filename, {'constant_memory': True})        
+        archive_filename = join(static_path, excel_name +'.zip')
+        excel_filename = join(tempfile.mkdtemp(), excel_name + '.xlsx')
+        workbook = xlsxwriter.Workbook(excel_filename, {'constant_memory': True})
         for worksheet_name in tabs:
-            columns = tabs.get(worksheet_name).get('columns')            
-            worksheet = workbook.add_worksheet(columns[-1][:30])
-            i = 0
-            for column in tabs.get(worksheet_name).get('columns'):               
-                worksheet.write(0, i, column)
-                i += 1
-            row_id = 1            
-            for row in tabs.get(worksheet_name).get('data'):                
+            columns = tabs.get(worksheet_name).get('columns')    
+            if columns:                
+                worksheet = workbook.add_worksheet(worksheet_name[:30])
                 i = 0
-                for col in columns:                    
-                    worksheet.write(row_id, i, row.get(col))
+                for column in tabs.get(worksheet_name).get('columns'):               
+                    worksheet.write(0, i, column)
                     i += 1
-                row_id += 1
-                    
+                row_id = 1            
+                for row in tabs.get(worksheet_name).get('data'):                
+                    i = 0
+                    for col in columns:                    
+                        worksheet.write(row_id, i, row.get(col))
+                        i += 1
+                    row_id += 1
+            else:
+                worksheet = workbook.add_worksheet(worksheet_name[:30])
+                                    
         workbook.close()
         zip = ZipFile(archive_filename, 'w')
-        zip.write(excel_filename, arcname=template + '.xlsx')
+        zip.write(excel_filename, arcname=excel_name + '.xlsx')
         zip.close()
         excel_data = []        
-        return HttpResponseRedirect('/static/%s' % get_excel(template, columns, excel_data))
+        return HttpResponseRedirect('/static/%s.zip' % excel_name)
     return HttpResponse(json.dumps(tabs), content_type='application/json')
 
 

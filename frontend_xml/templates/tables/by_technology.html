@@ -33,7 +33,11 @@
                 </md-input-container>
             </div>
             <div flex>
-                <md-button>Download Excel</md-button>
+                <md-input-container>
+                    <label>Filename</label>
+                    <input ng-model="filename">
+                </md-input-container>
+                <md-button ng-href="/data/files/get_excel/{{ vendor }}/{{ network }}/{{ filename }}">Download Excel</md-button>
             </div>
         </div>
         <div layout="row">

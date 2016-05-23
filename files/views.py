@@ -296,20 +296,12 @@ def get_cna_template(request):
     project = request.project
     for cna_template in CNATemplate.objects.filter(project=project).order_by('table_name'):
         tables.append({'table_name': cna_template.table_name, 'columns': cna_template.columns})
-
     return HttpResponse(json.dumps(tables), content_type='application/json')
 
 
-def get_excel(request, network):
-    filename = ''
-    if network == 'GSM':
-        filename = request.gsm.filename
-    elif network == 'WCDMA':
-        filename = request.wcdma.filename
-    elif network == 'LTE':
-        filename = request.lte.filename
-
-    return HttpResponseRedirect(ExcelFile(request.project, filename).excel_filename)
+def get_excel(request, vendor, network, filename):
+    ExcelFile(request.project, vendor, network, filename)
+    return HttpResponseRedirect('/static/' + filename + '.zip')
 
 
 @api_view(['GET', 'POST'])

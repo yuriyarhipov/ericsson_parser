@@ -45,10 +45,11 @@ class Excel:
 
 class ExcelFile:
 
-    def __init__(self, project, filename):
+    def __init__(self, project, vendor, network, filename):
         self.project = project
-        self.filename = filename
-        self.excel_filename = ''
+        self.vendor = vendor
+        self.network = network
+        self.filename = filename        
         self.conn = psycopg2.connect(
             'host = %s dbname = %s user = %s password = %s' % (
                 settings.DATABASES['default']['HOST'],
@@ -57,51 +58,37 @@ class ExcelFile:
                 settings.DATABASES['default']['PASSWORD']))
         self.main()
 
-    def main(self):
+    def main(self):        
+        tables = []
         cursor = self.conn.cursor()
+        for f in Files.objects.filter(project=self.project, vendor=self.vendor, network=self.network):
+            tables.extend(f.tables.split(','))
+        tables = set(tables)
+        tables = list(tables)
+        excel_name = 'topology'  
+        if self.filename:     
+            excel_name = self.filename
+        
         static_path = settings.STATICFILES_DIRS[0]
-        file_path = '%s/%s' % (static_path, self.project.project_name)
-        if not exists(file_path):
-            makedirs(file_path)
-        archive_filename = join(file_path, self.filename +'.zip')
-
-        self.excel_filename = join('/static/%s' % self.project.project_name, self.filename +'.zip')
-        if exists(archive_filename):
-            return
-
-        f = Files.objects.filter(project=self.project, filename=self.filename).first()
-
-        if f.network == 'WCDMA':
-            tables = ['Topology', 'RND']
-            for t in f.tables.split(','):
-                if t.lower() not in tables:
-                    tables.append(t.lower())
-        elif f.network == 'LTE':
-            tables = ['Topology_LTE', 'RND_LTE']
-            tables.extend(list(set(f.tables.split(','))))
-        elif f.network == 'GSM':
-            tables = [cna_t.table_name for cna_t in CNATemplate.objects.filter(project=self.project)]
-
-        excel_filename = join(tempfile.mkdtemp(), self.filename + '.xlsx')
+        archive_filename = join(static_path, excel_name +'.zip')
+        excel_filename = join(tempfile.mkdtemp(), excel_name + '.xlsx')        
         workbook = xlsxwriter.Workbook(excel_filename)
         for table in tables:
-            sql = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE (lower(table_name)='%s')" % (table.lower(),)
+            sql = "SELECT * FROM " + table + "  WHERE (project_id='" + str(self.project.id) + "') LIMIT 100;"
             cursor.execute(sql)
-            if cursor.rowcount > 0:
-                current_table = Table(table, self.filename)
-                data = current_table.get_data()
-                columns = [{'header': col} for col in current_table.columns]
-                worksheet = workbook.add_worksheet(table)
-                worksheet.add_table(
-                    0,
-                    0,
-                    len(data),
-                    len(columns) - 1,
-                    {'data': data,
-                     'columns': columns})
+            columns = [{'header':'%s' % desc[0]} for desc in cursor.description]
+            data = cursor.fetchall()                       
+            worksheet = workbook.add_worksheet(table)
+            worksheet.add_table(
+                0,
+                0,
+                len(data),
+                len(columns) - 1,
+                {'data': data,
+                 'columns': columns})
         workbook.close()
         zip = ZipFile(archive_filename, 'w')
-        zip.write(excel_filename, arcname=self.filename + '.xlsx')
+        zip.write(excel_filename, excel_name + '.xlsx')
         zip.close()
 
 
