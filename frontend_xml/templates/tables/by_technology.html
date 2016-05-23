@@ -6,7 +6,7 @@
     </md-card-title>
     <md-card-content>
         <div layout="row">
-            <div flex>
+            <div flex="15">
                 <md-input-container>
                     <label>Vendor</label>
                     <md-select ng-model="vendor" ng-change="refreshData(vendor, network, filter)">
@@ -16,7 +16,7 @@
                     </md-select>
                 </md-input-container>
             </div>
-            <div flex>
+            <div flex="15">
                 <md-input-container>
                     <label>Network</label>
                     <md-select ng-model="network" ng-change="refreshData(vendor, network, filter)">
@@ -26,17 +26,20 @@
                     </md-select>
                 </md-input-container>
             </div>
-            <div flex>
+            <div flex="15">
                 <md-input-container>
                     <label>Filter</label>
                     <input ng-model='filter' ng-change="refreshData(vendor, network, filter)">
                 </md-input-container>
             </div>
-            <div flex>
+            <div flex="15"></div>
+            <div flex="20">
                 <md-input-container>
                     <label>Filename</label>
                     <input ng-model="filename">
                 </md-input-container>
+            </div>
+            <div flex>
                 <md-button ng-href="/data/files/get_excel/{{ vendor }}/{{ network }}/{{ filename }}">Download Excel</md-button>
             </div>
         </div>

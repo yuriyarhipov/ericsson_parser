@@ -51,6 +51,7 @@ tableControllers.controller('byTechnologyCtrl', ['$scope', '$http', '$cookies', 
         $scope.networks = ['GSM', 'WCDMA', 'LTE'];
         $scope.network = 'WCDMA';
         $scope.filter = ''
+        $scope.filename = 'Topology'
 
         $scope.refreshData = function(vendor, network, filter){
             $http.get('/data/by_technology/' + vendor + '/' + network + '/?filter=' + filter).success(function(data) {
