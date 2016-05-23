@@ -58,9 +58,12 @@
         </div>
         <div flex>
             <md-tabs md-dynamic-height md-border-bottom>
-                <md-tab label="{{ tab }}" ng-repeat="(tab, data) in data">
+                <md-tab label="{{ tab }}" ng-repeat="(tab, data) in data">                    
                     <md-content class="md-padding">
-                        <div flex>
+                        <div flex ng-show="check_hide(data.data)">
+                            No elements out of range
+                        </div>
+                        <div flex ng-hide="check_hide(data.data)">
                             <div ui-grid="table_configs[tab]" class="RndGrid col-md-12" ui-grid-resize-columns ui-grid-move-columns ui-grid-cellNav></div>
                         </div>
                     </md-content>

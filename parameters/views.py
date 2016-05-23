@@ -112,8 +112,9 @@ def get_template_cells(request, network, filename):
 def run_template(request):
     project = request.project
     template = request.GET.get('template')
-    tabs = Template().get_data(project, template)
-
+    cells = request.GET.get('cell').split(',')
+    tabs = Template().get_data(project, template, cells)
+    
     if request.GET.get('excel'):
         static_path = settings.STATICFILES_DIRS[0]
         archive_filename = join(static_path, template +'.zip')

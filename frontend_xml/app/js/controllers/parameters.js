@@ -180,9 +180,20 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http', 'Flash', 
             $scope.data = data.data;
         };
         
+        $scope.check_hide = function(data){
+            console.log(data)
+            console.log(data.length);
+            return data.length == 0;                
+        };
+        
         $scope.onClickRun = function(){
-            Flash.create('success', 'Please wait');
-            $http.get('/data/run_template/?template=' + $scope.template).success(function(data) {
+            Flash.create('success', 'Please wait');           
+            $scope.url='/data/run_template/?template=' + $scope.template + '&file=' + $scope.file;            
+            var length_cells = $scope.group_cells.length;
+            for (var i = 0; i<length_cells; i++){
+                $scope.url = $scope.url +'&cell=' + $scope.group_cells[i].cell;
+            }
+            $http.get($scope.url).success(function(data) {
                 $scope.data = data;
                 $scope.table_configs = {}
                 for (i in data){

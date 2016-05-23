@@ -337,28 +337,35 @@ class Template(object):
                     data.append(dict(name=row[0]))
         return data
 
-    def get_table(self, project, table_name, column, min_value, max_value):
+    def get_table(self, project, table_name, cells, column, min_value, max_value):
         cursor = self.conn.cursor()
         sql_columns = [column, ]
         cursor.execute('SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name=%s', (table_name, ))
         columns = [row[0] for row in cursor]
+        where_sql = []
+        sql_cells = ','.join(["'%s'" % cell for cell in cells])
         if 'utrancell' in columns:
             sql_columns.append('Utrancell')
+            where_sql.append('Utrancell not in (%s)' % sql_cells)            
         if 'element2' in columns:
             sql_columns.append('Element2')
+            where_sql.append('Element2 not in (%s)' % sql_cells)
         if 'element1' in columns:
             sql_columns.append('Element1')
+            where_sql.append('Element1 not in (%s)' % sql_cells)
+        where_sql = ' AND '.join(where_sql)
+                            
         sql_columns = reversed(sql_columns)        
         if min_value and max_value:
             try:
-                cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND NOT ((''' + column + '''::float>=%s) AND (''' + column + '''::float<=%s))''', ( project.id, float(min_value), float(max_value)))
+               cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND NOT ((''' + column + '''::float>=%s) AND (''' + column + '''::float<=%s)) AND NOT (''' + where_sql +''')''', ( project.id, float(min_value), float(max_value)))
             except:
                 cursor.close()
                 self.conn.rollback()
                 cursor = self.conn.cursor()
         else:
             try:
-                cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s)''', ( project.id, ))
+                cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s)  AND NOT (''' + where_sql +''')''', ( project.id, ))
             except:
                 cursor.close()
                 self.conn.rollback()
@@ -374,7 +381,7 @@ class Template(object):
                 data.append(data_row)
         return columns, data
 
-    def get_parameter(self, project, param_name, min_value, max_value):
+    def get_parameter(self, project, cells, param_name, min_value, max_value):
         cursor = self.conn.cursor()
         cursor.execute('''
             SELECT
@@ -386,15 +393,14 @@ class Template(object):
             ''', (param_name.lower(), ))
         tabs = {}
         for row in cursor:
-            table_name = row[0]
-            print table_name
+            table_name = row[0]            
             if table_name not in ['topology', 'utrancell']:
-                columns, data = self.get_table(project, table_name, param_name, min_value, max_value)
+                columns, data = self.get_table(project, table_name, cells, param_name, min_value, max_value)
                 tabs['%s (%s)' % (param_name, table_name)] = {'columns': columns, 'data': data}
         return tabs
 
-    def get_data(self, project, template):
+    def get_data(self, project, template, cells):
         data = {}
         for t in QueryTemplate.objects.filter(project=project, template_name=template):
-            data.update(self.get_parameter(project, t.param_name, t.min_value, t.max_value))
+            data.update(self.get_parameter(project, cells, t.param_name, t.min_value, t.max_value))
         return data
