@@ -51,7 +51,7 @@ parameterControllers.controller('editTemplateCtrl', ['$scope', '$http', '$locati
         if ($cookies.get('is_auth') != 'true') {
             $location.path('/login')
         }
-        console.log('OK1');
+        
         var template = $routeParams.template;
         $http.get('/data/edit_template/' + template + '/').success(function (data) {
             $scope.network.selected = data.network;
@@ -114,7 +114,7 @@ parameterControllers.controller('predefinedTemplatesCtrl', ['$scope', '$http', '
 
 parameterControllers.controller('ExcelDialogCtrl', ['$scope', '$mdDialog',
     function ($scope, $mdDialog) {
-        console.log('OK');
+        
 }]);
 
 parameterControllers.controller('runTemplateCtrl', ['$scope', '$http', 'Flash', '$cookies', '$location', '$mdDialog', '$window',
@@ -185,11 +185,10 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http', 'Flash', 
             $scope.data = data.data;
         };
 
-        $scope.check_hide = function (data) {
-            console.log(data)
-            console.log(data.length);
+        $scope.check_hide = function (data) {            
             return data.length == 0;
         };
+        
         $scope.onClickExcel = function () {
             $scope.show_excel_dialog = false;
             Flash.create('success', 'Please wait');

@@ -65,6 +65,7 @@ class ExcelFile:
             tables.extend(f.tables.split(','))
         tables = set(tables)
         tables = list(tables)
+        tables.sort()
         excel_name = 'topology'  
         if self.filename:     
             excel_name = self.filename

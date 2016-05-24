@@ -389,18 +389,23 @@ class Template(object):
             FROM
                 INFORMATION_SCHEMA.COLUMNS
             WHERE
-                (lower(column_name)=%s);
+                (lower(column_name)=%s)
+            ORDER BY table_name;
             ''', (param_name.lower(), ))
-        tabs = {}
+        tabs = OrderedDict()
+        if cursor.rowcount == 0:            
+            tabs[param_name] = {'columns': [], 'data': []}
         for row in cursor:
             table_name = row[0]            
-            if table_name not in ['topology', 'utrancell']:
+            if table_name not in ['topology', ]:
                 columns, data = self.get_table(project, table_name, cells, param_name, min_value, max_value)
-                tabs['%s (%s)' % (param_name, table_name)] = {'columns': columns, 'data': data}
+                tabs['%s (%s) rows: %s' % (param_name, table_name, len(data))] = {'columns': columns, 'data': data}
         return tabs
 
     def get_data(self, project, template, cells):
-        data = {}
-        for t in QueryTemplate.objects.filter(project=project, template_name=template):
-            data.update(self.get_parameter(project, cells, t.param_name, t.min_value, t.max_value))
+        data = OrderedDict()
+        for t in QueryTemplate.objects.filter(project=project, template_name=template).order_by('id'):            
+            param_data = self.get_parameter(project, cells, t.param_name, t.min_value, t.max_value)
+            for key, value in param_data.iteritems():                
+                data[key] = value 
         return data

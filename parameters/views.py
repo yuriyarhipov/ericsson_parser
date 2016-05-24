@@ -114,7 +114,7 @@ def run_template(request):
     template = request.GET.get('template')
     cells = request.GET.get('cell').split(',')
     tabs = Template().get_data(project, template, cells)
-    
+        
     if request.GET.get('excel'):
         excel_name = request.GET.get('excel')
         if not excel_name:
@@ -140,6 +140,7 @@ def run_template(request):
                     row_id += 1
             else:
                 worksheet = workbook.add_worksheet(worksheet_name[:30])
+                worksheet.write(0, 0, 'No elements out of range')
                                     
         workbook.close()
         zip = ZipFile(archive_filename, 'w')
