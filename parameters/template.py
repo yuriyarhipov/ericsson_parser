@@ -399,7 +399,7 @@ class Template(object):
             table_name = row[0]            
             if table_name not in ['topology', ]:
                 columns, data = self.get_table(project, table_name, cells, param_name, min_value, max_value)
-                tabs['%s (%s) rows: %s' % (param_name, table_name, len(data))] = {'columns': columns, 'data': data}
+                tabs['%s (%s)(%s)' % (param_name, table_name, len(data))] = {'columns': columns, 'data': data}
         return tabs
 
     def get_data(self, project, template, cells):
