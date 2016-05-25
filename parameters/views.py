@@ -53,7 +53,7 @@ def add_template(request):
     data = []
     param_values = request.POST.getlist('param')
     min_values = request.POST.getlist('min_value')
-    max_values = request.POST.getlist('min_value')
+    max_values = request.POST.getlist('max_value')
     template_name = request.POST.get('template_name')
     project = request.project
     network = request.POST.get('network')
