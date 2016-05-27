@@ -152,7 +152,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
         
         if file_type == 'Drive Test':
             dt = DriveTest()
-            dt.upload_file(f, project.id, current_task)
+            dt.upload_file(f, project.id)
             Files.objects.filter(filename=basename(f), project=project).delete()
             Files.objects.create(
                 filename=basename(f),
@@ -174,8 +174,8 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                 vendor=vendor,
                 network=network)
 
-        i += percent_per_file
-        
+        i += percent_per_file        
+    UploadedFiles.objects.filter(id=file_id).delete()
     revoke(worker.request.id, terminate=True)
 
 

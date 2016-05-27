@@ -50,7 +50,7 @@ class DriveTest():
             parameters=parameters)
         return data
 
-    def upload_file(self, filename, project_id, current_task):
+    def upload_file(self, filename, project_id):
         cursor = self.conn.cursor()
         table_name = 'TERMS_%s' % project_id
         cursor.execute('''CREATE TABLE IF NOT EXISTS %s
@@ -68,15 +68,14 @@ class DriveTest():
             DELETE FROM ''' + table_name + '''
             WHERE
                 (project_id=%s) AND
-                (filename=%s)''', (project_id, basename(filename)))
-
+                (filename=%s)''', (project_id, basename(filename)))        
         with open(filename) as f:
             columns = []
             cursor.execute("Select * FROM %s LIMIT 0" % (table_name, ))
             colnames = [desc[0].lower() for desc in cursor.description]
             for col in f.readline().split('\t'):
                 columns.append(col)
-                if (col.lower() not in colnames):
+                if (col.lower() not in colnames):                    
                     cursor.execute(
                         'ALTER TABLE %s ADD COLUMN "%s" TEXT;' % (
                             table_name,
