@@ -124,8 +124,10 @@ treeViewControllers.controller('menuCtrl', ['$scope', '$timeout', '$cookies', '$
                 $scope.treedata = data;
                 for (i in data[0].children){
                     if (data[0].children[i].children.length > 0){
-                        $scope.files[data[0].children[i].children[0].radio_input_name] = data[0].children[i].children[0].label;
-                        $cookies.putObject('dt', $scope.files);
+                        if (($scope.files.gsm_rnd == '') & ($scope.files.lte_rnd == '') & ($scope.files.wcdma_rnd == '')){
+                            $scope.files[data[0].children[i].children[0].radio_input_name] = data[0].children[i].children[0].label;                        
+                            $cookies.putObject('dt', $scope.files);    
+                        }                                            
                     }
                 }
                 $timeout(loadData, 3000);                

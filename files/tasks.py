@@ -152,7 +152,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
         
         if file_type == 'Drive Test':
             dt = DriveTest()
-            dt.upload_file(f, project.id)
+            dt.upload_file(f, project.id, file_id, set_percent)
             Files.objects.filter(filename=basename(f), project=project).delete()
             Files.objects.create(
                 filename=basename(f),

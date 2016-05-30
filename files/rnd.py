@@ -46,6 +46,7 @@ class Rnd:
         return params
 
     def get_data(self, filenames=None):
+        print filenames
         cursor = connection.cursor()
         project_id = self.project_id
         network = self.network.upper()

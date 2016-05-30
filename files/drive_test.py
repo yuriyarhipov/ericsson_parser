@@ -50,9 +50,11 @@ class DriveTest():
             parameters=parameters)
         return data
 
-    def upload_file(self, filename, project_id):
-        cursor = self.conn.cursor()
+    def upload_file(self, filename, project_id, file_id=None, set_percent=None):
+        cursor = self.conn.cursor()        
         table_name = 'TERMS_%s' % project_id
+        set_percent(file_id, 20)
+        print "OK"
         cursor.execute('''CREATE TABLE IF NOT EXISTS %s
             (
                 "id" serial,
@@ -84,7 +86,7 @@ class DriveTest():
 
             columns = ['"%s"' % col for col in columns]
             cursor.copy_from(f, table_name, columns=columns)
-
+        set_percent(file_id, 50)
         cursor.execute('''
             UPDATE ''' + table_name + ''' SET
                 project_id=%s,
@@ -93,6 +95,7 @@ class DriveTest():
             WHERE
                 (project_id is Null) AND
                 (filename is NULL)''', (project_id, basename(filename)))
+        set_percent(file_id, 100)
         self.conn.commit()
 
     def get_color(self, legend, value):
