@@ -130,7 +130,7 @@ class DriveTest():
         points = []
         cursor = self.conn.cursor()
         sql_filenames = ["'%s'" % f for f in filenames]
-        cursor.execute('''SELECT DISTINCT id, "All-Latitude", "All-Longitude", "''' + param +'''" FROM ''' + table_name + ''' WHERE (project_id=%s) AND (filename in (''' + ','.join(sql_filenames) + ''')) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"=%s) AND ("''' + param +'''"!='') ORDER BY id''', (project_id, map_box.wkt, ms))
+        cursor.execute('''SELECT DISTINCT id, "All-Latitude", "All-Longitude", "''' + param +'''" FROM ''' + table_name + ''' WHERE (project_id=%s) AND ST_Within("point" , ST_GeomFromText(%s)) AND ("MS"=%s) AND ("''' + param +'''"!='') ORDER BY id''', (project_id, map_box.wkt, ms))
         row_count = cursor.rowcount
         k = row_count / 4000
         i = 0

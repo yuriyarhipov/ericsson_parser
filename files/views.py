@@ -462,7 +462,6 @@ def drive_test(request):
     param = request.POST.get('parameter')
     filenames = request.POST.get('filenames').split(',')
     legend = []
-
     for p in DriveTestLegend.objects.filter(project=request.project, param=request.POST.get('legend')):
         legend.append({
             'param': p.param,
