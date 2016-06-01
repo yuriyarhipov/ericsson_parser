@@ -101,7 +101,8 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
             data_file = NokiaWCDMA(f, project, file_id, i, available_percent, set_percent).data
         elif (vendor == 'Huawei'):
             if file_type == 'MMLCFG':
-                data_file = HuaweiWCDMA(f, project, file_id, i, available_percent, set_percent).data
+                if '.xml' in f:                
+                    data_file = HuaweiWCDMA(f, project, file_id, i, available_percent, set_percent).data
             elif file_type == 'MML script file':
                 data_file = HuaweiConfig(f, project, file_id, i, available_percent, set_percent).data
         if data_file:
