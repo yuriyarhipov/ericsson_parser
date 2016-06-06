@@ -85,7 +85,8 @@ class DriveTest():
             self.conn.commit()
 
             columns = ['"%s"' % col for col in columns]
-            cursor.copy_from(f, table_name, columns=columns)
+            #cursor.copy_from(f, table_name, columns=columns)            
+            cursor.copy_expert("COPY %s (%s) FROM STDIN WITH csv header encoding 'latin1' DELIMITER '\t'" % (table_name, ','.join(columns)), f)
         set_percent(file_id, 50)
         cursor.execute('''
             UPDATE ''' + table_name + ''' SET

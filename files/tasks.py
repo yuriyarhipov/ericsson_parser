@@ -92,7 +92,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     i = 0
     available_percent = percent_per_file / 2
     tables = set()
-
+    print work_files
     for f in work_files:
         data_file = None
         if (file_type in xml_types) and (network == 'WCDMA'):

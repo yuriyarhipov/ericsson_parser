@@ -591,7 +591,6 @@ class Tables:
         if self.network != 'LTE':
             return
 
-
         self.cursor.execute('''
             CREATE OR REPLACE VIEW RND_LTE AS
             SELECT

@@ -111,12 +111,34 @@ tableControllers.controller('universalTablesCtrl', ['$scope', '$http', '$cookies
         ]
 }]);
 
-tableControllers.controller('universalTableCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location',
-    function ($scope, $http, $routeParams, $cookies, $location) {
+tableControllers.controller('universalTableCtrl', ['$scope', '$http', '$routeParams', '$cookies', '$location', 'usSpinnerService',
+    function ($scope, $http, $routeParams, $cookies, $location, usSpinnerService) {
         if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
-        $http.get('/data/universal_table/' + $routeParams.table_name + '/').success(function(data){
-            $scope.columns = data.columns;
+        
+        $scope.tablename = $routeParams.table_name;
+        var columns = [];
+        $scope.table_config = {
+            columnDefs: columns,
+            enableGridMenu: true,
+            enableSelectAll: true,
+            enableFiltering: true,
+            flatEntityAccess: true,
+            showGridFooter: true,
+        }
+
+        $http.get('/data/universal_table/' + $routeParams.table_name + '/').success(function(data) {
+            for (col_id in data.columns){
+                columns.push({
+                    field: data.columns[col_id],
+                    name: data.columns[col_id],
+                    width:100
+                })
+            }
+            $scope.table_config.data = data.data;
+            usSpinnerService.stop('spinner_table');
         });
+        
+        
 }]);

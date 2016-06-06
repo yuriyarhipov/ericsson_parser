@@ -219,7 +219,7 @@ XmlApp.config(['$routeProvider',
                 controller: 'universalTablesCtrl'
             }).
             when('/universal_table/:table_name', {
-                templateUrl: 'templates/tables/universal_table.html',
+                templateUrl: 'templates/tables/table.html',
                 controller: 'universalTableCtrl'
             }).
             when('/measurements/wncs', {

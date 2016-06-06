@@ -1,8 +1,6 @@
 from tempfile import mkdtemp
 from os.path import join
 
-from pymongo import MongoClient
-import redis
 from pandas import DataFrame, ExcelWriter
 from django.conf import settings
 import dropbox

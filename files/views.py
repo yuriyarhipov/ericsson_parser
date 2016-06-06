@@ -551,8 +551,9 @@ def drive_test_point(request, id):
 
 @api_view(['GET', ])
 def universal_table(request, relation):
+    project = request.project
     ut = UniversalTable(relation.lower())
-    columns, data = ut.get_table()
+    columns, data = ut.get_table(project.id)
     return Response({'columns': columns, 'data': data})
 
 @api_view(['GET', ])
