@@ -114,7 +114,7 @@ def run_template(request):
     template = request.GET.get('template')
     cells = request.GET.get('cell').split(',')
     tabs = Template().get_data(project, template, cells)
-        
+
     if request.GET.get('excel'):
         excel_name = request.GET.get('excel')
         if not excel_name:
@@ -124,29 +124,29 @@ def run_template(request):
         excel_filename = join(tempfile.mkdtemp(), excel_name + '.xlsx')
         workbook = xlsxwriter.Workbook(excel_filename, {'constant_memory': True})
         for worksheet_name in tabs:
-            columns = tabs.get(worksheet_name).get('columns')    
-            if columns:                
+            columns = tabs.get(worksheet_name).get('columns')
+            if columns:
                 worksheet = workbook.add_worksheet(worksheet_name[:30])
                 i = 0
-                for column in tabs.get(worksheet_name).get('columns'):               
+                for column in tabs.get(worksheet_name).get('columns'):
                     worksheet.write(0, i, column)
                     i += 1
-                row_id = 1            
-                for row in tabs.get(worksheet_name).get('data'):                
+                row_id = 1
+                for row in tabs.get(worksheet_name).get('data'):
                     i = 0
-                    for col in columns:                    
+                    for col in columns:
                         worksheet.write(row_id, i, row.get(col))
                         i += 1
                     row_id += 1
             else:
                 worksheet = workbook.add_worksheet(worksheet_name[:30])
                 worksheet.write(0, 0, 'No elements out of range')
-                                    
+
         workbook.close()
         zip = ZipFile(archive_filename, 'w')
         zip.write(excel_filename, arcname=excel_name + '.xlsx')
         zip.close()
-        excel_data = []        
+        excel_data = []
         return HttpResponseRedirect('/static/%s.zip' % excel_name)
     return HttpResponse(json.dumps(tabs), content_type='application/json')
 
