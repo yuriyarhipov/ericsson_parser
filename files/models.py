@@ -266,10 +266,13 @@ class Files(models.Model):
         tables = self.tables.split(',')                
         cursor = connection.cursor()
         for table_name in tables:
-            cursor.execute('''DELETE FROM %s WHERE (filename='%s') AND (project_id='%s')''' % (
-                table_name,
-                self.filename,
-                self.project.id))
+            try:
+                cursor.execute('''DELETE FROM %s WHERE (filename='%s') AND (project_id='%s')''' % (
+                    table_name,
+                    self.filename,
+                    self.project.id))
+            except:
+                pass
         connection.commit()
         
 
