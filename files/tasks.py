@@ -234,7 +234,7 @@ def delete_file(filename):
 
 
 @celery.task
-def create_table(table, rows, network, filename, project, file_id, set_percent):
+def create_table(table, rows, network, filename, parent_task_id, project, file_id, set_percent):
     from xml_processing.xml import Tables
     from celery.result import AsyncResult
     from files.models import FileTasks
