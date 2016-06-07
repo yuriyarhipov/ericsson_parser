@@ -112,8 +112,7 @@ def by_technology(request, vendor, network):
         for t in f.tables.split(','):
             tables.add(t)
     tables = list(tables)
-    data_result = []
-    print tables
+    data_result = []    
 
     for t in tables:
         if table_filter:

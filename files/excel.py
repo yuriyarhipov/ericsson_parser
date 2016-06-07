@@ -30,12 +30,18 @@ class Excel:
         if exists(archive_filename):
             return
 
-
         excel_filename = join(tempfile.mkdtemp(), self.table_name + '.xlsx')
         workbook = xlsxwriter.Workbook(excel_filename)
         worksheet = workbook.add_worksheet(self.table_name)
-        worksheet.add_table(0, 0, len(self.data), len(self.columns)-1,
-                            {'data': self.data,
+        excel_data = []
+        for row in self.data:
+            excel_row = []
+            for col in self.columns:
+                excel_row.append(row[col.get('header')])
+            excel_data.append(excel_row)
+             
+        worksheet.add_table(0, 0, len(excel_data), len(self.columns)-1,
+                            {'data': excel_data,
                              'columns': self.columns})
         workbook.close()
         zip = ZipFile(archive_filename, 'w')

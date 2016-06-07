@@ -549,12 +549,16 @@ def drive_test_point(request, id):
     project = request.project
     point = dt.get_point(project.id, id)
     return Response(point)
-
+    
+@gzip_page
 @api_view(['GET', ])
 def universal_table(request, relation):
     project = request.project
     ut = UniversalTable(relation.lower())
     columns, data = ut.get_table(project.id)
+    if request.GET.get('excel'):
+        return HttpResponseRedirect(Excel(request.project.project_name, relation, columns, data).filename)
+
     return Response({'columns': columns, 'data': data})
 
 @api_view(['GET', ])

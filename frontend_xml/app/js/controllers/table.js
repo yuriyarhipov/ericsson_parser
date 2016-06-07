@@ -15,7 +15,7 @@ tableControllers.controller('TableCtrl', ['$scope', '$http', '$routeParams', '$c
             flatEntityAccess: true,
             showGridFooter: true,
         }
-
+        $scope.excel_url = '/data/table/' + $scope.tablename + '/?excel=true'
         $http.get('/data/table/' + $scope.tablename + '/').success(function(data) {
             for (col_id in data.columns){
                 columns.push({
@@ -127,7 +127,7 @@ tableControllers.controller('universalTableCtrl', ['$scope', '$http', '$routePar
             flatEntityAccess: true,
             showGridFooter: true,
         }
-
+        $scope.excel_url = '/data/universal_table/' + $routeParams.table_name + '/?excel=true' 
         $http.get('/data/universal_table/' + $routeParams.table_name + '/').success(function(data) {
             for (col_id in data.columns){
                 columns.push({
