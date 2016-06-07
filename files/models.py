@@ -265,7 +265,7 @@ class Files(models.Model):
     def clear_tables(self):
         tables = self.tables.split(',')                
         cursor = connection.cursor()
-        for table_name in tables:            
+        for table_name in tables:
             cursor.execute('''DELETE FROM %s WHERE (filename='%s') AND (project_id='%s')''' % (
                 table_name,
                 self.filename,

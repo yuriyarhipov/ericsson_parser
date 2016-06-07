@@ -91,8 +91,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     percent_per_file = 90 / len(work_files)
     i = 0
     available_percent = percent_per_file / 2
-    tables = set()
-    print work_files
+    tables = set()    
     for f in work_files:
         data_file = None
         if (file_type in xml_types) and (network == 'WCDMA'):
@@ -139,6 +138,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                     task)
 
             if (file_type in xml_types) and (network == 'LTE'):
+                set_percent(file_id, 10)
                 Files.objects.filter(
                 filename=basename(f),
                 project=project).delete()
@@ -149,7 +149,10 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                     vendor,
                     file_type,
                     network,
-                    task)
+                    file_id, 
+                    i, 
+                    available_percent, 
+                    set_percent)
         
         if file_type == 'Drive Test':
             dt = DriveTest()
@@ -231,7 +234,7 @@ def delete_file(filename):
 
 
 @celery.task
-def create_table(table, rows, network, filename, parent_task_id, project):
+def create_table(table, rows, network, filename, project, file_id, set_percent):
     from xml_processing.xml import Tables
     from celery.result import AsyncResult
     from files.models import FileTasks

@@ -671,14 +671,17 @@ class Processing(object):
     current = float(1)
     data = dict()
 
-    def __init__(self, filename, network, task, project):
+    def __init__(self, filename, network, project, file_id=None, current_percent=None, available_percent=None, set_percent=None):
         self.filename = filename
         self.network = network
         self.project = project
+        self.file_id = file_id,
+        self.current_percent = current_percent, 
+        self.available_percent = available_percent, 
+        self.set_percent = set_percent          
         self.conn = psycopg2.connect(
             'host = localhost dbname = xml2 user = postgres password = 1297536'
-        )
-        self.task = task
+        )        
         self.main()
 
     def parse_mo(self, mo):
@@ -721,7 +724,8 @@ class Processing(object):
             FileName=basename(self.filename),
             MO=', '.join(self.get_mo(node)),
             vendorName=self.vendorName,
-            version=self.version)
+            version=self.version,
+            project_id = self.project.id)
         result.update(self.get_additional_fields(node, table_name))
 
         mo = self.parse_mo(result['MO'])
@@ -862,43 +866,37 @@ class Processing(object):
         self.data[table_name].append(fields)
 
     def main(self):
+        elem_count = float(0)
         context = etree.iterparse(
             self.filename,
             events=('end',),
             tag='{genericNrm.xsd}attributes')
-        i = 0
-        val = 0
         for event, elem in context:
-            i += 1
-            if i == 10000:
-                if val < 87:
-                    val += 1
-                i = 0
-                self.task.update_state(state="PROGRESS", meta={"current": int(val)})
+            elem_count += 1
+                
+        context = etree.iterparse(
+            self.filename,
+            events=('end',),
+            tag='{genericNrm.xsd}attributes')
+        i = 0        
+        for event, elem in context:
+            i += 1                            
+            self.set_percent(self.file_id, i / elem_count * 50)
             self.parse_elem(elem)
             elem.clear()
-        tasks = []
+        tasks = []        
+        table_count = float(len(self.data))
+        i = float(0)
         for table_name, rows in self.data.iteritems():
-            ct_task = create_table.delay(
-                table_name,
-                rows,
-                self.network,
-                self.filename,
-                self.task.request.id,
-                self.project)
-            tasks.append(ct_task.id)
-        FileTasks.objects.create(
-            task_id=self.task.request.id,
-            tasks=','.join(tasks),
-            max_value=len(tasks))
-
-        self.task.update_state(state="PROGRESS", meta={"current": int(100)})
+            self.set_percent(self.file_id, 50 + i / table_count * 50)
+            i += 1
+            Tables().write_data(table_name, rows, self.network, self.filename)                    
         self.conn.commit()
 
 
 class Xml(object):
-    def save_xml(self, filename, project, description, vendor, file_type, network, task):
-        xml = Processing(filename, network, task, project)
+    def save_xml(self, filename, project, description, vendor, file_type, network, file_id=None, current_percent=None, available_percent=None, set_percent=None):        
+        xml = Processing(filename, network, project, file_id, current_percent, available_percent, set_percent)
         Files.objects.filter(filename=basename(xml.filename), project=project).delete()
         Files.objects.create(
             filename=basename(xml.filename),
