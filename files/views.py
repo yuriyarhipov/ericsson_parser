@@ -137,14 +137,12 @@ def save_files(request):
 
 def run_tasks_all(request):
     project = request.project
-    data = []
-    print 'OK'
+    data = []    
     for f in UploadedFiles.objects.filter(project=project):
         if f.file_type not in ['RND', 'Drive Test', 'HISTOGRAM FILE COUNTER - Access Distance']:
             for f in Files.objects.filter(project=project, file_type=f.file_type):
                 f.clear_tables()
-                f.delete()
-    print 'OK1'
+                f.delete()    
     for f in UploadedFiles.objects.filter(project=project):        
         job = tasks.worker.delay(f.filename, project, f.description, f.vendor, f.file_type, f.network, f.id)
     return HttpResponse(json.dumps([]), content_type='application/json')

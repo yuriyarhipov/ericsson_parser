@@ -49,6 +49,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     xml_types = [
         'WCDMA RADIO OSS BULK CM XML FILE',
         'WCDMA TRANSPORT OSS BULK CM XML FILE',
+        'WCDMA Radio and Transport Bulk',
         'LTE RADIO eNodeB BULK CM XML FILE',
         'LTE TRANSPORT eNodeB BULK CM XML FILE'
     ]
@@ -95,9 +96,10 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     for f in work_files:
         data_file = None
         if (file_type in xml_types) and (network == 'WCDMA'):
-            data_file = WcdmaXML(f, project, file_id, i, available_percent, set_percent).data
+            data_file = WcdmaXML(f, project, file_id, i, available_percent, set_percent).data                        
         elif (vendor == 'Nokia'):
             data_file = NokiaWCDMA(f, project, file_id, i, available_percent, set_percent).data
+            
         elif (vendor == 'Huawei'):
             if file_type == 'MMLCFG':
                 if '.xml' in f:                
@@ -113,10 +115,12 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                 table_index += 1
                 percent = int(table_index / table_count * 100)
                 set_percent(file_id, i + available_percent + int(float(available_percent) * float(percent) / 100))
-                try:
-                    table.write_table(table_name, data)
-                except:
-                    pass
+                #try:
+                print table_name
+                print data[0]
+                table.write_table(table_name, data)
+                #except:
+                #    pass
             UploadedFiles.objects.filter(id=file_id).delete()
             Files.objects.filter(filename=basename(f), project=project).delete()
             Files.objects.create(

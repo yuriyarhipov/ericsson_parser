@@ -165,24 +165,28 @@
                     </button>
                     <md-menu-content>
                         <md-menu-item>
-                            <md-button ng-href="#/register_version_release">
-                                Register Version Release
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/create_predefined_template">
-                                Create Predefined Template
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/predefined_templates">
-                                Predefined Templates
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/run_template">
-                                Run a Template
-                            </md-button>
+                            <md-menu>
+                                <md-button ng-click="$mdOpenMenu()">
+                                    Template
+                                </md-button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-button ng-href="#/create_predefined_template">
+                                            Create Predefined Template
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-href="#/predefined_templates">
+                                            Predefined Templates
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-href="#/run_template">
+                                            Run a Template
+                                        </md-button>
+                                    </md-menu-item>                                    
+                                </md-menu-content>
+                            </md-menu>
                         </md-menu-item>
                         <md-menu-item>
                             <md-menu>

@@ -56,6 +56,7 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
         $scope.TypeFile = [
                     'WCDMA RADIO OSS BULK CM XML FILE',
                     'WCDMA TRANSPORT OSS BULK CM XML FILE',
+                    'WCDMA Radio and Transport Bulk',
                     'WNCS OSS FILE',
                     'WMRR OSS FILE',
                     'WCDMA LICENSE FILE OSS XML',
@@ -78,6 +79,7 @@ filesControllers.controller('FilesHubCtrl', ['$scope', '$http', '$timeout', 'upl
                 $scope.TypeFile = [
                     'WCDMA RADIO OSS BULK CM XML FILE',
                     'WCDMA TRANSPORT OSS BULK CM XML FILE',
+                    'WCDMA Radio and Transport Bulk',
                     'WNCS OSS FILE',
                     'WMRR OSS FILE',
                     'WCDMA LICENSE FILE OSS XML',

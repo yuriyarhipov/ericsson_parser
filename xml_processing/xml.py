@@ -147,12 +147,11 @@ class Table:
             cursor.execute('CREATE TABLE IF NOT EXISTS %s (%s);' % (table_name, ', '.join(sql_columns)))
             self.conn.commit()
             self.add_indexes(table_name, columns)
-
+                    
     def write_table(self, tablename, data):
         df = pd.DataFrame(data)
         columns = list(df.columns.values)
         cursor = self.conn.cursor()
-
         self.create_table(tablename, columns)
         df.to_csv('/tmp/temp.csv', sep='\t', index=False, header=False)
         with open('/tmp/temp.csv') as f:

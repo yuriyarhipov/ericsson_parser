@@ -1,33 +1,92 @@
 <md-content>
     <md-tabs md-dynamic-height md-border-bottom>
-        <md-tab label="Map Color Settings">
+        <md-tab label="Map Settings">
+            <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">GSM:</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <md-input-container layout="row">
+                        <div flex="20">
+                            <md-slider-container>
+                                <md-slider flex class="md-primary" min="0" max="5000" ng-model="gsm_size">
+                                </md-slider>
+                            </md-slider-container>
+                        </div>
+                        <div flex="20">
+                            <md-checkbox ng-model="gsm_freq" aria-label="850/900 OL 1800/1900 UL" class="md-align-top-left md-primary" flex>850/900 OL 1800/1900 UL
+                        </div>
+                        <div flex="20">
+                            <md-checkbox ng-model="gsm_freq" aria-label="850/900 UL 1800/1900 OL" class="md-align-top-left md-primary" flex>850/900 UL 1800/1900 OL
+                        </div>
+                        <div flex="20">
+                            <input flex type="number" ng-model="gsm_size">
+                        </div>                        
+                    </md-input-container>
+                </md-card-content>
+            </md-card>
+            <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">Wcdma:</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <md-input-container layout="row">
+                        <div flex="20">
+                            <md-slider-container>
+                                <md-slider flex class="md-primary" min="0" max="5000">
+                                </md-slider>
+                            </md-slider-container>
+                        </div>
+                        <div flex="5">
+                        </div>
+                        <div flex="20">
+                            <label>Carrier</label>
+                            <md-input-container>
+                                <md-select ng-model="carrier">
+                                <md-option ng-repeat="c in carriers" value="{{c}}">{{ c }}</md-option>
+                            </md-select>
+                            </md-input-container>                            
+                        </div>
+                        <div flex="20">
+                            <md-slider flex class="md-primary" min="0" max="5000" ng-model="wcdma_carrier_percent">
+                        </div>                                                
+                    </md-input-container>
+                </md-card-content>
+            </md-card>
+            <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">LTE:</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    <md-input-container layout="row">
+                        <div flex="20">
+                            <md-slider-container>
+                                <md-slider class="md-primary" flex min="0" max="5000" ng-model="color.red">
+                                </md-slider>
+                            </md-slider-container>
+                        </div>
+                        <div flex="20">
+                            <md-checkbox ng-model="data.cb2" aria-label="850/900 OL 1800/1900 UL" class="md-align-top-left" flex>850/900 OL 1800/1900 UL
+                        </div>
+                        <div flex="20">
+                            <md-checkbox ng-model="data.cb2" aria-label="850/900 OL 1800/1900 UL" class="md-align-top-left" flex>850/900 UL 1800/1900 OL
+                        </div>
+                        <div flex="20">
+                            <input flex type="number" ng-model="color.red" aria-label="red" aria-controls="red-slider">
+                        </div>
+                        <div flex="20">
+                            <input type="color" class="form-control" id="gsm_color" ng-model="lte_color">
+                        </div>
+                    </md-input-container>
+                </md-card-content>
+            </md-card>
             <div flex="20">
-                <form class="form-horizontal">
-                    <div class="form-group">
-                        <label for="gsm_color" class="col-sm-6 control-label">GSM Color</label>
-                        <div class="col-sm-6">
-                            <input type="color" class="form-control" id="gsm_color" ng-model="gsm_color">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="color_wcdma" class="col-sm-6 control-label">WCDMA Color</label>
-                        <div class="col-sm-6">
-                            <input type="color" class="form-control" id="color_wcdma" ng-model="wcdma_color">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="color_lte" class="col-sm-6 control-label">LTE Color</label>
-                        <div class="col-sm-6">
-                            <input type="color" class="form-control" id="color_lte" ng-model="lte_color">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="color_element" class="col-sm-6 control-label">One Element Search</label>
-                        <div class="col-sm-6">
-                            <input type="color" class="form-control" id="color_element" ng-model="element_color">
-                        </div>
-                    </div>
-                </form>
                 <md-button class="md-raised md-primary" ng-click="onSaveMapColor(gsm_color, wcdma_color, lte_color, element_color)">Save</md-button>
             </div>
         </md-tab>
@@ -48,9 +107,7 @@
                             <input ng-model="radius_lte">
                         </md-input-container>
                         <md-input-container class="md-block">
-                            <md-button
-                                    class="md-raised md-primary"
-                                    ng-click="onSaveMapSettings(radius_wcdma,radius_lte, radius_gsm)">
+                            <md-button class="md-raised md-primary" ng-click="onSaveMapSettings(radius_wcdma,radius_lte, radius_gsm)">
                                 Save
                             </md-button>
                         </md-input-container>
@@ -98,28 +155,18 @@
                     </div>
                     <div class="flex">
                         <md-input-container>
-                            <select multiple
-                                    size="10"
-                                    class="col-md-12"
-                                    ng-options="s for s in sectors"
-                                    ng-model="sector">
+                            <select multiple size="10" class="col-md-12" ng-options="s for s in sectors" ng-model="sector">
                             </select>
                         </md-input-container>
                         <md-input-container>
-                            <button ng-click="onAdd(logical_sector, network, band, sector)"
-                                    class="btn btn-success">>>
+                            <button ng-click="onAdd(logical_sector, network, band, sector)" class="btn btn-success">>>
                             </button>
                             </br>
-                            <button ng-click="onRemove(logical_sector, selected_associated_sectors)"
-                                    class="btn btn-danger"><<
+                            <button ng-click="onRemove(logical_sector, selected_associated_sectors)" class="btn btn-danger"><<
                             </button>
                         </md-input-container>
                         <md-input-container>
-                            <select multiple
-                                    size="10"
-                                    class="col-md-12"
-                                    ng-options="s.sector as s.label for s in associated_sectors"
-                                    ng-model="selected_associated_sectors">
+                            <select multiple size="10" class="col-md-12" ng-options="s.sector as s.label for s in associated_sectors" ng-model="selected_associated_sectors">
                             </select>
                         </md-input-container>
                     </div>
@@ -137,8 +184,7 @@
                     <div flex="20">
                         <md-input-container class="md-block">
                             <label>Technology from</label>
-                            <md-select ng-model="lr_technology_from"
-                                       ng-change="onChangelr_tech_from(lr_technology_from)">
+                            <md-select ng-model="lr_technology_from" ng-change="onChangelr_tech_from(lr_technology_from)">
                                 <md-option ng-repeat="t in lr_technologies_from" value="{{ t }}">
                                     {{ t }}
                                 </md-option>
@@ -183,20 +229,14 @@
                     </div>
                     <div flex="40">
                         <md-input-container>
-                            <button ng-click="onClick_lr(lr_technology_from, lr_carrier_from, lr_symmetry, lr_technology_to, lr_carrier_to)"
-                                    class="btn btn-success">>>
+                            <button ng-click="onClick_lr(lr_technology_from, lr_carrier_from, lr_symmetry, lr_technology_to, lr_carrier_to)" class="btn btn-success">>>
                             </button>
                             </br>
-                            <button ng-click="onClickDelLr(selected_ho_realtions)"
-                                    class="btn btn-danger"><<
+                            <button ng-click="onClickDelLr(selected_ho_realtions)" class="btn btn-danger"><<
                             </button>
                         </md-input-container>
                         <md-input-container>
-                            <select multiple
-                                    size="10"
-                                    class="col-md-12"
-                                    ng-options="r.id as r.ho_realtion for r in lr_data"
-                                    ng-model="selected_ho_realtions">
+                            <select multiple size="10" class="col-md-12" ng-options="r.id as r.ho_realtion for r in lr_data" ng-model="selected_ho_realtions">
                             </select>
                         </md-input-container>
                     </div>
@@ -205,8 +245,8 @@
         </md-tab>
         <md-tab label="Drive Test Legend">
             <md-content class="md-padding">
-                <form ng-upload="complete(content)" class="form-horizontal col-sm-6" role="form"
-                      action="/data/files/set_drive_test_legend/" upload-options-enable-rails-csrf>
+                <form ng-upload="complete(content)" class="form-horizontal col-sm-6" role="form" action="/data/files/set_drive_test_legend/"
+                    upload-options-enable-rails-csrf>
                     <div class="form-group">
                         <label for="file" class="col-sm-3 control-label">File</label>
                         <div class="col-sm-9">
@@ -223,20 +263,20 @@
                 </form>
                 <table class="table table-bordered">
                     <thead>
-                    <tr>
-                        <td>Parameter</td>
-                        <td>Min Value</td>
-                        <td>Max Value</td>
-                        <td>Color</td>
-                    </tr>
+                        <tr>
+                            <td>Parameter</td>
+                            <td>Min Value</td>
+                            <td>Max Value</td>
+                            <td>Color</td>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="l in legend">
-                        <td>{{ l[0] }}</td>
-                        <td>{{ l[1] }}</td>
-                        <td>{{ l[2] }}</td>
-                        <td style="background-color:{{ l[3] }} ">{{ l[3] }}</td>
-                    </tr>
+                        <tr ng-repeat="l in legend">
+                            <td>{{ l[0] }}</td>
+                            <td>{{ l[1] }}</td>
+                            <td>{{ l[2] }}</td>
+                            <td style="background-color:{{ l[3] }} ">{{ l[3] }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </md-content>

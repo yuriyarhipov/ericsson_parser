@@ -7,6 +7,8 @@ import re
 class WcdmaXML:
     data = dict()
     xml_mask = re.compile('\{.*\}')
+    columns = []
+    lower_columns = []
 
     def __init__(self, filename, project, file_id=None, current_percent=None, available_percent=None, set_percent=None):
         self.filename = filename
@@ -17,6 +19,17 @@ class WcdmaXML:
         self.set_percent = set_percent
         self.parse_file()
 
+    def check_column(self, column):
+        if (column not in self.columns) and (column.lower() not in self.lower_columns):
+            self.columns.append(column)
+            self.lower_columns.append(column.lower())
+        elif (column not in self.columns) and (column.lower() in self.lower_columns):
+            i = self.lower_columns.index(column.lower())
+            print column, self.columns[i] 
+            column = self.columns[i]
+            
+            
+        return column    
 
 
     def get_mo(self, node):
@@ -41,6 +54,7 @@ class WcdmaXML:
                 field_name = self.xml_mask.sub('', child.tag)
                 field_value = child.text.strip()
                 if field_value:
+                    field_name = self.check_column(field_name)
                     row[field_name] = field_value
         return row
 
@@ -48,8 +62,9 @@ class WcdmaXML:
         result = dict()
         pattern = '(\w*)=(\w*-*\w*)'
         k = re.compile(pattern)
-        for k, v in re.findall(k, mo):
-            result[k] = v
+        if mo:        
+            for k, v in re.findall(k, mo):
+                result[k] = v
         return result
 
     def parse_node(self, node):
@@ -77,8 +92,8 @@ class WcdmaXML:
             'UeRabType', 'UeRc', 'Carrier', 'TermPointToMme']
 
         for at in additional_fields:
-            if (at in mo) and (at not in row):
-                row[at] = mo.get(at, '')
+            if (at in mo) and (at not in row):                
+                row[self.check_column(at)] = mo.get(at, '')
 
         if 'Sector' in mo:
             if 'Element' not in row:
