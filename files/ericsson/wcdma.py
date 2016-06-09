@@ -24,11 +24,8 @@ class WcdmaXML:
             self.columns.append(column)
             self.lower_columns.append(column.lower())
         elif (column not in self.columns) and (column.lower() in self.lower_columns):
-            i = self.lower_columns.index(column.lower())
-            print column, self.columns[i] 
+            i = self.lower_columns.index(column.lower())             
             column = self.columns[i]
-            
-            
         return column    
 
 
