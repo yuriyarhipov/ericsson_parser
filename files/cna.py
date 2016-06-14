@@ -8,8 +8,6 @@ from files.models import Files, CNATemplate
 from files.excel import ExcelFile
 
 
-
-
 class CNA:
 
     def __init__(self):
@@ -178,7 +176,7 @@ class CNA:
         self.conn.commit()
 
 
-    def save_cna(self, filename, project, description, vendor, file_type, network, task):
+    def save_cna(self, filename, project, description, vendor, file_type, network, file_id, set_percent):
         row_count = 100
         tables = dict()
         for cna_template in CNATemplate.objects.filter(project=project):
@@ -198,8 +196,8 @@ class CNA:
                         CNA().add_rows(basename(filename), tables, columns, rows)
                         rows = []
                         i += 1
-                        task.update_state(state="PROGRESS", meta={"current": int(i)})
-
+                        set_percent(dile_id, int(i))
+                        
         Files.objects.filter(filename=basename(filename), project=project).delete()
         Files.objects.create(
                 filename=basename(filename),

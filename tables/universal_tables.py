@@ -34,8 +34,8 @@ class UniversalTable:
             neighbor UtrancellTarget,
             t2.carrier CarrierTarget            
         FROM UtranRelation
-            Inner join TOPOLOGY AS t1 ON ((t1.Utrancell= UtranRelation.Utrancell) AND (t1.filename= UtranRelation.filename))
-            Inner join TOPOLOGY AS t2 ON ((t2.Utrancell= UtranRelation.neighbor) AND  (t2.filename= UtranRelation.filename))
+            left join TOPOLOGY AS t1 ON ((t1.Utrancell= UtranRelation.Utrancell) AND (t1.filename= UtranRelation.filename))
+            left join TOPOLOGY AS t2 ON ((t2.Utrancell= UtranRelation.neighbor) AND  (t2.filename= UtranRelation.filename))
             WHERE project_id = %s
             ''', (str(project_id), ))
         
@@ -61,8 +61,19 @@ class UniversalTable:
                 'RncSource',
                 'UtrancellSource',
                 'CarrierSource',
-                'CellTarget',
-                'Status']
+                'CellTarget']
+            cursor.execute('''
+                SELECT 
+                    GsmRelation.Element1 AS "RncSource", 
+                    GsmRelation.Utrancell AS "UtrancellSource", 
+                    Topology.Carrier As "CarrierSource", 
+                    GsmRelation.GSMRelation AS "CellTarget" 
+                FROM GsmRelation
+                    LEFT JOIN TOPOLOGY ON (
+                        (GsmRelation.Utrancell=Topology.Utrancell) AND 
+                        (GsmRelation.filename=topology.filename))
+                WHERE project_id = %s;
+            ''', (str(project_id), ))
 
         
         data = []
