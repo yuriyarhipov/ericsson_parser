@@ -1,41 +1,41 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="xmlApp">
+
 <head>
     <title>Xmart 1.2 alfa</title>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/tree-control.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/tree-control-attribute.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/select.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/tree-control.css" rel="stylesheet" type="text/css" />
+    <link href="/css/tree-control-attribute.css" rel="stylesheet" type="text/css" />
+    <link href="/css/select.min.css" rel="stylesheet" type="text/css" />
 
-    <link href="/css/angular-openlayers-directive.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/MarkerCluster.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/MarkerCluster.Default.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/leaflet.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/rnd.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/leaflet.draw.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/leaflet.measurecontrol.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/leaflet-slider.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/L.Control.ZoomBox.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/L.Control.Window.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/angular-flash.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/ui-grid.min.css" rel="stylesheet" type="text/css"/>
-    <link href='/css/leaflet.fullscreen.css' rel='stylesheet'/>
+    <link href="/css/angular-openlayers-directive.css" rel="stylesheet" type="text/css" />
+    <link href="/css/MarkerCluster.css" rel="stylesheet" type="text/css" />
+    <link href="/css/MarkerCluster.Default.css" rel="stylesheet" type="text/css" />
+    <link href="/css/leaflet.css" rel="stylesheet" type="text/css" />
+    <link href="/css/rnd.css" rel="stylesheet" type="text/css" />
+    <link href="/css/leaflet.draw.css" rel="stylesheet" type="text/css" />
+    <link href="/css/leaflet.measurecontrol.css" rel="stylesheet" type="text/css" />
+    <link href="/css/leaflet-slider.css" rel="stylesheet" type="text/css" />
+    <link href="/css/L.Control.ZoomBox.css" rel="stylesheet" type="text/css" />
+    <link href="/css/L.Control.Window.css" rel="stylesheet" type="text/css" />
+    <link href="/css/angular-flash.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/ui-grid.min.css" rel="stylesheet" type="text/css" />
+    <link href='/css/leaflet.fullscreen.css' rel='stylesheet' />
 
     <link rel="stylesheet" href="/css/angular-material.min.css">
-    <link href="/css/main.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/main.css" rel="stylesheet" type="text/css" />
     <link href="/css/material_icons.css" rel="stylesheet">
 
     <script src="/js/google_maps.js"></script>
     <script src="/js/angular.min.js"></script>
     <script type='text/javascript' src='/js/jquery.js'></script>
     <script type='text/javascript' src='/js/angular-route.min.js'></script>
-    <script type='text/javascript'
-            src='https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies.js'></script>
+    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies.js'></script>
     <script type='text/javascript' src='/js/ng-upload.min.js'></script>
     <script type='text/javascript' src='/js/angular-tree-control.js'></script>
     <script type='text/javascript' src='/js/select.min.js'></script>
@@ -90,365 +90,376 @@
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
 </head>
+
 <body>
-<md-toolbar class="md-menu-toolbar" ng-controller="mainMenuCtrl" ng-show="show_menu">
-    <div layout="row">
-        <md-toolbar-filler layout layout-align="center center" class="has_icon" id="custom_filler">
-            <img src="/static/XMART.png" style="height:30px">
-        </md-toolbar-filler>
-        <div>
-            <md-menu-bar>
-                <md-menu>
-                    <button ng-click="$mdOpenMenu()">
+    <md-toolbar class="md-menu-toolbar" ng-controller="mainMenuCtrl" ng-show="show_menu">
+        <div layout="row">
+            <md-toolbar-filler layout layout-align="center center" class="has_icon" id="custom_filler">
+                <img src="/static/XMART.png" style="height:30px">
+            </md-toolbar-filler>
+            <div>
+                <md-menu-bar>
+                    <md-menu>
+                        <button ng-click="$mdOpenMenu()">
                         Projects
                     </button>
-                    <md-menu-content>
-                        <md-menu-item>
-                            <md-button ng-href="#/add_project">
-                                Create Project
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/projects">
-                                Projects
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/files_hub">
-                                Files Hub
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/changelog">
-                                ChangeLog
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-                <md-menu>
-                    <button ng-click="$mdOpenMenu()">
+                        <md-menu-content>
+                            <md-menu-item>
+                                <md-button ng-href="#/add_project">
+                                    Create Project
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/projects">
+                                    Projects
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/files_hub">
+                                    Files Hub
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/changelog">
+                                    ChangeLog
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                    <md-menu>
+                        <button ng-click="$mdOpenMenu()">
                         Network
                     </button>
-                    <md-menu-content>
-                        <md-menu-item>
-                            <md-button ng-href="#/map">
-                                Map
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/create_group_of_cells">
-                                Create group of cells
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/groups">
-                                Group of cells
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/table/rnd/rnd">
-                                Radio Network Data
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button
-                                    ng-href="/data/rnd/get3g3gscript">3G3G Script
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-                <md-menu>
-                    <button ng-click="$mdOpenMenu()">
+                        <md-menu-content>
+                            <md-menu-item>
+                                <md-button ng-href="#/map">
+                                    Map
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/create_group_of_cells">
+                                    Create group of cells
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/groups">
+                                    Group of cells
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/table/rnd/rnd">
+                                    Radio Network Data
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="/data/rnd/get3g3gscript">3G3G Script
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                    <md-menu>
+                        <button ng-click="$mdOpenMenu()">
+                        Tables
+                    </button>
+                        <md-menu-content>
+                            <md-menu-item>
+                                <md-button ng-href="#/by_technology">
+                                    By Technology
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/universal_tables">
+                                    Universal Tables
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                    <md-menu>
+                        <button ng-click="$mdOpenMenu()">
                         Parameters
                     </button>
-                    <md-menu-content>
-                        <md-menu-item>
-                            <md-menu>
-                                <md-button ng-click="$mdOpenMenu()">
-                                    Template
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/create_predefined_template">
-                                            Create Predefined Template
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/predefined_templates">
-                                            Predefined Templates
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/run_template">
-                                            Run a Template
-                                        </md-button>
-                                    </md-menu-item>                                    
-                                </md-menu-content>
-                            </md-menu>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-menu>
-                                <md-button ng-click="$mdOpenMenu()">
-                                    Licenses & Hardware
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/licenses">
-                                            Check Licenses
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/hardwares">
-                                            Check Hardware
-                                        </md-button>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-menu>
-                                <md-button ng-click="$mdOpenMenu()">
-                                    Compare
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/compare_files">
-                                            Compare Files
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/compare_templates">
-                                            Compare Templates
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/compare_queries">
-                                            Compare Queries
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/compare_neighbors">
-                                            Compare Neighbors
-                                        </md-button>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-                <md-menu>
-                    <button ng-click="$mdOpenMenu()">
+                        <md-menu-content>
+                            <md-menu-item>
+                                <md-menu>
+                                    <md-button ng-click="$mdOpenMenu()">
+                                        Template
+                                    </md-button>
+                                    <md-menu-content>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/create_predefined_template">
+                                                Create Predefined Template
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/predefined_templates">
+                                                Predefined Templates
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/run_template">
+                                                Run a Template
+                                            </md-button>
+                                        </md-menu-item>
+                                    </md-menu-content>
+                                </md-menu>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-menu>
+                                    <md-button ng-click="$mdOpenMenu()">
+                                        Licenses & Hardware
+                                    </md-button>
+                                    <md-menu-content>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/licenses">
+                                                Check Licenses
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/hardwares">
+                                                Check Hardware
+                                            </md-button>
+                                        </md-menu-item>
+                                    </md-menu-content>
+                                </md-menu>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-menu>
+                                    <md-button ng-click="$mdOpenMenu()">
+                                        Compare
+                                    </md-button>
+                                    <md-menu-content>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/compare_files">
+                                                Compare Files
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/compare_templates">
+                                                Compare Templates
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/compare_queries">
+                                                Compare Queries
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/compare_neighbors">
+                                                Compare Neighbors
+                                            </md-button>
+                                        </md-menu-item>
+                                    </md-menu-content>
+                                </md-menu>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-menu>
+                                    <md-button ng-click="$mdOpenMenu()">
+                                        Automatic Site Query
+                                    </md-button>
+                                    <md-menu-content>
+                                        <md-menu-item>
+                                            <md-menu-item>
+                                                <md-button ng-href="#/set_automatic_site_query">
+                                                    Set Automatic Site Query
+                                                </md-button>
+                                            </md-menu-item>
+                                        </md-menu-item>
+                                    </md-menu-content>
+                                </md-menu>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                    <md-menu>
+                        <button ng-click="$mdOpenMenu()">
                         Statistics
                     </button>
-                    <md-menu-content>
-                        <md-menu-item>
-                            <md-menu>
-                                <md-button ng-click="$mdOpenMenu()">Measurement</md-button>
-                                <md-menu-content>
-                                    <md-menu-item>
-                                        <md-menu>
-                                            <md-button ng-click="$mdOpenMenu()">Ericsson</md-button>
-                                            <md-menu-content>
-                                                <md-menu-item>
-                                                    <md-button ng-href="#/access_distance">Access Distance
-                                                    </md-button>
-                                                </md-menu-item>
-                                                <md-menu-item>
-                                                    <md-button ng-href="#/measurements/wncs">WNCS
-                                                    </md-button>
-                                                </md-menu-item>
-                                                <md-menu-item>
-                                                    <md-button ng-href="#/measurements/wmrr">WMRR
-                                                    </md-button>
-                                                </md-menu-item>
-                                                <md-menu-item>
-                                                    <md-button ng-href="#/measurements/ncs">NCS
-                                                    </md-button>
-                                                </md-menu-item>
-                                                <md-menu-item>
-                                                    <md-button ng-href="#/measurements/mrr">MRR
-                                                    </md-button>
-                                                </md-menu-item>
-                                            </md-menu-content>
-                                        </md-menu>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-click="onMenuClick('', $event)">
-                                            Nokia
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-click="onMenuClick('', $event)">
-                                            Huawei
-                                        </md-button>
-                                    </md-menu-item>
+                        <md-menu-content>
+                            <md-menu-item>
+                                <md-menu>
+                                    <md-button ng-click="$mdOpenMenu()">Measurement</md-button>
+                                    <md-menu-content>
+                                        <md-menu-item>
+                                            <md-menu>
+                                                <md-button ng-click="$mdOpenMenu()">Ericsson</md-button>
+                                                <md-menu-content>
+                                                    <md-menu-item>
+                                                        <md-button ng-href="#/access_distance">Access Distance
+                                                        </md-button>
+                                                    </md-menu-item>
+                                                    <md-menu-item>
+                                                        <md-button ng-href="#/measurements/wncs">WNCS
+                                                        </md-button>
+                                                    </md-menu-item>
+                                                    <md-menu-item>
+                                                        <md-button ng-href="#/measurements/wmrr">WMRR
+                                                        </md-button>
+                                                    </md-menu-item>
+                                                    <md-menu-item>
+                                                        <md-button ng-href="#/measurements/ncs">NCS
+                                                        </md-button>
+                                                    </md-menu-item>
+                                                    <md-menu-item>
+                                                        <md-button ng-href="#/measurements/mrr">MRR
+                                                        </md-button>
+                                                    </md-menu-item>
+                                                </md-menu-content>
+                                            </md-menu>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-click="onMenuClick('', $event)">
+                                                Nokia
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-click="onMenuClick('', $event)">
+                                                Huawei
+                                            </md-button>
+                                        </md-menu-item>
 
-                                </md-menu-content>
-                            </md-menu>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/explore/tables">
-                                Explore
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/by_technology">
-                                By Technology
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/universal_tables">
-                                Universal Tables
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/dashboard_wcdma">
-                                Dashboard WCDMA
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/parameters_overview">
-                                Parameters Overview
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button>
-                                Statistics
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
+                                    </md-menu-content>
+                                </md-menu>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/explore/tables">
+                                    Explore
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/dashboard_wcdma">
+                                    Dashboard WCDMA
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/parameters_overview">
+                                    Parameters Overview
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button>
+                                    Statistics
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
 
-                <md-menu>
-                    <button ng-click="$mdOpenMenu()">
+                    <md-menu>
+                        <button ng-click="$mdOpenMenu()">
                         Optimization
                     </button>
-                    <md-menu-content>
-                        <md-menu-item>
-                            <md-menu>
-                                <md-button ng-click="$mdOpenMenu()">Ericsson</md-button>
-                                <md-menu-content>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/run_audit">Run Network Audit
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/power_audit">WCDMA Power Audit
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/psc_distance">PSC Distance Re-Use REPORT
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/same_neighbor">SAME SECTOR NEIGHBOR
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-href="#/psc_collision">1st Order CoSC Collision
-                                        </md-button>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-click="onMenuClick('', $event)">
-                                Nokia
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-click="onMenuClick('', $event)">
-                                Huawei
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-                <md-menu>
-                    <button ng-click="$mdOpenMenu()">
+                        <md-menu-content>
+                            <md-menu-item>
+                                <md-menu>
+                                    <md-button ng-click="$mdOpenMenu()">Ericsson</md-button>
+                                    <md-menu-content>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/run_audit">Run Network Audit
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/power_audit">WCDMA Power Audit
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/psc_distance">PSC Distance Re-Use REPORT
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/same_neighbor">SAME SECTOR NEIGHBOR
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button ng-href="#/psc_collision">1st Order CoSC Collision
+                                            </md-button>
+                                        </md-menu-item>
+                                    </md-menu-content>
+                                </md-menu>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-click="onMenuClick('', $event)">
+                                    Nokia
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-click="onMenuClick('', $event)">
+                                    Huawei
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                    <md-menu>
+                        <button ng-click="$mdOpenMenu()">
                         Help & Settings
                     </button>
-                    <md-menu-content>
-                        <md-menu-item>
-                            <md-button ng-href="#/help">
-                                Help
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/set_logical_sector">
-                                Settings
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/set_automatic_site_query">
-                                Set Automatic Site Query
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/set_cna_template">
-                                Set Cna Template
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/set_audit_template">
-                                Set Audit Template
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/about">
-                                About
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-                <md-menu>
-                    <button ng-click="$mdOpenMenu()">
+                        <md-menu-content>
+                            <md-menu-item>
+                                <md-button ng-href="#/help">
+                                    Help
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/set_logical_sector">
+                                    Settings
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/set_cna_template">
+                                    Set Cna Template
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/set_audit_template">
+                                    Set Audit Template
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/about">
+                                    About
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                    <md-menu>
+                        <button ng-click="$mdOpenMenu()">
                         <i class="material-icons md-36">account_box</i>
                     </button>
-                    <md-menu-content>
-                        <md-menu-item>
-                            <h5>{{ username }}</h5>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-href="#/change_pass/{{ username }}/">
-                                Change Password
-                            </md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-click="onMenuClick('/logout', $event)">
-                                Logout
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-            </md-menu-bar>
+                        <md-menu-content>
+                            <md-menu-item>
+                                <h5>{{ username }}</h5>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-href="#/change_pass/{{ username }}/">
+                                    Change Password
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-click="onMenuClick('/logout', $event)">
+                                    Logout
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                </md-menu-bar>
+            </div>
         </div>
-    </div>
-</md-toolbar>
+    </md-toolbar>
 
-<flash-message duration="5000" show-close="true"></flash-message>
-<div class="row">
-    <div class="col-md-1 sidebar" ng-controller="menuCtrl" ng-mouseenter="onShowMenu()">
-        <div pageslide ps-open="checked" ps-side="left" ng-mouseleave="onShowMenu()" ps-custom-top="60px">
-            <div style="padding:20px">
-                <h4>{{ project_name }}</h4>
-                
-                <div treecontrol class="tree-classic"
-                     tree-model="treedata"
-                     options="treeOptions"
-                     on-selection="showSelected(node)"
-                     selected-node="selected_node">
-                    <input type="radio"
-                           ng-show="node.show_check"
-                           ng-change="onFileChange()"
-                           ng-model="files[node.radio_input_name]"
-                           ng-value = "node.label"
-                           name="{{ node.radio_input_name }}">
-                    <span context-menu data-target="menu-{{node.menu}}">{{node.label}}</span>
+    <flash-message duration="5000" show-close="true"></flash-message>
+    <div class="row">
+        <div class="col-md-1 sidebar" ng-controller="menuCtrl" ng-mouseenter="onShowMenu()">
+            <div pageslide ps-open="checked" ps-side="left" ng-mouseleave="onShowMenu()" ps-custom-top="60px">
+                <div style="padding:20px">
+                    <h4>{{ project_name }}</h4>
+
+                    <div treecontrol class="tree-classic" tree-model="treedata" options="treeOptions" on-selection="showSelected(node)" selected-node="selected_node">
+                        <input type="radio" ng-show="node.show_check" ng-change="onFileChange()" ng-model="files[node.radio_input_name]" ng-value="node.label"
+                            name="{{ node.radio_input_name }}">
+                        <span context-menu data-target="menu-{{node.menu}}">{{node.label}}</span>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="col-md-11 main" ng-view></div>
     </div>
-    <div class="col-md-11 main" ng-view></div>
-</div>
 </body>
+
 </html>
