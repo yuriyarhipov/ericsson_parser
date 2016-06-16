@@ -1,8 +1,9 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 
 class Project(models.Model):
+    user = models.ForeignKey(User)
     project_name = models.TextField()
     created = models.DateField(auto_now=True)
 

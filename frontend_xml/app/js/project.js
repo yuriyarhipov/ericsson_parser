@@ -2,7 +2,6 @@ var activeProjectModule = angular.module('activeProjectModule', []);
 
 activeProjectModule.factory('activeProjectService', function($rootScope, $cookies) {
     var activeProject = {};
-
     activeProject.project = $cookies.active_project;
 
     activeProject.setProject = function(msg) {

@@ -3,25 +3,29 @@ import json
 from django.http import HttpResponse
 from django.db import connection
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from project.models import Project, UserSettings
 
 
 def projects(request):
     data = []
-    for project in Project.objects.all().order_by('project_name'):
+    user_name = request.COOKIES.get('username')
+    user = User.objects.get(username=user_name)
+    for project in Project.objects.filter(user=user).order_by('project_name'):
         data.append({'id': project.id, 'project_name': project.project_name, 'created': project.created.strftime('%m.%d.%Y')})
-
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def save_project(request):
+    user_name = request.COOKIES.get('username')
+    user = User.objects.get(username=user_name)        
     data = {'status': 'error', 'message': 'Sorry, Internal Error'}
     if request.POST:
         project_name = request.POST.get('project_name').replace(' ', '_')
-        if Project.objects.filter(project_name=project_name).exists():
+        if Project.objects.filter(project_name=project_name, user=user).exists():
             data = {'status': 'error', 'message': 'Sorry, A project with name "%s" exists' % project_name}
         else:
-            Project.objects.create(project_name=project_name)
+            Project.objects.create(project_name=project_name, user=user)
             data = {'status': 'ok', 'message': 'Done'}
 
     return HttpResponse(json.dumps(data), content_type='application/json')
