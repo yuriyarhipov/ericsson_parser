@@ -30,6 +30,12 @@ xmlControllers.controller('ProjectsCtrl', ['$scope', '$http', 'activeProjectServ
                 $scope.projects = data;
             });
         };
+        
+        $scope.onEditProject = function(project_name){
+            $http.post('/data/edit_projects/' + project_name + '/' + new_project_name + '/').success(function(data) {
+                $scope.projects = data;
+            });
+        };
   }]);
 
 xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activeProjectService', '$location',
@@ -90,14 +96,32 @@ xmlControllers.controller('ActiveProjectCtrl', ['$scope', '$cookies', 'activePro
         });
   }]);
 
-xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location', 'activeProjectService', '$cookies', '$location',
-    function ($scope, $http, $location, activeProjectService, $cookies, $location) {
+xmlControllers.controller('AddProjectCtrl', ['$scope', '$http', '$location', 'activeProjectService', '$cookies',
+    function ($scope, $http, $location, activeProjectService, $cookies) {
         if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
         $scope.project_data = {};
         $scope.processForm = function(){
             $http.post('/data/save_project/', $.param($scope.project_data)).success(function(){
+                activeProjectService.setProject($scope.project_data['project_name']);
+                $location.path('/projects');
+            });
+
+		};
+  }]);
+ 
+xmlControllers.controller('EditProjectCtrl', ['$scope', '$http', '$location', 'activeProjectService', '$cookies', '$routeParams',
+    function ($scope, $http, $location, activeProjectService, $cookies, $routeParams) {
+        if ($cookies.get('is_auth') != 'true'){
+            $location.path('/login')
+        }
+        $scope.project_data = {
+            'old_project_name':$routeParams.old_project_name,
+            'project_name': $routeParams.old_project_name,
+        };
+        $scope.processForm = function(){
+            $http.post('/data/edit_project/', $.param($scope.project_data)).success(function(){
                 activeProjectService.setProject($scope.project_data['project_name']);
                 $location.path('/projects');
             });

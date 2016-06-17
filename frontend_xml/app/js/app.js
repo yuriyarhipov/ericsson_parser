@@ -51,6 +51,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/add_project.html',
                 controller: 'AddProjectCtrl'
             }).
+            when('/edit_project/:old_project_name',{
+                templateUrl: 'templates/edit_project.html',
+                controller: 'EditProjectCtrl'
+            }).
             when('/files_hub',{
                 templateUrl: 'templates/files/files_hub.html',
                 controller: 'FilesHubCtrl'

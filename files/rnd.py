@@ -45,8 +45,7 @@ class Rnd:
         params.sort()
         return params
 
-    def get_data(self, filenames=None):
-        print filenames
+    def get_data(self, filenames=None):        
         cursor = connection.cursor()
         project_id = self.project_id
         network = self.network.upper()

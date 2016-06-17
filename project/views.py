@@ -31,6 +31,20 @@ def save_project(request):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
+def edit_project(request):
+    user_name = request.COOKIES.get('username')
+    user = User.objects.get(username=user_name)        
+    data = {'status': 'error', 'message': 'Sorry, Internal Error'}
+    if request.POST:
+        new_project_name = request.POST.get('project_name').replace(' ', '_')
+        old_project_name = request.POST.get('old_project_name')
+        p = Project.objects.get(project_name=old_project_name, user=user)
+        p.project_name = new_project_name
+        p.save()
+        data = {'status': 'ok', 'message': 'Done'}
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+
 def delete_projects(request, project_name):
     data = []
     Project.objects.filter(project_name=project_name).delete()
