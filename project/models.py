@@ -189,3 +189,11 @@ class UserSettings(models.Model):
     lte_radius = models.TextField()
     map_center = models.TextField()
     map_zoom = models.TextField()
+    
+
+class MapUserPosition(models.Model):
+    current_project = models.ForeignKey(Project)
+    user = models.ForeignKey(User)
+    latlng = models.TextField()
+    zoom = models.IntegerField()
+    

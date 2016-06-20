@@ -18,6 +18,7 @@ from files.compare import CompareFiles, CompareTable
 from files.excel import ExcelFile, Excel
 from files.distance import Distance
 from files.drive_test import DriveTest
+from project.models import UserSettings, MapUserPosition
 from rnd import Rnd
 import tasks
 from os import makedirs
@@ -25,6 +26,7 @@ from os.path import exists
 from shapely.geometry import box, Point
 from django.views.decorators.gzip import gzip_page
 from tables.universal_tables import UniversalTable
+from django.contrib.auth.models import User
 
 
 def handle_uploaded_file(files):
@@ -333,6 +335,13 @@ def map_frame(request, network):
 @api_view(['GET', ])
 def init_map(request):
     project = request.project
+    username = request.COOKIES.get('username')
+    if UserSettings.objects.filter(current_project=project, user=username).exists():
+        us = UserSettings.objects.get(current_project=project, user=username)
+        lat, lng = us.map_center.split(',')
+        data = {'point': [lat, lng], 'zoom': us.map_zoom}
+        return Response(data)
+        
     filenames = request.GET.getlist('filename')
     gsm_data = Rnd(project.id, 'GSM').get_data(filenames).get('data')
     data = {}
@@ -371,6 +380,72 @@ def rnd_table(request, network=None):
     if request.method == 'POST':
         Rnd(project.id, network.lower()).save_row(request.POST)
     return Response(data)
+
+@api_view(['GET', ])
+def get_user_position(request):
+    project = request.project
+    username = request.COOKIES.get('username')
+    user = User.objects.get(username=username)
+    mu_pos = MapUserPosition.objects.get(current_project=project, user=user)
+    data = {
+        'latlng': mu_pos.latlng.split(','),
+        'zoom': mu_pos.zoom
+    }
+    return Response(data)
+
+
+@api_view(['POST', ])
+def save_user_position(request):
+    project = request.project    
+    zoom = request.POST.get('zoom')
+    latlng = request.POST.get('latlng')
+    username = request.COOKIES.get('username')
+    user = User.objects.get(username=username)
+    if MapUserPosition.objects.filter(current_project=project, user=user).exists():
+        mu_pos =  MapUserPosition.objects.get(current_project=project, user=user)
+        mu_pos.latlng = latlng
+        mu_pos.zoom = zoom
+        mu_pos.save()
+    else:
+        MapUserPosition.objects.create(
+            current_project=project, 
+            user=user,
+            latlng = latlng,
+            zoom = zoom)
+    return Response([])
+
+
+@api_view(['POST', ])
+def save_map_position(request):
+    project = request.project    
+    zoom = request.POST.get('zoom')
+    latlng = request.POST.get('latlng')
+    username = request.COOKIES.get('username')
+    if UserSettings.objects.filter(current_project=project, user=username).exists():
+        us = UserSettings.objects.get(current_project=project, user=username)        
+        us.map_zoom = zoom
+        us.map_center=latlng
+        us.save()        
+    else:        
+        UserSettings.objects.create(
+            current_project=project, 
+            user=username, 
+            gsm_file = '',
+            wcdma_file = '',
+            lte_file = '',
+            rnd_gsm_file = '',
+            rnd_wcdma_file = '',
+            rnd_lte_file = '',
+            gsm_color = '#ffa500',
+            wcdma_color = '#0000FF',
+            lte_color = '#008000',
+            element_color = '#FF00FF',
+            gsm_radius = '1000',
+            wcdma_radius = '1200',
+            lte_radius = '1500',
+            map_center=latlng,
+            map_zoom=zoom) 
+    return Response([])
 
 
 @api_view(['GET', ])

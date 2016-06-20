@@ -662,10 +662,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                 params = params + 'filename='+filenames[i] + '&'
             }
 
-
             $http.get('/data/rnd/init_map?' + params).success(function(data){
                 if ('point' in data ){
-                    map.setView(data.point, 10);
+                    map.setView(data.point, data.zoom);
                 }
             });
 
@@ -737,7 +736,13 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             };
 
             map.on('moveend', function(e){
-                map.refresh_drive_test();
+                map.refresh_drive_test();                
+                var pos = map.getCenter();
+                var zoom = e.target.getZoom();
+                map._map_lat.value = pos.lat;
+                map._map_lng.value = pos.lng;
+                map._map_zoom.value = zoom;                              
+                map.save_zoom_and_latlng(zoom, pos.lat + ',' + pos.lng)
             });
 
             map.on('zoomend', function(e){
@@ -829,7 +834,31 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                     }
                 }
 
-
+            map.save_zoom_and_latlng = function(zoom, latlng){
+                params = {
+                    'zoom': zoom,
+                    'latlng': latlng,                    
+                }
+                $http.post('data/rnd/save_position/', $.param(params));    
+            };
+            
+            map._save_map_user_position = function(){
+                var pos = map.getCenter();
+                console.log(pos);                
+                params = {
+                    'zoom': map._zoom,
+                    'latlng': pos.lat + ',' + pos.lng,                    
+                }
+                
+                $http.post('data/rnd/save_user_position/', $.param(params));    
+            };
+            
+            map._set_map_user_position = function(){
+                $http.get('data/rnd/get_user_position/').success(function(data){
+                    map.setView(data.latlng, data.zoom);
+                });                    
+            };
+            
             map.refresh_drive_test = function(){
                 if (map._is_drive_test){
                     usSpinnerService.spin('spinner_map');

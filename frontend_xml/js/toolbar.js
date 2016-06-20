@@ -12,7 +12,8 @@ L.Control.ToolBar = L.Control.extend({
         map._appsDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
         map._3gDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
         map._layerDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
-
+        map._mapPosition = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
+        
         var fDiv = this.filterDiv = L.DomUtil.create('div', 'col-md-12 hide', this.controlDiv);
 
         this.networkDiv = L.DomUtil.create('div', 'col-md-3', this.filterDiv);
@@ -36,9 +37,8 @@ L.Control.ToolBar = L.Control.extend({
         this.resetFiltersButton = L.DomUtil.create('button', 'btn btn-danger', this.delFiltersDiv);
         this.resetFiltersButton.innerHTML = '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>';
 
-
-        this.rangeDiv = L.DomUtil.create('div', 'col-md-5', this.buttonsDiv);
-        this.secondDiv = L.DomUtil.create('div', 'col-md-7', this.buttonsDiv);
+        this.rangeDiv = L.DomUtil.create('div', 'col-md-3', this.buttonsDiv);
+        this.secondDiv = L.DomUtil.create('div', 'col-md-8', this.buttonsDiv);
         var sSize = this.sectorSize = L.DomUtil.create('input', 'range_sector', this.rangeDiv);
         this.sectorSize.setAttribute('type', 'range');
         this.sectorSize.setAttribute('min', -1);
@@ -95,6 +95,17 @@ L.Control.ToolBar = L.Control.extend({
         this.date_to_Div = L.DomUtil.create('div', 'col-md-5', map._pdDiv);
         map._pd_date_from = L.DomUtil.create('select', 'form-control', this.date_from_Div);
         map._pd_date_to = L.DomUtil.create('select', 'form-control', this.date_to_Div);
+        
+        //map position
+        L.DomUtil.create('div', 'col-md-1', map._mapPosition).innerHTML = 'lat:'
+        map._map_lat = L.DomUtil.create('input', 'col-md-3', map._mapPosition)
+        L.DomUtil.create('div', 'col-md-1', map._mapPosition).innerHTML = 'lng:'
+        map._map_lng = L.DomUtil.create('input', 'col-md-3', map._mapPosition)
+        L.DomUtil.create('div', 'col-md-1', map._mapPosition).innerHTML = 'zoom:'
+        map._map_zoom = L.DomUtil.create('input', 'col-md-1', map._mapPosition)
+        map._save_map_position = L.DomUtil.create('button', 'btn btn-default', map._mapPosition)
+        map._save_map_position.innerHTML = '<i class="material-icons" style="font-size:14px">save</i>';
+        
 
         map._appButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
         map._appButton.innerHTML = '<span class="glyphicon glyphicon-th" aria-hidden="true"></span>';
@@ -130,6 +141,11 @@ L.Control.ToolBar = L.Control.extend({
 
         this.layersButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
         this.layersButton.innerHTML = '<img src="/static/layers.png" style="width:18px">';
+        
+        this.MapPositionButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
+        this.MapPositionButton.innerHTML = '<i class="material-icons" style="font-size:14px">youtube_searched_for</i>';
+        this.SetMapPositionButton = L.DomUtil.create('button', 'btn btn-default', this.secondDiv);
+        this.SetMapPositionButton.innerHTML = '<i class="material-icons" style="font-size:14px">gps_fixed</i>';
 
         var stop = L.DomEvent.stopPropagation;
         L.DomEvent
@@ -377,7 +393,19 @@ L.Control.ToolBar = L.Control.extend({
             .addListener(this.dtButton, 'click', function(e){
                 map.drive_test();
             })
-
+            .addListener(map._save_map_position, 'click', function(e){
+                map._save_map_user_position()
+            })
+            .addListener(this.SetMapPositionButton, 'click', function(e){
+                map._set_map_user_position()     
+            })
+            .addListener(this.MapPositionButton, 'click', function(e){
+                if (L.DomUtil.hasClass(map._mapPosition, 'hide')){
+                    L.DomUtil.removeClass(map._mapPosition, 'hide');
+                } else {
+                    L.DomUtil.addClass(map._mapPosition, 'hide');
+                } 
+            })
             .addListener(closeButton, 'click', function(e){
                 if (L.DomUtil.hasClass(map._controlDiv, 'small')){
                     L.DomUtil.removeClass(map._controlDiv, 'small');

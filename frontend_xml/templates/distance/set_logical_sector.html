@@ -1,93 +1,125 @@
 <md-content>
     <md-tabs md-dynamic-height md-border-bottom>
-        <md-tab label="Map Settings">
-            <md-card>
-                <md-card-title>
-                    <md-card-title-text>
-                        <span class="md-headline">GSM:</span>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
-                    <md-input-container layout="row">
-                        <div flex="20">
-                            <md-slider-container>
-                                <md-slider flex class="md-primary" min="0" max="5000" ng-model="gsm_size">
-                                </md-slider>
-                            </md-slider-container>
-                        </div>
-                        <div flex="20">
-                            <md-checkbox ng-model="gsm_freq" aria-label="850/900 OL 1800/1900 UL" class="md-align-top-left md-primary" flex>850/900 OL 1800/1900 UL
-                        </div>
-                        <div flex="20">
-                            <md-checkbox ng-model="gsm_freq" aria-label="850/900 UL 1800/1900 OL" class="md-align-top-left md-primary" flex>850/900 UL 1800/1900 OL
-                        </div>
-                        <div flex="20">
-                            <input flex type="number" ng-model="gsm_size">
-                        </div>                        
-                    </md-input-container>
-                </md-card-content>
-            </md-card>
-            <md-card>
-                <md-card-title>
-                    <md-card-title-text>
-                        <span class="md-headline">Wcdma:</span>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
-                    <md-input-container layout="row">
-                        <div flex="20">
-                            <md-slider-container>
-                                <md-slider flex class="md-primary" min="0" max="5000">
-                                </md-slider>
-                            </md-slider-container>
-                        </div>
-                        <div flex="5">
-                        </div>
-                        <div flex="20">
-                            <label>Carrier</label>
-                            <md-input-container>
-                                <md-select ng-model="carrier">
-                                <md-option ng-repeat="c in carriers" value="{{c}}">{{ c }}</md-option>
-                            </md-select>
-                            </md-input-container>                            
-                        </div>
-                        <div flex="20">
-                            <md-slider flex class="md-primary" min="0" max="5000" ng-model="wcdma_carrier_percent">
-                        </div>                                                
-                    </md-input-container>
-                </md-card-content>
-            </md-card>
-            <md-card>
-                <md-card-title>
-                    <md-card-title-text>
-                        <span class="md-headline">LTE:</span>
-                    </md-card-title-text>
-                </md-card-title>
-                <md-card-content>
-                    <md-input-container layout="row">
-                        <div flex="20">
-                            <md-slider-container>
-                                <md-slider class="md-primary" flex min="0" max="5000" ng-model="color.red">
-                                </md-slider>
-                            </md-slider-container>
-                        </div>
-                        <div flex="20">
-                            <md-checkbox ng-model="data.cb2" aria-label="850/900 OL 1800/1900 UL" class="md-align-top-left" flex>850/900 OL 1800/1900 UL
-                        </div>
-                        <div flex="20">
-                            <md-checkbox ng-model="data.cb2" aria-label="850/900 OL 1800/1900 UL" class="md-align-top-left" flex>850/900 UL 1800/1900 OL
-                        </div>
-                        <div flex="20">
-                            <input flex type="number" ng-model="color.red" aria-label="red" aria-controls="red-slider">
-                        </div>
-                        <div flex="20">
-                            <input type="color" class="form-control" id="gsm_color" ng-model="lte_color">
-                        </div>
-                    </md-input-container>
-                </md-card-content>
-            </md-card>
-            <div flex="20">
-                <md-button class="md-raised md-primary" ng-click="onSaveMapColor(gsm_color, wcdma_color, lte_color, element_color)">Save</md-button>
+        <md-tab label="Map Color Settings">
+            <div class="md-padding" layout-xs="column" layout="row">
+                <div flex-xs flex-gt-xs="50" layout="column">
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Technology:</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content>
+                            <div class="form-group">
+                                <label for="gsm_color" class="col-sm-6 control-label">GSM Color</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="gsm_color" ng-model="gsm_color">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="color_wcdma" class="col-sm-6 control-label">WCDMA Color</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_wcdma" ng-model="wcdma_color">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="color_lte" class="col-sm-6 control-label">LTE Color</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_lte" ng-model="lte_color">
+                                </div>
+                            </div>
+                        </md-card-content>
+                    </md-card>
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Filter:</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content>
+                            <div class="form-group">
+                                <label for="color_element" class="col-sm-6 control-label">One Element Search</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                </div>
+                            </div>
+                        </md-card-content>
+                    </md-card>
+                </div>
+                <div flex-xs flex-gt-xs="50" layout="column">
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Neighbour:</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content>
+                            <div class="form-group">
+                                <label for="color_element" class="col-sm-6 control-label">Selected Cell</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="color_element" class="col-sm-6 control-label">Neighbour</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="color_element" class="col-sm-6 control-label">New neighbour</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="color_element" class="col-sm-6 control-label">Neighbour to be deleted</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                </div>
+                            </div>
+                        </md-card-content>
+                    </md-card>
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Interference:</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content>
+                            <div class="form-group">
+                                <label for="color_element" class="col-sm-6 control-label">Co-BCCH</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="color_element" class="col-sm-6 control-label">Adjacent Channel(+1)</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="color_element" class="col-sm-6 control-label">Adjacent Channel(-1)</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="color_element" class="col-sm-6 control-label">CO-Scrambling Code (SC)</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="color_element" class="col-sm-6 control-label">CO-PCI</label>
+                                <div class="col-sm-6">
+                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                </div>
+                            </div>
+                        </md-card-content>
+                    </md-card>
+                </div>
             </div>
         </md-tab>
         <md-tab label="Map Radius Settings">
