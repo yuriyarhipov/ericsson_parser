@@ -189,6 +189,15 @@ class UserSettings(models.Model):
     lte_radius = models.TextField()
     map_center = models.TextField()
     map_zoom = models.TextField()
+    neighbour = models.TextField()
+    selected_cell = models.TextField()
+    new_neighbour = models.TextField()
+    tobe_deleted_neighbour = models.TextField()
+    co_bcch = models.TextField()
+    adjacent_channel_minus = models.TextField()
+    adjacent_channel_plus = models.TextField()
+    sc = models.TextField()
+    co_pci = models.TextField()
     
 
 class MapUserPosition(models.Model):

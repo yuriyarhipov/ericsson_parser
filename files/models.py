@@ -380,18 +380,18 @@ class GsmGsm(models.Model):
     project = models.ForeignKey(Project)
     cellSource = models.TextField()
     cellTarget = models.TextField()
-    status = models.TextField()
+    
 
 class WcdmaWcdma(models.Model):
     project = models.ForeignKey(Project)
-    rncSource = models.TextField()
-    utrancellSource = models.TextField()
-    carrierSource = models.TextField()
-    rncTarget = models.TextField()
-    utrancellTarget = models.TextField()
-    carrierTarget = models.TextField()
-    status = models.TextField()
-
+    rncSource = models.TextField(blank=True, null=True)
+    utrancellSource = models.TextField(blank=True, null=True)
+    carrierSource = models.TextField(blank=True, null=True)
+    rncTarget = models.TextField(blank=True, null=True)
+    utrancellTarget = models.TextField(blank=True, null=True)
+    carrierTarget = models.TextField(blank=True, null=True)
+    
+    
 class LteLte(models.Model):
     project = models.ForeignKey(Project)
     rncSource = models.TextField()
@@ -400,7 +400,7 @@ class LteLte(models.Model):
     rncTarget = models.TextField()
     utrancellTarget = models.TextField()
     carrierTarget = models.TextField()
-    status = models.TextField()
+    
 
 class WcdmaLte(models.Model):
     project = models.ForeignKey(Project)
@@ -410,7 +410,7 @@ class WcdmaLte(models.Model):
     rncTarget = models.TextField()
     utrancellTarget = models.TextField()
     carrierTarget = models.TextField()
-    status = models.TextField()
+    
 
 class GsmLte(models.Model):
     project = models.ForeignKey(Project)
@@ -418,7 +418,7 @@ class GsmLte(models.Model):
     rncTarget = models.TextField()
     utrancellTarget = models.TextField()
     carrierTarget = models.TextField()
-    status = models.TextField()
+    
 
 class LteGsm(models.Model):
     project = models.ForeignKey(Project)
@@ -426,7 +426,7 @@ class LteGsm(models.Model):
     utrancellSource = models.TextField()
     carrierSource = models.TextField()
     cellTarget = models.TextField()
-    status = models.TextField()
+    
 
 class GsmWcdma(models.Model):
     project = models.ForeignKey(Project)
@@ -434,7 +434,7 @@ class GsmWcdma(models.Model):
     rncTarget = models.TextField()
     utrancellTarget = models.TextField()
     carrierTarget = models.TextField()
-    status = models.TextField()
+    
 
 class WcdmaGsm(models.Model):
     project = models.ForeignKey(Project)
@@ -454,3 +454,27 @@ class WNCS(models.Model):
     events = models.FloatField(default=0)
     drop = models.FloatField(default=0)
     distance = models.FloatField(default=0)
+
+
+class RND3G(models.Model):
+    project = models.ForeignKey(Project)
+    rnc = models.TextField()
+    site = models.TextField() 
+    utrancell = models.TextField()
+    cellid = models.TextField()
+    sector = models.TextField()
+    lac = models.TextField()
+    rac = models.TextField()
+    sc = models.TextField()
+    carrier = models.TextField()
+    name = models.TextField()
+    datum = models.TextField()
+    latitude = models.TextField()
+    longitude = models.TextField()
+    high = models.TextField()
+    Azimuth = models.TextField()
+    Antenna = models.TextField()
+    mechanical_tilt = models.TextField()
+    electrical_tilt = models.TextField()
+    
+    

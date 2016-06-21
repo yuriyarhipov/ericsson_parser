@@ -44,6 +44,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     from files.distance import Distance
     from files.drive_test import DriveTest
     from files.models import Files, UploadedFiles
+    from tables.universal_tables import UniversalTable
     from rnd import Rnd
 
     xml_types = [
@@ -180,7 +181,8 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                 vendor=vendor,
                 network=network)
 
-        i += percent_per_file        
+        i += percent_per_file
+    UniversalTable('').create_tables(project.id)
     UploadedFiles.objects.filter(id=file_id).delete()
     revoke(worker.request.id, terminate=True)
 

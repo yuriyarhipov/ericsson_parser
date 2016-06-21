@@ -107,7 +107,10 @@ tableControllers.controller('universalTablesCtrl', ['$scope', '$http', '$cookies
             $location.path('/login')
         }
         $scope.tables = [
-            'GsmGsm', 'GsmLte', 'GsmWcdma', 'WcdmaWcdma', 'WcdmaGsm', 'WcdmaLte', 'LteLte', 'LteGsm', 'LteWcdma'
+            'GsmGsm', 'GsmLte', 'GsmWcdma', 
+            'WcdmaWcdma', 'WcdmaGsm', 'WcdmaLte', 
+            'LteLte', 'LteGsm', 'LteWcdma',
+            'RND3G'
         ]
 }]);
 
