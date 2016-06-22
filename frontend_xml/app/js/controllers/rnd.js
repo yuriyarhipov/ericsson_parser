@@ -1077,3 +1077,18 @@ rndControllers.controller('sameNeighborCtrl', ['$scope', '$http', '$cookies', '$
             $scope.neighbor_table_config.data = data;
         });
   }]);
+
+rndControllers.controller('rndFromNetworkDataCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.rnd_data = {
+            'network': 'WCDMA',
+            'rnd_name': 'Topology'
+        };
+        $scope.Network = [ 'GSM', 'WCDMA', 'LTE'];
+        $scope.processForm = function(){
+            $http.post('/data/rnd_from_network_data/', $.param($scope.rnd_data)).success(function(){
+                
+            });
+
+		};
+  }]);

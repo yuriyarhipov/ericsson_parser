@@ -8,11 +8,42 @@ class UniversalTable:
     def __init__(self, relation):
         self.relation = relation
         self.conn = psycopg2.connect(
-            'host = %s dbname = %s user = %s password = %s' % (
+                'host = %s dbname = %s user = %s password = %s' % (
                 settings.DATABASES['default']['HOST'],
                 settings.DATABASES['default']['NAME'],
                 settings.DATABASES['default']['USER'],
                 settings.DATABASES['default']['PASSWORD']))
+    
+    
+    def create_rnd_from_network(self,project_id, network, rnd_name):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT 
+                "rnc",
+                "site", 
+                "utrancell",
+                "cellid",
+                "sector",
+                "lac",
+                "rac",
+                "sc",
+                "carrier",
+                "name",
+                "datum",
+                "latitude",
+                "longitude",
+                "high",
+                "Azimuth",
+                "Antenna",
+                "mechanical_tilt",
+                "electrical_tilt" 
+            FROM
+                files.rnd3g
+            WHERE
+                project_id=%s
+                 
+        ''', (project_id, ))
+       
         
     
     def create_tables(self, project_id):
@@ -23,7 +54,7 @@ class UniversalTable:
             cursor.execute('''
                 CREATE VIEW TOPOLOGY AS
                 SELECT DISTINCT
-                    %s project_id,
+                    UtranCell.project_id,
                     UtranCell.Element1 RNC,
                     RBSLocalCell.Element2 SITE,
                     UtranCell.UtranCell,
@@ -38,8 +69,8 @@ class UniversalTable:
                     INNER JOIN UtranCell ON (RBSLocalCell.LocalCellid = UtranCell.CID and RBSLocalCell.filename = UtranCell.filename)
                     LEFT JOIN IubLink ON  (RBSLocalCell.Element2 = IubLink.Element2 AND RBSLocalCell.filename = IubLink.filename)
                 WHERE 
-                (RBSLocalCell.project_id='%s') AND (UtranCell.project_id='%s') AND (IubLink.project_id='%s')
-                ;''', (project_id, project_id, project_id, project_id, ))
+                (RBSLocalCell.project_id=UtranCell.project_id) AND (IubLink.project_id=UtranCell.project_id)
+                ;''')
             self.conn.commit()
         
         cursor.execute('DELETE FROM files_wcdmawcdma WHERE project_id=%s', (project_id, ))
@@ -121,7 +152,7 @@ class UniversalTable:
     def get_table(self, project_id):
         cursor = self.conn.cursor()
         columns = []
-        print self.relation
+        
         if self.relation == 'gsmgsm':
             columns = ['CellSource', 'CellTarget', 'Status']
 
@@ -138,7 +169,7 @@ class UniversalTable:
             FROM files_wcdmawcdma            
             WHERE project_id = %s
             ''', (str(project_id), ))
-            print cursor.fetchone()
+            
              
             columns = [
                 'rncSource',
@@ -148,8 +179,7 @@ class UniversalTable:
                 'utrancellTarget',
                 'carrierTarget']
 
-        elif self.relation in ['gsmwcdma', 'gsmlte']:
-            print 1
+        elif self.relation in ['gsmwcdma', 'gsmlte']:            
             columns = [
                 'CellSource',
                 'RncTarget',

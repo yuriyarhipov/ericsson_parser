@@ -707,3 +707,13 @@ def measurements_wncs_top(request):
             'drop': row.drop,
         })
     return Response({'data': data})
+    
+@api_view(['POST', ])
+def rnd_from_network_data(request):
+    project = request.project
+    rnd_name = request.POST.get('rnd_name')
+    network = request.POST.get('network')
+    UniversalTable('').create_rnd_from_network(network, rnd_name)
+    return Response({'data': []})
+    
+

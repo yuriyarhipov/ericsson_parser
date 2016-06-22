@@ -242,6 +242,10 @@ XmlApp.config(['$routeProvider',
                 templateUrl: 'templates/changelog.html',
                 controller: 'changelogCtrl'
             }).
+            when('/rnd_from_network_data', {
+                templateUrl: 'templates/rnd_from_network_data.html',
+                controller: 'rndFromNetworkDataCtrl'
+            }).
             otherwise({
                 templateUrl: 'templates/projects.html',
                 controller: 'ProjectsCtrl'
