@@ -1,6 +1,7 @@
 import psycopg2
 from django.conf import settings
-from files.models import GsmGsm, LteLte, WcdmaWcdma, LteGsm, GsmLte, WcdmaLte, GsmWcdma, WcdmaGsm
+from files.models import GsmGsm, LteLte, WcdmaWcdma, LteGsm, GsmLte, WcdmaLte, GsmWcdma, WcdmaGsm, Files
+import json
 
 
 class UniversalTable:
@@ -15,7 +16,7 @@ class UniversalTable:
                 settings.DATABASES['default']['PASSWORD']))
     
     
-    def create_rnd_from_network(self,project_id, network, rnd_name):
+    def create_rnd_from_network(self, project, network, rnd_name):
         cursor = self.conn.cursor()
         cursor.execute('''
             SELECT 
@@ -38,11 +39,49 @@ class UniversalTable:
                 "mechanical_tilt",
                 "electrical_tilt" 
             FROM
-                files.rnd3g
+                files_rnd3g
             WHERE
                 project_id=%s
                  
-        ''', (project_id, ))
+        ''', (project.id, ))
+        data = []
+        for r in cursor:
+            row = dict()
+            row['RNC'] = r[0]
+            row['SITE'] = r[1]
+            row['Utrancell'] = r[2]
+            row['CellId'] = r[3]
+            row['Sector'] = r[4]
+            row['Lac'] = r[5]
+            row['Rac'] = r[6]
+            row['SC'] = r[7]
+            row['Carrier'] = r[8]
+            row['Name'] = r[9]
+            row['Datum'] = r[10]
+            row['Latitude'] = (float(r[11]) / 8388608) * 90
+            row['Longitude'] = (float(r[12]) / 16777216) * 360
+            row['High'] = r[13]
+            row['Azimuth'] = r[14]
+            row['Antenna'] = r[15]
+            row['Mechanical_Tilt'] = r[16]
+            row['Electrical_Tilt'] = r[17]
+            data.append(row)
+        cursor.execute('INSERT INTO rnd (project_id, network, description, data) VALUES (%s, %s, %s, %s)', (
+            project.id,
+            network,
+            rnd_name,
+            json.dumps({'data': data, 'columns': ['Sector', 'Rac', 'Antenna', 'RNC', 'Electrical_Tilt', 'Datum', 'SITE', 'Longitude', 'Lac', 'High', 'Latitude', 'Carrier', 'Azimuth', 'SC', 'Mechanical_Tilt', 'Utrancell', 'CellId'] }, encoding='latin1')))
+        self.conn.commit()
+        Files.objects.create(
+            filename=rnd_name,
+            file_type='RND',
+            project=project,
+            tables='',
+            description=rnd_name,
+            vendor='Universal',
+            network=network)
+            
+            
        
         
     
