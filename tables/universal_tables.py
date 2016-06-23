@@ -181,8 +181,25 @@ class UniversalTable:
      	        SectorAntenna.electricalantennatilt electrical_tilt FROM TOPOLOGY
      	        INNER JOIN Utrancell ON ( topology.cid=Utrancell.cid)
      	        INNER JOIN Sector ON ((Sector.element2=topology.site) AND (Sector.sector = topology.sector))
-     	        INNER JOIN SectorAntenna ON (SectorAntenna.element2=topology.site)
-     	        WHERE (topology.project_id = '%s') AND (SectorAntenna.project_id = '%s') AND (Sector.project_id = '%s') AND (Utrancell.project_id = '%s')
+     	        INNER JOIN SectorAntenna ON ((SectorAntenna.element2=topology.site) AND (SectorAntenna.sectorantenna = topology.sector))
+     	    WHERE (topology.project_id = '%s') AND (SectorAntenna.project_id = '%s') AND (Sector.project_id = '%s') AND (Utrancell.project_id = '%s')
+            ORDER BY 
+                topology.rnc, topology.site, topology.utrancell, 
+                topology.cid cellid,
+     	        topology.sector,
+     	        lac,
+     	        rac,
+     	        primaryscramblingcode sc,
+     	        carrier,
+     	        'name' "name",
+     	        sector.geodatum datum,
+     	        sector.latitude,
+     	        sector.longitude,
+     	        sector.height,
+     	        sector.beamdirection azimuth,
+     	        topology.sectorantena Antenna,
+     	        SectorAntenna.mechanicalantennatilt mechanical_tilt,
+     	        SectorAntenna.electricalantennatilt electrical_tilt 
        ''' % (project_id, project_id, project_id, project_id, project_id,)
         
         cursor.execute(sql)        
