@@ -265,17 +265,12 @@ class Files(models.Model):
     def clear_tables(self):
         tables = self.tables.split(',')                
         cursor = connection.cursor()
-        for table_name in tables:
-            try:
-                cursor.execute('''DELETE FROM %s WHERE (filename='%s') AND (project_id='%s')''' % (
-                    table_name,
-                    self.filename,
-                    self.project.id))
-            except:
-                pass
+        for table_name in tables:            
+            cursor.execute('''DELETE FROM %s WHERE (project_id='%s')''' % (
+                table_name,                
+                self.project.id))            
         connection.commit()
         
-
 
 class SuperFile(models.Model):
     filename = models.TextField()
@@ -458,23 +453,23 @@ class WNCS(models.Model):
 
 class RND3G(models.Model):
     project = models.ForeignKey(Project)
-    rnc = models.TextField()
-    site = models.TextField() 
-    utrancell = models.TextField()
-    cellid = models.TextField()
-    sector = models.TextField()
-    lac = models.TextField()
-    rac = models.TextField()
-    sc = models.TextField()
-    carrier = models.TextField()
-    name = models.TextField()
-    datum = models.TextField()
-    latitude = models.TextField()
-    longitude = models.TextField()
-    high = models.TextField()
-    Azimuth = models.TextField()
-    Antenna = models.TextField()
-    mechanical_tilt = models.TextField()
-    electrical_tilt = models.TextField()
+    rnc = models.TextField(null=True)
+    site = models.TextField(null=True) 
+    utrancell = models.TextField(null=True)
+    cellid = models.TextField(null=True)
+    sector = models.TextField(null=True)
+    lac = models.TextField(null=True)
+    rac = models.TextField(null=True)
+    sc = models.TextField(null=True)
+    carrier = models.TextField(null=True)
+    name = models.TextField(null=True)
+    datum = models.TextField(null=True)
+    latitude = models.TextField(null=True)
+    longitude = models.TextField(null=True)
+    high = models.TextField(null=True)
+    Azimuth = models.TextField(null=True)
+    Antenna = models.TextField(null=True)
+    mechanical_tilt = models.TextField(null=True)
+    electrical_tilt = models.TextField(null=True)
     
     

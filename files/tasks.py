@@ -95,6 +95,9 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     available_percent = percent_per_file / 2
     tables = set()    
     for f in work_files:
+        for f in Files.objects.filter(project=project, file_type=file_type):
+            f.clear_tables()           
+            f.delete()
         data_file = None
         if (file_type in xml_types) and (network == 'WCDMA'):
             data_file = WcdmaXML(f, project, file_id, i, available_percent, set_percent).data                        
@@ -108,6 +111,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
             elif file_type == 'MML script file':
                 data_file = HuaweiConfig(f, project, file_id, i, available_percent, set_percent).data
         if data_file:
+            
             table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
             table_count = len(data_file)
             table_index = 0.0
@@ -120,8 +124,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                     table.write_table(table_name, data)
                 except:
                     pass
-            UploadedFiles.objects.filter(id=file_id).delete()
-            Files.objects.filter(filename=basename(f), project=project).delete()
+            UploadedFiles.objects.filter(id=file_id).delete()            
             Files.objects.create(
                 filename=basename(f),
                 file_type=file_type,

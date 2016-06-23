@@ -137,7 +137,8 @@ class UniversalTable:
             WHERE (t2.project_id = '%s') AND (t1.project_id = '%s') AND (UtranRelation.project_id='%s') 
             ''' % (str(project_id), str(project_id), str(project_id), str(project_id),)
         
-        cursor.execute(sql)           
+        cursor.execute(sql) 
+        cursor.execute('DELETE FROM files_rnd3g WHERE project_id=%s', (project_id, ))          
         sql ='''
             INSERT INTO files_rnd3g (
                 project_id,                
@@ -160,7 +161,7 @@ class UniversalTable:
                 "mechanical_tilt",
                 "electrical_tilt"                
             )
-            SELECT
+            SELECT DISTINCT
                 %s, 
     	        topology.rnc, topology.site, topology.utrancell, 
                 topology.cid cellid,
@@ -179,15 +180,14 @@ class UniversalTable:
      	        SectorAntenna.mechanicalantennatilt mechanical_tilt,
      	        SectorAntenna.electricalantennatilt electrical_tilt FROM TOPOLOGY
      	        INNER JOIN Utrancell ON ( topology.cid=Utrancell.cid)
-     	        INNER JOIN Sector ON (Sector.element2=topology.site)
+     	        INNER JOIN Sector ON ((Sector.element2=topology.site) AND (Sector.sector = topology.sector))
      	        INNER JOIN SectorAntenna ON (SectorAntenna.element2=topology.site)
      	        WHERE (topology.project_id = '%s') AND (SectorAntenna.project_id = '%s') AND (Sector.project_id = '%s') AND (Utrancell.project_id = '%s')
        ''' % (project_id, project_id, project_id, project_id, project_id,)
         
         cursor.execute(sql)        
         self.conn.commit()
-        
-        
+                
     def get_table(self, project_id):
         cursor = self.conn.cursor()
         columns = []
