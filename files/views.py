@@ -459,7 +459,7 @@ def get_param_values(request, network, param):
 def get_rnd_neighbors(request, network, sector):
     project = request.project
     filename = request.wcdma.filename
-    values = Rnd(project.id, network).get_rnd_neighbors(sector, filename)
+    values = Rnd(project.id, network).get_rnd_neighbors(sector, project_id)
     return Response(values)
 
 
