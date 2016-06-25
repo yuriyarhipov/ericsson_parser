@@ -13,19 +13,19 @@
                             <div class="form-group">
                                 <label for="gsm_color" class="col-sm-6 control-label">GSM Color</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="gsm_color" ng-model="gsm_color">
+                                    <input type="color" class="form-control" id="gsm_color" ng-model="colors.gsm_color">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="color_wcdma" class="col-sm-6 control-label">WCDMA Color</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_wcdma" ng-model="wcdma_color">
+                                    <input type="color" class="form-control" id="color_wcdma" ng-model="colors.wcdma_color">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="color_lte" class="col-sm-6 control-label">LTE Color</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_lte" ng-model="lte_color">
+                                    <input type="color" class="form-control" id="color_lte" ng-model="colors.lte_color">
                                 </div>
                             </div>
                         </md-card-content>
@@ -40,7 +40,7 @@
                             <div class="form-group">
                                 <label for="color_element" class="col-sm-6 control-label">One Element Search</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_element" ng-model="element_color">
+                                    <input type="color" class="form-control" id="color_element" ng-model="colors.element_color">
                                 </div>
                             </div>
                         </md-card-content>
@@ -57,25 +57,25 @@
                             <div class="form-group">
                                 <label for="color_element" class="col-sm-6 control-label">Selected Cell</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_element" ng-model="selected_cell_color">
+                                    <input type="color" class="form-control" id="color_element" ng-model="colors.selected_cell_color">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="color_element" class="col-sm-6 control-label">Neighbour</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_element" ng-model="neighbour_color">
+                                    <input type="color" class="form-control" id="color_element" ng-model="colors.neighbour_color">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="color_element" class="col-sm-6 control-label">New neighbour</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_element" ng-model="new_neighbour_color">
+                                    <input type="color" class="form-control" id="color_element" ng-model="colors.new_neighbour_color">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="color_element" class="col-sm-6 control-label">Neighbour to be deleted</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_element" ng-model="deleted_neighbour_color">
+                                    <input type="color" class="form-control" id="color_element" ng-model="colors.deleted_neighbour_color">
                                 </div>
                             </div>
                         </md-card-content>
@@ -90,37 +90,39 @@
                             <div class="form-group">
                                 <label for="color_element" class="col-sm-6 control-label">Co-BCCH</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_element" ng-model="co_bcch_color">
+                                    <input type="color" class="form-control" id="color_element" ng-model="colors.co_bcch_color">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="color_element" class="col-sm-6 control-label">Adjacent Channel(+1)</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_element" ng-model="adj_plus_color">
+                                    <input type="color" class="form-control" id="color_element" ng-model="colors.adj_plus_color">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="color_element" class="col-sm-6 control-label">Adjacent Channel(-1)</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_element" ng-model="adj_minus_color">
+                                    <input type="color" class="form-control" id="color_element" ng-model="colors.adj_minus_color">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="color_element" class="col-sm-6 control-label">CO-Scrambling Code (SC)</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_element" ng-model="sc_color">
+                                    <input type="color" class="form-control" id="color_element" ng-model="colors.sc_color">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="color_element" class="col-sm-6 control-label">CO-PCI</label>
                                 <div class="col-sm-6">
-                                    <input type="color" class="form-control" id="color_element" ng-model="co_pci_color">
+                                    <input type="color" class="form-control" id="color_element" ng-model="colors.co_pci_color">
                                 </div>
                             </div>
-                        </md-card-content>
+                        </md-card-content>                        
                     </md-card>
-                </div>
+                </div>                
             </div>
+            <md-button class="md-raised md-primary" ng-click="onSaveMapColor()">Save</md-button>
+                        
         </md-tab>
         <md-tab label="Map Radius Settings">
             <md-content class="md-padding">

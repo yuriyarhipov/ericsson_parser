@@ -170,14 +170,14 @@ class Rnd:
 
         return result
 
-    def get_rnd_neighbors(self, sector, filename):
+    def get_rnd_neighbors(self, sector, project_id):
         cursor = connection.cursor()
         cursor.execute('''
             SELECT DISTINCT
                 neighbor
             FROM
                 UtranRelation
-            WHERE (Utrancell=%s) AND (filename=%s)''', (sector, filename, ))
+            WHERE (Utrancell=%s) AND (project_id=%s)''', (sector, project_id, ))
         neighbors = [row[0] for row in cursor]
         return neighbors
 

@@ -145,6 +145,15 @@ def user_settings(request, username):
                 lte_radius = '1500',
                 map_center = '0,0',
                 map_zoom = '10',
+                co_pci_color = '#FF00FF',
+                sc_color = '#FF00FF',
+                adj_minus_color = '#FF00FF',
+                adj_plus_color = '#FF00FF',
+                co_bcch_color = '#FF00FF',
+                deleted_neighbour_color = '#FF00FF',
+                new_neighbour_color = '#FF00FF',
+                neighbour_color = '#FF00FF',
+                selected_cell_color = '#FF00FF'
             )
 
     if request.method == 'GET':
@@ -160,15 +169,21 @@ def user_settings(request, username):
             data['wcdma_color'] = us.wcdma_color
             data['lte_color'] = us.lte_color
             data['element_color'] = us.element_color
+            data['co_pci_color'] = us.co_pci_color
+            data['sc_color'] = us.sc_color
+            data['adj_minus_color'] = us.adj_minus_color
+            data['adj_plus_color'] = us.adj_plus_color
+            data['co_bcch_color'] = us.co_bcch_color
+            data['deleted_neighbour_color'] = us.deleted_neighbour_color
+            data['new_neighbour_color'] = us.new_neighbour_color
+            data['neighbour_color'] = us.neighbour_color
+            data['selected_cell_color'] = us.selected_cell_color           
             return HttpResponse(json.dumps(data), content_type='application/json')
     elif request.method == 'POST':
-
         if UserSettings.objects.filter(current_project=project, user=username).exists():
             us = UserSettings.objects.get(current_project=project, user=username)
-            us.gsm_color = request.POST.get('gsm_color', us.gsm_color)
-            us.wcdma_color = request.POST.get('wcdma_color', us.wcdma_color)
-            us.lte_color = request.POST.get('lte_color', us.lte_color)
-            us.element_color = request.POST.get('element_color', us.element_color)
+            for key in request.POST.keys(): 
+                setattr(us, key, request.POST.get(key))            
             us.save()
         else:
             UserSettings.objects.create(

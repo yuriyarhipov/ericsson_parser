@@ -502,24 +502,18 @@ distanceControllers.controller('logicalSectorCtrl', ['$scope', '$http', '$cookie
         if ($cookies.get('is_auth') != 'true'){
             $location.path('/login')
         }
-
+        
+        $scope.colors = {};
         if (authService.is_auth){
             var username = authService.username;
             $http.get('/data/get_user_settings/' + username + '/').success(function(data){
-                $scope.gsm_color = data.gsm_color;
-                $scope.wcdma_color = data.wcdma_color;
-                $scope.lte_color = data.lte_color;
-                $scope.element_color = data.element_color;
+                $scope.colors = data;                
             });
         }
 
-        $scope.onSaveMapColor = function(gsm_color, wcdma_color, lte_color, element_color){
+        $scope.onSaveMapColor = function(){
             var username = authService.username;
-            $http.post('/data/get_user_settings/' + username + '/', $.param({
-                'gsm_color': gsm_color,
-                'wcdma_color': wcdma_color,
-                'lte_color': lte_color,
-                'element_color': element_color}));
+            $http.post('/data/get_user_settings/' + username + '/', $.param($scope.colors));
         };
 
         $scope.associated_sectors = [];
