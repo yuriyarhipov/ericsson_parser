@@ -385,9 +385,9 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
                                 'utrancellSource': utrancellSource,
                                 'utrancellTarget': layer.options.sector.Utrancell
                             })).success(function(){
-                                layer.setStyle({'color': 'red'});
+                                layer.setStyle({'color':  $scope.neighbour_color});
                             });
-                        } else if (layer.options.color == 'red'){
+                        } else if (layer.options.color ==  $scope.neighbour_color){
                             $http.post('/data/rnd/new3g3g/',$.param({
                                 'rncSource': layer.options.sector.RNC,
                                 'utrancellSource': layer.options.sector.Utrancell,
@@ -626,11 +626,11 @@ rndControllers.controller('mapCtrl', ['$scope', '$http', 'leafletData', '$locati
             }
 
             map.flush_neighbors = function(){
-                if (map._show_neighbors){
+                if (map._show_neighbors){                    
                     $http.post('/data/rnd/flush3g3g/');
                     map.eachLayer(function (layer) {
-                        if (layer.options.sector) {
-                            if ((layer.options.color == 'orange') || (layer.options.color == 'purple')){
+                        if (layer.options.sector) {                            
+                            if ((layer.options.color == $scope.new_neighbour_color) || (layer.options.color == $scope.deleted_neighbour_color)){                                
                                 layer.setStyle({'color': 'grey'});
                             }
                         }
