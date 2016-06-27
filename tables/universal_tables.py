@@ -81,10 +81,6 @@ class UniversalTable:
             vendor='Universal',
             network=network)
             
-            
-       
-        
-    
     def create_tables(self, project_id):
         cursor = self.conn.cursor()
         cursor.execute('select table_name from INFORMATION_SCHEMA.views;')
@@ -181,7 +177,7 @@ class UniversalTable:
      	        SectorAntenna.electricalantennatilt electrical_tilt FROM TOPOLOGY
      	        INNER JOIN Utrancell ON ( topology.cid=Utrancell.cid)
      	        INNER JOIN Sector ON ((Sector.element2=topology.site) AND (Sector.sector = topology.sector))
-     	        INNER JOIN SectorAntenna ON ((SectorAntenna.element2=topology.site) AND (SectorAntenna.sectorantenna = topology.sector))
+     	        left JOIN SectorAntenna ON ((SectorAntenna.element2=topology.site) AND (substring(SectorAntenna.sectorantenna from 1 for 1) = topology.sector))
      	    WHERE (topology.project_id = '%s') AND (SectorAntenna.project_id = '%s') AND (Sector.project_id = '%s') AND (Utrancell.project_id = '%s')
             ORDER BY 
                 topology.rnc, 

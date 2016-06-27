@@ -627,6 +627,7 @@ def drive_test_point(request, id):
 @api_view(['GET', ])
 def universal_table(request, relation):
     project = request.project
+    print project.id
     ut = UniversalTable(relation.lower())
     columns, data = ut.get_table(project.id)
     if request.GET.get('excel'):
