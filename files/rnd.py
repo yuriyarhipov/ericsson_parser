@@ -174,22 +174,21 @@ class Rnd:
         cursor = connection.cursor()
         cursor.execute('''
             SELECT DISTINCT
-                neighbor
+                "utrancellTarget"
             FROM
-                UtranRelation
-            WHERE (Utrancell=%s) AND (project_id=%s)''', (sector, project_id, ))
+                files_wcdmawcdma
+            WHERE ("utrancellSource"=%s) AND (project_id=%s)''', (sector, project_id, ))
         neighbors = [row[0] for row in cursor]
         return neighbors
 
-    def exist_rnd_neighbors(self, source_sector, target_sector, filename):
+    def exist_rnd_neighbors(self, source_sector, target_sector, project_id):
         cursor = connection.cursor()
         cursor.execute('''
             SELECT DISTINCT
-                neighbor
+                "utrancellTarget"
             FROM
-                UtranRelation
-            WHERE (neighbor=%s) AND (Utrancell=%s) AND (filename=%s)''', (target_sector, source_sector, filename, ))
-
+                files_wcdmawcdma
+            WHERE ("utrancellTarget"=%s) AND ("utrancellSource"=%s) AND (project_id=%s)''', (target_sector, source_sector, project_id, ))
         return cursor.rowcount > 0
 
     def get_new3g(self, sector, filename):
