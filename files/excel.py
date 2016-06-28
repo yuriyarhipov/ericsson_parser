@@ -51,11 +51,12 @@ class Excel:
 
 class ExcelFile:
 
-    def __init__(self, project, vendor, network, filename):
+    def __init__(self, project, vendor, network, filename, tables):
         self.project = project
         self.vendor = vendor
         self.network = network
         self.filename = filename        
+        self.tables = tables
         self.conn = psycopg2.connect(
             'host = %s dbname = %s user = %s password = %s' % (
                 settings.DATABASES['default']['HOST'],
@@ -66,12 +67,8 @@ class ExcelFile:
 
     def main(self):        
         tables = []
-        cursor = self.conn.cursor()
-        for f in Files.objects.filter(project=self.project, vendor=self.vendor, network=self.network):
-            tables.extend(f.tables.split(','))
-        tables = set(tables)
-        tables = list(tables)
-        tables.sort()
+        cursor = self.conn.cursor()        
+        self.tables.sort()
         excel_name = 'topology'  
         if self.filename:     
             excel_name = self.filename
@@ -80,7 +77,7 @@ class ExcelFile:
         archive_filename = join(static_path, excel_name +'.zip')
         excel_filename = join(tempfile.mkdtemp(), excel_name + '.xlsx')        
         workbook = xlsxwriter.Workbook(excel_filename)
-        for table in tables:
+        for table in self.tables:
             sql = "SELECT * FROM " + table + "  WHERE (project_id='" + str(self.project.id) + "');"
             cursor.execute(sql)
             columns = [{'header':'%s' % desc[0]} for desc in cursor.description]
@@ -94,6 +91,7 @@ class ExcelFile:
                 {'data': data,
                  'columns': columns})
         workbook.close()
+        print archive_filename
         zip = ZipFile(archive_filename, 'w')
         zip.write(excel_filename, excel_name + '.xlsx')
         zip.close()

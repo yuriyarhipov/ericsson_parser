@@ -301,7 +301,8 @@ def get_cna_template(request):
 
 
 def get_excel(request, vendor, network, filename):
-    ExcelFile(request.project, vendor, network, filename)
+    tables =  request.GET.getlist('table') 
+    ExcelFile(request.project, vendor, network, filename, tables)    
     return HttpResponseRedirect('/static/' + filename + '.zip')
 
 

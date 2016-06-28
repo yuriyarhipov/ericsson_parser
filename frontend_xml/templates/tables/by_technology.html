@@ -40,18 +40,22 @@
                 </md-input-container>
             </div>
             <div flex>
-                <md-button ng-href="/data/files/get_excel/{{ vendor }}/{{ network }}/{{ filename }}">Download Excel</md-button>
+                <md-button ng-href="/data/files/get_excel/{{ vendor }}/{{ network }}/{{ filename }}?{{ tables_params }}">Download Excel</md-button>
             </div>
         </div>
         <div layout="row">
-            <table class="table table-bordered table-striped">
-                <thead>
+            <table class="table table-bordered table-striped" layout="row">
+                <thead>                    
                     <tr>
-                        <td>Table name</td>
+                        <td flex="10">
+                            <md-checkbox ng-change="onSelectAll(select_all)" ng-model="select_all" aria-label="SelectAll"></md-checkbox>
+                        </td>
+                        <td flex>Table name</td>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="t in data">
+                        <td><md-checkbox ng-change="onChangeTable()" ng-model="check_tables[t]" aria-label="SelectAll"></md-checkbox></td>
                         <td>
                             <a href="#/table/{{ t }}">{{ t }}</a>
                         </td>
