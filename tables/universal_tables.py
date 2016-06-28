@@ -128,8 +128,8 @@ class UniversalTable:
                 neighbor UtrancellTarget,
                 t2.carrier CarrierTarget            
             FROM UtranRelation
-                left join TOPOLOGY AS t1 ON ((t1.Utrancell= UtranRelation.Utrancell) AND (t1.filename= UtranRelation.filename))
-                left join TOPOLOGY AS t2 ON ((t2.Utrancell= UtranRelation.neighbor) AND  (t2.filename= UtranRelation.filename))
+                left join TOPOLOGY AS t1 ON (t1.Utrancell= UtranRelation.Utrancell)
+                left join TOPOLOGY AS t2 ON (t2.Utrancell= UtranRelation.neighbor) 
             WHERE (t2.project_id = '%s') AND (t1.project_id = '%s') AND (UtranRelation.project_id='%s') 
             ''' % (str(project_id), str(project_id), str(project_id), str(project_id),)
         
