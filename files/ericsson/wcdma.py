@@ -115,6 +115,7 @@ class WcdmaXML:
             if 'adjacentCell' in row:
                 ac = self.parse_mo(row.get('adjacentCell'))
                 row['Neighbor'] = ac.get('UtranCell')
+                row['RNCTarget'] = ac.get('MeContext')
         elif table_name == 'IubLink':
             if 'iubLinkNodeBFunction' in row:
                 ib = self.parse_mo(row.get('iubLinkNodeBFunction'))

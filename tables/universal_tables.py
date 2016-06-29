@@ -124,7 +124,7 @@ class UniversalTable:
 	            element1 RNCSource, 
 		        UtranRelation.Utrancell UtrancellSource, 
 	            t1.carrier CarrierSource,	
-                t2.rnc RncTarget,
+                UtranRelation.RNCTarget,
                 neighbor UtrancellTarget,
                 t2.carrier CarrierTarget            
             FROM UtranRelation
