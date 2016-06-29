@@ -58,6 +58,7 @@ tableControllers.controller('byTechnologyCtrl', ['$scope', '$http', '$cookies', 
         $scope.refreshData = function(vendor, network, filter){
             $http.get('/data/by_technology/' + vendor + '/' + network + '/?filter=' + filter).success(function(data) {
                 $scope.data = data;
+                $scope.tables_params = '';
                 for (i in data){
                     $scope.check_tables[data[i]] = true;   
                     $scope.tables_params = $scope.tables_params + '&table=' + data[i]; 
@@ -66,8 +67,17 @@ tableControllers.controller('byTechnologyCtrl', ['$scope', '$http', '$cookies', 
         };
         
         $scope.refreshData('Ericsson', 'WCDMA', '');
+        
+        $scope.onChangeTable = function(){            
+            $scope.tables_params = '';
+            for (i in $scope.check_tables){                
+                if ($scope.check_tables[i]){                    
+                    $scope.tables_params = $scope.tables_params + '&table=' + i;             
+                }
+            };
+        };
         $scope.select_all = true;
-        $scope.onSelectAll = function(status){
+        $scope.onSelectAll = function(status){            
             if (status){
                 for (i in $scope.data){
                     $scope.check_tables[$scope.data[i]] = true;   
@@ -77,15 +87,9 @@ tableControllers.controller('byTechnologyCtrl', ['$scope', '$http', '$cookies', 
                     $scope.check_tables[$scope.data[i]] = false;   
                 }
             }            
+            $scope.onChangeTable()
         };
-        $scope.onChangeTable = function(){            
-            $scope.tables_params = '';
-            for (i in $scope.check_tables){                
-                if ($scope.check_tables[i]){                    
-                    $scope.tables_params = $scope.tables_params + '&table=' + i;             
-                }
-            };
-        }; 
+         
         
   }]);
 
