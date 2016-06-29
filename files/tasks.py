@@ -123,8 +123,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                 try:                
                     table.write_table(table_name, data)
                 except:
-                    pass
-            UploadedFiles.objects.filter(id=file_id).delete()            
+                    pass                        
             Files.objects.create(
                 filename=basename(f),
                 file_type=file_type,

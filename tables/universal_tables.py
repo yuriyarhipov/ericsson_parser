@@ -128,9 +128,9 @@ class UniversalTable:
                 neighbor UtrancellTarget,
                 t2.carrier CarrierTarget            
             FROM UtranRelation
-                left join TOPOLOGY AS t1 ON (t1.Utrancell= UtranRelation.Utrancell)
-                left join TOPOLOGY AS t2 ON (t2.Utrancell= UtranRelation.neighbor) 
-            WHERE (t2.project_id = '%s') AND (t1.project_id = '%s') AND (UtranRelation.project_id='%s') 
+                left join TOPOLOGY AS t1 ON (t1.Utrancell= UtranRelation.Utrancell) AND (t1.project_id = '%s')
+                left join TOPOLOGY AS t2 ON (t2.Utrancell= UtranRelation.neighbor) AND (t2.project_id = '%s') 
+            WHERE (UtranRelation.project_id='%s') 
             ''' % (str(project_id), str(project_id), str(project_id), str(project_id),)
         
         cursor.execute(sql) 
@@ -175,10 +175,10 @@ class UniversalTable:
      	        topology.sectorantena Antenna,
      	        SectorAntenna.mechanicalantennatilt mechanical_tilt,
      	        SectorAntenna.electricalantennatilt electrical_tilt FROM TOPOLOGY
-     	        INNER JOIN Utrancell ON ( topology.cid=Utrancell.cid)
-     	        INNER JOIN Sector ON ((Sector.element2=topology.site) AND (Sector.sector = topology.sector))
-     	        left JOIN SectorAntenna ON ((SectorAntenna.element2=topology.site) AND (substring(SectorAntenna.sectorantenna from 1 for 1) = topology.sector))
-     	    WHERE (topology.project_id = '%s') AND (SectorAntenna.project_id = '%s') AND (Sector.project_id = '%s') AND (Utrancell.project_id = '%s')
+     	        INNER JOIN Utrancell ON (topology.cid=Utrancell.cid) AND (Utrancell.project_id = '%s')
+     	        INNER JOIN Sector ON ((Sector.element2=topology.site) AND (Sector.sector = topology.sector) AND (Sector.project_id = '%s'))
+     	        left JOIN SectorAntenna ON ((SectorAntenna.element2=topology.site) AND (substring(SectorAntenna.sectorantenna from 1 for 1) = topology.sector) AND (SectorAntenna.project_id = '%s'))
+     	    WHERE (topology.project_id = '%s')   
             ORDER BY 
                 topology.rnc, 
                 topology.site, 
