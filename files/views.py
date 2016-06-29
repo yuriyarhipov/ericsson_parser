@@ -429,8 +429,8 @@ def save_map_position(request):
         us.save()        
     else:        
         UserSettings.objects.create(
-            current_project=project, 
-            user=username, 
+            current_project=project,
+            user=username,
             gsm_file = '',
             wcdma_file = '',
             lte_file = '',
@@ -440,12 +440,22 @@ def save_map_position(request):
             gsm_color = '#ffa500',
             wcdma_color = '#0000FF',
             lte_color = '#008000',
-            element_color = '#FF00FF',
+            element_color = '#FF0000',
             gsm_radius = '1000',
             wcdma_radius = '1200',
             lte_radius = '1500',
-            map_center=latlng,
-            map_zoom=zoom) 
+            map_center = '0,0',
+            map_zoom = '10',
+            co_pci_color = '#FF0000',
+            sc_color = '#FF0000',
+            adj_minus_color = '#00FF00',
+            adj_plus_color = '#0000FF',
+            co_bcch_color = '#FF0000',
+            deleted_neighbour_color = '#0000FF',
+            new_neighbour_color = '#ffa500',
+            neighbour_color = '#FF0000',
+            selected_cell_color = '#00FF00'
+        )
     return Response([])
 
 
