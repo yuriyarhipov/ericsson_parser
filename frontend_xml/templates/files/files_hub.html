@@ -64,14 +64,16 @@
                                     <th>Filename</th>
                                     <th>Description</th>
                                     <th>File Type</th>
-                                    <th></th>
+                                    <th>Label</th>
+                                    <th></th>          
                                     <th></th>                                    
                                 </thead>
                                 <thead>
                                     <tr ng-repeat="f in uploaded_files">
                                         <td>{{ f.filename}}</td>
                                         <td>{{ f.description}}</td>
-                                        <td>{{ f.file_type}}</td>                                        
+                                        <td>{{ f.file_type}}</td>
+                                        <td>{{ f.label}}</td>                                        
                                         <th><md-button class="md-raised md-warn" ng-click="onDelete(f.id)">Delete</md-button></th>
                                         <th><md-progress-circular md-mode="determinate" value="{{ f.status }}"></md-progress-circular></th>
                                     </tr>

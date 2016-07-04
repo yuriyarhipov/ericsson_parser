@@ -79,11 +79,14 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     distance_files = [
         'HISTOGRAM FILE COUNTER - Access Distance',
     ]
-
+    
+    uf = UploadedFiles.objects.get(id=file_id)
     task = current_task
     task.update_state(state="PROGRESS", meta={"current": 1})
     work_files = []
-
+    
+    uf.label = 'Unpacking...'
+    uf.save()
     ext = splitext(filename)[1]
     if ext in ['rar', 'zip', 'gz', '.rar', '.zip', '.gz']:
         work_files.extend(XmlPack(filename).get_files())
@@ -94,6 +97,8 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     i = 0
     available_percent = percent_per_file / 2
     tables = set()    
+    uf.label = 'Processing...'
+    uf.save()
     for f in work_files:
         if file_type not in ['RND', ]:            
             for f in Files.objects.filter(project=project, file_type=file_type):
@@ -112,7 +117,8 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
             elif file_type == 'MML script file':
                 data_file = HuaweiConfig(f, project, file_id, i, available_percent, set_percent).data
         if data_file:
-            
+            uf.label = 'Writing...'
+            uf.save()            
             table = Table(1, 'localhost', 'xml2', 'postgres', '1297536')
             table_count = len(data_file)
             table_index = 0.0
@@ -185,6 +191,9 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
                 network=network)
 
         i += percent_per_file
+        
+    uf.label = 'Creating Universal tables...'
+    uf.save()
     UniversalTable('').create_tables(project.id)
     UploadedFiles.objects.filter(id=file_id).delete()
     revoke(worker.request.id, terminate=True)

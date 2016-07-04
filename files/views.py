@@ -80,6 +80,7 @@ def uploaded_files(request):
             vendor=f.vendor,
             network=f.network,
             status=f.status,
+            label=f.label,
             date=f.date.strftime('%d.%m.%Y'),
         ))
     return HttpResponse(json.dumps(data), content_type='application/json')

@@ -107,20 +107,12 @@ class UniversalTable:
                 (RBSLocalCell.project_id=UtranCell.project_id) AND (IubLink.project_id=UtranCell.project_id)
                 ;''')
             self.conn.commit()
-        
-        cursor.execute('DELETE FROM files_wcdmawcdma WHERE project_id=%s', (project_id, ))
-        sql = '''
-            INSERT INTO files_wcdmawcdma (
-                project_id,
-                "rncSource",
-                "utrancellSource",
-                "carrierSource",
-                "rncTarget",
-                "utrancellTarget",
-                "carrierTarget"
-            )
+            
+        if 'wcdmawcdma' not in views:        
+            sql = '''
+            CREATE VIEW wcdmawcdma AS
             SELECT DISTINCT
-                %s project,         
+                UtranRelation.project_id,                         
 	            element1 RNCSource, 
 		        UtranRelation.Utrancell UtrancellSource, 
 	            t1.carrier CarrierSource,	
@@ -128,78 +120,58 @@ class UniversalTable:
                 neighbor UtrancellTarget,
                 t2.carrier CarrierTarget            
             FROM UtranRelation
-                left join TOPOLOGY AS t1 ON (t1.Utrancell= UtranRelation.Utrancell) AND (t1.project_id = '%s')
-                left join TOPOLOGY AS t2 ON (t2.Utrancell= UtranRelation.neighbor) AND (t2.project_id = '%s') 
-            WHERE (UtranRelation.project_id='%s') 
-            ''' % (str(project_id), str(project_id), str(project_id), str(project_id),)
-        
-        cursor.execute(sql) 
-        cursor.execute('DELETE FROM files_rnd3g WHERE project_id=%s', (project_id, ))          
-        sql ='''
-            INSERT INTO files_rnd3g (
-                project_id,                
-                "rnc",
-                "site", 
-                "utrancell",
-                "cellid",
-                "sector",
-                "lac",
-                "rac",
-                "sc",
-                "carrier",
-                "name",
-                "datum",
-                "latitude",
-                "longitude",
-                "high",
-                "Azimuth",
-                "Antenna",
-                "mechanical_tilt",
-                "electrical_tilt"                
-            )
-            SELECT DISTINCT
-                %s, 
-    	        topology.rnc, topology.site, topology.utrancell, 
-                topology.cid cellid,
-     	        topology.sector,
-     	        lac,
-     	        rac,
-     	        primaryscramblingcode sc,
-     	        carrier,
-     	        'name' "name",
-     	        sector.geodatum datum,
-     	        sector.latitude,
-     	        sector.longitude,
-     	        sector.height,
-     	        sector.beamdirection azimuth,
-     	        topology.sectorantena Antenna,
-     	        SectorAntenna.mechanicalantennatilt mechanical_tilt,
-     	        SectorAntenna.electricalantennatilt electrical_tilt FROM TOPOLOGY
-     	        INNER JOIN Utrancell ON (topology.cid=Utrancell.cid) AND (Utrancell.project_id = '%s')
-     	        INNER JOIN Sector ON ((Sector.element2=topology.site) AND (Sector.sector = topology.sector) AND (Sector.project_id = '%s'))
-     	        left JOIN SectorAntenna ON ((SectorAntenna.element2=topology.site) AND (substring(SectorAntenna.sectorantenna from 1 for 1) = topology.sector) AND (SectorAntenna.project_id = '%s'))
-     	    WHERE (topology.project_id = '%s')   
-            ORDER BY 
-                topology.rnc, 
-                topology.site, 
-                topology.utrancell, 
-                topology.cid,
-     	        topology.sector,
-     	        lac,
-     	        rac,
-     	        sc,
-     	        carrier,     	        
-     	        datum,
-     	        sector.latitude,
-     	        sector.longitude,
-     	        sector.height,
-     	        azimuth,
-     	        Antenna,
-     	        mechanical_tilt,
-     	        electrical_tilt 
-       ''' % (project_id, project_id, project_id, project_id, project_id,)
-        
-        cursor.execute(sql)        
+                left join TOPOLOGY AS t1 ON (t1.Utrancell= UtranRelation.Utrancell) AND (t1.project_id = UtranRelation.project_id)
+                left join TOPOLOGY AS t2 ON (t2.Utrancell= UtranRelation.neighbor) AND (t2.project_id = UtranRelation.project_id); 
+             
+            '''
+                    
+            cursor.execute(sql)
+        if 'rnd3g' not in views:      
+            sql ='''            
+                CREATE VIEW rnd3g AS
+                SELECT DISTINCT
+                    topology.project_id, 
+    	            topology.rnc, 
+                    topology.site, 
+                    topology.utrancell, 
+                    topology.cid cellid,
+     	            topology.sector,
+     	            lac,
+     	            rac,
+         	        primaryscramblingcode sc,
+         	        carrier,
+     	            'name' "name",
+     	            sector.geodatum datum,
+     	            sector.latitude,
+         	        sector.longitude,
+         	        sector.height,
+     	            sector.beamdirection azimuth,
+     	            topology.sectorantena Antenna,
+     	            SectorAntenna.mechanicalantennatilt mechanical_tilt,
+         	        SectorAntenna.electricalantennatilt electrical_tilt FROM TOPOLOGY
+     	        INNER JOIN Utrancell ON (topology.cid=Utrancell.cid) AND (Utrancell.project_id = topology.project_id)
+     	        INNER JOIN Sector ON ((Sector.element2=topology.site) AND (Sector.sector = topology.sector) AND (Sector.project_id = topology.project_id))
+     	        left JOIN SectorAntenna ON ((SectorAntenna.element2=topology.site) AND (substring(SectorAntenna.sectorantenna from 1 for 1) = topology.sector) AND (SectorAntenna.project_id = topology.project_id))     	       
+                ORDER BY 
+                    topology.rnc, 
+                    topology.site, 
+                    topology.utrancell, 
+                    topology.cid,
+         	        topology.sector,
+     	            lac,
+     	            rac,
+     	            sc,
+     	            carrier,     	        
+     	            datum,
+     	            sector.latitude,
+         	        sector.longitude,
+           	        sector.height,
+     	            azimuth,
+     	            Antenna,
+     	            mechanical_tilt,
+     	            electrical_tilt 
+        '''        
+            cursor.execute(sql)        
         self.conn.commit()
                 
     def get_table(self, project_id):
@@ -213,13 +185,13 @@ class UniversalTable:
         elif self.relation == 'wcdmawcdma':            
             cursor.execute('''
             SELECT 
-	            "rncSource", 
-    		    "utrancellSource", 
-	            "carrierSource",	
-                "rncTarget",
-                "utrancellTarget",
-                "carrierTarget"            
-            FROM files_wcdmawcdma            
+	            rncSource, 
+    		    utrancellSource, 
+	            carrierSource,	
+                rncTarget,
+                utrancellTarget,
+                carrierTarget            
+            FROM wcdmawcdma            
             WHERE project_id = %s
             ''', (str(project_id), ))
             
@@ -248,10 +220,10 @@ class UniversalTable:
                 'CellTarget']
             cursor.execute('''
                 SELECT 
-                    GsmRelation.Element1 AS "RncSource", 
-                    GsmRelation.Utrancell AS "UtrancellSource", 
-                    Topology.Carrier As "CarrierSource", 
-                    GsmRelation.GSMRelation AS "CellTarget" 
+                    GsmRelation.Element1 AS RncSource, 
+                    GsmRelation.Utrancell AS UtrancellSource, 
+                    Topology.Carrier As CarrierSource, 
+                    GsmRelation.GSMRelation AS CellTarget 
                 FROM GsmRelation
                     LEFT JOIN TOPOLOGY ON (
                         (GsmRelation.Utrancell=Topology.Utrancell) AND 
@@ -281,35 +253,34 @@ class UniversalTable:
                 'electrical_tilt'  ]
             cursor.execute('''
                 SELECT 
-                    "rnc",
-                "site", 
-                "utrancell",
-                "cellid",
-                "sector",
-                "lac",
-                "rac",
-                "sc",
-                "carrier",
-                "name",
-                "datum",
-                "latitude",
-                "longitude",
-                "high",
-                "Azimuth",
-                "Antenna",
-                "mechanical_tilt",
-                "electrical_tilt"   
-                FROM files_rnd3g                    
-                WHERE project_id = %s;
+                rnc,
+                site, 
+                utrancell,
+                cellid,
+                sector,
+                lac,
+                rac,
+                sc,
+                carrier,
+                name,
+                datum,
+                latitude,
+                longitude,
+                height,
+                Azimuth,
+                Antenna,
+                mechanical_tilt,
+                electrical_tilt   
+                FROM rnd3g                    
+                WHERE project_id = %s
             ''', (str(project_id), ))
 
         
         data = []
         for row in cursor.fetchall():
             dict_row = dict()
-            for i in range(len(columns)):
-                print i, row
+            for i in range(len(columns)):                
                 dict_row[columns[i]] = row[i]
             data.append(dict_row)
-
+        print len(data)
         return columns, data
