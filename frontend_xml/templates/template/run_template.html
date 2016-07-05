@@ -8,7 +8,7 @@
         <div flex>
             <form ng-upload="complete(content)" class="form-horizontal" role="form" action="/data/run_template/">
                 <div class="form-group">
-                    <label class="col-sm-1 control-label" for="network">Network:</label>
+                    <label class="col-sm-2 control-label" for="network">Network:</label>
                     <div class="col-sm-9">
                         <select ng-change="onChangeNetwork()" ng-model="network" class="form-control" id="network" name="network">
                     <option value="GSM">GSM</option>
@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-1 control-label" for="file">File:</label>
+                    <label class="col-sm-2 control-label" for="file">File:</label>
                     <div class="col-sm-9">
                         <select ng-change="onChangeFile()" ng-model="file" ng-options="file for file in files track by file" class="form-control"
                             id="file" name="file">
@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-1 control-label" for="template">Template:</label>
+                    <label class="col-sm-2 control-label" for="template">Template:</label>
                     <div class="col-sm-9">
                         <select ng-model="template" ng-options="template for template in templates track by template" class="form-control" id="template"
                             name="template">
@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-1 control-label" for="cells">Select Cells:</label>
+                    <label class="col-sm-2 control-label" for="cells">Select Cells:</label>
                     <div class="col-sm-9">
                         <input class="form-control" id="filter">
                         <select ng-model="selected_cells" ng-options="cell.cell group by cell.cell_type for cell in data_cells" class="form-control"
@@ -48,16 +48,22 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-sm-2 control-label" for="template">Out of range:</label>
+                    <div class="col-sm-9">
+                        <input type="checkbox" ng-model="out_of_range">
+                    </div>
+                </div>
+                <div class="form-group">
                     <div ng-repeat="cell in group_cells">
                         <input type="hidden" value="{{ cell.cell }}" name="cell">
-                    </div>
-                    <div class="col-sm-1"></div>
+                    </div>                    
+                    <div class="col-sm-2"></div>
                     <div class="col-sm-1"><button ng-click="onClickRun()" type="button" class="btn btn-success">Run</button></div>
                     <div class="col-sm-5" ng-show="show_excel_dialog">
                         <div class="col-md-5">
                             <input type="text" class="form-control" placeholder="Excel FileName" ng-model="excelFileName">
-                        </div>                
-                        <div class="col-md-5">        
+                        </div>
+                        <div class="col-md-5">
                             <button ng-click="onClickExcel()" type="button" class="btn btn-success">OK</button>
                         </div>
                     </div>

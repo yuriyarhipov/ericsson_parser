@@ -130,7 +130,8 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http', 'Flash', 
 
         $scope.hideTable = true;
         $scope.hideForm = false;
-        $scope.show_excel_dialog = false; 
+        $scope.show_excel_dialog = false;
+        $scope.out_of_range = false; 
         $scope.onChangeNetwork = function () {
             $http.get('/data/get_templates/' + $scope.network + '/').success(function (data) {
                 $scope.templates = data;
@@ -203,7 +204,7 @@ parameterControllers.controller('runTemplateCtrl', ['$scope', '$http', 'Flash', 
 
         $scope.onClickRun = function () {
             Flash.create('success', 'Please wait');
-            $scope.url = '/data/run_template/?template=' + $scope.template + '&file=' + $scope.file;
+            $scope.url = '/data/run_template/?template=' + $scope.template + '&file=' + $scope.file + '&out_of_range='+$scope.out_of_range;
             var length_cells = $scope.group_cells.length;
             for (var i = 0; i < length_cells; i++) {
                 $scope.url = $scope.url + '&cell=' + $scope.group_cells[i].cell;

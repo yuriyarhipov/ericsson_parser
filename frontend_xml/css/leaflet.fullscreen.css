@@ -7,6 +7,7 @@
     }
 
 .leaflet-container:-webkit-full-screen {
+  position: static!important;
   width:100%!important;
   height:100%!important;
   }

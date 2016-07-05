@@ -112,8 +112,9 @@ def get_template_cells(request, network, filename):
 def run_template(request):
     project = request.project
     template = request.GET.get('template')
+    out_of_range = request.GET.get('out_of_range') == 'true'    
     cells = request.GET.get('cell').split(',')
-    tabs = Template().get_data(project, template, cells)
+    tabs = Template(out_of_range).get_data(project, template, cells)
 
     if request.GET.get('excel'):
         excel_name = request.GET.get('excel')
