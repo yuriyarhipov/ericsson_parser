@@ -99,11 +99,7 @@ def worker(filename, project, description, vendor, file_type, network, file_id):
     tables = set()    
     uf.label = 'Processing...'
     uf.save()
-    for f in work_files:
-        if file_type not in ['RND', ]:            
-            for f in Files.objects.filter(project=project, file_type=file_type):
-                f.clear_tables()           
-                f.delete()
+    for f in work_files:        
         data_file = None
         if (file_type in xml_types) and (network == 'WCDMA'):
             data_file = WcdmaXML(f, project, file_id, i, available_percent, set_percent).data                        
