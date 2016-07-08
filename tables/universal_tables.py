@@ -39,7 +39,7 @@ class UniversalTable:
                 "mechanical_tilt",
                 "electrical_tilt" 
             FROM
-                files_rnd3g
+                rnd3g
             WHERE
                 project_id=%s
                  
