@@ -101,10 +101,9 @@ class UniversalTable:
                     IubLink.Iublink,
                     UtranCell.filename            
                 FROM RBSLocalCell
-                    INNER JOIN UtranCell ON (RBSLocalCell.LocalCellid = UtranCell.CID and RBSLocalCell.filename = UtranCell.filename)
-                    LEFT JOIN IubLink ON  (RBSLocalCell.Element2 = IubLink.Element2 AND RBSLocalCell.filename = IubLink.filename)
-                WHERE 
-                (RBSLocalCell.project_id=UtranCell.project_id) AND (IubLink.project_id=UtranCell.project_id)
+                    INNER JOIN UtranCell ON (RBSLocalCell.LocalCellid = UtranCell.CID and RBSLocalCell.filename = UtranCell.filename and (RBSLocalCell.project_id=UtranCell.project_id))
+                    LEFT JOIN IubLink ON  (RBSLocalCell.Element2 = IubLink.Element2 AND RBSLocalCell.filename = IubLink.filename AND (IubLink.project_id=UtranCell.project_id))
+                                
                 ;''')
             self.conn.commit()
             

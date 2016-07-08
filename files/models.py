@@ -263,7 +263,7 @@ class Files(models.Model):
 
         return [value, status]
     
-    def clear_tables(self):
+    def clear_tables(self):        
         tables = self.tables.split(',')                
         cursor = connection.cursor()
         for table_name in tables:   
