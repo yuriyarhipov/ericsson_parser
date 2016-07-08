@@ -34,8 +34,8 @@ class UniversalTable:
                 "latitude",
                 "longitude",
                 "height",
-                "Azimuth",
-                "Antenna",
+                "azimuth",
+                "antenna",
                 "mechanical_tilt",
                 "electrical_tilt" 
             FROM
