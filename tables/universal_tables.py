@@ -41,7 +41,7 @@ class UniversalTable:
             FROM
                 rnd3g
             WHERE
-                project_id=%s
+                project_id='%s'
                  
         ''', (project.id, ))
         data = []
