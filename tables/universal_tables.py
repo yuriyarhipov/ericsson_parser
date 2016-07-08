@@ -33,7 +33,7 @@ class UniversalTable:
                 "datum",
                 "latitude",
                 "longitude",
-                "high",
+                "height",
                 "Azimuth",
                 "Antenna",
                 "mechanical_tilt",
