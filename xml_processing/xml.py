@@ -9,6 +9,7 @@ from files.models import Files, FileTasks
 from tables.table import Topology
 from files.excel import ExcelFile
 from files.tasks import create_table
+from tempfile import NamedTemporaryFile
 
 
 class Diff:
@@ -153,11 +154,11 @@ class Table:
         columns = list(df.columns.values)
         cursor = self.conn.cursor()
         self.create_table(tablename, columns)
-        df.to_csv('/tmp/temp.csv', sep='\t', index=False, header=False)
-        with open('/tmp/temp.csv') as f:
-            if tablename == 'SECTOREQM':
-                print columns
-                print df
+        f = NamedTemporaryFile(delete=False)
+        f_name = f.name
+        f.close()
+        df.to_csv(f_name, sep='\t', index=False, header=False)
+        with open(f_name) as f:            
             cursor.copy_from(f, tablename, columns=columns)
         self.conn.commit()
 
