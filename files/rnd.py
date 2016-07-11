@@ -177,7 +177,7 @@ class Rnd:
                 utrancellTarget
             FROM
                 wcdmawcdma
-            WHERE (utrancellSource=%s) AND (project_id=%s)''', (sector, project_id, ))
+            WHERE (utrancellSource=%s) AND (project_id='%s')''', (sector, project_id, ))
         neighbors = [row[0] for row in cursor]
         return neighbors
 
@@ -188,7 +188,7 @@ class Rnd:
                 utrancellTarget
             FROM
                 wcdmawcdma
-            WHERE (utrancellTarget=%s) AND (utrancellSource=%s) AND (project_id=%s)''', (target_sector, source_sector, project_id, ))
+            WHERE (utrancellTarget=%s) AND (utrancellSource=%s) AND (project_id='%s')''', (target_sector, source_sector, project_id, ))
         return cursor.rowcount > 0
 
     def get_new3g(self, sector, filename):
