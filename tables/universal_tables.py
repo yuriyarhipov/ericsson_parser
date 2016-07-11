@@ -41,7 +41,7 @@ class UniversalTable:
             FROM
                 rnd3g
             WHERE
-                project_id='%s'
+                project_id='%s' 
                  
         ''', (project.id, ))
         data = []
@@ -58,8 +58,8 @@ class UniversalTable:
             row['Carrier'] = r[8]
             row['Name'] = r[9]
             row['Datum'] = r[10]
-            row['Latitude'] = (float(r[11]) / 8388608) * 90
-            row['Longitude'] = (float(r[12]) / 16777216) * 360
+            row['Latitude'] = r[11]
+            row['Longitude'] = r[12]
             row['High'] = r[13]
             row['Azimuth'] = r[14]
             row['Antenna'] = r[15]
@@ -141,8 +141,8 @@ class UniversalTable:
          	        carrier,
      	            'name' "name",
      	            sector.geodatum datum,
-     	            sector.latitude,
-         	        sector.longitude,
+     	            sector.latitude ::float/ 8388608 * 90 latitude,
+         	        sector.longitude::float / 16777216 * 360 longitude,
          	        sector.height,
      	            sector.beamdirection azimuth,
      	            topology.sectorantena Antenna,
@@ -162,8 +162,8 @@ class UniversalTable:
      	            sc,
      	            carrier,     	        
      	            datum,
-     	            sector.latitude,
-         	        sector.longitude,
+     	            latitude,
+         	        longitude,
            	        sector.height,
      	            azimuth,
      	            Antenna,

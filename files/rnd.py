@@ -176,7 +176,7 @@ class Rnd:
             SELECT DISTINCT
                 "utrancellTarget"
             FROM
-                files_wcdmawcdma
+                wcdmawcdma
             WHERE ("utrancellSource"=%s) AND (project_id=%s)''', (sector, project_id, ))
         neighbors = [row[0] for row in cursor]
         return neighbors
@@ -187,7 +187,7 @@ class Rnd:
             SELECT DISTINCT
                 "utrancellTarget"
             FROM
-                files_wcdmawcdma
+                wcdmawcdma
             WHERE ("utrancellTarget"=%s) AND ("utrancellSource"=%s) AND (project_id=%s)''', (target_sector, source_sector, project_id, ))
         return cursor.rowcount > 0
 
