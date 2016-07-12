@@ -338,9 +338,13 @@ class Template(object):
                     data.append(dict(name=row[0]))
         return data
 
-    def get_table(self, project, table_name, cells, column, min_value, max_value):
+    def get_table(self, project, table_name, cells, column, min_value, max_value):        
         cursor = self.conn.cursor()
         sql_columns = [column, ]
+        if min_value and max_value and self.out_of_range:
+            sql_columns.append(min_value + ' "Min:"')
+            sql_columns.append(max_value + '"Max:"')
+     
         cursor.execute('SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE LOWER(table_name)=%s', (table_name.lower(), ))
         columns = [row[0] for row in cursor]
         where_sql = []        
@@ -356,16 +360,16 @@ class Template(object):
             where_sql.append('Element1 not in (%s)' % sql_cells)
         where_sql = ' AND '.join(where_sql)
                                     
-        sql_columns = reversed(sql_columns)        
-        if (min_value and max_value) and (self.out_of_range):
-            try:
-               cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND NOT ((''' + column + '''::float>=%s) AND (''' + column + '''::float<=%s)) AND NOT (''' + where_sql +''')''', ( project.id, float(min_value), float(max_value)))
-            except:
+        sql_columns = reversed(sql_columns)
+        if (min_value and max_value) and (not self.out_of_range):            
+            try:                
+                cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND NOT ((''' + column + '''::float>=%s) AND (''' + column + '''::float<=%s)) AND NOT (''' + where_sql +''')''', ( project.id, float(min_value), float(max_value)))
+            except:                
                 cursor.close()
                 self.conn.rollback()
                 cursor = self.conn.cursor()
-        else:
-            try:
+        else:            
+            try:                                                
                 cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s)  AND NOT (''' + where_sql +''')''', ( project.id, ))
             except:                
                 cursor.close()
@@ -374,12 +378,13 @@ class Template(object):
         columns = []
         data = []
         if cursor.rowcount > 0:
-            columns = ['%s' % desc[0] for desc in cursor.description]            
+            columns = ['%s' % desc[0] for desc in cursor.description]
+                        
             for row in cursor:
                 data_row = dict()
                 for col in columns:
                     data_row[col] = row[columns.index(col)]
-                data.append(data_row)
+                data.append(data_row)                     
         return columns, data
 
     def get_parameter(self, project, cells, param_name, min_value, max_value):

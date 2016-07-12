@@ -113,7 +113,7 @@ def run_template(request):
     project = request.project
     template = request.GET.get('template')
     out_of_range = request.GET.get('out_of_range') == 'true'    
-    cells = request.GET.get('cell').split(',')
+    cells = request.GET.getlist('cell')
     tabs = Template(out_of_range).get_data(project, template, cells)
 
     if request.GET.get('excel'):

@@ -60,7 +60,11 @@ class Files(models.Model):
             return SuperFile.objects.filter(project=project, network=network).first()
 
         if network == 'WCDMA':
-            file_type = ['WCDMA RADIO OSS BULK CM XML FILE', 'Configuration Management XML File']
+            file_type = [
+                'WCDMA RADIO OSS BULK CM XML FILE', 
+                'Configuration Management XML File',
+                'WCDMA TRANSPORT OSS BULK CM XML FILE',
+                'WCDMA Radio and Transport Bulk',]
         elif network == 'LTE':
             file_type = ['LTE RADIO eNodeB BULK CM XML FILE', ]
         elif network == 'GSM':
