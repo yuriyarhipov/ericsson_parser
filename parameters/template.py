@@ -361,7 +361,7 @@ class Template(object):
         where_sql = ' AND '.join(where_sql)
                                     
         sql_columns = reversed(sql_columns)
-        if (min_value and max_value) and (not self.out_of_range):            
+        if min_value and max_value and self.out_of_range:            
             try:                
                 cursor.execute(''' SELECT ''' + ','.join(sql_columns) + ''' FROM ''' + table_name + ''' WHERE (project_id::integer=%s) AND NOT ((''' + column + '''::float>=%s) AND (''' + column + '''::float<=%s)) AND NOT (''' + where_sql +''')''', ( project.id, float(min_value), float(max_value)))
             except:                
